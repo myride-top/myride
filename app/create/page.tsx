@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import Navbar from '@/components/ui/navbar'
+import { ChevronLeft } from 'lucide-react'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
@@ -249,7 +250,7 @@ export default function CreateCarPage() {
               href='/dashboard'
               className='text-primary hover:text-primary/80 mr-4'
             >
-              ← Back to Dashboard
+              <ChevronLeft className='w-5 h-5' />
             </Link>
             <h1 className='text-3xl font-bold text-foreground'>Add New Car</h1>
           </div>
