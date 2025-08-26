@@ -518,7 +518,7 @@ export default function EditCarPage() {
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-gray-50'>
+      <div className='min-h-screen bg-background'>
         <Navbar />
 
         {/* Page Header */}
@@ -527,16 +527,16 @@ export default function EditCarPage() {
             <div className='flex items-center'>
               <button
                 onClick={() => router.back()}
-                className='mr-4 text-gray-600 hover:text-gray-900 cursor-pointer'
+                className='mr-4 text-foreground hover:text-foreground/80 cursor-pointer'
               >
                 <ArrowLeft className='w-6 h-6' />
               </button>
-              <h1 className='text-3xl font-bold text-gray-900'>Edit Car</h1>
+              <h1 className='text-3xl font-bold text-foreground'>Edit Car</h1>
             </div>
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className='bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50'
+              className='bg-destructive text-destructive-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50'
             >
               {deleting ? 'Deleting...' : 'Delete Car'}
             </button>

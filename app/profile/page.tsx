@@ -125,7 +125,7 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-gray-50'>
+      <div className='min-h-screen bg-background'>
         <Navbar />
 
         {/* Page Header */}
@@ -133,11 +133,11 @@ export default function ProfilePage() {
           <div className='flex items-center'>
             <button
               onClick={() => router.back()}
-              className='mr-4 text-gray-600 hover:text-gray-900'
+              className='mr-4 text-foreground hover:text-foreground/80'
             >
               <ArrowLeft className='w-6 h-6' />
             </button>
-            <h1 className='text-3xl font-bold text-gray-900'>Edit Profile</h1>
+            <h1 className='text-3xl font-bold text-foreground'>Edit Profile</h1>
           </div>
         </div>
 

@@ -193,7 +193,7 @@ export default function CarDetailPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen bg-background'>
       <Navbar />
 
       {/* Page Header */}
@@ -209,8 +209,8 @@ export default function CarDetailPage() {
               </Link>
             )}
             <div>
-              <h1 className='text-3xl font-bold text-gray-900'>{car.name}</h1>
-              <div className='text-sm text-gray-500'>
+              <h1 className='text-3xl font-bold text-foreground'>{car.name}</h1>
+              <div className='text-sm text-muted-foreground'>
                 by @{profile?.username || params.username || 'Unknown'}
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function CarDetailPage() {
           <div className='flex items-center space-x-4'>
             <button
               onClick={handleShare}
-              className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors cursor-pointer'
+              className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
             >
               <Share2 className='w-4 h-4 mr-2' />
               Share
@@ -226,7 +226,7 @@ export default function CarDetailPage() {
             {user && car && user.id === car.user_id && (
               <Link
                 href={`/${profile?.username}/${car.id}/edit`}
-                className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors cursor-pointer'
+                className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
               >
                 <Edit className='w-4 h-4 mr-2' />
                 Edit
@@ -242,7 +242,9 @@ export default function CarDetailPage() {
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
             {/* Photos Section */}
             <div className='lg:col-span-2'>
-              <h2 className='text-2xl font-bold text-gray-900 mb-6'>Photos</h2>
+              <h2 className='text-2xl font-bold text-foreground mb-6'>
+                Photos
+              </h2>
 
               {/* Category Filter */}
               {car.photos && car.photos.length > 0 && (
@@ -252,8 +254,8 @@ export default function CarDetailPage() {
                       onClick={() => setSelectedCategory('all')}
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
                         selectedCategory === 'all'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground hover:bg-accent'
                       } cursor-pointer`}
                     >
                       All ({car.photos.length})
@@ -274,8 +276,8 @@ export default function CarDetailPage() {
                           onClick={() => setSelectedCategory(category)}
                           className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
                             selectedCategory === category
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-accent'
                           } cursor-pointer`}
                         >
                           {category} ({count})
@@ -307,9 +309,7 @@ export default function CarDetailPage() {
                           key={index}
                           onClick={() => setSelectedPhoto(index)}
                           className={`aspect-w-1 aspect-h-1 rounded-md overflow-hidden cursor-pointer ${
-                            selectedPhoto === index
-                              ? 'ring-2 ring-indigo-500'
-                              : ''
+                            selectedPhoto === index ? 'ring-2 ring-primary' : ''
                           }`}
                         >
                           <img
@@ -325,14 +325,14 @@ export default function CarDetailPage() {
                   )}
                 </div>
               ) : (
-                <div className='text-center py-12 bg-gray-100 rounded-lg'>
-                  <Image className='mx-auto h-12 w-12 text-gray-400' />
-                  <h3 className='mt-2 text-sm font-medium text-gray-900'>
+                <div className='text-center py-12 bg-muted rounded-lg'>
+                  <Image className='mx-auto h-12 w-12 text-muted-foreground' />
+                  <h3 className='mt-2 text-sm font-medium text-foreground'>
                     {car.photos && car.photos.length > 0
                       ? 'Photos Corrupted'
                       : 'No photos yet'}
                   </h3>
-                  <p className='mt-1 text-sm text-gray-500'>
+                  <p className='mt-1 text-sm text-muted-foreground'>
                     {car.photos && car.photos.length > 0
                       ? 'The existing photos appear to be corrupted. Please re-upload them in the edit page.'
                       : selectedCategory === 'all'
@@ -345,7 +345,7 @@ export default function CarDetailPage() {
                         href={`/${
                           profile?.username || params.username
                         }/${encodeURIComponent(car.name)}/edit`}
-                        className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                        className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
                       >
                         Edit Car & Re-upload Photos
                       </Link>
@@ -357,41 +357,47 @@ export default function CarDetailPage() {
 
             {/* Specifications Section */}
             <div className='lg:col-span-1'>
-              <h2 className='text-2xl font-bold text-gray-900 mb-6'>
+              <h2 className='text-2xl font-bold text-foreground mb-6'>
                 Specifications
               </h2>
 
-              <div className='bg-white shadow rounded-lg divide-y divide-gray-200'>
+              <div className='bg-card shadow rounded-lg divide-y divide-border border border-border'>
                 {/* Basic Info */}
                 <div className='p-6'>
-                  <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                  <h3 className='text-lg font-medium text-card-foreground mb-4'>
                     Basic Information
                   </h3>
                   <dl className='space-y-3'>
                     <div>
-                      <dt className='text-sm font-medium text-gray-500'>
+                      <dt className='text-sm font-medium text-muted-foreground'>
                         Make
                       </dt>
-                      <dd className='text-sm text-gray-900'>{car.make}</dd>
+                      <dd className='text-sm text-card-foreground'>
+                        {car.make}
+                      </dd>
                     </div>
                     <div>
-                      <dt className='text-sm font-medium text-gray-500'>
+                      <dt className='text-sm font-medium text-muted-foreground'>
                         Model
                       </dt>
-                      <dd className='text-sm text-gray-900'>{car.model}</dd>
+                      <dd className='text-sm text-card-foreground'>
+                        {car.model}
+                      </dd>
                     </div>
                     <div>
-                      <dt className='text-sm font-medium text-gray-500'>
+                      <dt className='text-sm font-medium text-muted-foreground'>
                         Year
                       </dt>
-                      <dd className='text-sm text-gray-900'>{car.year}</dd>
+                      <dd className='text-sm text-card-foreground'>
+                        {car.year}
+                      </dd>
                     </div>
                     {car.description && (
                       <div>
-                        <dt className='text-sm font-medium text-gray-500'>
+                        <dt className='text-sm font-medium text-muted-foreground'>
                           Description
                         </dt>
-                        <dd className='text-sm text-gray-900'>
+                        <dd className='text-sm text-card-foreground'>
                           {car.description}
                         </dd>
                       </div>

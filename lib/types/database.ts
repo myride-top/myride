@@ -49,8 +49,7 @@ export interface Car {
   model: string
   year: number
   description: string | null
-  photos: CarPhoto[] | null
-  
+
   // Engine Specifications
   engine_displacement: number | null // in liters
   engine_cylinders: number | null
@@ -61,21 +60,21 @@ export interface Car {
   fuel_type: string | null // e.g., "Gasoline"
   transmission: string | null // e.g., "6-Speed Manual"
   drivetrain: string | null // e.g., "AWD", "RWD", "FWD"
-  
+
   // Performance Specifications
   zero_to_sixty: number | null // 0-60 mph time in seconds
   top_speed: number | null // in mph
   quarter_mile: number | null // quarter mile time in seconds
   weight: number | null // in lbs
   power_to_weight: string | null // e.g., "10.2 lbs/hp"
-  
+
   // Brake System
   front_brakes: string | null
   rear_brakes: string | null
   brake_rotors: string | null
   brake_caliper_brand: string | null
   brake_lines: string | null
-  
+
   // Suspension
   front_suspension: string | null
   rear_suspension: string | null
@@ -83,7 +82,7 @@ export interface Car {
   ride_height: string | null
   coilovers: string | null
   sway_bars: string | null
-  
+
   // Wheels and Tires
   wheel_size: string | null
   wheel_material: string | null
@@ -99,7 +98,7 @@ export interface Car {
   rear_tire_brand: string | null
   rear_tire_model: string | null
   rear_tire_pressure: number | null
-  
+
   // Exterior
   body_kit: string | null
   paint_color: string | null
@@ -107,7 +106,7 @@ export interface Car {
   wrap_color: string | null
   carbon_fiber_parts: string | null
   lighting: string | null
-  
+
   // Interior
   interior_color: string | null
   interior_material: string | null
@@ -115,21 +114,21 @@ export interface Car {
   steering_wheel: string | null
   shift_knob: string | null
   gauges: string | null
-  
+
   // Modifications
   modifications: string[] | null
   dyno_results: string | null
-  
+
   // Additional Details
   vin: string | null
   mileage: number | null
   fuel_economy: string | null
   maintenance_history: string | null
-  
+
   // Photo organization
   photos: CarPhoto[] | null
   main_photo_url: string | null // URL of the main/featured photo
-  
+
   created_at: string
   updated_at: string
 }
@@ -144,7 +143,7 @@ export const PHOTO_CATEGORIES = [
   'suspension',
   'underbody',
   'dyno',
-  'other'
+  'other',
 ] as const
 
-export type PhotoCategory = typeof PHOTO_CATEGORIES[number]
+export type PhotoCategory = (typeof PHOTO_CATEGORIES)[number]

@@ -239,7 +239,7 @@ export default function CreateCarPage() {
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-gray-50'>
+      <div className='min-h-screen bg-background'>
         <Navbar />
 
         {/* Page Header */}
@@ -247,18 +247,18 @@ export default function CreateCarPage() {
           <div className='flex items-center'>
             <Link
               href='/dashboard'
-              className='text-indigo-600 hover:text-indigo-900 mr-4'
+              className='text-primary hover:text-primary/80 mr-4'
             >
               ← Back to Dashboard
             </Link>
-            <h1 className='text-3xl font-bold text-gray-900'>Add New Car</h1>
+            <h1 className='text-3xl font-bold text-foreground'>Add New Car</h1>
           </div>
         </div>
 
         {/* Main Content */}
         <main className='max-w-3xl mx-auto py-6 sm:px-6 lg:px-8'>
           <div className='px-4 py-6 sm:px-0'>
-            <div className='bg-white shadow rounded-lg'>
+            <div className='bg-card shadow rounded-lg border border-border'>
               <div className='px-4 py-5 sm:p-6'>
                 <form onSubmit={handleSubmit} className='space-y-6' noValidate>
                   {/* Car Details */}
@@ -266,7 +266,7 @@ export default function CreateCarPage() {
                     <div>
                       <label
                         htmlFor='name'
-                        className='block text-sm font-medium text-gray-700'
+                        className='block text-sm font-medium text-foreground'
                       >
                         Car Name *
                       </label>
@@ -277,7 +277,7 @@ export default function CreateCarPage() {
                         value={carData.name}
                         onChange={handleInputChange}
                         required
-                        className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                        className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
                         placeholder='e.g., My Daily Driver'
                       />
                     </div>
@@ -298,7 +298,7 @@ export default function CreateCarPage() {
                         className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
                         placeholder='Auto-generated from car name'
                       />
-                      <p className='mt-1 text-xs text-gray-500'>
+                      <p className='mt-1 text-xs text-muted-foreground'>
                         Leave empty to auto-generate, or customize your own URL
                       </p>
                     </div>
@@ -365,7 +365,7 @@ export default function CreateCarPage() {
                   <div>
                     <label
                       htmlFor='description'
-                      className='block text-sm font-medium text-gray-700'
+                      className='block text-sm font-medium text-foreground'
                     >
                       Description
                     </label>
@@ -375,14 +375,14 @@ export default function CreateCarPage() {
                       value={carData.description}
                       onChange={handleInputChange}
                       rows={4}
-                      className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                      className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
                       placeholder='Tell us about your car...'
                     />
                   </div>
 
                   {/* Engine Specifications */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-foreground mb-4'>
                       Engine & Performance
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -1503,14 +1503,14 @@ export default function CreateCarPage() {
                   <div className='flex justify-end space-x-4'>
                     <Link
                       href='/dashboard'
-                      className='px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                      className='px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:ring-ring'
                     >
                       Cancel
                     </Link>
                     <button
                       type='submit'
                       disabled={loading}
-                      className='px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 cursor-pointer'
+                      className='px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 cursor-pointer'
                     >
                       {loading ? 'Creating...' : 'Create Car'}
                     </button>
