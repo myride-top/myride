@@ -177,7 +177,7 @@ export default function CarDetailPage() {
     return (
       <div className='min-h-screen flex items-center justify-center'>
         <div className='text-center'>
-          <h1 className='text-2xl font-bold text-gray-900 mb-4'>
+          <h1 className='text-2xl font-bold text-card-foreground mb-4'>
             Car Not Found
           </h1>
           <p className='text-gray-600 mb-4'>{error}</p>
@@ -416,7 +416,7 @@ export default function CarDetailPage() {
                   car.fuel_type ||
                   car.drivetrain) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Engine & Performance
                     </h3>
                     <dl className='space-y-3'>
@@ -425,7 +425,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Engine Displacement
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.engine_displacement}L
                           </dd>
                         </div>
@@ -435,7 +435,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Engine Cylinders
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.engine_cylinders}
                           </dd>
                         </div>
@@ -445,7 +445,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Engine Code
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.engine_code}
                           </dd>
                         </div>
@@ -455,7 +455,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Horsepower
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.horsepower} HP
                           </dd>
                         </div>
@@ -465,7 +465,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Torque
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.torque} lb-ft
                           </dd>
                         </div>
@@ -475,7 +475,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Engine Type
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.engine_type}
                           </dd>
                         </div>
@@ -485,7 +485,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Fuel Type
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.fuel_type}
                           </dd>
                         </div>
@@ -495,7 +495,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Transmission
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.transmission}
                           </dd>
                         </div>
@@ -505,7 +505,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Drivetrain
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.drivetrain}
                           </dd>
                         </div>
@@ -515,7 +515,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             0-60 mph
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.zero_to_sixty}s
                           </dd>
                         </div>
@@ -525,7 +525,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Top Speed
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.top_speed} mph
                           </dd>
                         </div>
@@ -535,7 +535,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Quarter Mile
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.quarter_mile}s
                           </dd>
                         </div>
@@ -545,7 +545,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Weight
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.weight} lbs
                           </dd>
                         </div>
@@ -555,7 +555,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Power to Weight Ratio
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.power_to_weight}
                           </dd>
                         </div>
@@ -578,7 +578,7 @@ export default function CarDetailPage() {
                   car.rear_tire_model ||
                   car.rear_tire_pressure) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Wheels & Tires
                     </h3>
                     <dl className='space-y-3'>
@@ -587,7 +587,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Wheel Size
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.wheel_size}
                           </dd>
                         </div>
@@ -597,7 +597,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Wheel Brand
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.wheel_brand}
                           </dd>
                         </div>
@@ -607,7 +607,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Wheel Material
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.wheel_material}
                           </dd>
                         </div>
@@ -617,7 +617,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Wheel Offset
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.wheel_offset}
                           </dd>
                         </div>
@@ -627,7 +627,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Front Tire Size
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.front_tire_size}
                           </dd>
                         </div>
@@ -637,7 +637,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Front Tire Brand
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.front_tire_brand}
                           </dd>
                         </div>
@@ -647,7 +647,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Front Tire Model
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.front_tire_model}
                           </dd>
                         </div>
@@ -657,7 +657,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Front Tire Pressure
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.front_tire_pressure} PSI
                           </dd>
                         </div>
@@ -667,7 +667,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rear Tire Size
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.rear_tire_size}
                           </dd>
                         </div>
@@ -677,7 +677,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rear Tire Brand
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.rear_tire_brand}
                           </dd>
                         </div>
@@ -687,7 +687,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rear Tire Model
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.rear_tire_model}
                           </dd>
                         </div>
@@ -697,7 +697,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rear Tire Pressure
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.rear_tire_pressure} PSI
                           </dd>
                         </div>
@@ -713,7 +713,7 @@ export default function CarDetailPage() {
                   car.brake_caliper_brand ||
                   car.brake_lines) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Brake System
                     </h3>
                     <dl className='space-y-3'>
@@ -722,7 +722,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Front Brakes
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.front_brakes}
                           </dd>
                         </div>
@@ -732,7 +732,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rear Brakes
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.rear_brakes}
                           </dd>
                         </div>
@@ -742,7 +742,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rotors
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.brake_rotors}
                           </dd>
                         </div>
@@ -752,7 +752,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Brake Caliper Brand
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.brake_caliper_brand}
                           </dd>
                         </div>
@@ -762,7 +762,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Brake Lines
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.brake_lines}
                           </dd>
                         </div>
@@ -779,7 +779,7 @@ export default function CarDetailPage() {
                   car.coilovers ||
                   car.sway_bars) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Suspension
                     </h3>
                     <dl className='space-y-3'>
@@ -788,7 +788,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Front Suspension
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.front_suspension}
                           </dd>
                         </div>
@@ -798,7 +798,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Rear Suspension
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.rear_suspension}
                           </dd>
                         </div>
@@ -808,7 +808,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Suspension Type
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.suspension_type}
                           </dd>
                         </div>
@@ -818,7 +818,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Ride Height
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.ride_height}
                           </dd>
                         </div>
@@ -828,7 +828,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Coilovers
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.coilovers}
                           </dd>
                         </div>
@@ -838,7 +838,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Sway Bars
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.sway_bars}
                           </dd>
                         </div>
@@ -855,7 +855,7 @@ export default function CarDetailPage() {
                   car.carbon_fiber_parts ||
                   car.lighting) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Exterior
                     </h3>
                     <dl className='space-y-3'>
@@ -864,7 +864,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Body Kit
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.body_kit}
                           </dd>
                         </div>
@@ -874,7 +874,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Paint Color
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.paint_color}
                           </dd>
                         </div>
@@ -884,7 +884,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Paint Type
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.paint_type}
                           </dd>
                         </div>
@@ -894,7 +894,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Wrap Color
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.wrap_color}
                           </dd>
                         </div>
@@ -904,7 +904,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Carbon Fiber Parts
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.carbon_fiber_parts}
                           </dd>
                         </div>
@@ -914,7 +914,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Lighting
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.lighting}
                           </dd>
                         </div>
@@ -931,7 +931,7 @@ export default function CarDetailPage() {
                   car.shift_knob ||
                   car.gauges) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Interior
                     </h3>
                     <dl className='space-y-3'>
@@ -940,7 +940,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Interior Color
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.interior_color}
                           </dd>
                         </div>
@@ -950,7 +950,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Interior Material
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.interior_material}
                           </dd>
                         </div>
@@ -960,7 +960,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Seats
                           </dt>
-                          <dd className='text-sm text-gray-900'>{car.seats}</dd>
+                          <dd className='text-sm text-card-foreground'>{car.seats}</dd>
                         </div>
                       )}
                       {car.steering_wheel && (
@@ -968,7 +968,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Steering Wheel
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.steering_wheel}
                           </dd>
                         </div>
@@ -978,7 +978,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Shift Knob
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.shift_knob}
                           </dd>
                         </div>
@@ -988,7 +988,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Gauges
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.gauges}
                           </dd>
                         </div>
@@ -1000,12 +1000,12 @@ export default function CarDetailPage() {
                 {/* Modifications */}
                 {car.modifications && car.modifications.length > 0 && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Modifications
                     </h3>
                     <ul className='space-y-2'>
                       {car.modifications.map((mod, index) => (
-                        <li key={index} className='text-sm text-gray-900'>
+                        <li key={index} className='text-sm text-card-foreground'>
                           • {mod}
                         </li>
                       ))}
@@ -1016,10 +1016,10 @@ export default function CarDetailPage() {
                 {/* Dyno Results */}
                 {car.dyno_results && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Dyno Results
                     </h3>
-                    <p className='text-sm text-gray-900'>{car.dyno_results}</p>
+                    <p className='text-sm text-card-foreground'>{car.dyno_results}</p>
                   </div>
                 )}
 
@@ -1029,7 +1029,7 @@ export default function CarDetailPage() {
                   car.fuel_economy ||
                   car.maintenance_history) && (
                   <div className='p-6'>
-                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Additional Details
                     </h3>
                     <dl className='space-y-3'>
@@ -1038,7 +1038,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             VIN
                           </dt>
-                          <dd className='text-sm text-gray-900'>{car.vin}</dd>
+                          <dd className='text-sm text-card-foreground'>{car.vin}</dd>
                         </div>
                       )}
                       {car.mileage && (
@@ -1046,7 +1046,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Mileage
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.mileage.toLocaleString()} miles
                           </dd>
                         </div>
@@ -1056,7 +1056,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Fuel Economy
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.fuel_economy}
                           </dd>
                         </div>
@@ -1066,7 +1066,7 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Maintenance History
                           </dt>
-                          <dd className='text-sm text-gray-900'>
+                          <dd className='text-sm text-card-foreground'>
                             {car.maintenance_history}
                           </dd>
                         </div>

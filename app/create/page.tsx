@@ -285,7 +285,7 @@ export default function CreateCarPage() {
                     <div>
                       <label
                         htmlFor='url_slug'
-                        className='block text-sm font-medium text-gray-700'
+                        className='block text-sm font-medium text-foreground'
                       >
                         URL Slug
                       </label>
@@ -295,7 +295,7 @@ export default function CreateCarPage() {
                         name='url_slug'
                         value={carData.url_slug || ''}
                         onChange={handleInputChange}
-                        className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                        className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
                         placeholder='Auto-generated from car name'
                       />
                       <p className='mt-1 text-xs text-muted-foreground'>
@@ -306,7 +306,7 @@ export default function CreateCarPage() {
                     <div>
                       <label
                         htmlFor='year'
-                        className='block text-sm font-medium text-gray-700'
+                        className='block text-sm font-medium text-foreground'
                       >
                         Year *
                       </label>
@@ -319,14 +319,14 @@ export default function CreateCarPage() {
                         required
                         min='1900'
                         max={new Date().getFullYear() + 1}
-                        className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                        className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                       />
                     </div>
 
                     <div>
                       <label
                         htmlFor='make'
-                        className='block text-sm font-medium text-gray-700'
+                        className='block text-sm font-medium text-foreground'
                       >
                         Make *
                       </label>
@@ -337,7 +337,7 @@ export default function CreateCarPage() {
                         value={carData.make}
                         onChange={handleInputChange}
                         required
-                        className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                        className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                         placeholder='e.g., Toyota'
                       />
                     </div>
@@ -345,7 +345,7 @@ export default function CreateCarPage() {
                     <div>
                       <label
                         htmlFor='model'
-                        className='block text-sm font-medium text-gray-700'
+                        className='block text-sm font-medium text-foreground'
                       >
                         Model *
                       </label>
@@ -356,7 +356,7 @@ export default function CreateCarPage() {
                         value={carData.model}
                         onChange={handleInputChange}
                         required
-                        className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                        className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                         placeholder='e.g., Camry'
                       />
                     </div>
@@ -389,7 +389,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='horsepower'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Horsepower
                         </label>
@@ -399,14 +399,14 @@ export default function CreateCarPage() {
                           name='horsepower'
                           value={carData.horsepower}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 300'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='torque'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Torque (lb-ft)
                         </label>
@@ -416,14 +416,14 @@ export default function CreateCarPage() {
                           name='torque'
                           value={carData.torque}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 350'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='engine_type'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Engine Type
                         </label>
@@ -433,14 +433,14 @@ export default function CreateCarPage() {
                           name='engine_type'
                           value={carData.engine_type}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Turbocharged I4'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='transmission'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Transmission
                         </label>
@@ -450,7 +450,7 @@ export default function CreateCarPage() {
                           name='transmission'
                           value={carData.transmission}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 6-Speed Manual'
                         />
                       </div>
@@ -458,7 +458,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='engine_code'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Engine Code
                         </label>
@@ -468,7 +468,7 @@ export default function CreateCarPage() {
                           name='engine_code'
                           value={carData.engine_code}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., B58, LS3, K20'
                         />
                       </div>
@@ -476,7 +476,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='drivetrain'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Drivetrain
                         </label>
@@ -486,7 +486,7 @@ export default function CreateCarPage() {
                           name='drivetrain'
                           value={carData.drivetrain}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., AWD, RWD, FWD'
                         />
                       </div>
@@ -494,7 +494,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='engine_displacement'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Engine Displacement (L)
                         </label>
@@ -505,7 +505,7 @@ export default function CreateCarPage() {
                           name='engine_displacement'
                           value={carData.engine_displacement}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 2.0'
                         />
                       </div>
@@ -513,7 +513,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='engine_cylinders'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Engine Cylinders
                         </label>
@@ -523,7 +523,7 @@ export default function CreateCarPage() {
                           name='engine_cylinders'
                           value={carData.engine_cylinders}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 4'
                         />
                       </div>
@@ -531,7 +531,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='fuel_type'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Fuel Type
                         </label>
@@ -541,7 +541,7 @@ export default function CreateCarPage() {
                           name='fuel_type'
                           value={carData.fuel_type}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Gasoline, Diesel, Electric'
                         />
                       </div>
@@ -550,14 +550,14 @@ export default function CreateCarPage() {
 
                   {/* Wheels & Tires */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Wheels & Tires
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='wheel_size'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Wheel Size
                         </label>
@@ -567,14 +567,14 @@ export default function CreateCarPage() {
                           name='wheel_size'
                           value={carData.wheel_size}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 18x8.5'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='wheel_brand'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Wheel Brand
                         </label>
@@ -584,14 +584,14 @@ export default function CreateCarPage() {
                           name='wheel_brand'
                           value={carData.wheel_brand}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., BBS'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='wheel_material'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Wheel Material
                         </label>
@@ -601,14 +601,14 @@ export default function CreateCarPage() {
                           name='wheel_material'
                           value={carData.wheel_material}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Forged Aluminum'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='wheel_offset'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Wheel Offset
                         </label>
@@ -618,7 +618,7 @@ export default function CreateCarPage() {
                           name='wheel_offset'
                           value={carData.wheel_offset}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., +35'
                         />
                       </div>
@@ -632,7 +632,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='front_tire_size'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Front Tire Size
                         </label>
@@ -642,14 +642,14 @@ export default function CreateCarPage() {
                           name='front_tire_size'
                           value={carData.front_tire_size}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 225/40R18'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='front_tire_brand'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Front Tire Brand
                         </label>
@@ -659,14 +659,14 @@ export default function CreateCarPage() {
                           name='front_tire_brand'
                           value={carData.front_tire_brand}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Michelin'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='front_tire_model'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Front Tire Model
                         </label>
@@ -676,14 +676,14 @@ export default function CreateCarPage() {
                           name='front_tire_model'
                           value={carData.front_tire_model}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Pilot Sport 4S'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='front_tire_pressure'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Front Tire Pressure (PSI)
                         </label>
@@ -693,7 +693,7 @@ export default function CreateCarPage() {
                           name='front_tire_pressure'
                           value={carData.front_tire_pressure}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 32'
                         />
                       </div>
@@ -707,7 +707,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='rear_tire_size'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Rear Tire Size
                         </label>
@@ -717,14 +717,14 @@ export default function CreateCarPage() {
                           name='rear_tire_size'
                           value={carData.rear_tire_size}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 255/40R18'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='rear_tire_brand'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Rear Tire Brand
                         </label>
@@ -734,14 +734,14 @@ export default function CreateCarPage() {
                           name='rear_tire_brand'
                           value={carData.rear_tire_brand}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Michelin'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='rear_tire_model'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Rear Tire Model
                         </label>
@@ -751,14 +751,14 @@ export default function CreateCarPage() {
                           name='rear_tire_model'
                           value={carData.rear_tire_model}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Pilot Sport 4S'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='rear_tire_pressure'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Rear Tire Pressure (PSI)
                         </label>
@@ -768,7 +768,7 @@ export default function CreateCarPage() {
                           name='rear_tire_pressure'
                           value={carData.rear_tire_pressure}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 30'
                         />
                       </div>
@@ -777,14 +777,14 @@ export default function CreateCarPage() {
 
                   {/* Brakes & Suspension */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Brakes & Suspension
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='front_brakes'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Front Brakes
                         </label>
@@ -794,14 +794,14 @@ export default function CreateCarPage() {
                           name='front_brakes'
                           value={carData.front_brakes}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Brembo 4-Piston'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='suspension_type'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Suspension Type
                         </label>
@@ -811,7 +811,7 @@ export default function CreateCarPage() {
                           name='suspension_type'
                           value={carData.suspension_type}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Coilovers'
                         />
                       </div>
@@ -819,7 +819,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='rear_brakes'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Rear Brakes
                         </label>
@@ -829,7 +829,7 @@ export default function CreateCarPage() {
                           name='rear_brakes'
                           value={carData.rear_brakes}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Brembo 2-Piston'
                         />
                       </div>
@@ -837,7 +837,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='brake_rotors'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Brake Rotors
                         </label>
@@ -847,7 +847,7 @@ export default function CreateCarPage() {
                           name='brake_rotors'
                           value={carData.brake_rotors}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Slotted & Drilled'
                         />
                       </div>
@@ -855,7 +855,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='brake_caliper_brand'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Brake Caliper Brand
                         </label>
@@ -865,7 +865,7 @@ export default function CreateCarPage() {
                           name='brake_caliper_brand'
                           value={carData.brake_caliper_brand}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Brembo, AP Racing'
                         />
                       </div>
@@ -873,7 +873,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='brake_lines'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Brake Lines
                         </label>
@@ -883,7 +883,7 @@ export default function CreateCarPage() {
                           name='brake_lines'
                           value={carData.brake_lines}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Stainless Steel Braided'
                         />
                       </div>
@@ -891,7 +891,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='front_suspension'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Front Suspension
                         </label>
@@ -901,7 +901,7 @@ export default function CreateCarPage() {
                           name='front_suspension'
                           value={carData.front_suspension}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., MacPherson Strut'
                         />
                       </div>
@@ -909,7 +909,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='rear_suspension'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Rear Suspension
                         </label>
@@ -919,7 +919,7 @@ export default function CreateCarPage() {
                           name='rear_suspension'
                           value={carData.rear_suspension}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Multi-Link'
                         />
                       </div>
@@ -927,7 +927,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='ride_height'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Ride Height
                         </label>
@@ -937,7 +937,7 @@ export default function CreateCarPage() {
                           name='ride_height'
                           value={carData.ride_height}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Lowered 2 inches'
                         />
                       </div>
@@ -945,7 +945,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='coilovers'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Coilovers
                         </label>
@@ -955,7 +955,7 @@ export default function CreateCarPage() {
                           name='coilovers'
                           value={carData.coilovers}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., KW Variant 3'
                         />
                       </div>
@@ -963,7 +963,7 @@ export default function CreateCarPage() {
                       <div>
                         <label
                           htmlFor='sway_bars'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Sway Bars
                         </label>
@@ -973,7 +973,7 @@ export default function CreateCarPage() {
                           name='sway_bars'
                           value={carData.sway_bars}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., H&R 24mm Front, 22mm Rear'
                         />
                       </div>
@@ -982,14 +982,14 @@ export default function CreateCarPage() {
 
                   {/* Exterior */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Exterior
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='body_kit'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Body Kit
                         </label>
@@ -999,14 +999,14 @@ export default function CreateCarPage() {
                           name='body_kit'
                           value={carData.body_kit}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Rocket Bunny, Liberty Walk'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='paint_color'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Paint Color
                         </label>
@@ -1016,14 +1016,14 @@ export default function CreateCarPage() {
                           name='paint_color'
                           value={carData.paint_color}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Championship White'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='paint_type'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Paint Type
                         </label>
@@ -1033,14 +1033,14 @@ export default function CreateCarPage() {
                           name='paint_type'
                           value={carData.paint_type}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Pearl, Matte, Metallic'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='wrap_color'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Wrap Color
                         </label>
@@ -1050,14 +1050,14 @@ export default function CreateCarPage() {
                           name='wrap_color'
                           value={carData.wrap_color}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Satin Black, Glossy Red'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='carbon_fiber_parts'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Carbon Fiber Parts
                         </label>
@@ -1067,14 +1067,14 @@ export default function CreateCarPage() {
                           name='carbon_fiber_parts'
                           value={carData.carbon_fiber_parts}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Hood, Trunk, Fenders'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='lighting'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Lighting
                         </label>
@@ -1084,7 +1084,7 @@ export default function CreateCarPage() {
                           name='lighting'
                           value={carData.lighting}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., LED Headlights, Underglow'
                         />
                       </div>
@@ -1093,14 +1093,14 @@ export default function CreateCarPage() {
 
                   {/* Interior */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Interior
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='interior_color'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Interior Color
                         </label>
@@ -1110,14 +1110,14 @@ export default function CreateCarPage() {
                           name='interior_color'
                           value={carData.interior_color}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Black, Tan, Red'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='interior_material'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Interior Material
                         </label>
@@ -1127,14 +1127,14 @@ export default function CreateCarPage() {
                           name='interior_material'
                           value={carData.interior_material}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Leather, Alcantara, Cloth'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='seats'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Seats
                         </label>
@@ -1144,14 +1144,14 @@ export default function CreateCarPage() {
                           name='seats'
                           value={carData.seats}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., Recaro Sport Seats'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='steering_wheel'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Steering Wheel
                         </label>
@@ -1161,14 +1161,14 @@ export default function CreateCarPage() {
                           name='steering_wheel'
                           value={carData.steering_wheel}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., MOMO Racing Wheel'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='shift_knob'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Shift Knob
                         </label>
@@ -1178,14 +1178,14 @@ export default function CreateCarPage() {
                           name='shift_knob'
                           value={carData.shift_knob}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., MOMO Aluminum'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='gauges'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Gauges
                         </label>
@@ -1195,7 +1195,7 @@ export default function CreateCarPage() {
                           name='gauges'
                           value={carData.gauges}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., AEM Wideband, Boost Gauge'
                         />
                       </div>
@@ -1204,14 +1204,14 @@ export default function CreateCarPage() {
 
                   {/* Performance Specifications */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Performance
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='zero_to_sixty'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           0-60 Time (seconds)
                         </label>
@@ -1222,14 +1222,14 @@ export default function CreateCarPage() {
                           name='zero_to_sixty'
                           value={carData.zero_to_sixty}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 4.2'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='top_speed'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Top Speed (mph)
                         </label>
@@ -1239,14 +1239,14 @@ export default function CreateCarPage() {
                           name='top_speed'
                           value={carData.top_speed}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 155'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='quarter_mile'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Quarter Mile (seconds)
                         </label>
@@ -1257,14 +1257,14 @@ export default function CreateCarPage() {
                           name='quarter_mile'
                           value={carData.quarter_mile}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 12.5'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='weight'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Weight (lbs)
                         </label>
@@ -1274,14 +1274,14 @@ export default function CreateCarPage() {
                           name='weight'
                           value={carData.weight}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 3500'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='power_to_weight'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Power to Weight Ratio
                         </label>
@@ -1291,7 +1291,7 @@ export default function CreateCarPage() {
                           name='power_to_weight'
                           value={carData.power_to_weight}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 10.2 lbs/hp'
                         />
                       </div>
@@ -1300,14 +1300,14 @@ export default function CreateCarPage() {
 
                   {/* Modifications */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Modifications & Dyno
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='dyno_results'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Dyno Results
                         </label>
@@ -1317,14 +1317,14 @@ export default function CreateCarPage() {
                           name='dyno_results'
                           value={carData.dyno_results}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 350 WHP, 380 WTQ'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='modifications'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Modifications List
                         </label>
@@ -1343,7 +1343,7 @@ export default function CreateCarPage() {
                             }))
                           }}
                           rows={3}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='List modifications separated by commas (e.g., Cold Air Intake, Exhaust, Tune)'
                         />
                       </div>
@@ -1352,14 +1352,14 @@ export default function CreateCarPage() {
 
                   {/* Additional Details */}
                   <div className='border-t pt-6'>
-                    <h4 className='text-lg font-medium text-gray-900 mb-4'>
+                    <h4 className='text-lg font-medium text-card-foreground mb-4'>
                       Additional Details
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
                           htmlFor='vin'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           VIN
                         </label>
@@ -1369,14 +1369,14 @@ export default function CreateCarPage() {
                           name='vin'
                           value={carData.vin}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='Vehicle Identification Number'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='mileage'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Mileage
                         </label>
@@ -1386,14 +1386,14 @@ export default function CreateCarPage() {
                           name='mileage'
                           value={carData.mileage}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 50000'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='fuel_economy'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Fuel Economy
                         </label>
@@ -1403,14 +1403,14 @@ export default function CreateCarPage() {
                           name='fuel_economy'
                           value={carData.fuel_economy}
                           onChange={handleInputChange}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='e.g., 25 MPG City, 32 MPG Highway'
                         />
                       </div>
                       <div>
                         <label
                           htmlFor='maintenance_history'
-                          className='block text-sm font-medium text-gray-700'
+                          className='block text-sm font-medium text-foreground'
                         >
                           Maintenance History
                         </label>
@@ -1420,7 +1420,7 @@ export default function CreateCarPage() {
                           value={carData.maintenance_history}
                           onChange={handleInputChange}
                           rows={3}
-                          className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                          className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
                           placeholder='Recent maintenance, modifications, etc.'
                         />
                       </div>
@@ -1429,7 +1429,7 @@ export default function CreateCarPage() {
 
                   {/* Photo Upload */}
                   <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-4'>
+                    <label className='block text-sm font-medium text-foreground mb-4'>
                       Photos
                     </label>
                     <p className='text-sm text-gray-600 mb-4'>

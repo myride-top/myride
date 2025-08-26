@@ -52,7 +52,7 @@ export default function PhotoCategoryMenu({
       <button
         onClick={handleToggle}
         type='button'
-        className='inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer'
+        className='inline-flex items-center px-3 py-1.5 border border-input shadow-sm text-xs font-medium rounded-md text-foreground bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
       >
         <span className='capitalize'>{currentCategory}</span>
         <ChevronDown
@@ -65,18 +65,20 @@ export default function PhotoCategoryMenu({
       {/* Dropdown Menu */}
       {isOpen && (
         <div className='fixed z-[9999] top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center'>
-          <div className='bg-white rounded-lg shadow-xl p-4 max-w-sm w-full mx-4'>
-            <h3 className='text-lg font-medium mb-4'>Select Category</h3>
+          <div className='bg-card rounded-lg shadow-xl p-4 max-w-sm w-full mx-4 border border-border'>
+            <h3 className='text-lg font-medium mb-4 text-card-foreground'>
+              Select Category
+            </h3>
             <div className='space-y-2'>
               {PHOTO_CATEGORIES.map(category => (
                 <button
                   key={category}
                   type='button'
                   onClick={e => handleCategorySelect(category, e)}
-                  className={`block w-full text-left px-4 py-3 text-sm rounded-md hover:bg-gray-100 ${
+                  className={`block w-full text-left px-4 py-3 text-sm rounded-md hover:bg-accent ${
                     currentCategory === category
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-gray-700'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-card-foreground'
                   }`}
                 >
                   <span className='capitalize'>{category}</span>
@@ -85,7 +87,7 @@ export default function PhotoCategoryMenu({
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className='mt-4 w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300'
+              className='mt-4 w-full px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted/80'
             >
               Cancel
             </button>

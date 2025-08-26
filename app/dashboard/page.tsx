@@ -55,10 +55,12 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen flex items-center justify-center'>
+        <div className='min-h-screen flex items-center justify-center bg-background'>
           <div className='text-center'>
-            <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto'></div>
-            <p className='mt-4 text-gray-600'>Loading your dashboard...</p>
+            <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
+            <p className='mt-4 text-muted-foreground'>
+              Loading your dashboard...
+            </p>
           </div>
         </div>
       </ProtectedRoute>
@@ -67,7 +69,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-gray-50'>
+      <div className='min-h-screen bg-background'>
         <Navbar showCreateButton={true} />
 
         {/* Main Content */}
@@ -75,18 +77,18 @@ export default function DashboardPage() {
           {/* Stats Overview */}
           <div className='px-4 py-6 sm:px-0'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-              <div className='bg-white overflow-hidden shadow rounded-lg'>
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
                 <div className='p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <CarIcon className='w-6 h-6 text-gray-400' />
+                      <CarIcon className='w-6 h-6 text-muted-foreground' />
                     </div>
                     <div className='ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-gray-500 truncate'>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
                           Total Cars
                         </dt>
-                        <dd className='text-lg font-medium text-gray-900'>
+                        <dd className='text-lg font-medium text-card-foreground'>
                           {cars.length}
                         </dd>
                       </dl>
@@ -95,18 +97,18 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className='bg-white overflow-hidden shadow rounded-lg'>
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
                 <div className='p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <User className='w-6 h-6 text-gray-400' />
+                      <User className='w-6 h-6 text-muted-foreground' />
                     </div>
                     <div className='ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-gray-500 truncate'>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
                           Profile Status
                         </dt>
-                        <dd className='text-lg font-medium text-gray-900'>
+                        <dd className='text-lg font-medium text-card-foreground'>
                           {profile ? 'Active' : 'Incomplete'}
                         </dd>
                       </dl>
@@ -115,18 +117,18 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className='bg-white overflow-hidden shadow rounded-lg'>
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
                 <div className='p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Clock className='w-6 h-6 text-gray-400' />
+                      <Clock className='w-6 h-6 text-muted-foreground' />
                     </div>
                     <div className='ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-gray-500 truncate'>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
                           Member Since
                         </dt>
-                        <dd className='text-lg font-medium text-gray-900'>
+                        <dd className='text-lg font-medium text-card-foreground'>
                           {user?.created_at
                             ? new Date(user.created_at).toLocaleDateString()
                             : 'N/A'}
@@ -143,14 +145,14 @@ export default function DashboardPage() {
               <div className='flex flex-col sm:flex-row gap-4'>
                 <Link
                   href='/create'
-                  className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary'
+                  className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
                 >
                   <Plus className='w-5 h-5 mr-2' />
                   Add New Car
                 </Link>
                 <Link
                   href='/profile'
-                  className='inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                  className='inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
                 >
                   <User className='w-5 h-5 mr-2' />
                   Edit Profile
@@ -160,22 +162,22 @@ export default function DashboardPage() {
 
             {/* Cars Grid */}
             <div>
-              <h2 className='text-2xl font-bold text-gray-900 mb-6'>
+              <h2 className='text-2xl font-bold text-foreground mb-6'>
                 Your Cars
               </h2>
               {cars.length === 0 ? (
                 <div className='text-center py-12'>
-                  <CarIcon className='mx-auto h-12 w-12 text-gray-400' />
-                  <h3 className='mt-2 text-sm font-medium text-gray-900'>
+                  <CarIcon className='mx-auto h-12 w-12 text-muted-foreground' />
+                  <h3 className='mt-2 text-sm font-medium text-foreground'>
                     No cars yet
                   </h3>
-                  <p className='mt-1 text-sm text-gray-500'>
+                  <p className='mt-1 text-sm text-muted-foreground'>
                     Get started by adding your first car.
                   </p>
                   <div className='mt-6'>
                     <Link
                       href='/create'
-                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
                     >
                       <Plus className='w-5 h-5 mr-2' />
                       Add Your First Car
@@ -187,7 +189,7 @@ export default function DashboardPage() {
                   {cars.map(car => (
                     <div
                       key={car.id}
-                      className='bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 relative'
+                      className='bg-card overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 relative border border-border'
                     >
                       <div
                         className='p-6 cursor-pointer'
@@ -196,12 +198,12 @@ export default function DashboardPage() {
                         }
                       >
                         <div className='flex items-center justify-between mb-4'>
-                          <h3 className='text-lg font-medium text-gray-900'>
+                          <h3 className='text-lg font-medium text-card-foreground'>
                             {car.make} {car.model}
                           </h3>
                           <div className='flex items-center space-x-2'>
                             {car.photos && car.photos.length > 0 && (
-                              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
+                              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary'>
                                 📸 {car.photos.length}
                               </span>
                             )}
@@ -224,8 +226,8 @@ export default function DashboardPage() {
                               />
                             </div>
                           ) : (
-                            <div className='w-full h-48 bg-gray-200 rounded-md flex items-center justify-center'>
-                              <Image className='w-16 h-16 text-gray-400' />
+                            <div className='w-full h-48 bg-muted rounded-md flex items-center justify-center'>
+                              <Image className='w-16 h-16 text-muted-foreground' />
                             </div>
                           )}
                         </div>
@@ -241,7 +243,7 @@ export default function DashboardPage() {
                                 `/${profile?.username}/${car.url_slug}/edit`
                               )
                             }}
-                            className='flex-1 px-3 py-2 border border-primary text-primary rounded-md focus:ring-2 ring-offset-2 ring-primary text-center cursor-pointer text-sm focus:outline-none'
+                            className='flex-1 px-3 py-2 border border-primary text-primary rounded-md focus:ring-2 ring-offset-2 ring-ring text-center cursor-pointer text-sm focus:outline-none'
                           >
                             Edit
                           </button>
@@ -256,7 +258,7 @@ export default function DashboardPage() {
                                 toast.error('Failed to copy link')
                               }
                             }}
-                            className='px-3 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-primary transition-colors cursor-pointer'
+                            className='px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer'
                             title='Copy link to clipboard'
                           >
                             <Share2 className='w-4 h-4' />

@@ -113,10 +113,10 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen flex items-center justify-center'>
+        <div className='min-h-screen flex items-center justify-center bg-background'>
           <div className='text-center'>
-            <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto'></div>
-            <p className='mt-4 text-gray-600'>Loading profile...</p>
+            <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
+            <p className='mt-4 text-muted-foreground'>Loading profile...</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -144,7 +144,7 @@ export default function ProfilePage() {
         {/* Main Content */}
         <main className='max-w-3xl mx-auto py-6 sm:px-6 lg:px-8'>
           <div className='px-4 py-6 sm:px-0'>
-            <div className='bg-white shadow rounded-lg'>
+            <div className='bg-card shadow rounded-lg border border-border'>
               <div className='px-4 py-5 sm:p-6'>
                 {/* User Info */}
                 <div className='mb-6'>
@@ -166,13 +166,13 @@ export default function ProfilePage() {
 
                 {/* Error/Success Messages */}
                 {error && (
-                  <div className='mb-4 rounded-md bg-red-50 p-4'>
+                  <div className='mb-4 rounded-md bg-destructive/10 p-4 border border-destructive/20'>
                     <div className='flex'>
                       <div className='flex-shrink-0'>
-                        <AlertTriangle className='h-5 w-5 text-red-400' />
+                        <AlertTriangle className='h-5 w-5 text-destructive' />
                       </div>
                       <div className='ml-3'>
-                        <p className='text-sm text-red-800'>{error}</p>
+                        <p className='text-sm text-destructive'>{error}</p>
                       </div>
                     </div>
                   </div>

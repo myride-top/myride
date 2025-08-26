@@ -126,19 +126,19 @@ export default function PhotoUpload({
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
           isDragOver
-            ? 'border-indigo-400 bg-indigo-50'
-            : 'border-gray-300 hover:border-gray-400'
+            ? 'border-primary bg-primary/10'
+            : 'border-border hover:border-primary/50'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
         <div className='space-y-2'>
-          <Upload className='mx-auto h-12 w-12 text-gray-400' />
-          <div className='text-sm text-gray-600'>
+          <Upload className='mx-auto h-12 w-12 text-muted-foreground' />
+          <div className='text-sm text-muted-foreground'>
             <label
               htmlFor='file-input'
-              className='relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500'
+              className='relative cursor-pointer bg-background rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-ring'
             >
               <span>Upload photos</span>
               <input
@@ -154,8 +154,10 @@ export default function PhotoUpload({
             </label>
             <p className='pl-1'>or drag and drop</p>
           </div>
-          <p className='text-xs text-gray-500'>PNG, JPG, GIF up to 5MB each</p>
-          <p className='text-xs text-indigo-600 font-medium'>
+          <p className='text-xs text-muted-foreground'>
+            PNG, JPG, GIF up to 5MB each
+          </p>
+          <p className='text-xs text-primary font-medium'>
             You can categorize photos after uploading
           </p>
         </div>
@@ -164,16 +166,18 @@ export default function PhotoUpload({
       {/* Upload Progress */}
       {Object.keys(uploadProgress).length > 0 && (
         <div className='space-y-2'>
-          <h4 className='text-sm font-medium text-gray-700'>Upload Progress</h4>
+          <h4 className='text-sm font-medium text-foreground'>
+            Upload Progress
+          </h4>
           {Object.entries(uploadProgress).map(([fileName, progress]) => (
             <div key={fileName} className='space-y-1'>
-              <div className='flex justify-between text-xs text-gray-600'>
+              <div className='flex justify-between text-xs text-muted-foreground'>
                 <span>{fileName}</span>
                 <span>{progress}%</span>
               </div>
-              <div className='w-full bg-gray-200 rounded-full h-2'>
+              <div className='w-full bg-muted rounded-full h-2'>
                 <div
-                  className='bg-indigo-600 h-2 rounded-full transition-all duration-300'
+                  className='bg-primary h-2 rounded-full transition-all duration-300'
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -184,9 +188,9 @@ export default function PhotoUpload({
 
       {/* Upload Status */}
       {uploading && (
-        <div className='text-center text-sm text-gray-600'>
+        <div className='text-center text-sm text-muted-foreground'>
           <div className='inline-flex items-center'>
-            <Loader2 className='animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600' />
+            <Loader2 className='animate-spin -ml-1 mr-3 h-5 w-5 text-primary' />
             Uploading photos...
           </div>
         </div>
