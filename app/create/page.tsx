@@ -144,6 +144,7 @@ export default function CreateCarPage() {
         year: carData.year,
         description: carData.description || null,
         photos: photos,
+        main_photo_url: null, // Will be set later when user chooses main photo
         // Engine Specifications
         engine_displacement: carData.engine_displacement
           ? parseFloat(carData.engine_displacement)
@@ -190,12 +191,16 @@ export default function CreateCarPage() {
         front_tire_size: carData.front_tire_size || null,
         front_tire_brand: carData.front_tire_brand || null,
         front_tire_model: carData.front_tire_model || null,
-        front_tire_pressure: carData.front_tire_pressure ? parseInt(carData.front_tire_pressure) : null,
+        front_tire_pressure: carData.front_tire_pressure
+          ? parseInt(carData.front_tire_pressure)
+          : null,
         // Rear Tires
         rear_tire_size: carData.rear_tire_size || null,
         rear_tire_brand: carData.rear_tire_brand || null,
         rear_tire_model: carData.rear_tire_model || null,
-        rear_tire_pressure: carData.rear_tire_pressure ? parseInt(carData.rear_tire_pressure) : null,
+        rear_tire_pressure: carData.rear_tire_pressure
+          ? parseInt(carData.rear_tire_pressure)
+          : null,
         // Exterior
         body_kit: carData.body_kit || null,
         paint_color: carData.paint_color || null,
@@ -236,9 +241,9 @@ export default function CreateCarPage() {
     <ProtectedRoute>
       <div className='min-h-screen bg-gray-50'>
         <Navbar />
-        
+
         {/* Page Header */}
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
           <div className='flex items-center'>
             <Link
               href='/dashboard'
@@ -246,9 +251,7 @@ export default function CreateCarPage() {
             >
               ← Back to Dashboard
             </Link>
-            <h1 className='text-3xl font-bold text-gray-900'>
-              Add New Car
-            </h1>
+            <h1 className='text-3xl font-bold text-gray-900'>Add New Car</h1>
           </div>
         </div>
 
@@ -545,7 +548,7 @@ export default function CreateCarPage() {
                     </div>
                   </div>
 
-                                    {/* Wheels & Tires */}
+                  {/* Wheels & Tires */}
                   <div className='border-t pt-6'>
                     <h4 className='text-lg font-medium text-gray-900 mb-4'>
                       Wheels & Tires
@@ -619,7 +622,7 @@ export default function CreateCarPage() {
                           placeholder='e.g., +35'
                         />
                       </div>
-                      
+
                       {/* Front Tire Specifications */}
                       <div className='md:col-span-2'>
                         <h5 className='text-md font-medium text-gray-800 mb-3 border-b pb-2'>
@@ -694,7 +697,7 @@ export default function CreateCarPage() {
                           placeholder='e.g., 32'
                         />
                       </div>
-                      
+
                       {/* Rear Tire Specifications */}
                       <div className='md:col-span-2'>
                         <h5 className='text-md font-medium text-gray-800 mb-3 border-b pb-2'>
@@ -976,8 +979,6 @@ export default function CreateCarPage() {
                       </div>
                     </div>
                   </div>
-
-
 
                   {/* Exterior */}
                   <div className='border-t pt-6'>

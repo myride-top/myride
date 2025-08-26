@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { getCarsByUserClient, setMainPhoto } from '@/lib/database/cars-client'
@@ -8,22 +9,12 @@ import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
-import {
-  Trash2,
-  User,
-  Clock,
-  Plus,
-  Edit,
-  Eye,
-  Share2,
-  Star,
-  Car as CarIcon,
-  Image,
-} from 'lucide-react'
+import { User, Clock, Plus, Share2, CarIcon, Image } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
 
 export default function DashboardPage() {
-  const { user, signOut } = useAuth()
+  const router = useRouter()
+  const { user } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [cars, setCars] = useState<Car[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,24 +52,6 @@ export default function DashboardPage() {
     loadUserData()
   }, [user])
 
-  const handleSetMainPhoto = async (car: Car, photoUrl: string) => {
-    try {
-      const updatedCar = await setMainPhoto(car.id, photoUrl)
-      if (updatedCar) {
-        // Update the car in the local state
-        setCars(prevCars =>
-          prevCars.map(c => (c.id === car.id ? updatedCar : c))
-        )
-        toast.success('Main photo set successfully!')
-      } else {
-        toast.error('Failed to set main photo')
-      }
-    } catch (error) {
-      console.error('Error setting main photo:', error)
-      toast.error('Failed to set main photo')
-    }
-  }
-
   if (loading) {
     return (
       <ProtectedRoute>
@@ -98,7 +71,7 @@ export default function DashboardPage() {
         <Navbar showCreateButton={true} />
 
         {/* Main Content */}
-        <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'>
+        <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           {/* Stats Overview */}
           <div className='px-4 py-6 sm:px-0'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
@@ -212,9 +185,10 @@ export default function DashboardPage() {
               ) : (
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                   {cars.map(car => (
-                    <div
+                    <Link
                       key={car.id}
-                      className='bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200'
+                      href={`/${profile?.username}/${car.url_slug}`}
+                      className='bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 block cursor-pointer'
                     >
                       <div className='p-6'>
                         <div className='flex items-center justify-between mb-4'>
@@ -227,9 +201,6 @@ export default function DashboardPage() {
                                 📸 {car.photos.length}
                               </span>
                             )}
-                            <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
-                              {car.year}
-                            </span>
                           </div>
                         </div>
 
@@ -256,20 +227,20 @@ export default function DashboardPage() {
                         </div>
 
                         <div className='flex space-x-2'>
-                          <Link
-                            href={`/${profile?.username}/${car.url_slug}/edit`}
-                            className='flex-1 bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-center'
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              router.push(
+                                `/${profile?.username}/${car.url_slug}/edit`
+                              )
+                            }}
+                            className='flex-1 bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-center cursor-pointer'
                           >
                             Edit
-                          </Link>
-                          <Link
-                            href={`/${profile?.username}/${car.url_slug}`}
-                            className='flex-1 bg-gray-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 text-center'
-                          >
-                            View
-                          </Link>
+                          </button>
                           <button
-                            onClick={async () => {
+                            onClick={async e => {
+                              e.stopPropagation()
                               const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
                               try {
                                 await navigator.clipboard.writeText(shareUrl)
@@ -285,7 +256,7 @@ export default function DashboardPage() {
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

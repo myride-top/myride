@@ -15,14 +15,7 @@ import ProtectedRoute from '@/components/auth/protected-route'
 import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
-import {
-  ArrowLeft,
-  Trash2,
-  Star,
-  X,
-  Loader2,
-  AlertTriangle,
-} from 'lucide-react'
+import { ArrowLeft, Star, X, Loader2, AlertTriangle } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
 
 export default function EditCarPage() {
@@ -471,32 +464,6 @@ export default function EditCarPage() {
     }
   }
 
-  const handlePhotoDescriptionChange = async (
-    photoIndex: number,
-    newDescription: string
-  ) => {
-    if (car && car.photos) {
-      const updatedPhotos = [...car.photos]
-      if (typeof updatedPhotos[photoIndex] === 'object') {
-        ;(updatedPhotos[photoIndex] as CarPhoto).description = newDescription
-
-        try {
-          const updatedCar = await updateCarClient(car.id, {
-            photos: updatedPhotos,
-          })
-
-          if (updatedCar) {
-            setCar(updatedCar)
-            toast.success('Photo description updated!')
-          }
-        } catch (error) {
-          console.error('Error updating photo description:', error)
-          toast.error('Failed to update photo description')
-        }
-      }
-    }
-  }
-
   const handleSetMainPhoto = async (photoUrl: string) => {
     if (!car) return
 
@@ -555,7 +522,7 @@ export default function EditCarPage() {
         <Navbar />
 
         {/* Page Header */}
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
           <div className='flex justify-between items-center'>
             <div className='flex items-center'>
               <button
