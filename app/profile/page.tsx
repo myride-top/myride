@@ -148,14 +148,14 @@ export default function ProfilePage() {
               <div className='px-4 py-5 sm:p-6'>
                 {/* User Info */}
                 <div className='mb-6'>
-                  <h3 className='text-lg font-medium text-gray-900 mb-2'>
+                  <h3 className='text-lg font-medium text-foreground mb-2'>
                     Account Information
                   </h3>
-                  <div className='bg-gray-50 rounded-md p-4'>
-                    <p className='text-sm text-gray-600'>
+                  <div className='bg-muted rounded-md p-4'>
+                    <p className='text-sm text-muted-foreground'>
                       <span className='font-medium'>Email:</span> {user?.email}
                     </p>
-                    <p className='text-sm text-gray-600'>
+                    <p className='text-sm text-muted-foreground'>
                       <span className='font-medium'>Member since:</span>{' '}
                       {user?.created_at
                         ? new Date(user.created_at).toLocaleDateString()
@@ -183,7 +183,7 @@ export default function ProfilePage() {
                   <div>
                     <label
                       htmlFor='username'
-                      className='block text-sm font-medium text-gray-700'
+                      className='block text-sm font-medium text-foreground'
                     >
                       Username
                     </label>
@@ -194,10 +194,10 @@ export default function ProfilePage() {
                       value={formData.username}
                       onChange={handleInputChange}
                       required
-                      className='mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                      className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
                       placeholder='Enter your username'
                     />
-                    <p className='mt-1 text-sm text-gray-500'>
+                    <p className='mt-1 text-sm text-muted-foreground'>
                       This will be your public username on MyRide
                     </p>
                   </div>
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                   <div>
                     <label
                       htmlFor='full_name'
-                      className='block text-sm font-medium text-gray-700'
+                      className='block text-sm font-medium text-foreground'
                     >
                       Full Name
                     </label>
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                       name='full_name'
                       value={formData.full_name}
                       onChange={handleInputChange}
-                      className='mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                      className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
                       placeholder='Enter your full name'
                     />
                   </div>
@@ -224,7 +224,7 @@ export default function ProfilePage() {
                     <button
                       type='submit'
                       disabled={saving}
-                      className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+                      className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
                     >
                       {saving ? (
                         <>

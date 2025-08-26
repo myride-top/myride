@@ -67,7 +67,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-background'>
+      <div className='min-h-screen bg-gray-50'>
         <Navbar showCreateButton={true} />
 
         {/* Main Content */}
@@ -75,18 +75,18 @@ export default function DashboardPage() {
           {/* Stats Overview */}
           <div className='px-4 py-6 sm:px-0'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+              <div className='bg-white overflow-hidden shadow rounded-lg'>
                 <div className='p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <CarIcon className='w-6 h-6 text-primary' />
+                      <CarIcon className='w-6 h-6 text-gray-400' />
                     </div>
                     <div className='ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-sm font-medium text-gray-500 truncate'>
                           Total Cars
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-lg font-medium text-gray-900'>
                           {cars.length}
                         </dd>
                       </dl>
@@ -95,18 +95,18 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+              <div className='bg-white overflow-hidden shadow rounded-lg'>
                 <div className='p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <User className='w-6 h-6 text-primary' />
+                      <User className='w-6 h-6 text-gray-400' />
                     </div>
                     <div className='ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-sm font-medium text-gray-500 truncate'>
                           Profile Status
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-lg font-medium text-gray-900'>
                           {profile ? 'Active' : 'Incomplete'}
                         </dd>
                       </dl>
@@ -115,18 +115,18 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+              <div className='bg-white overflow-hidden shadow rounded-lg'>
                 <div className='p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Clock className='w-6 h-6 text-primary' />
+                      <Clock className='w-6 h-6 text-gray-400' />
                     </div>
                     <div className='ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-sm font-medium text-gray-500 truncate'>
                           Member Since
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-lg font-medium text-gray-900'>
                           {user?.created_at
                             ? new Date(user.created_at).toLocaleDateString()
                             : 'N/A'}
@@ -143,14 +143,14 @@ export default function DashboardPage() {
               <div className='flex flex-col sm:flex-row gap-4'>
                 <Link
                   href='/create'
-                  className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                  className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary'
                 >
                   <Plus className='w-5 h-5 mr-2' />
                   Add New Car
                 </Link>
                 <Link
                   href='/profile'
-                  className='inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                  className='inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                 >
                   <User className='w-5 h-5 mr-2' />
                   Edit Profile
@@ -160,22 +160,22 @@ export default function DashboardPage() {
 
             {/* Cars Grid */}
             <div>
-              <h2 className='text-2xl font-bold text-foreground mb-6'>
+              <h2 className='text-2xl font-bold text-gray-900 mb-6'>
                 Your Cars
               </h2>
               {cars.length === 0 ? (
                 <div className='text-center py-12'>
-                  <CarIcon className='mx-auto h-12 w-12 text-muted-foreground' />
-                  <h3 className='mt-2 text-sm font-medium text-foreground'>
+                  <CarIcon className='mx-auto h-12 w-12 text-gray-400' />
+                  <h3 className='mt-2 text-sm font-medium text-gray-900'>
                     No cars yet
                   </h3>
-                  <p className='mt-1 text-sm text-muted-foreground'>
+                  <p className='mt-1 text-sm text-gray-500'>
                     Get started by adding your first car.
                   </p>
                   <div className='mt-6'>
                     <Link
                       href='/create'
-                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                     >
                       <Plus className='w-5 h-5 mr-2' />
                       Add Your First Car
@@ -185,26 +185,30 @@ export default function DashboardPage() {
               ) : (
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                   {cars.map(car => (
-                    <Link
+                    <div
                       key={car.id}
-                      href={`/${profile?.username}/${car.url_slug}`}
-                      className='bg-card overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 block cursor-pointer border border-border'
+                      className='bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 relative'
                     >
-                      <div className='p-6'>
+                      <div
+                        className='p-6 cursor-pointer'
+                        onClick={() =>
+                          router.push(`/${profile?.username}/${car.url_slug}`)
+                        }
+                      >
                         <div className='flex items-center justify-between mb-4'>
-                          <h3 className='text-lg font-medium text-card-foreground'>
+                          <h3 className='text-lg font-medium text-gray-900'>
                             {car.make} {car.model}
                           </h3>
                           <div className='flex items-center space-x-2'>
                             {car.photos && car.photos.length > 0 && (
-                              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary'>
+                              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
                                 📸 {car.photos.length}
                               </span>
                             )}
                           </div>
                         </div>
 
-                        <div className='mb-4'>
+                        <div>
                           {car.photos && car.photos.length > 0 ? (
                             <div className='relative'>
                               <img
@@ -220,12 +224,15 @@ export default function DashboardPage() {
                               />
                             </div>
                           ) : (
-                            <div className='w-full h-48 bg-muted rounded-md flex items-center justify-center'>
-                              <Image className='w-16 h-16 text-muted-foreground' />
+                            <div className='w-full h-48 bg-gray-200 rounded-md flex items-center justify-center'>
+                              <Image className='w-16 h-16 text-gray-400' />
                             </div>
                           )}
                         </div>
+                      </div>
 
+                      {/* Action buttons - separate from clickable area */}
+                      <div className='px-6 pb-6'>
                         <div className='flex space-x-2'>
                           <button
                             onClick={e => {
@@ -234,7 +241,7 @@ export default function DashboardPage() {
                                 `/${profile?.username}/${car.url_slug}/edit`
                               )
                             }}
-                            className='flex-1 bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring text-center cursor-pointer'
+                            className='flex-1 px-3 py-2 border border-primary text-primary rounded-md focus:ring-2 ring-offset-2 ring-primary text-center cursor-pointer text-sm focus:outline-none'
                           >
                             Edit
                           </button>
@@ -249,14 +256,14 @@ export default function DashboardPage() {
                                 toast.error('Failed to copy link')
                               }
                             }}
-                            className='px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer'
+                            className='px-3 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-primary transition-colors cursor-pointer'
                             title='Copy link to clipboard'
                           >
                             <Share2 className='w-4 h-4' />
                           </button>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               )}

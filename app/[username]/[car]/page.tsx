@@ -218,15 +218,15 @@ export default function CarDetailPage() {
           <div className='flex items-center space-x-4'>
             <button
               onClick={handleShare}
-              className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+              className='inline-flex items-center px-3 py-2 border border-primary shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
             >
               <Share2 className='w-4 h-4 mr-2' />
               Share
             </button>
             {user && car && user.id === car.user_id && (
               <Link
-                href={`/${profile?.username}/${car.id}/edit`}
-                className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+                href={`/${profile?.username}/${car.url_slug}/edit`}
+                className='inline-flex items-center px-3 py-2 border border-primary shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
               >
                 <Edit className='w-4 h-4 mr-2' />
                 Edit
