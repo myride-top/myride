@@ -14,6 +14,8 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
+import { Share2, Edit, Image, Loader2 } from 'lucide-react'
+import Navbar from '@/components/ui/navbar'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -132,6 +134,20 @@ export default function CarDetailPage() {
       )
     }) || []
 
+  // Sort photos to show main photo first if it exists
+  const sortedPhotos = [...filteredPhotos].sort((a, b) => {
+    const aUrl = getPhotoInfo(a).url
+    const bUrl = getPhotoInfo(b).url
+
+    // If car has a main photo, prioritize it
+    if (car?.main_photo_url) {
+      if (aUrl === car.main_photo_url) return -1
+      if (bUrl === car.main_photo_url) return 1
+    }
+
+    return 0
+  })
+
   // Group photos by category for the gallery
   const photosByCategory =
     car?.photos?.reduce((acc, photo) => {
@@ -150,7 +166,7 @@ export default function CarDetailPage() {
     return (
       <div className='min-h-screen flex items-center justify-center'>
         <div className='text-center'>
-          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto'></div>
+          <Loader2 className='animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto' />
           <p className='mt-4 text-gray-600'>Loading car details...</p>
         </div>
       </div>
@@ -166,7 +182,7 @@ export default function CarDetailPage() {
           </h1>
           <p className='text-gray-600 mb-4'>{error}</p>
           <Link
-                            href={user ? '/dashboard' : '/'}
+            href={user ? '/dashboard' : '/'}
             className='text-indigo-600 hover:text-indigo-900'
           >
             {user ? 'Back to Dashboard' : 'Back to Home'}
@@ -178,69 +194,45 @@ export default function CarDetailPage() {
 
   return (
     <div className='min-h-screen bg-gray-50'>
-      {/* Header */}
-      <header className='bg-white shadow'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between items-center py-6'>
-            <div className='flex items-center'>
-              <Link
-                href={user ? '/dashboard' : '/'}
-                className='text-indigo-600 hover:text-indigo-900 mr-4'
-              >
-                {user ? '← Back to Dashboard' : '← Back to Home'}
-              </Link>
-              <div>
-                <h1 className='text-3xl font-bold text-gray-900'>{car.name}</h1>
-                <div className='text-sm text-gray-500'>
-                  by @{profile?.username || params.username || 'Unknown'}
-                </div>
+      <Navbar />
+
+      {/* Page Header */}
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+        <div className='flex justify-between items-center'>
+          <div className='flex items-center'>
+            <Link
+              href={user ? '/dashboard' : '/'}
+              className='text-indigo-600 hover:text-indigo-900 mr-4'
+            >
+              {user ? '← Back to Dashboard' : '← Back to Home'}
+            </Link>
+            <div>
+              <h1 className='text-3xl font-bold text-gray-900'>{car.name}</h1>
+              <div className='text-sm text-gray-500'>
+                by @{profile?.username || params.username || 'Unknown'}
               </div>
             </div>
-            <div className='flex items-center space-x-4'>
-              <button
-                onClick={handleShare}
+          </div>
+          <div className='flex items-center space-x-4'>
+            <button
+              onClick={handleShare}
+              className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors cursor-pointer'
+            >
+              <Share2 className='w-4 h-4 mr-2' />
+              Share
+            </button>
+            {user && car && user.id === car.user_id && (
+              <Link
+                href={`/${profile?.username}/${car.id}/edit`}
                 className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors cursor-pointer'
               >
-                <svg
-                  className='w-4 h-4 mr-2'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z'
-                  />
-                </svg>
-                Share
-              </button>
-              {user && car && user.id === car.user_id && (
-                <Link
-                  href={`/${profile?.username}/${car.id}/edit`}
-                  className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors cursor-pointer'
-                >
-                  <svg
-                    className='w-4 h-4 mr-2'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
-                    />
-                  </svg>
-                  Edit
-                </Link>
-              )}
-            </div>
+                <Edit className='w-4 h-4 mr-2' />
+                Edit
+              </Link>
+            )}
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'>
@@ -292,23 +284,23 @@ export default function CarDetailPage() {
                 </div>
               )}
 
-              {filteredPhotos.length > 0 ? (
+              {sortedPhotos.length > 0 ? (
                 <div className='space-y-4'>
                   {/* Main Photo */}
                   <div className='aspect-w-16 aspect-h-9'>
                     <img
-                      src={getPhotoInfo(filteredPhotos[selectedPhoto]).url}
+                      src={getPhotoInfo(sortedPhotos[selectedPhoto]).url}
                       alt={`${car.name} - ${
-                        getPhotoInfo(filteredPhotos[selectedPhoto]).category
+                        getPhotoInfo(sortedPhotos[selectedPhoto]).category
                       } ${selectedPhoto + 1}`}
                       className='w-full h-96 object-cover rounded-lg shadow-lg'
                     />
                   </div>
 
                   {/* Photo Thumbnails */}
-                  {filteredPhotos.length > 1 && (
+                  {sortedPhotos.length > 1 && (
                     <div className='grid grid-cols-4 gap-2'>
-                      {filteredPhotos.map((photo, index) => (
+                      {sortedPhotos.map((photo, index) => (
                         <button
                           key={index}
                           onClick={() => setSelectedPhoto(index)}
@@ -329,38 +321,10 @@ export default function CarDetailPage() {
                       ))}
                     </div>
                   )}
-
-                  {/* Photo Details */}
-                  {filteredPhotos[selectedPhoto] && (
-                    <div className='bg-white p-4 rounded-lg shadow'>
-                      <h3 className='font-medium text-gray-900 capitalize'>
-                        {getPhotoInfo(filteredPhotos[selectedPhoto]).category}
-                      </h3>
-                      {typeof filteredPhotos[selectedPhoto] === 'object' &&
-                        'description' in filteredPhotos[selectedPhoto] &&
-                        filteredPhotos[selectedPhoto].description && (
-                          <p className='text-sm text-gray-600 mt-1'>
-                            {filteredPhotos[selectedPhoto].description}
-                          </p>
-                        )}
-                    </div>
-                  )}
                 </div>
               ) : (
                 <div className='text-center py-12 bg-gray-100 rounded-lg'>
-                  <svg
-                    className='mx-auto h-12 w-12 text-gray-400'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
-                    />
-                  </svg>
+                  <Image className='mx-auto h-12 w-12 text-gray-400' />
                   <h3 className='mt-2 text-sm font-medium text-gray-900'>
                     {car.photos && car.photos.length > 0
                       ? 'Photos Corrupted'
@@ -510,8 +474,10 @@ export default function CarDetailPage() {
                 {/* Wheels & Tires */}
                 {(car.wheel_size ||
                   car.wheel_brand ||
-                  car.tire_size ||
-                  car.tire_brand) && (
+                  car.front_tire_size ||
+                  car.front_tire_brand ||
+                  car.rear_tire_size ||
+                  car.rear_tire_brand) && (
                   <div className='p-6'>
                     <h3 className='text-lg font-medium text-gray-900 mb-4'>
                       Wheels & Tires
@@ -537,23 +503,43 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
-                      {car.tire_size && (
+                      {car.front_tire_size && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
-                            Tire Size
+                            Front Tire Size
                           </dt>
                           <dd className='text-sm text-gray-900'>
-                            {car.tire_size}
+                            {car.front_tire_size}
                           </dd>
                         </div>
                       )}
-                      {car.tire_brand && (
+                      {car.front_tire_brand && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
-                            Tire Brand
+                            Front Tire Brand
                           </dt>
                           <dd className='text-sm text-gray-900'>
-                            {car.tire_brand}
+                            {car.front_tire_brand}
+                          </dd>
+                        </div>
+                      )}
+                      {car.rear_tire_size && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Rear Tire Size
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.rear_tire_size}
+                          </dd>
+                        </div>
+                      )}
+                      {car.rear_tire_brand && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Rear Tire Brand
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.rear_tire_brand}
                           </dd>
                         </div>
                       )}

@@ -10,6 +10,7 @@ import ProtectedRoute from '@/components/auth/protected-route'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
+import Navbar from '@/components/ui/navbar'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
@@ -234,24 +235,22 @@ export default function CreateCarPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-gray-50'>
-        {/* Header */}
-        <header className='bg-white shadow'>
-          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-            <div className='flex justify-between items-center py-6'>
-              <div className='flex items-center'>
-                <Link
-                  href='/dashboard'
-                  className='text-indigo-600 hover:text-indigo-900 mr-4'
-                >
-                  ← Back to Dashboard
-                </Link>
-                <h1 className='text-3xl font-bold text-gray-900'>
-                  Add New Car
-                </h1>
-              </div>
-            </div>
+        <Navbar />
+        
+        {/* Page Header */}
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+          <div className='flex items-center'>
+            <Link
+              href='/dashboard'
+              className='text-indigo-600 hover:text-indigo-900 mr-4'
+            >
+              ← Back to Dashboard
+            </Link>
+            <h1 className='text-3xl font-bold text-gray-900'>
+              Add New Car
+            </h1>
           </div>
-        </header>
+        </div>
 
         {/* Main Content */}
         <main className='max-w-3xl mx-auto py-6 sm:px-6 lg:px-8'>

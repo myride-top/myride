@@ -7,7 +7,9 @@ const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-export async function getCarsByUserClient(userId: string): Promise<Car[] | null> {
+export async function getCarsByUserClient(
+  userId: string
+): Promise<Car[] | null> {
   try {
     const { data, error } = await supabase
       .from('cars')
@@ -47,10 +49,16 @@ export async function getCarByIdClient(carId: string): Promise<Car | null> {
   }
 }
 
-export async function getCarByNameAndUsernameClient(carName: string, username: string): Promise<Car | null> {
+export async function getCarByNameAndUsernameClient(
+  carName: string,
+  username: string
+): Promise<Car | null> {
   try {
-    console.log('getCarByNameAndUsernameClient called with:', { carName, username })
-    
+    console.log('getCarByNameAndUsernameClient called with:', {
+      carName,
+      username,
+    })
+
     // First get the profile to get the user_id
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
@@ -77,7 +85,7 @@ export async function getCarByNameAndUsernameClient(carName: string, username: s
         .eq('name', carName)
         .eq('user_id', profileData.id)
         .single()
-      
+
       if (!error && data) {
         console.log('Exact match found:', data)
         return data
@@ -95,7 +103,7 @@ export async function getCarByNameAndUsernameClient(carName: string, username: s
         .ilike('name', carName)
         .eq('user_id', profileData.id)
         .single()
-      
+
       if (!error && data) {
         console.log('Case-insensitive exact match found:', data)
         return data
@@ -112,7 +120,7 @@ export async function getCarByNameAndUsernameClient(carName: string, username: s
         .ilike('name', `%${carName}%`)
         .eq('user_id', profileData.id)
         .single()
-      
+
       if (!error && data) {
         console.log('Partial match found:', data)
         return data
@@ -130,7 +138,7 @@ export async function getCarByNameAndUsernameClient(carName: string, username: s
         .ilike('name', `%${nameWithSpaces}%`)
         .eq('user_id', profileData.id)
         .single()
-      
+
       if (!error && data) {
         console.log('Space-replaced match found:', data)
         return data
@@ -148,7 +156,7 @@ export async function getCarByNameAndUsernameClient(carName: string, username: s
         .ilike('name', `%${nameWithDashes}%`)
         .eq('user_id', profileData.id)
         .single()
-      
+
       if (!error && data) {
         console.log('Dash-replaced match found:', data)
         return data
@@ -166,10 +174,16 @@ export async function getCarByNameAndUsernameClient(carName: string, username: s
   }
 }
 
-export async function getCarByUrlSlugAndUsernameClient(urlSlug: string, username: string): Promise<Car | null> {
+export async function getCarByUrlSlugAndUsernameClient(
+  urlSlug: string,
+  username: string
+): Promise<Car | null> {
   try {
-    console.log('getCarByUrlSlugAndUsernameClient called with:', { urlSlug, username })
-    
+    console.log('getCarByUrlSlugAndUsernameClient called with:', {
+      urlSlug,
+      username,
+    })
+
     // First get the profile to get the user_id
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
@@ -206,7 +220,9 @@ export async function getCarByUrlSlugAndUsernameClient(urlSlug: string, username
   }
 }
 
-export async function createCarClient(carData: Omit<Car, 'id' | 'created_at' | 'updated_at'>): Promise<Car | null> {
+export async function createCarClient(
+  carData: Omit<Car, 'id' | 'created_at' | 'updated_at'>
+): Promise<Car | null> {
   try {
     const { data, error } = await supabase
       .from('cars')
@@ -226,7 +242,10 @@ export async function createCarClient(carData: Omit<Car, 'id' | 'created_at' | '
   }
 }
 
-export async function updateCarClient(carId: string, carData: Partial<Omit<Car, 'id' | 'created_at' | 'updated_at'>>): Promise<Car | null> {
+export async function updateCarClient(
+  carId: string,
+  carData: Partial<Omit<Car, 'id' | 'created_at' | 'updated_at'>>
+): Promise<Car | null> {
   try {
     const { data, error } = await supabase
       .from('cars')
@@ -249,10 +268,7 @@ export async function updateCarClient(carId: string, carData: Partial<Omit<Car, 
 
 export async function deleteCarClient(carId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('cars')
-      .delete()
-      .eq('id', carId)
+    const { error } = await supabase.from('cars').delete().eq('id', carId)
 
     if (error) {
       console.error('Error deleting car:', error)
@@ -267,7 +283,10 @@ export async function deleteCarClient(carId: string): Promise<boolean> {
 }
 
 // Helper function to add a photo to a car
-export async function addPhotoToCar(carId: string, photo: CarPhoto): Promise<Car | null> {
+export async function addPhotoToCar(
+  carId: string,
+  photo: CarPhoto
+): Promise<Car | null> {
   try {
     // First get the current car to get existing photos
     const currentCar = await getCarByIdClient(carId)
@@ -284,7 +303,10 @@ export async function addPhotoToCar(carId: string, photo: CarPhoto): Promise<Car
 }
 
 // Helper function to remove a photo from a car
-export async function removePhotoFromCar(carId: string, photoUrl: string): Promise<Car | null> {
+export async function removePhotoFromCar(
+  carId: string,
+  photoUrl: string
+): Promise<Car | null> {
   try {
     const currentCar = await getCarByIdClient(carId)
     if (!currentCar) return null
@@ -300,14 +322,19 @@ export async function removePhotoFromCar(carId: string, photoUrl: string): Promi
 }
 
 // Helper function to update photo category
-export async function updatePhotoCategory(carId: string, photoUrl: string, category: string, description?: string): Promise<Car | null> {
+export async function updatePhotoCategory(
+  carId: string,
+  photoUrl: string,
+  category: string,
+  description?: string
+): Promise<Car | null> {
   try {
     const currentCar = await getCarByIdClient(carId)
     if (!currentCar) return null
 
     const currentPhotos = currentCar.photos || []
-    const updatedPhotos = currentPhotos.map(photo => 
-      photo.url === photoUrl 
+    const updatedPhotos = currentPhotos.map(photo =>
+      photo.url === photoUrl
         ? { ...photo, category, description: description || photo.description }
         : photo
     )
@@ -315,6 +342,19 @@ export async function updatePhotoCategory(carId: string, photoUrl: string, categ
     return await updateCarClient(carId, { photos: updatedPhotos })
   } catch (error) {
     console.error('Error updating photo category:', error)
+    return null
+  }
+}
+
+// Helper function to set main photo
+export async function setMainPhoto(
+  carId: string,
+  photoUrl: string
+): Promise<Car | null> {
+  try {
+    return await updateCarClient(carId, { main_photo_url: photoUrl })
+  } catch (error) {
+    console.error('Error setting main photo:', error)
     return null
   }
 }

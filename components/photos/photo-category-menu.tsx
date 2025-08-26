@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PHOTO_CATEGORIES, PhotoCategory } from '@/lib/types/database'
+import { ChevronDown } from 'lucide-react'
 
 interface PhotoCategoryMenuProps {
   currentCategory: PhotoCategory
@@ -54,21 +55,11 @@ export default function PhotoCategoryMenu({
         className='inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer'
       >
         <span className='capitalize'>{currentCategory}</span>
-        <svg
+        <ChevronDown
           className={`ml-1.5 h-4 w-4 transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
-          fill='none'
-          stroke='currentColor'
-          viewBox='0 0 24 24'
-        >
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth={2}
-            d='M19 9l-7 7-7-7'
-          />
-        </svg>
+        />
       </button>
 
       {/* Dropdown Menu */}

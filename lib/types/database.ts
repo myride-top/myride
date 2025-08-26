@@ -128,6 +128,7 @@ export interface Car {
   
   // Photo organization
   photos: CarPhoto[] | null
+  main_photo_url: string | null // URL of the main/featured photo
   
   created_at: string
   updated_at: string

@@ -7,6 +7,7 @@ import {
   getCarByUrlSlugAndUsernameClient,
   updateCarClient,
   deleteCarClient,
+  setMainPhoto,
 } from '@/lib/database/cars-client'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
@@ -14,6 +15,15 @@ import ProtectedRoute from '@/components/auth/protected-route'
 import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
+import {
+  ArrowLeft,
+  Trash2,
+  Star,
+  X,
+  Loader2,
+  AlertTriangle,
+} from 'lucide-react'
+import Navbar from '@/components/ui/navbar'
 
 export default function EditCarPage() {
   const { user } = useAuth()
@@ -361,7 +371,7 @@ export default function EditCarPage() {
         if (profile) {
           router.push(`/${profile.username}`)
         } else {
-                      router.push('/dashboard')
+          router.push('/dashboard')
         }
       } else {
         setError('Failed to delete car')
@@ -479,11 +489,28 @@ export default function EditCarPage() {
             setCar(updatedCar)
             toast.success('Photo description updated!')
           }
-        } catch (updatedCar) {
+        } catch (error) {
           console.error('Error updating photo description:', error)
           toast.error('Failed to update photo description')
         }
       }
+    }
+  }
+
+  const handleSetMainPhoto = async (photoUrl: string) => {
+    if (!car) return
+
+    try {
+      const updatedCar = await setMainPhoto(car.id, photoUrl)
+      if (updatedCar) {
+        setCar(updatedCar)
+        toast.success('Main photo set successfully!')
+      } else {
+        toast.error('Failed to set main photo')
+      }
+    } catch (error) {
+      console.error('Error setting main photo:', error)
+      toast.error('Failed to set main photo')
     }
   }
 
@@ -506,19 +533,7 @@ export default function EditCarPage() {
         <div className='min-h-screen flex items-center justify-center'>
           <div className='text-center'>
             <div className='text-red-600 mb-4'>
-              <svg
-                className='w-16 h-16 mx-auto'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
-                />
-              </svg>
+              <AlertTriangle className='w-16 h-16 mx-auto' />
             </div>
             <h2 className='text-xl font-semibold text-gray-900 mb-2'>Error</h2>
             <p className='text-gray-600 mb-4'>{error}</p>
@@ -537,41 +552,29 @@ export default function EditCarPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-gray-50'>
-        {/* Header */}
-        <header className='bg-white shadow'>
-          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-            <div className='flex justify-between items-center py-6'>
-              <div className='flex items-center'>
-                <button
-                  onClick={() => router.back()}
-                  className='mr-4 text-gray-600 hover:text-gray-900 cursor-pointer'
-                >
-                  <svg
-                    className='w-6 h-6'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M15 19l-7-7 7-7'
-                    />
-                  </svg>
-                </button>
-                <h1 className='text-3xl font-bold text-gray-900'>Edit Car</h1>
-              </div>
+        <Navbar />
+
+        {/* Page Header */}
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+          <div className='flex justify-between items-center'>
+            <div className='flex items-center'>
               <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className='bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50'
+                onClick={() => router.back()}
+                className='mr-4 text-gray-600 hover:text-gray-900 cursor-pointer'
               >
-                {deleting ? 'Deleting...' : 'Delete Car'}
+                <ArrowLeft className='w-6 h-6' />
               </button>
+              <h1 className='text-3xl font-bold text-gray-900'>Edit Car</h1>
             </div>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className='bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50'
+            >
+              {deleting ? 'Deleting...' : 'Delete Car'}
+            </button>
           </div>
-        </header>
+        </div>
 
         {/* Main Content */}
         <main className='max-w-4xl mx-auto py-6 sm:px-6 lg:px-8'>
@@ -581,17 +584,7 @@ export default function EditCarPage() {
               <div className='mb-6 rounded-md bg-red-50 p-4'>
                 <div className='flex'>
                   <div className='flex-shrink-0'>
-                    <svg
-                      className='h-5 w-5 text-red-400'
-                      viewBox='0 0 20 20'
-                      fill='currentColor'
-                    >
-                      <path
-                        fillRule='evenodd'
-                        d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
+                    <AlertTriangle className='h-5 w-5 text-red-400' />
                   </div>
                   <div className='ml-3'>
                     <p className='text-sm text-red-800'>{error}</p>
@@ -1716,9 +1709,15 @@ export default function EditCarPage() {
                             id='modifications'
                             name='modifications'
                             value={formData.modifications.join(', ')}
-                            onChange={(e) => {
-                              const mods = e.target.value.split(',').map(m => m.trim()).filter(m => m)
-                              setFormData(prev => ({ ...prev, modifications: mods }))
+                            onChange={e => {
+                              const mods = e.target.value
+                                .split(',')
+                                .map(m => m.trim())
+                                .filter(m => m)
+                              setFormData(prev => ({
+                                ...prev,
+                                modifications: mods,
+                              }))
                             }}
                             rows={3}
                             className='mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
@@ -1813,26 +1812,7 @@ export default function EditCarPage() {
                       >
                         {saving ? (
                           <>
-                            <svg
-                              className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
-                              xmlns='http://www.w3.org/2000/svg'
-                              fill='none'
-                              viewBox='0 0 24 24'
-                            >
-                              <circle
-                                className='opacity-25'
-                                cx='12'
-                                cy='12'
-                                r='10'
-                                stroke='currentColor'
-                                strokeWidth='4'
-                              ></circle>
-                              <path
-                                className='opacity-75'
-                                fill='currentColor'
-                                d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                              ></path>
-                            </svg>
+                            <Loader2 className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' />
                             Saving...
                           </>
                         ) : (
@@ -1894,28 +1874,50 @@ export default function EditCarPage() {
                               )}
                             </div>
 
-                            {/* Delete Button */}
-                            <button
-                              onClick={async () => {
-                                // TODO: Implement photo deletion
-                                setError('Photo deletion not implemented yet')
-                              }}
-                              className='absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700 transition-colors cursor-pointer'
-                            >
-                              <svg
-                                className='w-3 h-3'
-                                fill='none'
-                                stroke='currentColor'
-                                viewBox='0 0 24 24'
+                            {/* Main Photo Badge */}
+                            {car.main_photo_url ===
+                              (typeof photo === 'string'
+                                ? photo
+                                : photo.url) && (
+                              <div className='absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium'>
+                                Main
+                              </div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className='absolute bottom-2 right-2 flex space-x-1'>
+                              {/* Set as Main Photo Button */}
+                              {car.main_photo_url !==
+                                (typeof photo === 'string'
+                                  ? photo
+                                  : photo.url) && (
+                                <button
+                                  onClick={() =>
+                                    handleSetMainPhoto(
+                                      typeof photo === 'string'
+                                        ? photo
+                                        : photo.url
+                                    )
+                                  }
+                                  className='bg-blue-600 text-white rounded-full p-1 hover:bg-blue-700 transition-colors cursor-pointer'
+                                  title='Set as main photo'
+                                >
+                                  <Star className='w-3 h-3' />
+                                </button>
+                              )}
+
+                              {/* Delete Button */}
+                              <button
+                                onClick={async () => {
+                                  // TODO: Implement photo deletion
+                                  setError('Photo deletion not implemented yet')
+                                }}
+                                className='bg-red-600 text-white rounded-full p-1 hover:bg-red-700 transition-colors cursor-pointer'
+                                title='Delete photo'
                               >
-                                <path
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  strokeWidth={2}
-                                  d='M6 18L18 6M6 6l12 12'
-                                />
-                              </svg>
-                            </button>
+                                <X className='w-3 h-3' />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
