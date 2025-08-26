@@ -1,7 +1,5 @@
 ### TODO
 
-- possibility to show fullscreen photos in car details
-
 - share entire profile and not just one car
 
 - ability to like car if you're signed in

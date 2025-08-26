@@ -14,8 +14,22 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
-import { Share2, Edit, Image, Loader2 } from 'lucide-react'
+import {
+  Share2,
+  Edit,
+  Image,
+  Loader2,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -26,6 +40,8 @@ export default function CarDetailPage() {
   const [error, setError] = useState('')
   const [selectedPhoto, setSelectedPhoto] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
+  const [fullscreenPhotoIndex, setFullscreenPhotoIndex] = useState(0)
 
   useEffect(() => {
     const loadCarData = async () => {
@@ -148,6 +164,43 @@ export default function CarDetailPage() {
     return 0
   })
 
+  const openFullscreenPhoto = (photoIndex: number) => {
+    setFullscreenPhotoIndex(photoIndex)
+    setIsPhotoDialogOpen(true)
+  }
+
+  const navigatePhoto = (direction: 'prev' | 'next') => {
+    if (sortedPhotos.length === 0) return
+
+    if (direction === 'prev') {
+      setFullscreenPhotoIndex(prev =>
+        prev === 0 ? sortedPhotos.length - 1 : prev - 1
+      )
+    } else {
+      setFullscreenPhotoIndex(prev =>
+        prev === sortedPhotos.length - 1 ? 0 : prev + 1
+      )
+    }
+  }
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isPhotoDialogOpen) return
+
+    if (e.key === 'ArrowLeft') {
+      navigatePhoto('prev')
+    } else if (e.key === 'ArrowRight') {
+      navigatePhoto('next')
+    } else if (e.key === 'Escape') {
+      setIsPhotoDialogOpen(false)
+    }
+  }
+
+  // Add keyboard event listener
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isPhotoDialogOpen, sortedPhotos.length])
+
   // Group photos by category for the gallery
   const photosByCategory =
     car?.photos?.reduce((acc, photo) => {
@@ -164,10 +217,10 @@ export default function CarDetailPage() {
 
   if (loading) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
+      <div className='min-h-screen flex items-center justify-center bg-background'>
         <div className='text-center'>
-          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto'></div>
-          <p className='mt-4 text-gray-600'>Loading car details...</p>
+          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
+          <p className='mt-4 text-muted-foreground'>Loading car details...</p>
         </div>
       </div>
     )
@@ -175,15 +228,15 @@ export default function CarDetailPage() {
 
   if (error || !car) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
+      <div className='min-h-screen flex items-center justify-center bg-background'>
         <div className='text-center'>
           <h1 className='text-2xl font-bold text-card-foreground mb-4'>
             Car Not Found
           </h1>
-          <p className='text-gray-600 mb-4'>{error}</p>
+          <p className='text-muted-foreground mb-4'>{error}</p>
           <Link
             href={user ? '/dashboard' : '/'}
-            className='text-indigo-600 hover:text-indigo-900'
+            className='text-primary hover:text-primary/80'
           >
             {user ? 'Back to Dashboard' : 'Back to Home'}
           </Link>
@@ -203,7 +256,7 @@ export default function CarDetailPage() {
             {user && (
               <Link
                 href='/dashboard'
-                className='text-indigo-600 hover:text-indigo-900 mr-4'
+                className='text-primary hover:text-primary/80 mr-4'
               >
                 ← Back to Dashboard
               </Link>
@@ -292,35 +345,77 @@ export default function CarDetailPage() {
                 <div className='space-y-4'>
                   {/* Main Photo */}
                   <div className='aspect-w-16 aspect-h-9'>
-                    <img
-                      src={getPhotoInfo(sortedPhotos[selectedPhoto]).url}
-                      alt={`${car.name} - ${
-                        getPhotoInfo(sortedPhotos[selectedPhoto]).category
-                      } ${selectedPhoto + 1}`}
-                      className='w-full h-96 object-cover rounded-lg shadow-lg'
-                    />
+                    <button
+                      onClick={() => openFullscreenPhoto(selectedPhoto)}
+                      className='w-full h-96 rounded-lg shadow-lg overflow-hidden cursor-pointer hover:opacity-95 transition-opacity'
+                    >
+                      <img
+                        src={getPhotoInfo(sortedPhotos[selectedPhoto]).url}
+                        alt={`${car.name} - ${
+                          getPhotoInfo(sortedPhotos[selectedPhoto]).category
+                        } ${selectedPhoto + 1}`}
+                        className='w-full h-full object-cover'
+                      />
+                    </button>
                   </div>
 
-                  {/* Photo Thumbnails */}
+                  {/* Photo Thumbnails - Show all photos except the main one */}
                   {sortedPhotos.length > 1 && (
-                    <div className='grid grid-cols-4 gap-2'>
-                      {sortedPhotos.map((photo, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedPhoto(index)}
-                          className={`aspect-w-1 aspect-h-1 rounded-md overflow-hidden cursor-pointer ${
-                            selectedPhoto === index ? 'ring-2 ring-primary' : ''
-                          }`}
-                        >
-                          <img
-                            src={getPhotoInfo(photo).url}
-                            alt={`${car.name} ${getPhotoInfo(photo).category} ${
-                              index + 1
-                            }`}
-                            className='w-full h-20 object-cover'
-                          />
-                        </button>
-                      ))}
+                    <div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-3'>
+                      {sortedPhotos
+                        .filter((_, index) => index !== selectedPhoto) // Exclude the main photo
+                        .map((photo, thumbnailIndex) => {
+                          const originalIndex =
+                            sortedPhotos.findIndex((_, index) =>
+                              index !== selectedPhoto && index > selectedPhoto
+                                ? index - 1
+                                : index === selectedPhoto
+                                ? -1
+                                : index
+                            ) +
+                            (thumbnailIndex >=
+                            sortedPhotos.findIndex((_, index) =>
+                              index !== selectedPhoto && index > selectedPhoto
+                                ? index - 1
+                                : index === selectedPhoto
+                                ? -1
+                                : index
+                            )
+                              ? 1
+                              : 0)
+                          return (
+                            <div
+                              key={thumbnailIndex}
+                              className='relative group'
+                            >
+                              <button
+                                onClick={() =>
+                                  openFullscreenPhoto(originalIndex)
+                                }
+                                className='w-full h-24 rounded-md overflow-hidden cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-primary/50 ring-offset-2'
+                              >
+                                <img
+                                  src={getPhotoInfo(photo).url}
+                                  alt={`${car.name} ${
+                                    getPhotoInfo(photo).category
+                                  } ${originalIndex + 1}`}
+                                  className='w-full h-full object-cover'
+                                />
+                              </button>
+                              {/* Fullscreen button overlay */}
+                              <button
+                                onClick={() =>
+                                  openFullscreenPhoto(originalIndex)
+                                }
+                                className='absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100'
+                              >
+                                <div className='bg-black/50 rounded-full p-1'>
+                                  <Image className='w-4 h-4 text-white' />
+                                </div>
+                              </button>
+                            </div>
+                          )
+                        })}
                     </div>
                   )}
                 </div>
@@ -960,7 +1055,9 @@ export default function CarDetailPage() {
                           <dt className='text-sm font-medium text-gray-500'>
                             Seats
                           </dt>
-                          <dd className='text-sm text-card-foreground'>{car.seats}</dd>
+                          <dd className='text-sm text-card-foreground'>
+                            {car.seats}
+                          </dd>
                         </div>
                       )}
                       {car.steering_wheel && (
@@ -1005,7 +1102,10 @@ export default function CarDetailPage() {
                     </h3>
                     <ul className='space-y-2'>
                       {car.modifications.map((mod, index) => (
-                        <li key={index} className='text-sm text-card-foreground'>
+                        <li
+                          key={index}
+                          className='text-sm text-card-foreground'
+                        >
                           • {mod}
                         </li>
                       ))}
@@ -1019,7 +1119,9 @@ export default function CarDetailPage() {
                     <h3 className='text-lg font-medium text-card-foreground mb-4'>
                       Dyno Results
                     </h3>
-                    <p className='text-sm text-card-foreground'>{car.dyno_results}</p>
+                    <p className='text-sm text-card-foreground'>
+                      {car.dyno_results}
+                    </p>
                   </div>
                 )}
 
@@ -1035,15 +1137,17 @@ export default function CarDetailPage() {
                     <dl className='space-y-3'>
                       {car.vin && (
                         <div>
-                          <dt className='text-sm font-medium text-gray-500'>
+                          <dt className='text-sm font-medium text-muted-foreground'>
                             VIN
                           </dt>
-                          <dd className='text-sm text-card-foreground'>{car.vin}</dd>
+                          <dd className='text-sm text-card-foreground'>
+                            {car.vin}
+                          </dd>
                         </div>
                       )}
                       {car.mileage && (
                         <div>
-                          <dt className='text-sm font-medium text-gray-500'>
+                          <dt className='text-sm font-medium text-muted-foreground'>
                             Mileage
                           </dt>
                           <dd className='text-sm text-card-foreground'>
@@ -1053,7 +1157,7 @@ export default function CarDetailPage() {
                       )}
                       {car.fuel_economy && (
                         <div>
-                          <dt className='text-sm font-medium text-gray-500'>
+                          <dt className='text-sm font-medium text-muted-foreground'>
                             Fuel Economy
                           </dt>
                           <dd className='text-sm text-card-foreground'>
@@ -1063,7 +1167,7 @@ export default function CarDetailPage() {
                       )}
                       {car.maintenance_history && (
                         <div>
-                          <dt className='text-sm font-medium text-gray-500'>
+                          <dt className='text-sm font-medium text-muted-foreground'>
                             Maintenance History
                           </dt>
                           <dd className='text-sm text-card-foreground'>
@@ -1079,6 +1183,61 @@ export default function CarDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* Fullscreen Photo Dialog */}
+      <Dialog open={isPhotoDialogOpen} onOpenChange={setIsPhotoDialogOpen}>
+        <DialogContent className='max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-0'>
+          <DialogTitle className='sr-only'>
+            {car.name} - Photo {fullscreenPhotoIndex + 1} of{' '}
+            {sortedPhotos.length}
+          </DialogTitle>
+          <div className='relative w-full h-full flex items-center justify-center'>
+            {/* Close button */}
+            <button
+              onClick={() => setIsPhotoDialogOpen(false)}
+              className='absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors'
+            >
+              <X className='w-6 h-6' />
+            </button>
+
+            {/* Navigation buttons */}
+            {sortedPhotos.length > 1 && (
+              <>
+                <button
+                  onClick={() => navigatePhoto('prev')}
+                  className='absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors'
+                >
+                  <ChevronLeft className='w-6 h-6' />
+                </button>
+                <button
+                  onClick={() => navigatePhoto('next')}
+                  className='absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors'
+                >
+                  <ChevronRight className='w-6 h-6' />
+                </button>
+              </>
+            )}
+
+            {/* Photo counter */}
+            {sortedPhotos.length > 1 && (
+              <div className='absolute bottom-4 left-1/2 -translate-x-1/2 z-10 px-3 py-1 rounded-full bg-black/50 text-white text-sm'>
+                {fullscreenPhotoIndex + 1} / {sortedPhotos.length}
+              </div>
+            )}
+
+            {/* Main photo */}
+            {sortedPhotos.length > 0 && (
+              <img
+                src={getPhotoInfo(sortedPhotos[fullscreenPhotoIndex]).url}
+                alt={`${car.name} - ${
+                  getPhotoInfo(sortedPhotos[fullscreenPhotoIndex]).category
+                } ${fullscreenPhotoIndex + 1}`}
+                className='max-w-full max-h-full object-contain'
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
