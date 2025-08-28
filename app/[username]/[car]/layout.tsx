@@ -4,19 +4,21 @@ import { getProfileByUsername } from '@/lib/database/profiles'
 
 interface CarLayoutProps {
   children: React.ReactNode
-  params: {
+  params: Promise<{
     username: string
     car: string
-  }
+  }>
 }
 
 export async function generateMetadata({
   params,
 }: CarLayoutProps): Promise<Metadata> {
   try {
+    const { username, car: carSlug } = await params
+
     const [car, profile] = await Promise.all([
-      getCarByUrlSlugAndUsername(params.car, params.username),
-      getProfileByUsername(params.username),
+      getCarByUrlSlugAndUsername(carSlug, username),
+      getProfileByUsername(username),
     ])
 
     if (!car) {
@@ -41,13 +43,11 @@ export async function generateMetadata({
       }
     }
 
-    const title = `${car.name} by @${
-      profile?.username || params.username
-    } - MyRide`
+    const title = `${car.name} by @${profile?.username || username} - MyRide`
     const description = car.description
       ? `${car.description} - ${car.year} ${car.make} ${car.model}`
       : `Check out this ${car.year} ${car.make} ${car.model} by @${
-          profile?.username || params.username
+          profile?.username || username
         } on MyRide!`
 
     const metadata: Metadata = {
@@ -57,7 +57,7 @@ export async function generateMetadata({
         title,
         description,
         type: 'website',
-        url: `https://myride.com/${params.username}/${params.car}`,
+        url: `https://myride.com/${username}/${carSlug}`,
         images: imageUrl
           ? [
               {
