@@ -1,4 +1,3 @@
-import { Car } from '@/lib/types/database'
 import { convertToPreferredUnit } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
@@ -22,23 +21,23 @@ export default function SpecificationSection({
   const { unitPreference } = useUnitPreference()
 
   // Filter out specifications with null/empty values
-  const validSpecs = specifications.filter(spec => 
-    spec.value !== null && spec.value !== undefined && spec.value !== ''
+  const validSpecs = specifications.filter(
+    spec => spec.value !== null && spec.value !== undefined && spec.value !== ''
   )
 
   if (validSpecs.length === 0) {
     return null
   }
 
-  const formatValue = (spec: typeof validSpecs[0]) => {
+  const formatValue = (spec: (typeof validSpecs)[0]) => {
     if (spec.unitType && typeof spec.value === 'number') {
       return convertToPreferredUnit(spec.value, spec.unitType, unitPreference)
     }
-    
+
     if (spec.unit && typeof spec.value === 'number') {
       return `${spec.value} ${spec.unit}`
     }
-    
+
     return spec.value
   }
 
@@ -46,14 +45,12 @@ export default function SpecificationSection({
     <div className={className}>
       <h3 className='text-lg font-medium text-foreground mb-4'>{title}</h3>
       <dl className='space-y-3'>
-        {validSpecs.map((spec) => (
+        {validSpecs.map(spec => (
           <div key={spec.key}>
             <dt className='text-sm font-medium text-muted-foreground'>
               {spec.label}
             </dt>
-            <dd className='text-sm text-foreground'>
-              {formatValue(spec)}
-            </dd>
+            <dd className='text-sm text-foreground'>{formatValue(spec)}</dd>
           </div>
         ))}
       </dl>

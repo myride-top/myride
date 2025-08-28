@@ -8,16 +8,7 @@ import { getCarsByUserClient } from '@/lib/database/cars-client'
 import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
-import { toast } from 'sonner'
-import {
-  Plus,
-  CarIcon,
-  Info,
-  Heart,
-  Users,
-  Calendar,
-  Image,
-} from 'lucide-react'
+import { Plus, CarIcon, Info, Heart, Calendar, Image } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
 import LoadingSpinner from '@/components/ui/loading-spinner'
 import EmptyState from '@/components/ui/empty-state'

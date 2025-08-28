@@ -1,5 +1,5 @@
 import { Car, Profile } from '@/lib/types/database'
-import { Share2, Edit, Image, Heart } from 'lucide-react'
+import { Share2, Image, Heart } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'

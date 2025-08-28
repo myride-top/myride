@@ -63,9 +63,15 @@ export default function BrowsePage() {
                   // Extract profile from the joined data
                   const profile: Profile = {
                     id: car.user_id,
-                    username: (car as any).profiles?.username || 'unknown',
-                    full_name: (car as any).profiles?.full_name || null,
-                    avatar_url: (car as any).profiles?.avatar_url || null,
+                    username:
+                      (car as { profiles?: { username: string } }).profiles
+                        ?.username || 'unknown',
+                    full_name:
+                      (car as { profiles?: { full_name: string | null } })
+                        .profiles?.full_name || null,
+                    avatar_url:
+                      (car as { profiles?: { avatar_url: string | null } })
+                        .profiles?.avatar_url || null,
                     unit_preference: 'metric',
                     created_at: '',
                     updated_at: '',
