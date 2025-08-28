@@ -1,6 +1,7 @@
 import { createBrowserClient } from '@supabase/ssr'
 import { Car, CarPhoto } from '@/lib/types/database'
 import { urlToCarName } from '@/lib/utils/url-helpers'
+import { unitConversions } from '@/lib/utils'
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -250,7 +251,8 @@ export async function getCarByUrlSlugAndUsernameClient(
 }
 
 export async function createCarClient(
-  carData: Omit<Car, 'id' | 'created_at' | 'updated_at'>
+  carData: Omit<Car, 'id' | 'created_at' | 'updated_at'>,
+  unitPreference: 'metric' | 'imperial' = 'metric'
 ): Promise<Car | null> {
   try {
     // Check car limit before creating
@@ -260,9 +262,48 @@ export async function createCarClient(
       return null
     }
 
+    // Convert values based on user's unit preference
+    const convertedCarData = {
+      ...carData,
+      torque: carData.torque
+        ? unitPreference === 'metric'
+          ? unitConversions.torque.metricToImperial(carData.torque)
+          : carData.torque
+        : null,
+      front_tire_pressure: carData.front_tire_pressure
+        ? unitPreference === 'metric'
+          ? unitConversions.pressure.metricToImperial(
+              carData.front_tire_pressure
+            )
+          : carData.front_tire_pressure
+        : null,
+      rear_tire_pressure: carData.rear_tire_pressure
+        ? unitPreference === 'metric'
+          ? unitConversions.pressure.metricToImperial(
+              carData.rear_tire_pressure
+            )
+          : carData.rear_tire_pressure
+        : null,
+      top_speed: carData.top_speed
+        ? unitPreference === 'metric'
+          ? unitConversions.speed.metricToImperial(carData.top_speed)
+          : carData.top_speed
+        : null,
+      weight: carData.weight
+        ? unitPreference === 'metric'
+          ? unitConversions.weight.metricToImperial(carData.weight)
+          : carData.weight
+        : null,
+      mileage: carData.mileage
+        ? unitPreference === 'metric'
+          ? unitConversions.distance.metricToImperial(carData.mileage)
+          : carData.mileage
+        : null,
+    }
+
     const { data, error } = await supabase
       .from('cars')
-      .insert(carData)
+      .insert(convertedCarData)
       .select()
       .single()
 
@@ -280,12 +321,70 @@ export async function createCarClient(
 
 export async function updateCarClient(
   carId: string,
-  carData: Partial<Omit<Car, 'id' | 'created_at' | 'updated_at'>>
+  carData: Partial<Omit<Car, 'id' | 'created_at' | 'updated_at'>>,
+  unitPreference: 'metric' | 'imperial' = 'metric'
 ): Promise<Car | null> {
   try {
+    // Convert values based on user's unit preference
+    const convertedCarData = {
+      ...carData,
+      torque:
+        carData.torque !== undefined
+          ? carData.torque
+            ? unitPreference === 'metric'
+              ? unitConversions.torque.metricToImperial(carData.torque)
+              : carData.torque
+            : null
+          : undefined,
+      front_tire_pressure:
+        carData.front_tire_pressure !== undefined
+          ? carData.front_tire_pressure
+            ? unitPreference === 'metric'
+              ? unitConversions.pressure.metricToImperial(
+                  carData.front_tire_pressure
+                )
+              : carData.front_tire_pressure
+            : null
+          : undefined,
+      rear_tire_pressure:
+        carData.rear_tire_pressure !== undefined
+          ? carData.rear_tire_pressure
+            ? unitPreference === 'metric'
+              ? unitConversions.pressure.metricToImperial(
+                  carData.rear_tire_pressure
+                )
+              : carData.rear_tire_pressure
+            : null
+          : undefined,
+      top_speed:
+        carData.top_speed !== undefined
+          ? carData.top_speed
+            ? unitPreference === 'metric'
+              ? unitConversions.speed.metricToImperial(carData.top_speed)
+              : carData.top_speed
+            : null
+          : undefined,
+      weight:
+        carData.weight !== undefined
+          ? carData.weight
+            ? unitPreference === 'metric'
+              ? unitConversions.weight.metricToImperial(carData.weight)
+              : carData.weight
+            : null
+          : undefined,
+      mileage:
+        carData.mileage !== undefined
+          ? carData.mileage
+            ? unitPreference === 'metric'
+              ? unitConversions.distance.metricToImperial(carData.mileage)
+              : carData.mileage
+            : null
+          : undefined,
+    }
+
     const { data, error } = await supabase
       .from('cars')
-      .update(carData)
+      .update(convertedCarData)
       .eq('id', carId)
       .select()
       .single()

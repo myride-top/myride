@@ -31,10 +31,13 @@ import {
   DialogTrigger,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { convertToPreferredUnit, getUnitLabel } from '@/lib/utils'
+import { useUnitPreference } from '@/lib/context/unit-context'
 
 export default function CarDetailPage() {
   const params = useParams()
   const { user } = useAuth()
+  const { unitPreference } = useUnitPreference()
   const [car, setCar] = useState<Car | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -477,7 +480,11 @@ export default function CarDetailPage() {
                             Torque
                           </dt>
                           <dd className='text-sm text-gray-900'>
-                            {car.torque} lb-ft
+                            {convertToPreferredUnit(
+                              car.torque,
+                              'torque',
+                              unitPreference
+                            )}
                           </dd>
                         </div>
                       )}
@@ -504,7 +511,7 @@ export default function CarDetailPage() {
                       {car.zero_to_sixty && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
-                            0-60 mph
+                            0-100 km/h
                           </dt>
                           <dd className='text-sm text-gray-900'>
                             {car.zero_to_sixty}s
@@ -517,7 +524,35 @@ export default function CarDetailPage() {
                             Top Speed
                           </dt>
                           <dd className='text-sm text-gray-900'>
-                            {car.top_speed} mph
+                            {convertToPreferredUnit(
+                              car.top_speed,
+                              'speed',
+                              unitPreference
+                            )}
+                          </dd>
+                        </div>
+                      )}
+                      {car.quarter_mile && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            0-400m
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.quarter_mile}s
+                          </dd>
+                        </div>
+                      )}
+                      {car.weight && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Weight
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {convertToPreferredUnit(
+                              car.weight,
+                              'weight',
+                              unitPreference
+                            )}
                           </dd>
                         </div>
                       )}
@@ -594,6 +629,34 @@ export default function CarDetailPage() {
                           </dt>
                           <dd className='text-sm text-gray-900'>
                             {car.rear_tire_brand}
+                          </dd>
+                        </div>
+                      )}
+                      {car.front_tire_pressure && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Front Tire Pressure
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {convertToPreferredUnit(
+                              car.front_tire_pressure,
+                              'pressure',
+                              unitPreference
+                            )}
+                          </dd>
+                        </div>
+                      )}
+                      {car.rear_tire_pressure && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Rear Tire Pressure
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {convertToPreferredUnit(
+                              car.rear_tire_pressure,
+                              'pressure',
+                              unitPreference
+                            )}
                           </dd>
                         </div>
                       )}
@@ -709,6 +772,49 @@ export default function CarDetailPage() {
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {/* Additional Details */}
+                {(car.mileage || car.fuel_economy || car.vin) && (
+                  <div className='p-6'>
+                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                      Additional Details
+                    </h3>
+                    <dl className='space-y-3'>
+                      {car.mileage && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Mileage
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {convertToPreferredUnit(
+                              car.mileage,
+                              'distance',
+                              unitPreference
+                            )}
+                          </dd>
+                        </div>
+                      )}
+                      {car.fuel_economy && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Fuel Economy
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.fuel_economy}
+                          </dd>
+                        </div>
+                      )}
+                      {car.vin && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            VIN
+                          </dt>
+                          <dd className='text-sm text-gray-900'>{car.vin}</dd>
+                        </div>
+                      )}
+                    </dl>
                   </div>
                 )}
 

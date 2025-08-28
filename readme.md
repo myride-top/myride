@@ -1,10 +1,10 @@
 ### TODO
 
-- share entire profile and not just one car
+- ability to share entire profile
 
-- ability to like car if you're signed in
+- ability to like a car if you're signed in
 
-- one car is free, if you want more it costs $1 (toast notifications, details page, stripe integration)
+- metadata car picture
 
 - support creator (? can we use stripe in a way that users can choose how much they wanna pay ? or what other service to use ?)
 
@@ -12,8 +12,11 @@
 
 ### Wanted features after launch
 
+- one car is free, it costs $1 to add another car (toast notifications, details page, stripe integration)
+
 - premium
-  - entire page about benefits of premium
-  - $20 lifetime
-  - analytics (car views, car shares)
+  - entire informational page about benefits of premium
+  - $10 lifetime
+  - analytics (car views, car shares, car likes)
+    - charts
   - no limit for adding cards

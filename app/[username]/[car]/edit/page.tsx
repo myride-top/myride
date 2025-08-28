@@ -17,9 +17,16 @@ import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
 import { ArrowLeft, Star, X, Loader2, AlertTriangle } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
+import {
+  convertToPreferredUnit,
+  getUnitLabel,
+  unitConversions,
+} from '@/lib/utils'
+import { useUnitPreference } from '@/lib/context/unit-context'
 
 export default function EditCarPage() {
   const { user } = useAuth()
+  const { unitPreference, isLoading: unitLoading } = useUnitPreference()
   const router = useRouter()
   const params = useParams()
   const carId = params.car as string
@@ -166,16 +173,34 @@ export default function EditCarPage() {
               engine_cylinders: carData.engine_cylinders?.toString() || '',
               engine_code: carData.engine_code || '',
               horsepower: carData.horsepower?.toString() || '',
-              torque: carData.torque?.toString() || '',
+              torque: carData.torque
+                ? unitPreference === 'metric'
+                  ? unitConversions.torque
+                      .imperialToMetric(carData.torque)
+                      .toString()
+                  : carData.torque.toString()
+                : '',
               engine_type: carData.engine_type || '',
               fuel_type: carData.fuel_type || '',
               transmission: carData.transmission || '',
               drivetrain: carData.drivetrain || '',
               // Performance Specifications
               zero_to_sixty: carData.zero_to_sixty?.toString() || '',
-              top_speed: carData.top_speed?.toString() || '',
+              top_speed: carData.top_speed
+                ? unitPreference === 'metric'
+                  ? unitConversions.speed
+                      .imperialToMetric(carData.top_speed)
+                      .toString()
+                  : carData.top_speed.toString()
+                : '',
               quarter_mile: carData.quarter_mile?.toString() || '',
-              weight: carData.weight?.toString() || '',
+              weight: carData.weight
+                ? unitPreference === 'metric'
+                  ? unitConversions.weight
+                      .imperialToMetric(carData.weight)
+                      .toString()
+                  : carData.weight.toString()
+                : '',
               power_to_weight: carData.power_to_weight || '',
               // Brake System
               front_brakes: carData.front_brakes || '',
@@ -199,13 +224,24 @@ export default function EditCarPage() {
               front_tire_size: carData.front_tire_size || '',
               front_tire_brand: carData.front_tire_brand || '',
               front_tire_model: carData.front_tire_model || '',
-              front_tire_pressure:
-                carData.front_tire_pressure?.toString() || '',
+              front_tire_pressure: carData.front_tire_pressure
+                ? unitPreference === 'metric'
+                  ? unitConversions.pressure
+                      .imperialToMetric(carData.front_tire_pressure)
+                      .toString()
+                  : carData.front_tire_pressure.toString()
+                : '',
               // Rear Tires
               rear_tire_size: carData.rear_tire_size || '',
               rear_tire_brand: carData.rear_tire_brand || '',
               rear_tire_model: carData.rear_tire_model || '',
-              rear_tire_pressure: carData.rear_tire_pressure?.toString() || '',
+              rear_tire_pressure: carData.rear_tire_pressure
+                ? unitPreference === 'metric'
+                  ? unitConversions.pressure
+                      .imperialToMetric(carData.rear_tire_pressure)
+                      .toString()
+                  : carData.rear_tire_pressure.toString()
+                : '',
               // Exterior
               body_kit: carData.body_kit || '',
               paint_color: carData.paint_color || '',
@@ -225,7 +261,13 @@ export default function EditCarPage() {
               dyno_results: carData.dyno_results || '',
               // Additional Details
               vin: carData.vin || '',
-              mileage: carData.mileage?.toString() || '',
+              mileage: carData.mileage
+                ? unitPreference === 'metric'
+                  ? unitConversions.distance
+                      .imperialToMetric(carData.mileage)
+                      .toString()
+                  : carData.mileage.toString()
+                : '',
               fuel_economy: carData.fuel_economy || '',
               maintenance_history: carData.maintenance_history || '',
             })
@@ -242,7 +284,7 @@ export default function EditCarPage() {
     }
 
     loadCar()
-  }, [carId, user])
+  }, [carId, user, unitPreference])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -256,74 +298,99 @@ export default function EditCarPage() {
     }
 
     try {
-      const updatedCar = await updateCarClient(car.id, {
-        name: formData.name,
-        url_slug: formData.url_slug || '', // Let database auto-generate if empty
-        make: formData.make,
-        model: formData.model,
-        year: parseInt(formData.year),
-        description: formData.description || null,
-        photos: car.photos || [], // Include the current photos array
-        // Engine Specifications
-        engine_displacement: formData.engine_displacement
-          ? parseFloat(formData.engine_displacement)
-          : null,
-        engine_cylinders: formData.engine_cylinders
-          ? parseInt(formData.engine_cylinders)
-          : null,
-        horsepower: formData.horsepower ? parseInt(formData.horsepower) : null,
-        torque: formData.torque ? parseInt(formData.torque) : null,
-        engine_type: formData.engine_type || null,
-        fuel_type: formData.fuel_type || null,
-        transmission: formData.transmission || null,
-        // Performance Specifications
-        zero_to_sixty: formData.zero_to_sixty
-          ? parseFloat(formData.zero_to_sixty)
-          : null,
-        top_speed: formData.top_speed ? parseInt(formData.top_speed) : null,
-        quarter_mile: formData.quarter_mile
-          ? parseFloat(formData.quarter_mile)
-          : null,
-        // Brake System
-        front_brakes: formData.front_brakes || null,
-        rear_brakes: formData.rear_brakes || null,
-        brake_rotors: formData.brake_rotors || null,
-        // Suspension
-        front_suspension: formData.front_suspension || null,
-        rear_suspension: formData.rear_suspension || null,
-        suspension_type: formData.suspension_type || null,
-        ride_height: formData.ride_height || null,
-        // Wheels and Tires
-        wheel_size: formData.wheel_size || null,
-        wheel_material: formData.wheel_material || null,
-        wheel_brand: formData.wheel_brand || null,
-        wheel_offset: formData.wheel_offset || null,
-        // Front Tires
-        front_tire_size: formData.front_tire_size || null,
-        front_tire_brand: formData.front_tire_brand || null,
-        front_tire_model: formData.front_tire_model || null,
-        front_tire_pressure: formData.front_tire_pressure
-          ? parseInt(formData.front_tire_pressure)
-          : null,
-        // Rear Tires
-        rear_tire_size: formData.rear_tire_size || null,
-        rear_tire_brand: formData.rear_tire_brand || null,
-        rear_tire_model: formData.rear_tire_model || null,
-        rear_tire_pressure: formData.rear_tire_pressure
-          ? parseInt(formData.rear_tire_pressure)
-          : null,
-        // Exterior
-        body_kit: formData.body_kit || null,
-        paint_color: formData.paint_color || null,
-        paint_type: formData.paint_type || null,
-        // Interior
-        interior_color: formData.interior_color || null,
-        interior_material: formData.interior_material || null,
-        seats: formData.seats || null,
-        // Modifications
-        modifications: formData.modifications || null,
-        dyno_results: formData.dyno_results || null,
-      })
+      const updatedCar = await updateCarClient(
+        car.id,
+        {
+          name: formData.name,
+          url_slug: formData.url_slug || '', // Let database auto-generate if empty
+          make: formData.make,
+          model: formData.model,
+          year: parseInt(formData.year),
+          description: formData.description || null,
+          photos: car.photos || [], // Include the current photos array
+          // Engine Specifications
+          engine_displacement: formData.engine_displacement
+            ? parseFloat(formData.engine_displacement)
+            : null,
+          engine_cylinders: formData.engine_cylinders
+            ? parseInt(formData.engine_cylinders)
+            : null,
+          engine_code: formData.engine_code || null,
+          horsepower: formData.horsepower
+            ? parseInt(formData.horsepower)
+            : null,
+          torque: formData.torque ? parseFloat(formData.torque) : null,
+          engine_type: formData.engine_type || null,
+          fuel_type: formData.fuel_type || null,
+          transmission: formData.transmission || null,
+          drivetrain: formData.drivetrain || null,
+          // Performance Specifications
+          zero_to_sixty: formData.zero_to_sixty
+            ? parseFloat(formData.zero_to_sixty)
+            : null,
+          top_speed: formData.top_speed ? parseFloat(formData.top_speed) : null,
+          quarter_mile: formData.quarter_mile
+            ? parseFloat(formData.quarter_mile)
+            : null,
+          weight: formData.weight ? parseFloat(formData.weight) : null,
+          power_to_weight: formData.power_to_weight || null,
+          // Brake System
+          front_brakes: formData.front_brakes || null,
+          rear_brakes: formData.rear_brakes || null,
+          brake_rotors: formData.brake_rotors || null,
+          brake_caliper_brand: formData.brake_caliper_brand || null,
+          brake_lines: formData.brake_lines || null,
+          // Suspension
+          front_suspension: formData.front_suspension || null,
+          rear_suspension: formData.rear_suspension || null,
+          suspension_type: formData.suspension_type || null,
+          ride_height: formData.ride_height || null,
+          coilovers: formData.coilovers || null,
+          sway_bars: formData.sway_bars || null,
+          // Wheels and Tires
+          wheel_size: formData.wheel_size || null,
+          wheel_material: formData.wheel_material || null,
+          wheel_brand: formData.wheel_brand || null,
+          wheel_offset: formData.wheel_offset || null,
+          // Front Tires
+          front_tire_size: formData.front_tire_size || null,
+          front_tire_brand: formData.front_tire_brand || null,
+          front_tire_model: formData.front_tire_model || null,
+          front_tire_pressure: formData.front_tire_pressure
+            ? parseFloat(formData.front_tire_pressure)
+            : null,
+          // Rear Tires
+          rear_tire_size: formData.rear_tire_size || null,
+          rear_tire_brand: formData.rear_tire_brand || null,
+          rear_tire_model: formData.rear_tire_model || null,
+          rear_tire_pressure: formData.rear_tire_pressure
+            ? parseFloat(formData.rear_tire_pressure)
+            : null,
+          // Exterior
+          body_kit: formData.body_kit || null,
+          paint_color: formData.paint_color || null,
+          paint_type: formData.paint_type || null,
+          wrap_color: formData.wrap_color || null,
+          carbon_fiber_parts: formData.carbon_fiber_parts || null,
+          lighting: formData.lighting || null,
+          // Interior
+          interior_color: formData.interior_color || null,
+          interior_material: formData.interior_material || null,
+          seats: formData.seats || null,
+          steering_wheel: formData.steering_wheel || null,
+          shift_knob: formData.shift_knob || null,
+          gauges: formData.gauges || null,
+          // Modifications
+          modifications: formData.modifications || null,
+          dyno_results: formData.dyno_results || null,
+          // Additional Details
+          vin: formData.vin || null,
+          mileage: formData.mileage ? parseFloat(formData.mileage) : null,
+          fuel_economy: formData.fuel_economy || null,
+          maintenance_history: formData.maintenance_history || null,
+        },
+        unitPreference
+      )
 
       if (updatedCar) {
         setCar(updatedCar)
@@ -481,13 +548,13 @@ export default function EditCarPage() {
     }
   }
 
-  if (loading) {
+  if (loading || unitLoading) {
     return (
       <ProtectedRoute>
         <div className='min-h-screen flex items-center justify-center bg-background'>
           <div className='text-center'>
             <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
-            <p className='mt-4 text-muted-foreground'>Loading car...</p>
+            <p className='mt-4 text-muted-foreground'>Loading...</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -695,86 +762,9 @@ export default function EditCarPage() {
                     </div>
 
                     {/* Engine Specifications */}
-                    <div className='border-t border-border pt-6'>
-                      <h4 className='text-lg font-medium text-card-foreground mb-4'>
-                        Engine & Performance
-                      </h4>
-                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                        <div>
-                          <label
-                            htmlFor='horsepower'
-                            className='block text-sm font-medium text-foreground'
-                          >
-                            Horsepower
-                          </label>
-                          <input
-                            type='number'
-                            id='horsepower'
-                            name='horsepower'
-                            value={formData.horsepower}
-                            onChange={handleInputChange}
-                            className='mt-1 block w-full border-border rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm bg-background text-foreground'
-                            placeholder='e.g., 300'
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor='torque'
-                            className='block text-sm font-medium text-foreground'
-                          >
-                            Torque (lb-ft)
-                          </label>
-                          <input
-                            type='number'
-                            id='torque'
-                            name='torque'
-                            value={formData.torque}
-                            onChange={handleInputChange}
-                            className='mt-1 block w-full border-border rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm bg-background text-foreground'
-                            placeholder='e.g., 350'
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor='engine_type'
-                            className='block text-sm font-medium text-foreground'
-                          >
-                            Engine Type
-                          </label>
-                          <input
-                            type='text'
-                            id='engine_type'
-                            name='engine_type'
-                            value={formData.engine_type}
-                            onChange={handleInputChange}
-                            className='mt-1 block w-full border-border rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm bg-background text-foreground'
-                            placeholder='e.g., Turbocharged I4'
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor='transmission'
-                            className='block text-sm font-medium text-foreground'
-                          >
-                            Transmission
-                          </label>
-                          <input
-                            type='text'
-                            id='transmission'
-                            name='transmission'
-                            value={formData.transmission}
-                            onChange={handleInputChange}
-                            className='mt-1 block w-full border-border rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm bg-background text-foreground'
-                            placeholder='e.g., 6-Speed Manual'
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Engine Specifications */}
                     <div className='border-t pt-6'>
                       <h4 className='text-lg font-medium text-card-foreground mb-4'>
-                        Engine & Performance
+                        Engine
                       </h4>
                       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                         <div>
@@ -851,7 +841,7 @@ export default function EditCarPage() {
                             htmlFor='torque'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Torque (lb-ft)
+                            Torque ({getUnitLabel('torque', unitPreference)})
                           </label>
                           <input
                             type='number'
@@ -928,7 +918,10 @@ export default function EditCarPage() {
                             htmlFor='zero_to_sixty'
                             className='block text-sm font-medium text-foreground'
                           >
-                            0-60 Time (seconds)
+                            {unitPreference === 'metric'
+                              ? '0-100 km/h'
+                              : '0-60 mph'}{' '}
+                            Time (seconds)
                           </label>
                           <input
                             type='number'
@@ -946,7 +939,7 @@ export default function EditCarPage() {
                             htmlFor='top_speed'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Top Speed (mph)
+                            Top Speed ({getUnitLabel('speed', unitPreference)})
                           </label>
                           <input
                             type='number'
@@ -955,7 +948,11 @@ export default function EditCarPage() {
                             value={formData.top_speed}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 155'
+                            placeholder={
+                              unitPreference === 'metric'
+                                ? 'e.g., 250'
+                                : 'e.g., 155'
+                            }
                           />
                         </div>
                         <div>
@@ -963,7 +960,7 @@ export default function EditCarPage() {
                             htmlFor='quarter_mile'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Quarter Mile (seconds)
+                            0-400m (seconds)
                           </label>
                           <input
                             type='number'
@@ -981,7 +978,7 @@ export default function EditCarPage() {
                             htmlFor='weight'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Weight (lbs)
+                            Weight ({getUnitLabel('weight', unitPreference)})
                           </label>
                           <input
                             type='number'
@@ -990,7 +987,11 @@ export default function EditCarPage() {
                             value={formData.weight}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 3500'
+                            placeholder={
+                              unitPreference === 'metric'
+                                ? 'e.g., 1588'
+                                : 'e.g., 3500'
+                            }
                           />
                         </div>
                         <div>
@@ -1007,7 +1008,7 @@ export default function EditCarPage() {
                             value={formData.power_to_weight}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 10.2 lbs/hp'
+                            placeholder='e.g., 4.6 kg/hp'
                           />
                         </div>
                       </div>
@@ -1177,16 +1178,22 @@ export default function EditCarPage() {
                             htmlFor='front_tire_pressure'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Front Tire Pressure (PSI)
+                            Front Tire Pressure (
+                            {getUnitLabel('pressure', unitPreference)})
                           </label>
                           <input
                             type='number'
+                            step='0.1'
                             id='front_tire_pressure'
                             name='front_tire_pressure'
                             value={formData.front_tire_pressure}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 32'
+                            placeholder={
+                              unitPreference === 'metric'
+                                ? 'e.g., 2.2'
+                                : 'e.g., 32'
+                            }
                           />
                         </div>
                         <div>
@@ -1211,16 +1218,22 @@ export default function EditCarPage() {
                             htmlFor='rear_tire_pressure'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Rear Tire Pressure (PSI)
+                            Rear Tire Pressure (
+                            {getUnitLabel('pressure', unitPreference)})
                           </label>
                           <input
                             type='number'
+                            step='0.1'
                             id='rear_tire_pressure'
                             name='rear_tire_pressure'
                             value={formData.rear_tire_pressure}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 30'
+                            placeholder={
+                              unitPreference === 'metric'
+                                ? 'e.g., 2.1'
+                                : 'e.g., 30'
+                            }
                           />
                         </div>
                       </div>
@@ -1724,7 +1737,7 @@ export default function EditCarPage() {
                             htmlFor='mileage'
                             className='block text-sm font-medium text-foreground'
                           >
-                            Mileage
+                            Mileage ({getUnitLabel('distance', unitPreference)})
                           </label>
                           <input
                             type='number'
@@ -1733,7 +1746,11 @@ export default function EditCarPage() {
                             value={formData.mileage}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 50000'
+                            placeholder={
+                              unitPreference === 'metric'
+                                ? 'e.g., 80000'
+                                : 'e.g., 50000'
+                            }
                           />
                         </div>
                         <div>
@@ -1750,7 +1767,7 @@ export default function EditCarPage() {
                             value={formData.fuel_economy}
                             onChange={handleInputChange}
                             className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring sm:text-sm'
-                            placeholder='e.g., 25 MPG City, 32 MPG Highway'
+                            placeholder='e.g., 9.4 L/100km City, 7.4 L/100km Highway'
                           />
                         </div>
                         <div>

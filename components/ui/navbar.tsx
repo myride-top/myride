@@ -114,13 +114,13 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
               (canCreateCar ? (
                 <Link
                   href='/create'
-                  className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                  className='md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hidden'
                 >
                   <Plus className='w-4 h-4 mr-2' />
                   Add New Car
                 </Link>
               ) : (
-                <div className='inline-flex items-center px-4 py-2 border border-orange-200 text-sm font-medium rounded-md shadow-sm text-orange-700 bg-orange-50 cursor-not-allowed'>
+                <div className='md:inline-flex hidden items-center px-4 py-2 border border-orange-200 text-sm font-medium rounded-md shadow-sm text-orange-700 bg-orange-50 cursor-not-allowed'>
                   <AlertCircle className='w-4 h-4 mr-2' />
                   Car Limit Reached
                 </div>

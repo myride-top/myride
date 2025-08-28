@@ -76,7 +76,7 @@ export default function DashboardPage() {
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           {/* Stats Overview */}
           <div className='px-4 py-6 sm:px-0'>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
+            {/* <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
               <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
                 <div className='p-5'>
                   <div className='flex items-center'>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Cars Grid */}
             <div>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
                 </div>
               ) : cars.length === 1 ? (
                 <div className='space-y-6'>
-                  <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+                  <div className='bg-blue-50 dark:bg-blue-50/20 border border-blue-200 rounded-lg p-4'>
                     <div className='flex items-center'>
                       <div className='flex-shrink-0'>
                         <svg
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                         </svg>
                       </div>
                       <div className='ml-3'>
-                        <p className='text-sm text-blue-700'>
+                        <p className='text-sm text-blue-700 dark:text-blue-50'>
                           You have reached the maximum limit of 1 car per user.
                           To add a new car, you'll need to delete your existing
                           car first.

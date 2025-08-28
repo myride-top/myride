@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import Navbar from '@/components/ui/navbar'
-import { ChevronLeft } from 'lucide-react'
+import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -23,9 +23,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  convertToPreferredUnit,
+  getUnitLabel,
+  unitConversions,
+} from '@/lib/utils'
+import { useUnitPreference } from '@/lib/context/unit-context'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
+  const { unitPreference } = useUnitPreference()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -187,95 +194,98 @@ export default function CreateCarPage() {
     }
 
     try {
-      const newCar = await createCarClient({
-        user_id: user.id,
-        name: carData.name,
-        url_slug: carData.url_slug || '', // Let database auto-generate if empty
-        make: carData.make,
-        model: carData.model,
-        year: carData.year,
-        description: carData.description || null,
-        photos: photos,
-        main_photo_url: null, // Will be set later when user chooses main photo
-        // Engine Specifications
-        engine_displacement: carData.engine_displacement
-          ? parseFloat(carData.engine_displacement)
-          : null,
-        engine_cylinders: carData.engine_cylinders
-          ? parseInt(carData.engine_cylinders)
-          : null,
-        engine_code: carData.engine_code || null,
-        horsepower: carData.horsepower ? parseInt(carData.horsepower) : null,
-        torque: carData.torque ? parseInt(carData.torque) : null,
-        engine_type: carData.engine_type || null,
-        fuel_type: carData.fuel_type || null,
-        transmission: carData.transmission || null,
-        drivetrain: carData.drivetrain || null,
-        // Performance Specifications
-        zero_to_sixty: carData.zero_to_sixty
-          ? parseFloat(carData.zero_to_sixty)
-          : null,
-        top_speed: carData.top_speed ? parseInt(carData.top_speed) : null,
-        quarter_mile: carData.quarter_mile
-          ? parseFloat(carData.quarter_mile)
-          : null,
-        weight: carData.weight ? parseInt(carData.weight) : null,
-        power_to_weight: carData.power_to_weight || null,
-        // Brake System
-        front_brakes: carData.front_brakes || null,
-        rear_brakes: carData.rear_brakes || null,
-        brake_rotors: carData.brake_rotors || null,
-        brake_caliper_brand: carData.brake_caliper_brand || null,
-        brake_lines: carData.brake_lines || null,
-        // Suspension
-        front_suspension: carData.front_suspension || null,
-        rear_suspension: carData.rear_suspension || null,
-        suspension_type: carData.suspension_type || null,
-        ride_height: carData.ride_height || null,
-        coilovers: carData.coilovers || null,
-        sway_bars: carData.sway_bars || null,
-        // Wheels and Tires
-        wheel_size: carData.wheel_size || null,
-        wheel_material: carData.wheel_material || null,
-        wheel_brand: carData.wheel_brand || null,
-        wheel_offset: carData.wheel_offset || null,
-        // Front Tires
-        front_tire_size: carData.front_tire_size || null,
-        front_tire_brand: carData.front_tire_brand || null,
-        front_tire_model: carData.front_tire_model || null,
-        front_tire_pressure: carData.front_tire_pressure
-          ? parseInt(carData.front_tire_pressure)
-          : null,
-        // Rear Tires
-        rear_tire_size: carData.rear_tire_size || null,
-        rear_tire_brand: carData.rear_tire_brand || null,
-        rear_tire_model: carData.rear_tire_model || null,
-        rear_tire_pressure: carData.rear_tire_pressure
-          ? parseInt(carData.rear_tire_pressure)
-          : null,
-        // Exterior
-        body_kit: carData.body_kit || null,
-        paint_color: carData.paint_color || null,
-        paint_type: carData.paint_type || null,
-        wrap_color: carData.wrap_color || null,
-        carbon_fiber_parts: carData.carbon_fiber_parts || null,
-        lighting: carData.lighting || null,
-        // Interior
-        interior_color: carData.interior_color || null,
-        interior_material: carData.interior_material || null,
-        seats: carData.seats || null,
-        steering_wheel: carData.steering_wheel || null,
-        shift_knob: carData.shift_knob || null,
-        gauges: carData.gauges || null,
-        // Modifications
-        modifications: carData.modifications || null,
-        dyno_results: carData.dyno_results || null,
-        // Additional Details
-        vin: carData.vin || null,
-        mileage: carData.mileage ? parseInt(carData.mileage) : null,
-        fuel_economy: carData.fuel_economy || null,
-        maintenance_history: carData.maintenance_history || null,
-      })
+      const newCar = await createCarClient(
+        {
+          user_id: user.id,
+          name: carData.name,
+          url_slug: carData.url_slug || '', // Let database auto-generate if empty
+          make: carData.make,
+          model: carData.model,
+          year: carData.year,
+          description: carData.description || null,
+          photos: photos,
+          main_photo_url: null, // Will be set later when user chooses main photo
+          // Engine Specifications
+          engine_displacement: carData.engine_displacement
+            ? parseFloat(carData.engine_displacement)
+            : null,
+          engine_cylinders: carData.engine_cylinders
+            ? parseInt(carData.engine_cylinders)
+            : null,
+          engine_code: carData.engine_code || null,
+          horsepower: carData.horsepower ? parseInt(carData.horsepower) : null,
+          torque: carData.torque ? parseFloat(carData.torque) : null,
+          engine_type: carData.engine_type || null,
+          fuel_type: carData.fuel_type || null,
+          transmission: carData.transmission || null,
+          drivetrain: carData.drivetrain || null,
+          // Performance Specifications
+          zero_to_sixty: carData.zero_to_sixty
+            ? parseFloat(carData.zero_to_sixty)
+            : null,
+          top_speed: carData.top_speed ? parseFloat(carData.top_speed) : null,
+          quarter_mile: carData.quarter_mile
+            ? parseFloat(carData.quarter_mile)
+            : null,
+          weight: carData.weight ? parseFloat(carData.weight) : null,
+          power_to_weight: carData.power_to_weight || null,
+          // Brake System
+          front_brakes: carData.front_brakes || null,
+          rear_brakes: carData.rear_brakes || null,
+          brake_rotors: carData.brake_rotors || null,
+          brake_caliper_brand: carData.brake_caliper_brand || null,
+          brake_lines: carData.brake_lines || null,
+          // Suspension
+          front_suspension: carData.front_suspension || null,
+          rear_suspension: carData.rear_suspension || null,
+          suspension_type: carData.suspension_type || null,
+          ride_height: carData.ride_height || null,
+          coilovers: carData.coilovers || null,
+          sway_bars: carData.sway_bars || null,
+          // Wheels and Tires
+          wheel_size: carData.wheel_size || null,
+          wheel_material: carData.wheel_material || null,
+          wheel_brand: carData.wheel_brand || null,
+          wheel_offset: carData.wheel_offset || null,
+          // Front Tires
+          front_tire_size: carData.front_tire_size || null,
+          front_tire_brand: carData.front_tire_brand || null,
+          front_tire_model: carData.front_tire_model || null,
+          front_tire_pressure: carData.front_tire_pressure
+            ? parseFloat(carData.front_tire_pressure)
+            : null,
+          // Rear Tires
+          rear_tire_size: carData.rear_tire_size || null,
+          rear_tire_brand: carData.rear_tire_brand || null,
+          rear_tire_model: carData.rear_tire_model || null,
+          rear_tire_pressure: carData.rear_tire_pressure
+            ? parseFloat(carData.rear_tire_pressure)
+            : null,
+          // Exterior
+          body_kit: carData.body_kit || null,
+          paint_color: carData.paint_color || null,
+          paint_type: carData.paint_type || null,
+          wrap_color: carData.wrap_color || null,
+          carbon_fiber_parts: carData.carbon_fiber_parts || null,
+          lighting: carData.lighting || null,
+          // Interior
+          interior_color: carData.interior_color || null,
+          interior_material: carData.interior_material || null,
+          seats: carData.seats || null,
+          steering_wheel: carData.steering_wheel || null,
+          shift_knob: carData.shift_knob || null,
+          gauges: carData.gauges || null,
+          // Modifications
+          modifications: carData.modifications || null,
+          dyno_results: carData.dyno_results || null,
+          // Additional Details
+          vin: carData.vin || null,
+          mileage: carData.mileage ? parseFloat(carData.mileage) : null,
+          fuel_economy: carData.fuel_economy || null,
+          maintenance_history: carData.maintenance_history || null,
+        },
+        unitPreference
+      )
 
       if (newCar) {
         router.push('/dashboard')
@@ -316,11 +326,8 @@ export default function CreateCarPage() {
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
           <div className='flex items-center'>
-            <Link
-              href='/dashboard'
-              className='text-primary hover:text-primary/80 mr-4'
-            >
-              <ChevronLeft className='w-5 h-5' />
+            <Link href='/dashboard' className='mr-4'>
+              <ArrowLeft />
             </Link>
             <h1 className='text-3xl font-bold text-foreground'>Add New Car</h1>
           </div>
@@ -454,7 +461,7 @@ export default function CreateCarPage() {
                   {/* Engine Specifications */}
                   <div className='border-t pt-6'>
                     <h4 className='text-lg font-medium text-foreground mb-4'>
-                      Engine & Performance
+                      Engine
                     </h4>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
@@ -479,7 +486,7 @@ export default function CreateCarPage() {
                           htmlFor='torque'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Torque (lb-ft)
+                          Torque ({getUnitLabel('torque', unitPreference)})
                         </label>
                         <input
                           type='number'
@@ -488,7 +495,11 @@ export default function CreateCarPage() {
                           value={carData.torque}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 350'
+                          placeholder={
+                            unitPreference === 'metric'
+                              ? 'e.g., 475'
+                              : 'e.g., 350'
+                          }
                         />
                       </div>
                       <div>
@@ -756,16 +767,22 @@ export default function CreateCarPage() {
                           htmlFor='front_tire_pressure'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Front Tire Pressure (PSI)
+                          Front Tire Pressure (
+                          {getUnitLabel('pressure', unitPreference)})
                         </label>
                         <input
                           type='number'
+                          step='0.1'
                           id='front_tire_pressure'
                           name='front_tire_pressure'
                           value={carData.front_tire_pressure}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 32'
+                          placeholder={
+                            unitPreference === 'metric'
+                              ? 'e.g., 2.2'
+                              : 'e.g., 32'
+                          }
                         />
                       </div>
 
@@ -831,16 +848,22 @@ export default function CreateCarPage() {
                           htmlFor='rear_tire_pressure'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Rear Tire Pressure (PSI)
+                          Rear Tire Pressure (
+                          {getUnitLabel('pressure', unitPreference)})
                         </label>
                         <input
                           type='number'
+                          step='0.1'
                           id='rear_tire_pressure'
                           name='rear_tire_pressure'
                           value={carData.rear_tire_pressure}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 30'
+                          placeholder={
+                            unitPreference === 'metric'
+                              ? 'e.g., 2.1'
+                              : 'e.g., 30'
+                          }
                         />
                       </div>
                     </div>
@@ -1284,7 +1307,10 @@ export default function CreateCarPage() {
                           htmlFor='zero_to_sixty'
                           className='block text-sm font-medium text-foreground'
                         >
-                          0-60 Time (seconds)
+                          {unitPreference === 'metric'
+                            ? '0-100 km/h'
+                            : '0-60 mph'}{' '}
+                          Time (seconds)
                         </label>
                         <input
                           type='number'
@@ -1302,7 +1328,7 @@ export default function CreateCarPage() {
                           htmlFor='top_speed'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Top Speed (mph)
+                          Top Speed ({getUnitLabel('speed', unitPreference)})
                         </label>
                         <input
                           type='number'
@@ -1311,7 +1337,11 @@ export default function CreateCarPage() {
                           value={carData.top_speed}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 155'
+                          placeholder={
+                            unitPreference === 'metric'
+                              ? 'e.g., 250'
+                              : 'e.g., 155'
+                          }
                         />
                       </div>
                       <div>
@@ -1319,7 +1349,7 @@ export default function CreateCarPage() {
                           htmlFor='quarter_mile'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Quarter Mile (seconds)
+                          0-400m (seconds)
                         </label>
                         <input
                           type='number'
@@ -1337,7 +1367,7 @@ export default function CreateCarPage() {
                           htmlFor='weight'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Weight (lbs)
+                          Weight ({getUnitLabel('weight', unitPreference)})
                         </label>
                         <input
                           type='number'
@@ -1346,7 +1376,11 @@ export default function CreateCarPage() {
                           value={carData.weight}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 3500'
+                          placeholder={
+                            unitPreference === 'metric'
+                              ? 'e.g., 1588'
+                              : 'e.g., 3500'
+                          }
                         />
                       </div>
                       <div>
@@ -1363,7 +1397,7 @@ export default function CreateCarPage() {
                           value={carData.power_to_weight}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 10.2 lbs/hp'
+                          placeholder='e.g., 4.6 kg/hp'
                         />
                       </div>
                     </div>
@@ -1449,7 +1483,7 @@ export default function CreateCarPage() {
                           htmlFor='mileage'
                           className='block text-sm font-medium text-foreground'
                         >
-                          Mileage
+                          Mileage ({getUnitLabel('distance', unitPreference)})
                         </label>
                         <input
                           type='number'
@@ -1458,7 +1492,11 @@ export default function CreateCarPage() {
                           value={carData.mileage}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 50000'
+                          placeholder={
+                            unitPreference === 'metric'
+                              ? 'e.g., 80000'
+                              : 'e.g., 50000'
+                          }
                         />
                       </div>
                       <div>
@@ -1475,7 +1513,7 @@ export default function CreateCarPage() {
                           value={carData.fuel_economy}
                           onChange={handleInputChange}
                           className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring'
-                          placeholder='e.g., 25 MPG City, 32 MPG Highway'
+                          placeholder='e.g., 9.4 L/100km City, 7.4 L/100km Highway'
                         />
                       </div>
                       <div>

@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     username: '',
     full_name: '',
+    unit_preference: 'metric' as 'metric' | 'imperial',
   })
 
   useEffect(() => {
@@ -37,12 +38,14 @@ export default function ProfilePage() {
             setFormData({
               username: userProfile.username || '',
               full_name: userProfile.full_name || '',
+              unit_preference: userProfile.unit_preference || 'metric',
             })
           } else {
             // If no profile exists, set default values
             setFormData({
               username: `user_${user.id.slice(0, 8)}`,
               full_name: user.email || '',
+              unit_preference: 'metric',
             })
           }
         } catch (error) {
@@ -86,6 +89,7 @@ export default function ProfilePage() {
       const result = await updateProfileClient(user.id, {
         username: formData.username,
         full_name: formData.full_name,
+        unit_preference: formData.unit_preference,
       })
 
       if (result.success && result.data) {
@@ -102,7 +106,9 @@ export default function ProfilePage() {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
@@ -218,6 +224,28 @@ export default function ProfilePage() {
                       className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
                       placeholder='Enter your full name'
                     />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor='unit_preference'
+                      className='block text-sm font-medium text-foreground'
+                    >
+                      Unit System
+                    </label>
+                    <select
+                      id='unit_preference'
+                      name='unit_preference'
+                      value={formData.unit_preference}
+                      onChange={handleInputChange}
+                      className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
+                    >
+                      <option value='metric'>Metric (km/h, Nm, bar, kg)</option>
+                      <option value='imperial'>Imperial (mph, lb-ft, PSI, lbs)</option>
+                    </select>
+                    <p className='mt-1 text-sm text-muted-foreground'>
+                      Choose your preferred unit system for car specifications
+                    </p>
                   </div>
 
                   <div className='flex justify-end'>
