@@ -193,7 +193,7 @@ export default function CookiesPage() {
             <h3 className='text-xl font-semibold text-foreground mb-3 mt-4'>
               5.2 Browser-Specific Instructions
             </h3>
-            <p>Here's how to manage cookies in popular browsers:</p>
+            <p>Here&apos;s how to manage cookies in popular browsers:</p>
             <ul className='list-disc pl-6 mt-2 space-y-1'>
               <li>
                 <strong>Chrome:</strong> Settings → Privacy and security →
