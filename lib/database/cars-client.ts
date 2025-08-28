@@ -29,6 +29,35 @@ export async function getCarsByUserClient(
   }
 }
 
+export async function getUserCarCountClient(userId: string): Promise<number> {
+  try {
+    const { count, error } = await supabase
+      .from('cars')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+
+    if (error) {
+      console.error('Error counting user cars:', error)
+      return 0
+    }
+
+    return count || 0
+  } catch (error) {
+    console.error('Error counting user cars:', error)
+    return 0
+  }
+}
+
+export async function canUserCreateCarClient(userId: string): Promise<boolean> {
+  try {
+    const carCount = await getUserCarCountClient(userId)
+    return carCount < 1 // Limit to 1 car per user
+  } catch (error) {
+    console.error('Error checking if user can create car:', error)
+    return false
+  }
+}
+
 export async function getCarByIdClient(carId: string): Promise<Car | null> {
   try {
     const { data, error } = await supabase
@@ -224,6 +253,13 @@ export async function createCarClient(
   carData: Omit<Car, 'id' | 'created_at' | 'updated_at'>
 ): Promise<Car | null> {
   try {
+    // Check car limit before creating
+    const canCreate = await canUserCreateCarClient(carData.user_id)
+    if (!canCreate) {
+      console.error('User has reached car limit')
+      return null
+    }
+
     const { data, error } = await supabase
       .from('cars')
       .insert(carData)

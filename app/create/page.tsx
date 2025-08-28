@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
-import { createCarClient } from '@/lib/database/cars-client'
+import {
+  createCarClient,
+  canUserCreateCarClient,
+} from '@/lib/database/cars-client'
 import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import ProtectedRoute from '@/components/auth/protected-route'
@@ -12,6 +15,14 @@ import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import Navbar from '@/components/ui/navbar'
 import { ChevronLeft } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
@@ -19,6 +30,32 @@ export default function CreateCarPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [photos, setPhotos] = useState<CarPhoto[]>([])
+  const [showLimitDialog, setShowLimitDialog] = useState(false)
+  const [checkingLimit, setCheckingLimit] = useState(true)
+
+  // Check if user can create a car on component mount
+  useEffect(() => {
+    const checkCarLimit = async () => {
+      if (!user) {
+        setCheckingLimit(false)
+        return
+      }
+
+      try {
+        const canCreate = await canUserCreateCarClient(user.id)
+        if (!canCreate) {
+          setShowLimitDialog(true)
+        }
+      } catch (error) {
+        console.error('Error checking car limit:', error)
+      } finally {
+        setCheckingLimit(false)
+      }
+    }
+
+    checkCarLimit()
+  }, [user])
+
   const [carData, setCarData] = useState({
     name: '',
     url_slug: '',
@@ -135,6 +172,20 @@ export default function CreateCarPage() {
       return
     }
 
+    // Double-check car limit before submission
+    try {
+      const canCreate = await canUserCreateCarClient(user.id)
+      if (!canCreate) {
+        setShowLimitDialog(true)
+        setLoading(false)
+        return
+      }
+    } catch (error) {
+      setError('Error checking car limit')
+      setLoading(false)
+      return
+    }
+
     try {
       const newCar = await createCarClient({
         user_id: user.id,
@@ -236,6 +287,25 @@ export default function CreateCarPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show loading state while checking car limit
+  if (checkingLimit) {
+    return (
+      <ProtectedRoute>
+        <div className='min-h-screen bg-background'>
+          <Navbar />
+          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
+            <div className='flex items-center justify-center'>
+              <div className='text-center'>
+                <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4'></div>
+                <p className='text-foreground'>Checking car limit...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ProtectedRoute>
+    )
   }
 
   return (
@@ -1522,6 +1592,27 @@ export default function CreateCarPage() {
           </div>
         </main>
       </div>
+
+      {/* Car Limit Dialog */}
+      <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Car Limit Reached</DialogTitle>
+            <DialogDescription>
+              You have already reached the maximum limit of 1 car per user. To
+              add a new car, you'll need to delete your existing car first.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Link
+              href='/dashboard'
+              className='px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+            >
+              Go to Dashboard
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ProtectedRoute>
   )
 }

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
+import { canUserCreateCarClient } from '@/lib/database/cars-client'
 import { Profile } from '@/lib/types/database'
 import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
@@ -16,6 +17,7 @@ import {
   Settings,
   ChevronDown,
   Car,
+  AlertCircle,
 } from 'lucide-react'
 
 interface NavbarProps {
@@ -27,14 +29,19 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [canCreateCar, setCanCreateCar] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const loadProfile = async () => {
       if (user) {
         try {
-          const userProfile = await getProfileByUserIdClient(user.id)
+          const [userProfile, canCreate] = await Promise.all([
+            getProfileByUserIdClient(user.id),
+            canUserCreateCarClient(user.id),
+          ])
           setProfile(userProfile)
+          setCanCreateCar(canCreate)
         } catch (error) {
           console.error('Error loading profile:', error)
         }
@@ -102,15 +109,22 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
           </div>
 
           <div className='flex items-center space-x-4'>
-            {showCreateButton && user && (
-              <Link
-                href='/create'
-                className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
-              >
-                <Plus className='w-4 h-4 mr-2' />
-                Add New Car
-              </Link>
-            )}
+            {showCreateButton &&
+              user &&
+              (canCreateCar ? (
+                <Link
+                  href='/create'
+                  className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                >
+                  <Plus className='w-4 h-4 mr-2' />
+                  Add New Car
+                </Link>
+              ) : (
+                <div className='inline-flex items-center px-4 py-2 border border-orange-200 text-sm font-medium rounded-md shadow-sm text-orange-700 bg-orange-50 cursor-not-allowed'>
+                  <AlertCircle className='w-4 h-4 mr-2' />
+                  Car Limit Reached
+                </div>
+              ))}
 
             {user ? (
               <div className='flex items-center space-x-2'>
@@ -167,13 +181,20 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
                           Edit Profile
                         </button>
 
-                        <button
-                          onClick={() => handleOptionClick('create')}
-                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
-                        >
-                          <Plus className='w-4 h-4 mr-3' />
-                          Add New Car
-                        </button>
+                        {canCreateCar ? (
+                          <button
+                            onClick={() => handleOptionClick('create')}
+                            className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
+                          >
+                            <Plus className='w-4 h-4 mr-3' />
+                            Add New Car
+                          </button>
+                        ) : (
+                          <div className='flex items-center w-full px-4 py-2 text-sm text-orange-600 bg-orange-50'>
+                            <AlertCircle className='w-4 h-4 mr-3' />
+                            Car Limit Reached
+                          </div>
+                        )}
 
                         <div className='border-t border-border my-1'></div>
 
