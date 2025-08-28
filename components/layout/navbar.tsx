@@ -88,8 +88,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
         console.log('Premium purchase not implemented yet')
         break
       case 'support':
-        // TODO: Implement support creator
-        console.log('Support creator not implemented yet')
+        router.push('/support')
         break
     }
   }

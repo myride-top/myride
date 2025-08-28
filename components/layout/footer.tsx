@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Car, Github, Instagram, Mail } from 'lucide-react'
 import Link from 'next/link'
+import SupportButton from '@/components/common/support-button'
 
 // Custom TikTok icon component
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -69,11 +70,22 @@ export default function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-              className='text-muted-foreground mb-6 max-w-sm'
+              className='text-muted-foreground mb-4 max-w-sm'
             >
               The ultimate platform for car enthusiasts to showcase their rides
               and connect with fellow automotive lovers worldwide.
             </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              viewport={{ once: true }}
+              className='mb-6'
+            >
+              <SupportButton variant='outline' size='sm'>
+                Support MyRide
+              </SupportButton>
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

@@ -1,0 +1,94 @@
+import { Metadata } from 'next'
+import Link from 'next/link'
+import { Heart, CheckCircle, ArrowLeft, Home, Car } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Thank You for Your Support - MyRide',
+  description: 'Thank you for supporting MyRide development',
+}
+
+export default function ThankYouPage() {
+  return (
+    <div className='min-h-screen bg-background flex items-center justify-center'>
+      <div className='max-w-md mx-auto text-center px-4'>
+        <div className='mb-8'>
+          <div className='inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-6'>
+            <CheckCircle className='h-10 w-10 text-white' />
+          </div>
+          <h1 className='text-3xl font-bold text-foreground mb-4'>
+            Thank You!
+          </h1>
+          <p className='text-lg text-muted-foreground mb-6'>
+            Your support means the world to us. You're helping keep MyRide free
+            for car enthusiasts everywhere.
+          </p>
+        </div>
+
+        <div className='bg-card border border-border rounded-lg p-6 mb-8'>
+          <div className='flex items-center justify-center gap-2 mb-4'>
+            <Heart className='h-5 w-5 text-pink-500' />
+            <span className='font-semibold text-foreground'>
+              What happens next?
+            </span>
+          </div>
+          <ul className='text-sm text-muted-foreground space-y-2 text-left'>
+            <li className='flex items-start gap-2'>
+              <span className='text-primary'>•</span>
+              You'll receive a confirmation email from Stripe
+            </li>
+            <li className='flex items-start gap-2'>
+              <span className='text-primary'>•</span>
+              Your support helps fund new features and improvements
+            </li>
+            <li className='flex items-start gap-2'>
+              <span className='text-primary'>•</span>
+              We'll continue working hard to make MyRide even better
+            </li>
+            <li className='flex items-start gap-2'>
+              <span className='text-primary'>•</span>
+              Keep enjoying the platform - it's free for everyone!
+            </li>
+          </ul>
+        </div>
+
+        <div className='space-y-4'>
+          <Link
+            href='/dashboard'
+            className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2'
+          >
+            <Home className='h-4 w-4' />
+            Go to Dashboard
+          </Link>
+
+          <Link
+            href='/browse'
+            className='w-full bg-card border border-border hover:bg-muted text-foreground font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2'
+          >
+            <Car className='h-4 w-4' />
+            Browse Cars
+          </Link>
+
+          <Link
+            href='/'
+            className='w-full text-muted-foreground hover:text-foreground font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2'
+          >
+            <ArrowLeft className='h-4 w-4' />
+            Back to Home
+          </Link>
+        </div>
+
+        <div className='mt-8 pt-6 border-t border-border'>
+          <p className='text-sm text-muted-foreground'>
+            Have questions? Contact us at{' '}
+            <a
+              href='mailto:tonyasek007@gmail.com'
+              className='text-primary hover:underline'
+            >
+              tonyasek007@gmail.com
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
