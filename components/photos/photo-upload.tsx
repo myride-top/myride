@@ -57,7 +57,6 @@ export default function PhotoUpload({
 
     setUploading(true)
     const uploadedPhotos: CarPhoto[] = []
-    let successCount = 0
 
     for (const file of files) {
       try {
@@ -92,7 +91,6 @@ export default function PhotoUpload({
         }
 
         uploadedPhotos.push(photo)
-        successCount++
 
         // Update progress to 100%
         setUploadProgress(prev => ({ ...prev, [file.name]: 100 }))

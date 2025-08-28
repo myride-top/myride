@@ -92,7 +92,9 @@ export default function CarDetailPage() {
           })
         } catch (shareError) {
           // Native sharing failed, but clipboard copy already succeeded
-          console.log('Native sharing failed, but link copied to clipboard')
+          console.log(
+            `Native sharing failed, but link copied to clipboard (${shareError})`
+          )
         }
       }
     } catch (clipboardError) {

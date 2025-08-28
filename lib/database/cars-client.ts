@@ -137,7 +137,7 @@ export async function getCarByNameAndUsernameClient(
         return data
       }
     } catch (e) {
-      // Continue to next strategy
+      console.error(e)
     }
 
     // Strategy 3: Try partial match (most flexible)
@@ -154,7 +154,7 @@ export async function getCarByNameAndUsernameClient(
         return data
       }
     } catch (e) {
-      // Continue to next strategy
+      console.error(e)
     }
 
     // Strategy 4: Try with spaces instead of dashes
@@ -172,7 +172,7 @@ export async function getCarByNameAndUsernameClient(
         return data
       }
     } catch (e) {
-      // Continue to next strategy
+      console.error(e)
     }
 
     // Strategy 5: Try with dashes instead of spaces
@@ -190,7 +190,7 @@ export async function getCarByNameAndUsernameClient(
         return data
       }
     } catch (e) {
-      // Continue to next strategy
+      console.error(e)
     }
 
     console.error('All search strategies failed. Original error:', searchError)

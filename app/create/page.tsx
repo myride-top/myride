@@ -183,7 +183,7 @@ export default function CreateCarPage() {
         return
       }
     } catch (error) {
-      setError('Error checking car limit')
+      setError(`Error checking car limit (${error})`)
       setLoading(false)
       return
     }
@@ -288,7 +288,7 @@ export default function CreateCarPage() {
         setError('Failed to create car')
       }
     } catch (err) {
-      setError('An error occurred while creating the car')
+      setError(`An error occurred while creating the car (${err})`)
     } finally {
       setLoading(false)
     }

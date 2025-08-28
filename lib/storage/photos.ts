@@ -22,6 +22,8 @@ export async function uploadCarPhoto(
     return null
   }
 
+  console.log(data)
+
   // Get public URL
   const {
     data: { publicUrl },
@@ -64,6 +66,8 @@ export async function uploadProfileAvatar(
       cacheControl: '3600',
       upsert: true,
     })
+
+  console.log(data)
 
   if (error) {
     console.error('Error uploading avatar:', error)

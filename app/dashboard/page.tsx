@@ -184,8 +184,8 @@ export default function DashboardPage() {
                       <div className='ml-3'>
                         <p className='text-sm text-blue-700 dark:text-blue-50'>
                           You have reached the maximum limit of 1 car per user.
-                          To add a new car, you'll need to delete your existing
-                          car first.
+                          To add a new car, you&apos;ll need to delete your
+                          existing car first.
                         </p>
                       </div>
                     </div>
@@ -260,7 +260,7 @@ export default function DashboardPage() {
                                   await navigator.clipboard.writeText(shareUrl)
                                   toast.success('Link copied to clipboard!')
                                 } catch (error) {
-                                  toast.error('Failed to copy link')
+                                  toast.error(`Failed to copy link (${error})`)
                                 }
                               }}
                               className='px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer'
@@ -345,7 +345,7 @@ export default function DashboardPage() {
                                 await navigator.clipboard.writeText(shareUrl)
                                 toast.success('Link copied to clipboard!')
                               } catch (error) {
-                                toast.error('Failed to copy link')
+                                toast.error(`Failed to copy link (${error})`)
                               }
                             }}
                             className='px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer'
