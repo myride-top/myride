@@ -200,6 +200,7 @@ export default function CreateCarPage() {
           description: carData.description || null,
           photos: photos,
           main_photo_url: null, // Will be set later when user chooses main photo
+          like_count: 0, // New cars start with 0 likes
           // Engine Specifications
           engine_displacement: carData.engine_displacement
             ? parseFloat(carData.engine_displacement)
