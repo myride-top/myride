@@ -9,6 +9,12 @@ export async function POST(request: NextRequest) {
   try {
     const { amount, description, metadata } = await request.json()
 
+    console.log('Creating payment link with:', {
+      amount,
+      description,
+      metadata,
+    })
+
     // Validate amount
     if (!amount || amount < 100) {
       // Minimum $1.00 (100 cents)
@@ -18,7 +24,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe Payment Link
+    // Create Stripe Payment Link with simplified configuration
     const paymentLink = await stripe.paymentLinks.create({
       line_items: [
         {
@@ -27,7 +33,6 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: 'Support MyRide',
               description: description || 'Support for MyRide development',
-              images: ['https://myride.com/og-image-default.svg'], // Replace with your actual image
             },
             unit_amount: amount,
           },
@@ -43,25 +48,28 @@ export async function POST(request: NextRequest) {
         type: 'redirect',
         redirect: {
           url: `${
-            process.env.NEXT_PUBLIC_APP_URL || 'https://myride.com'
+            process.env.NEXT_PUBLIC_APP_URL || 'https://myride.cz'
           }/support/thank-you`,
         },
       },
-      allow_promotion_codes: true,
-      billing_address_collection: 'auto',
-      customer_creation: 'always',
-      payment_method_collection: 'always',
-      payment_method_types: ['card', 'link', 'us_bank_account'],
-      shipping_address_collection: {
-        allowed_countries: ['US', 'CA', 'GB', 'DE', 'FR', 'AU', 'JP'], // Add more as needed
-      },
     })
 
+    console.log('Payment link created successfully:', paymentLink.url)
     return NextResponse.json({ url: paymentLink.url })
   } catch (error) {
     console.error('Error creating payment link:', error)
+
+    // Log more detailed error information
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
+
     return NextResponse.json(
-      { error: 'Failed to create payment link' },
+      {
+        error: 'Failed to create payment link',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     )
   }

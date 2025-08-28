@@ -57,7 +57,7 @@ export async function generateMetadata({
         title,
         description,
         type: 'website',
-        url: `https://myride.com/${username}/${carSlug}`,
+        url: `https://myride.cz/${username}/${carSlug}`,
         images: imageUrl
           ? [
               {
