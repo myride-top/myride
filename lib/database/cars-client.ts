@@ -491,3 +491,122 @@ export async function setMainPhoto(
     return null
   }
 }
+
+// Like-related functions
+export async function likeCarClient(
+  carId: string,
+  userId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from('car_likes')
+    .insert({ car_id: carId, user_id: userId })
+
+  if (error) {
+    console.error('Error liking car:', error)
+    throw new Error('Failed to like car')
+  }
+}
+
+export async function unlikeCarClient(
+  carId: string,
+  userId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from('car_likes')
+    .delete()
+    .eq('car_id', carId)
+    .eq('user_id', userId)
+
+  if (error) {
+    console.error('Error unliking car:', error)
+    throw new Error('Failed to unlike car')
+  }
+}
+
+export async function hasUserLikedCarClient(
+  carId: string,
+  userId: string
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('car_likes')
+    .select('id')
+    .eq('car_id', carId)
+    .eq('user_id', userId)
+    .single()
+
+  if (error && error.code !== 'PGRST116') {
+    // PGRST116 is "not found" error
+    console.error('Error checking if user liked car:', error)
+    throw new Error('Failed to check like status')
+  }
+
+  return !!data
+}
+
+export async function getCarLikeCountClient(carId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('cars')
+    .select('like_count')
+    .eq('id', carId)
+    .single()
+
+  if (error) {
+    console.error('Error getting car like count:', error)
+    throw new Error('Failed to get like count')
+  }
+
+  return data.like_count || 0
+}
+
+export async function getAllCarsClient(): Promise<Car[] | null> {
+  try {
+    // Get all cars first
+    const { data: cars, error: carsError } = await supabase
+      .from('cars')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (carsError) {
+      console.error('Error fetching cars:', carsError)
+      return null
+    }
+
+    if (!cars || cars.length === 0) {
+      return []
+    }
+
+    // Get all unique user IDs from the cars
+    const userIds = [...new Set(cars.map(car => car.user_id))]
+
+    // Get profiles for all users
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, username, full_name, avatar_url')
+      .in('id', userIds)
+
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError)
+      // Return cars without profile data
+      return cars
+    }
+
+    // Create a map of user_id to profile for quick lookup
+    const profileMap = new Map()
+    if (profiles) {
+      profiles.forEach(profile => {
+        profileMap.set(profile.id, profile)
+      })
+    }
+
+    // Attach profile data to cars
+    const carsWithProfiles = cars.map(car => ({
+      ...car,
+      profiles: profileMap.get(car.user_id) || null,
+    }))
+
+    return carsWithProfiles
+  } catch (error) {
+    console.error('Error fetching all cars:', error)
+    return null
+  }
+}

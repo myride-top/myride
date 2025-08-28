@@ -1,9 +1,5 @@
 ### TODO
 
-- ability to share entire profile
-
-- ability to like a car if you're signed in
-
 - support creator (? can we use stripe in a way that users can choose how much they wanna pay ? or what other service to use ?)
 
 - premium page (coming soon)
@@ -18,3 +14,4 @@
   - analytics (car views, car shares, car likes)
     - charts
   - no limit for adding cards
+  - ability to share entire profile of cars

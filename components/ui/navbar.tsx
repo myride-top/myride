@@ -109,6 +109,13 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
           </div>
 
           <div className='flex items-center space-x-4'>
+            <Link
+              href='/browse'
+              className='text-foreground hover:text-foreground/80 px-3 py-2 rounded-md text-sm font-medium cursor-pointer'
+            >
+              Browse Cars
+            </Link>
+
             {showCreateButton &&
               user &&
               (canCreateCar ? (

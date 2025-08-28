@@ -13,6 +13,7 @@ import {
 } from '@/lib/types/database'
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
+import { toast } from 'sonner'
 import {
   Edit,
   Image,
@@ -20,7 +21,13 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
+  Heart,
 } from 'lucide-react'
+import {
+  likeCarClient,
+  unlikeCarClient,
+  hasUserLikedCarClient,
+} from '@/lib/database/cars-client'
 import Navbar from '@/components/ui/navbar'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import LoadingSpinner from '@/components/ui/loading-spinner'
@@ -41,6 +48,9 @@ export default function CarDetailPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
   const [fullscreenPhotoIndex, setFullscreenPhotoIndex] = useState(0)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  const [isLikeLoading, setIsLikeLoading] = useState(false)
 
   useEffect(() => {
     const loadCarData = async () => {
@@ -55,6 +65,7 @@ export default function CarDetailPage() {
 
         if (carData) {
           setCar(carData)
+          setLikeCount(carData.like_count || 0)
         } else {
           setError('Car not found')
         }
@@ -74,6 +85,22 @@ export default function CarDetailPage() {
       loadCarData()
     }
   }, [params.car, params.username])
+
+  // Check if current user has liked this car
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      if (user && car && user.id !== car.user_id) {
+        try {
+          const liked = await hasUserLikedCarClient(car.id, user.id)
+          setIsLiked(liked)
+        } catch (error) {
+          console.error('Error checking like status:', error)
+        }
+      }
+    }
+
+    checkLikeStatus()
+  }, [user, car])
 
   // Helper function to get photo URL and category
   const getPhotoInfo = (photo: string | CarPhoto) => {
@@ -168,6 +195,37 @@ export default function CarDetailPage() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isPhotoDialogOpen, sortedPhotos.length])
 
+  const handleLike = async () => {
+    if (!user || !car) return
+
+    if (user.id === car.user_id) {
+      toast.error('You cannot like your own car')
+      return
+    }
+
+    if (isLikeLoading) return
+
+    setIsLikeLoading(true)
+    try {
+      if (isLiked) {
+        await unlikeCarClient(car.id, user.id)
+        setLikeCount(prev => prev - 1)
+        setIsLiked(false)
+        toast.success('Car unliked')
+      } else {
+        await likeCarClient(car.id, user.id)
+        setLikeCount(prev => prev + 1)
+        setIsLiked(true)
+        toast.success('Car liked!')
+      }
+    } catch (error) {
+      toast.error('Failed to update like status')
+      console.error('Error updating like:', error)
+    } finally {
+      setIsLikeLoading(false)
+    }
+  }
+
   if (loading) {
     return <LoadingSpinner fullScreen message='Loading car details...' />
   }
@@ -202,6 +260,33 @@ export default function CarDetailPage() {
         backHref={user ? '/dashboard' : undefined}
         actions={
           <div className='flex items-center space-x-4'>
+            {/* Show like count for all users */}
+            {likeCount > 0 && (
+              <div className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground'>
+                <Heart className='w-4 h-4' />
+                <span>
+                  {likeCount} like{likeCount !== 1 ? 's' : ''}
+                </span>
+              </div>
+            )}
+
+            {/* Interactive like button for signed-in users who don't own the car */}
+            {user && car && user.id !== car.user_id && (
+              <button
+                onClick={handleLike}
+                disabled={isLikeLoading}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer ${
+                  isLiked
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+                title={isLiked ? 'Unlike car' : 'Like car'}
+              >
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                {likeCount > 0 && <span>{likeCount}</span>}
+              </button>
+            )}
+
             <ShareButton
               url={window.location.href}
               title={`${car.name} by @${profile?.username || params.username}`}

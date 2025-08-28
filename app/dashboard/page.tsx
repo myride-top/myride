@@ -9,7 +9,15 @@ import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
-import { Plus, CarIcon, Info } from 'lucide-react'
+import {
+  Plus,
+  CarIcon,
+  Info,
+  Heart,
+  Users,
+  Calendar,
+  Image,
+} from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
 import LoadingSpinner from '@/components/ui/loading-spinner'
 import EmptyState from '@/components/ui/empty-state'
@@ -21,6 +29,42 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [cars, setCars] = useState<Car[]>([])
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({
+    totalLikes: 0,
+    totalPhotos: 0,
+    memberSince: '',
+  })
+
+  // Function to recalculate stats
+  const recalculateStats = (currentCars: Car[]) => {
+    const totalLikes = currentCars.reduce(
+      (sum, car) => sum + (car.like_count || 0),
+      0
+    )
+    const totalPhotos = currentCars.reduce(
+      (sum, car) => sum + (car.photos?.length || 0),
+      0
+    )
+    const memberSince = user?.created_at
+      ? new Date(user.created_at).toLocaleDateString()
+      : 'N/A'
+
+    setStats({
+      totalLikes,
+      totalPhotos,
+      memberSince,
+    })
+  }
+
+  // Handle like changes
+  const handleLikeChange = (carId: string, newLikeCount: number) => {
+    setCars(prevCars => {
+      const updatedCars = prevCars.map(car =>
+        car.id === carId ? { ...car, like_count: newLikeCount } : car
+      )
+      return updatedCars
+    })
+  }
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -41,6 +85,9 @@ export default function DashboardPage() {
           setProfile(userProfile)
 
           setCars(userCars || [])
+
+          // Calculate stats
+          recalculateStats(userCars || [])
         } catch (error) {
           console.error('Error loading user data:', error)
         } finally {
@@ -54,6 +101,13 @@ export default function DashboardPage() {
 
     loadUserData()
   }, [user])
+
+  // Recalculate stats when cars change
+  useEffect(() => {
+    if (cars.length > 0) {
+      recalculateStats(cars)
+    }
+  }, [cars])
 
   if (loading) {
     return (
@@ -71,6 +125,89 @@ export default function DashboardPage() {
         {/* Main Content */}
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           <div className='px-4 py-6 sm:px-0'>
+            {/* Stats Overview */}
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+                <div className='p-5'>
+                  <div className='flex items-center'>
+                    <div className='flex-shrink-0'>
+                      <CarIcon className='w-6 h-6 text-muted-foreground' />
+                    </div>
+                    <div className='ml-5 w-0 flex-1'>
+                      <dl>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                          Total Cars
+                        </dt>
+                        <dd className='text-lg font-medium text-card-foreground'>
+                          {cars.length}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+                <div className='p-5'>
+                  <div className='flex items-center'>
+                    <div className='flex-shrink-0'>
+                      <Heart className='w-6 h-6 text-red-500' />
+                    </div>
+                    <div className='ml-5 w-0 flex-1'>
+                      <dl>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                          Total Likes
+                        </dt>
+                        <dd className='text-lg font-medium text-card-foreground'>
+                          {stats.totalLikes}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+                <div className='p-5'>
+                  <div className='flex items-center'>
+                    <div className='flex-shrink-0'>
+                      <Image className='w-6 h-6 text-muted-foreground' />
+                    </div>
+                    <div className='ml-5 w-0 flex-1'>
+                      <dl>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                          Total Photos
+                        </dt>
+                        <dd className='text-lg font-medium text-card-foreground'>
+                          {stats.totalPhotos}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+                <div className='p-5'>
+                  <div className='flex items-center'>
+                    <div className='flex-shrink-0'>
+                      <Calendar className='w-6 h-6 text-muted-foreground' />
+                    </div>
+                    <div className='ml-5 w-0 flex-1'>
+                      <dl>
+                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                          Member Since
+                        </dt>
+                        <dd className='text-lg font-medium text-card-foreground'>
+                          {stats.memberSince}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Cars Grid */}
             <div>
               <h2 className='text-2xl font-bold text-foreground mb-6'>
@@ -122,6 +259,7 @@ export default function DashboardPage() {
                         onShare={car =>
                           router.push(`/${profile?.username}/${car.url_slug}`)
                         }
+                        onLikeChange={handleLikeChange}
                       />
                     ))}
                   </div>
@@ -142,6 +280,7 @@ export default function DashboardPage() {
                       onShare={car =>
                         router.push(`/${profile?.username}/${car.url_slug}`)
                       }
+                      onLikeChange={handleLikeChange}
                     />
                   ))}
                 </div>

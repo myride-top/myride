@@ -1,14 +1,22 @@
 import { Car, Profile } from '@/lib/types/database'
-import { Share2, Edit, Image } from 'lucide-react'
+import { Share2, Edit, Image, Heart } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/lib/context/auth-context'
+import { useState, useEffect } from 'react'
+import {
+  likeCarClient,
+  unlikeCarClient,
+  hasUserLikedCarClient,
+} from '@/lib/database/cars-client'
 
 interface CarCardProps {
   car: Car
   profile: Profile | null
   onEdit?: (car: Car) => void
   onShare?: (car: Car) => void
+  onLikeChange?: (carId: string, newLikeCount: number) => void
   className?: string
   showActions?: boolean
   isOwner?: boolean
@@ -19,10 +27,31 @@ export default function CarCard({
   profile,
   onEdit,
   onShare,
+  onLikeChange,
   className,
   showActions = true,
   isOwner = false,
 }: CarCardProps) {
+  const { user } = useAuth()
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(car.like_count || 0)
+  const [isLikeLoading, setIsLikeLoading] = useState(false)
+
+  // Check if current user has liked this car
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      if (user && !isOwner) {
+        try {
+          const liked = await hasUserLikedCarClient(car.id, user.id)
+          setIsLiked(liked)
+        } catch (error) {
+          console.error('Error checking like status:', error)
+        }
+      }
+    }
+
+    checkLikeStatus()
+  }, [user, car.id, isOwner])
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation()
     const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
@@ -39,6 +68,41 @@ export default function CarCard({
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation()
     onEdit?.(car)
+  }
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    if (!user) {
+      toast.error('Please sign in to like cars')
+      return
+    }
+
+    if (isLikeLoading) return
+
+    setIsLikeLoading(true)
+    try {
+      if (isLiked) {
+        await unlikeCarClient(car.id, user.id)
+        const newCount = likeCount - 1
+        setLikeCount(newCount)
+        setIsLiked(false)
+        toast.success('Car unliked')
+        onLikeChange?.(car.id, newCount)
+      } else {
+        await likeCarClient(car.id, user.id)
+        const newCount = likeCount + 1
+        setLikeCount(newCount)
+        setIsLiked(true)
+        toast.success('Car liked!')
+        onLikeChange?.(car.id, newCount)
+      }
+    } catch (error) {
+      toast.error('Failed to update like status')
+      console.error('Error updating like:', error)
+    } finally {
+      setIsLikeLoading(false)
+    }
   }
 
   const getMainPhotoUrl = () => {
@@ -111,6 +175,28 @@ export default function CarCard({
               >
                 Edit car
               </button>
+            )}
+            {!isOwner && user && (
+              <button
+                onClick={handleLike}
+                disabled={isLikeLoading}
+                className={cn(
+                  'flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer',
+                  isLiked
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                )}
+                title={isLiked ? 'Unlike car' : 'Like car'}
+              >
+                <Heart className={cn('w-4 h-4', isLiked && 'fill-current')} />
+                {likeCount > 0 && <span>{likeCount}</span>}
+              </button>
+            )}
+            {isOwner && likeCount > 0 && (
+              <div className='flex items-center space-x-1 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground'>
+                <Heart className='w-4 h-4' />
+                <span>{likeCount}</span>
+              </div>
             )}
             <button
               onClick={handleShare}

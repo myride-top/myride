@@ -11,6 +11,11 @@ export interface Database {
         Insert: Omit<Car, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Car, 'id' | 'created_at' | 'updated_at'>>
       }
+      car_likes: {
+        Row: CarLike
+        Insert: Omit<CarLike, 'id' | 'created_at'>
+        Update: Partial<Omit<CarLike, 'id' | 'created_at'>>
+      }
     }
     Views: {
       [_ in never]: never
@@ -32,6 +37,13 @@ export interface Profile {
   unit_preference: 'metric' | 'imperial'
   created_at: string
   updated_at: string
+}
+
+export interface CarLike {
+  id: string
+  user_id: string
+  car_id: string
+  created_at: string
 }
 
 export interface CarPhoto {
@@ -129,6 +141,9 @@ export interface Car {
   // Photo organization
   photos: CarPhoto[] | null
   main_photo_url: string | null // URL of the main/featured photo
+
+  // Like count
+  like_count: number
 
   created_at: string
   updated_at: string
