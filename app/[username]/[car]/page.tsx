@@ -168,6 +168,13 @@ export default function CarDetailPage() {
     return 0
   })
 
+  // Ensure selectedPhoto is valid for the current filtered photos
+  useEffect(() => {
+    if (sortedPhotos.length > 0 && selectedPhoto >= sortedPhotos.length) {
+      setSelectedPhoto(0)
+    }
+  }, [sortedPhotos.length, selectedPhoto])
+
   const openFullscreenPhoto = (photoIndex: number) => {
     setFullscreenPhotoIndex(photoIndex)
     setIsPhotoDialogOpen(true)
@@ -341,7 +348,8 @@ export default function CarDetailPage() {
                 </div>
               )}
 
-              {sortedPhotos.length > 0 ? (
+              {sortedPhotos.length > 0 &&
+              selectedPhoto < sortedPhotos.length ? (
                 <div className='space-y-4'>
                   {/* Main Photo */}
                   <div className='aspect-w-16 aspect-h-9'>
@@ -350,7 +358,8 @@ export default function CarDetailPage() {
                       alt={`${car.name} - ${
                         getPhotoInfo(sortedPhotos[selectedPhoto]).category
                       } ${selectedPhoto + 1}`}
-                      className='w-full h-96 object-cover rounded-lg shadow-lg'
+                      className='w-full h-96 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
+                      onClick={() => openFullscreenPhoto(selectedPhoto)}
                     />
                   </div>
 
@@ -455,15 +464,50 @@ export default function CarDetailPage() {
                 </div>
 
                 {/* Engine Specifications */}
-                {(car.horsepower ||
+                {(car.engine_displacement ||
+                  car.engine_cylinders ||
+                  car.engine_code ||
+                  car.horsepower ||
                   car.torque ||
                   car.engine_type ||
-                  car.transmission) && (
+                  car.fuel_type ||
+                  car.transmission ||
+                  car.drivetrain) && (
                   <div className='p-6'>
                     <h3 className='text-lg font-medium text-gray-900 mb-4'>
                       Engine & Performance
                     </h3>
                     <dl className='space-y-3'>
+                      {car.engine_displacement && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Engine Displacement
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.engine_displacement}L
+                          </dd>
+                        </div>
+                      )}
+                      {car.engine_cylinders && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Cylinders
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.engine_cylinders}
+                          </dd>
+                        </div>
+                      )}
+                      {car.engine_code && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Engine Code
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.engine_code}
+                          </dd>
+                        </div>
+                      )}
                       {car.horsepower && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
@@ -498,6 +542,16 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.fuel_type && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Fuel Type
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.fuel_type}
+                          </dd>
+                        </div>
+                      )}
                       {car.transmission && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
@@ -508,10 +562,22 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.drivetrain && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Drivetrain
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.drivetrain}
+                          </dd>
+                        </div>
+                      )}
                       {car.zero_to_sixty && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
-                            0-100 km/h
+                            {unitPreference === 'metric'
+                              ? '0-100 km/h'
+                              : '0-60 mph'}
                           </dt>
                           <dd className='text-sm text-gray-900'>
                             {car.zero_to_sixty}s
@@ -556,6 +622,16 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.power_to_weight && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Power to Weight Ratio
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.power_to_weight}
+                          </dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                 )}
@@ -563,10 +639,16 @@ export default function CarDetailPage() {
                 {/* Wheels & Tires */}
                 {(car.wheel_size ||
                   car.wheel_brand ||
+                  car.wheel_material ||
+                  car.wheel_offset ||
                   car.front_tire_size ||
                   car.front_tire_brand ||
+                  car.front_tire_model ||
                   car.rear_tire_size ||
-                  car.rear_tire_brand) && (
+                  car.rear_tire_brand ||
+                  car.rear_tire_model ||
+                  car.front_tire_pressure ||
+                  car.rear_tire_pressure) && (
                   <div className='p-6'>
                     <h3 className='text-lg font-medium text-gray-900 mb-4'>
                       Wheels & Tires
@@ -592,6 +674,26 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.wheel_material && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Wheel Material
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.wheel_material}
+                          </dd>
+                        </div>
+                      )}
+                      {car.wheel_offset && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Wheel Offset
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.wheel_offset}
+                          </dd>
+                        </div>
+                      )}
                       {car.front_tire_size && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
@@ -612,6 +714,16 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.front_tire_model && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Front Tire Model
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.front_tire_model}
+                          </dd>
+                        </div>
+                      )}
                       {car.rear_tire_size && (
                         <div>
                           <dt className='text-sm font-medium text-gray-500'>
@@ -629,6 +741,16 @@ export default function CarDetailPage() {
                           </dt>
                           <dd className='text-sm text-gray-900'>
                             {car.rear_tire_brand}
+                          </dd>
+                        </div>
+                      )}
+                      {car.rear_tire_model && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Rear Tire Model
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.rear_tire_model}
                           </dd>
                         </div>
                       )}
@@ -665,7 +787,11 @@ export default function CarDetailPage() {
                 )}
 
                 {/* Brakes */}
-                {(car.front_brakes || car.rear_brakes || car.brake_rotors) && (
+                {(car.front_brakes ||
+                  car.rear_brakes ||
+                  car.brake_rotors ||
+                  car.brake_caliper_brand ||
+                  car.brake_lines) && (
                   <div className='p-6'>
                     <h3 className='text-lg font-medium text-gray-900 mb-4'>
                       Brake System
@@ -701,6 +827,26 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.brake_caliper_brand && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Caliper Brand
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.brake_caliper_brand}
+                          </dd>
+                        </div>
+                      )}
+                      {car.brake_lines && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Brake Lines
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.brake_lines}
+                          </dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                 )}
@@ -709,7 +855,9 @@ export default function CarDetailPage() {
                 {(car.front_suspension ||
                   car.rear_suspension ||
                   car.suspension_type ||
-                  car.ride_height) && (
+                  car.ride_height ||
+                  car.coilovers ||
+                  car.sway_bars) && (
                   <div className='p-6'>
                     <h3 className='text-lg font-medium text-gray-900 mb-4'>
                       Suspension
@@ -755,6 +903,176 @@ export default function CarDetailPage() {
                           </dd>
                         </div>
                       )}
+                      {car.coilovers && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Coilovers
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.coilovers}
+                          </dd>
+                        </div>
+                      )}
+                      {car.sway_bars && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Sway Bars
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.sway_bars}
+                          </dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
+                )}
+
+                {/* Exterior */}
+                {(car.body_kit ||
+                  car.paint_color ||
+                  car.paint_type ||
+                  car.wrap_color ||
+                  car.carbon_fiber_parts ||
+                  car.lighting) && (
+                  <div className='p-6'>
+                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                      Exterior
+                    </h3>
+                    <dl className='space-y-3'>
+                      {car.body_kit && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Body Kit
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.body_kit}
+                          </dd>
+                        </div>
+                      )}
+                      {car.paint_color && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Paint Color
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.paint_color}
+                          </dd>
+                        </div>
+                      )}
+                      {car.paint_type && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Paint Type
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.paint_type}
+                          </dd>
+                        </div>
+                      )}
+                      {car.wrap_color && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Wrap Color
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.wrap_color}
+                          </dd>
+                        </div>
+                      )}
+                      {car.carbon_fiber_parts && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Carbon Fiber Parts
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.carbon_fiber_parts}
+                          </dd>
+                        </div>
+                      )}
+                      {car.lighting && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Lighting
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.lighting}
+                          </dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
+                )}
+
+                {/* Interior */}
+                {(car.interior_color ||
+                  car.interior_material ||
+                  car.seats ||
+                  car.steering_wheel ||
+                  car.shift_knob ||
+                  car.gauges) && (
+                  <div className='p-6'>
+                    <h3 className='text-lg font-medium text-gray-900 mb-4'>
+                      Interior
+                    </h3>
+                    <dl className='space-y-3'>
+                      {car.interior_color && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Interior Color
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.interior_color}
+                          </dd>
+                        </div>
+                      )}
+                      {car.interior_material && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Interior Material
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.interior_material}
+                          </dd>
+                        </div>
+                      )}
+                      {car.seats && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Seats
+                          </dt>
+                          <dd className='text-sm text-gray-900'>{car.seats}</dd>
+                        </div>
+                      )}
+                      {car.steering_wheel && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Steering Wheel
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.steering_wheel}
+                          </dd>
+                        </div>
+                      )}
+                      {car.shift_knob && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Shift Knob
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.shift_knob}
+                          </dd>
+                        </div>
+                      )}
+                      {car.gauges && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Gauges
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.gauges}
+                          </dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                 )}
@@ -776,7 +1094,10 @@ export default function CarDetailPage() {
                 )}
 
                 {/* Additional Details */}
-                {(car.mileage || car.fuel_economy || car.vin) && (
+                {(car.mileage ||
+                  car.fuel_economy ||
+                  car.vin ||
+                  car.maintenance_history) && (
                   <div className='p-6'>
                     <h3 className='text-lg font-medium text-gray-900 mb-4'>
                       Additional Details
@@ -814,6 +1135,16 @@ export default function CarDetailPage() {
                           <dd className='text-sm text-gray-900'>{car.vin}</dd>
                         </div>
                       )}
+                      {car.maintenance_history && (
+                        <div>
+                          <dt className='text-sm font-medium text-gray-500'>
+                            Maintenance History
+                          </dt>
+                          <dd className='text-sm text-gray-900'>
+                            {car.maintenance_history}
+                          </dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                 )}
@@ -832,6 +1163,61 @@ export default function CarDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* Fullscreen Photo Viewer */}
+      <Dialog open={isPhotoDialogOpen} onOpenChange={setIsPhotoDialogOpen}>
+        <DialogContent className='max-w-none w-screen h-screen p-0 bg-black/95 border-0 rounded-none'>
+          <DialogTitle className='sr-only'>
+            {car.name} - Photo {fullscreenPhotoIndex + 1} of{' '}
+            {sortedPhotos.length}
+          </DialogTitle>
+          <div className='relative w-full h-full flex items-center justify-center'>
+            {/* Close Button */}
+            <button
+              onClick={() => setIsPhotoDialogOpen(false)}
+              className='absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors'
+            >
+              <X className='w-6 h-6' />
+            </button>
+
+            {/* Navigation Buttons */}
+            {sortedPhotos.length > 1 && (
+              <>
+                <button
+                  onClick={() => navigatePhoto('prev')}
+                  className='absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors'
+                >
+                  <ChevronLeft className='w-8 h-8' />
+                </button>
+                <button
+                  onClick={() => navigatePhoto('next')}
+                  className='absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors'
+                >
+                  <ChevronRight className='w-8 h-8' />
+                </button>
+              </>
+            )}
+
+            {/* Photo Counter */}
+            {sortedPhotos.length > 1 && (
+              <div className='absolute top-4 left-4 z-10 px-3 py-1 bg-black/50 text-white text-sm rounded-full'>
+                {fullscreenPhotoIndex + 1} / {sortedPhotos.length}
+              </div>
+            )}
+
+            {/* Main Photo */}
+            {sortedPhotos[fullscreenPhotoIndex] && (
+              <img
+                src={getPhotoInfo(sortedPhotos[fullscreenPhotoIndex]).url}
+                alt={`${car.name} - ${
+                  getPhotoInfo(sortedPhotos[fullscreenPhotoIndex]).category
+                } ${fullscreenPhotoIndex + 1}`}
+                className='max-w-full max-h-full object-contain'
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
