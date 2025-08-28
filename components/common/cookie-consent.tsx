@@ -27,7 +27,7 @@ export default function CookieConsent() {
   }
 
   const handleDecline = () => {
-    // Just hide the banner without saving any consent status
+    declineCookies()
     setIsVisible(false)
   }
 

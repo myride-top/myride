@@ -227,7 +227,7 @@ export async function getCarByUrlSlugAndUsernameClient(
     console.log('Profile found:', profileData)
 
     // First try to get the car by url_slug and user_id
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('cars')
       .select('*')
       .eq('url_slug', urlSlug)
@@ -235,7 +235,12 @@ export async function getCarByUrlSlugAndUsernameClient(
       .single()
 
     // If that fails and the urlSlug looks like a UUID, try to get by ID
-    if (error && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(urlSlug)) {
+    if (
+      error &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        urlSlug
+      )
+    ) {
       console.log('URL slug looks like UUID, trying to fetch by ID:', urlSlug)
       const { data: carById, error: idError } = await supabase
         .from('cars')
@@ -346,9 +351,13 @@ export async function fixCarUrlSlug(carId: string): Promise<Car | null> {
     }
 
     // Check if the current url_slug is a UUID
-    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(car.url_slug)) {
+    if (
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        car.url_slug
+      )
+    ) {
       console.log('Fixing URL slug for car:', car.id)
-      
+
       // Generate a proper URL slug from the car name
       const baseSlug = car.name
         .toLowerCase()

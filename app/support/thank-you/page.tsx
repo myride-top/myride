@@ -19,8 +19,8 @@ export default function ThankYouPage() {
             Thank You!
           </h1>
           <p className='text-lg text-muted-foreground mb-6'>
-            Your support means the world to us. You're helping keep MyRide free
-            for car enthusiasts everywhere.
+            Your support means the world to us. You&apos;re helping keep MyRide
+            free for car enthusiasts everywhere.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export default function ThankYouPage() {
           <ul className='text-sm text-muted-foreground space-y-2 text-left'>
             <li className='flex items-start gap-2'>
               <span className='text-primary'>•</span>
-              You'll receive a confirmation email from Stripe
+              You&apos;ll receive a confirmation email from Stripe
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-primary'>•</span>
@@ -42,11 +42,11 @@ export default function ThankYouPage() {
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-primary'>•</span>
-              We'll continue working hard to make MyRide even better
+              We&apos;ll continue working hard to make MyRide even better
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-primary'>•</span>
-              Keep enjoying the platform - it's free for everyone!
+              Keep enjoying the platform - it&apos;s free for everyone!
             </li>
           </ul>
         </div>
