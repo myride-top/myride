@@ -11,10 +11,9 @@ import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import ProtectedRoute from '@/components/auth/protected-route'
 import Link from 'next/link'
-import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import Navbar from '@/components/ui/navbar'
-import { ArrowLeft, ChevronLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -23,11 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  convertToPreferredUnit,
-  getUnitLabel,
-  unitConversions,
-} from '@/lib/utils'
+import { getUnitLabel } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
 export default function CreateCarPage() {
@@ -1638,7 +1633,7 @@ export default function CreateCarPage() {
             <DialogTitle>Car Limit Reached</DialogTitle>
             <DialogDescription>
               You have already reached the maximum limit of 1 car per user. To
-              add a new car, you'll need to delete your existing car first.
+              add a new car, you&apos;ll need to delete your existing car first.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

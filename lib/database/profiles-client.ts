@@ -118,9 +118,6 @@ export async function updateProfileClient(
     return { success: true, data: createdProfile }
   }
 
-  // If multiple profiles exist, use the first one (this shouldn't happen with proper constraints)
-  const profileToUpdate = existingProfile[0]
-
   // Update the existing profile
   const { data, error } = await supabase
     .from('profiles')

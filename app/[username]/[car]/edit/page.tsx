@@ -17,11 +17,7 @@ import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
 import { ArrowLeft, Star, X, Loader2, AlertTriangle } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
-import {
-  convertToPreferredUnit,
-  getUnitLabel,
-  unitConversions,
-} from '@/lib/utils'
+import { getUnitLabel, unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
 export default function EditCarPage() {
@@ -677,7 +673,7 @@ export default function EditCarPage() {
                         placeholder='Custom URL for your car'
                       />
                       <p className='mt-1 text-xs text-muted-foreground'>
-                        Customize your car's URL or leave empty for
+                        Customize your car&apos;s URL or leave empty for
                         auto-generation
                       </p>
                     </div>

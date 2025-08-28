@@ -1,6 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
 import { Car, CarPhoto } from '@/lib/types/database'
-import { urlToCarName } from '@/lib/utils/url-helpers'
 import { unitConversions } from '@/lib/utils'
 
 const supabase = createBrowserClient(
@@ -104,7 +103,6 @@ export async function getCarByNameAndUsernameClient(
     console.log('Profile found:', profileData)
 
     // Try multiple search strategies to find the car
-    let carData = null
     let searchError = null
 
     // Strategy 1: Try exact match first

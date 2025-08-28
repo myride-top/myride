@@ -18,20 +18,14 @@ import {
   Share2,
   Edit,
   Image,
-  Loader2,
   X,
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
 } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { convertToPreferredUnit, getUnitLabel } from '@/lib/utils'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { convertToPreferredUnit } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
 export default function CarDetailPage() {
@@ -132,8 +126,9 @@ export default function CarDetailPage() {
       return {
         url: photo.url,
         category:
-          photo.category && PHOTO_CATEGORIES.includes(photo.category as any)
-            ? (photo.category as PhotoCategory)
+          photo.category &&
+          PHOTO_CATEGORIES.includes(photo.category as PhotoCategory)
+            ? photo.category
             : ('other' as const),
       }
     }
@@ -211,20 +206,6 @@ export default function CarDetailPage() {
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isPhotoDialogOpen, sortedPhotos.length])
-
-  // Group photos by category for the gallery
-  const photosByCategory =
-    car?.photos?.reduce((acc, photo) => {
-      const { url, category } = getPhotoInfo(photo)
-      // Only include photos with valid URLs
-      if (url && url.length > 0) {
-        if (!acc[category]) {
-          acc[category] = []
-        }
-        acc[category].push(photo)
-      }
-      return acc
-    }, {} as Record<string, (string | CarPhoto)[]>) || {}
 
   if (loading) {
     return (

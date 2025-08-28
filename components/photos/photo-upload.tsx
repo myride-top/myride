@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { uploadCarPhoto } from '@/lib/storage/photos'
-import { CarPhoto, PHOTO_CATEGORIES, PhotoCategory } from '@/lib/types/database'
+import { CarPhoto } from '@/lib/types/database'
 import { toast } from 'sonner'
-import { Upload, Image, Loader2 } from 'lucide-react'
+import { Upload, Loader2 } from 'lucide-react'
 
 interface PhotoUploadProps {
   carId: string
