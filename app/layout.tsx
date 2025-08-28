@@ -5,6 +5,7 @@ import { AuthProvider } from '@/lib/context/auth-context'
 import { UnitProvider } from '@/lib/context/unit-context'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { Toaster } from 'sonner'
+import CookieConsent from '@/components/common/cookie-consent'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -47,6 +48,7 @@ export default function RootLayout({
                 closeButton
                 duration={4000}
               />
+              <CookieConsent />
             </UnitProvider>
           </AuthProvider>
         </ThemeProvider>
