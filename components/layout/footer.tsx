@@ -29,10 +29,10 @@ const footerLinks = {
     { name: 'Privacy', href: '#privacy' },
   ],
   legal: [
-    { name: 'Terms', href: '#terms' },
-    { name: 'Privacy', href: '#privacy' },
-    { name: 'Cookies', href: '#cookies' },
-    { name: 'Licenses', href: '#licenses' },
+    { name: 'Terms', href: '/legal/terms' },
+    { name: 'Privacy', href: '/legal/privacy' },
+    { name: 'Cookies', href: '/legal/cookies' },
+    { name: 'Licenses', href: '/legal/licenses' },
   ],
 }
 
@@ -153,19 +153,19 @@ export default function Footer() {
           </p>
           <div className='flex items-center gap-6 text-sm text-muted-foreground'>
             <Link
-              href='#terms'
+              href='/legal/terms'
               className='hover:text-primary transition-colors'
             >
               Terms of Service
             </Link>
             <Link
-              href='#privacy'
+              href='/legal/privacy'
               className='hover:text-primary transition-colors'
             >
               Privacy Policy
             </Link>
             <Link
-              href='#cookies'
+              href='/legal/cookies'
               className='hover:text-primary transition-colors'
             >
               Cookie Policy
