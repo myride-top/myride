@@ -39,7 +39,7 @@ export default function ShareButton({
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    
+
     try {
       // Always copy to clipboard first
       await navigator.clipboard.writeText(url)
@@ -56,13 +56,15 @@ export default function ShareButton({
           })
         } catch (shareError) {
           // Native sharing failed, but clipboard copy already succeeded
-          console.log(`Native sharing failed, but link copied to clipboard (${shareError})`)
+          console.log(
+            `Native sharing failed, but link copied to clipboard (${shareError})`
+          )
         }
       }
     } catch (clipboardError) {
       console.error('Error copying to clipboard:', clipboardError)
       toast.error('Failed to copy link to clipboard')
-      
+
       // Try native sharing as fallback
       if (navigator.share) {
         try {
@@ -83,14 +85,14 @@ export default function ShareButton({
     <button
       onClick={handleShare}
       className={cn(
-        'inline-flex items-center font-medium rounded-md focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer',
+        'inline-flex items-center font-medium rounded-md focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer drop-shadow',
         sizeClasses[size],
         variantClasses[variant],
         className
       )}
       title='Share this car'
     >
-      {showIcon && <Share2 className={cn('w-4 h-4', children && 'mr-2')} />}
+      {showIcon && <Share2 className={cn('w-4 h-4 mr-2')} />}
       {children || 'Share'}
     </button>
   )

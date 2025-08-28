@@ -13,7 +13,6 @@ import {
 } from '@/lib/types/database'
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
-import { toast } from 'sonner'
 import {
   Edit,
   Image,
