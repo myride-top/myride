@@ -13,7 +13,7 @@ export default function LoginPage() {
             Or{' '}
             <Link
               href='/register'
-              className='font-medium text-primary hover:text-primary/80'
+              className='font-medium text-primary hover:text-primary/80 cursor-pointer'
             >
               create a new account
             </Link>

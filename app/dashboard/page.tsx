@@ -9,8 +9,11 @@ import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
-import { Plus, Share2, CarIcon, Image } from 'lucide-react'
+import { Plus, CarIcon, Info } from 'lucide-react'
 import Navbar from '@/components/ui/navbar'
+import LoadingSpinner from '@/components/ui/loading-spinner'
+import EmptyState from '@/components/ui/empty-state'
+import CarCard from '@/components/cars/car-card'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -55,14 +58,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen flex items-center justify-center bg-background'>
-          <div className='text-center'>
-            <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
-            <p className='mt-4 text-muted-foreground'>
-              Loading your dashboard...
-            </p>
-          </div>
-        </div>
+        <LoadingSpinner fullScreen message='Loading your dashboard...' />
       </ProtectedRoute>
     )
   }
@@ -74,115 +70,36 @@ export default function DashboardPage() {
 
         {/* Main Content */}
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
-          {/* Stats Overview */}
           <div className='px-4 py-6 sm:px-0'>
-            {/* <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <CarIcon className='w-6 h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
-                          Total Cars
-                        </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
-                          {cars.length}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <User className='w-6 h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
-                          Profile Status
-                        </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
-                          {profile ? 'Active' : 'Incomplete'}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <Clock className='w-6 h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
-                          Member Since
-                        </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
-                          {user?.created_at
-                            ? new Date(user.created_at).toLocaleDateString()
-                            : 'N/A'}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-
             {/* Cars Grid */}
             <div>
               <h2 className='text-2xl font-bold text-foreground mb-6'>
                 Your Cars
               </h2>
               {cars.length === 0 ? (
-                <div className='text-center py-12'>
-                  <CarIcon className='mx-auto h-12 w-12 text-muted-foreground' />
-                  <h3 className='mt-2 text-sm font-medium text-foreground'>
-                    No cars yet
-                  </h3>
-                  <p className='mt-1 text-sm text-muted-foreground'>
-                    Get started by adding your first car.
-                  </p>
-                  <div className='mt-6'>
+                <EmptyState
+                  icon={CarIcon}
+                  title='No cars yet'
+                  description='Get started by adding your first car.'
+                  action={
                     <Link
                       href='/create'
-                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
                     >
                       <Plus className='w-5 h-5 mr-2' />
                       Add Your First Car
                     </Link>
-                  </div>
-                </div>
+                  }
+                />
               ) : cars.length === 1 ? (
                 <div className='space-y-6'>
-                  <div className='bg-blue-50 dark:bg-blue-50/20 border border-blue-200 rounded-lg p-4'>
+                  <div className='bg-blue-50 dark:bg-blue-50/10 border border-blue-200 dark:border-blue-200/50 rounded-lg p-4'>
                     <div className='flex items-center'>
                       <div className='flex-shrink-0'>
-                        <svg
-                          className='h-5 w-5 text-blue-400'
-                          viewBox='0 0 20 20'
-                          fill='currentColor'
-                        >
-                          <path
-                            fillRule='evenodd'
-                            d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z'
-                            clipRule='evenodd'
-                          />
-                        </svg>
+                        <Info className='h-5 w-5 text-blue-400' />
                       </div>
                       <div className='ml-3'>
-                        <p className='text-sm text-blue-700 dark:text-blue-50'>
+                        <p className='text-sm text-blue-700 dark:text-blue-300'>
                           You have reached the maximum limit of 1 car per user.
                           To add a new car, you&apos;ll need to delete your
                           existing car first.
@@ -192,170 +109,40 @@ export default function DashboardPage() {
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                     {cars.map(car => (
-                      <div
+                      <CarCard
                         key={car.id}
-                        className='bg-card overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 relative border border-border'
-                      >
-                        <div
-                          className='p-6 cursor-pointer'
-                          onClick={() =>
-                            router.push(`/${profile?.username}/${car.url_slug}`)
-                          }
-                        >
-                          <div className='flex items-center justify-between mb-4'>
-                            <h3 className='text-lg font-medium text-card-foreground'>
-                              {car.make} {car.model}
-                            </h3>
-                            <div className='flex items-center space-x-2'>
-                              {car.photos && car.photos.length > 0 && (
-                                <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary'>
-                                  📸 {car.photos.length}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div>
-                            {car.photos && car.photos.length > 0 ? (
-                              <div className='relative'>
-                                <img
-                                  src={
-                                    car.main_photo_url ||
-                                    car.photos.find(
-                                      p => p.category === 'exterior'
-                                    )?.url ||
-                                    car.photos[0].url
-                                  }
-                                  alt={`${car.make} ${car.model}`}
-                                  className='w-full h-48 object-cover rounded-md'
-                                />
-                              </div>
-                            ) : (
-                              <div className='w-full h-48 bg-muted rounded-md flex items-center justify-center'>
-                                <Image className='w-16 h-16 text-muted-foreground' />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Action buttons - separate from clickable area */}
-                        <div className='px-6 pb-6'>
-                          <div className='flex space-x-2'>
-                            <button
-                              onClick={e => {
-                                e.stopPropagation()
-                                router.push(
-                                  `/${profile?.username}/${car.url_slug}/edit`
-                                )
-                              }}
-                              className='flex-1 px-3 py-2 border border-primary text-primary rounded-md focus:ring-2 ring-offset-2 ring-ring text-center cursor-pointer text-sm focus:outline-none hover:bg-zinc-100 transition'
-                            >
-                              Edit car
-                            </button>
-                            <button
-                              onClick={async e => {
-                                e.stopPropagation()
-                                const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
-                                try {
-                                  await navigator.clipboard.writeText(shareUrl)
-                                  toast.success('Link copied to clipboard!')
-                                } catch (error) {
-                                  toast.error(`Failed to copy link (${error})`)
-                                }
-                              }}
-                              className='px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer'
-                              title='Copy link to clipboard'
-                            >
-                              <Share2 className='w-4 h-4' />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                        car={car}
+                        profile={profile}
+                        isOwner={true}
+                        onEdit={car =>
+                          router.push(
+                            `/${profile?.username}/${car.url_slug}/edit`
+                          )
+                        }
+                        onShare={car =>
+                          router.push(`/${profile?.username}/${car.url_slug}`)
+                        }
+                      />
                     ))}
                   </div>
                 </div>
               ) : (
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                   {cars.map(car => (
-                    <div
+                    <CarCard
                       key={car.id}
-                      className='bg-card overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200 relative border border-border'
-                    >
-                      <div
-                        className='p-6 cursor-pointer'
-                        onClick={() =>
-                          router.push(`/${profile?.username}/${car.url_slug}`)
-                        }
-                      >
-                        <div className='flex items-center justify-between mb-4'>
-                          <h3 className='text-lg font-medium text-card-foreground'>
-                            {car.make} {car.model}
-                          </h3>
-                          <div className='flex items-center space-x-2'>
-                            {car.photos && car.photos.length > 0 && (
-                              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary'>
-                                📸 {car.photos.length}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div>
-                          {car.photos && car.photos.length > 0 ? (
-                            <div className='relative'>
-                              <img
-                                src={
-                                  car.main_photo_url ||
-                                  car.photos.find(
-                                    p => p.category === 'exterior'
-                                  )?.url ||
-                                  car.photos[0].url
-                                }
-                                alt={`${car.make} ${car.model}`}
-                                className='w-full h-48 object-cover rounded-md'
-                              />
-                            </div>
-                          ) : (
-                            <div className='w-full h-48 bg-muted rounded-md flex items-center justify-center'>
-                              <Image className='w-16 h-16 text-muted-foreground' />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Action buttons - separate from clickable area */}
-                      <div className='px-6 pb-6'>
-                        <div className='flex space-x-2'>
-                          <button
-                            onClick={e => {
-                              e.stopPropagation()
-                              router.push(
-                                `/${profile?.username}/${car.url_slug}/edit`
-                              )
-                            }}
-                            className='flex-1 px-3 py-2 border border-primary text-primary rounded-md focus:ring-2 ring-offset-2 ring-ring text-center cursor-pointer text-sm focus:outline-none'
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={async e => {
-                              e.stopPropagation()
-                              const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
-                              try {
-                                await navigator.clipboard.writeText(shareUrl)
-                                toast.success('Link copied to clipboard!')
-                              } catch (error) {
-                                toast.error(`Failed to copy link (${error})`)
-                              }
-                            }}
-                            className='px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer'
-                            title='Copy link to clipboard'
-                          >
-                            <Share2 className='w-4 h-4' />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                      car={car}
+                      profile={profile}
+                      isOwner={true}
+                      onEdit={car =>
+                        router.push(
+                          `/${profile?.username}/${car.url_slug}/edit`
+                        )
+                      }
+                      onShare={car =>
+                        router.push(`/${profile?.username}/${car.url_slug}`)
+                      }
+                    />
                   ))}
                 </div>
               )}

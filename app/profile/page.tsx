@@ -139,7 +139,7 @@ export default function ProfilePage() {
           <div className='flex items-center'>
             <button
               onClick={() => router.back()}
-              className='mr-4 text-foreground hover:text-foreground/80'
+              className='mr-4 text-foreground hover:text-foreground/80 cursor-pointer'
             >
               <ArrowLeft className='w-6 h-6' />
             </button>
@@ -241,7 +241,9 @@ export default function ProfilePage() {
                       className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
                     >
                       <option value='metric'>Metric (km/h, Nm, bar, kg)</option>
-                      <option value='imperial'>Imperial (mph, lb-ft, PSI, lbs)</option>
+                      <option value='imperial'>
+                        Imperial (mph, lb-ft, PSI, lbs)
+                      </option>
                     </select>
                     <p className='mt-1 text-sm text-muted-foreground'>
                       Choose your preferred unit system for car specifications

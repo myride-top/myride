@@ -101,7 +101,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
           <div className='flex items-center'>
             <Link
               href={user ? '/dashboard' : '/'}
-              className='flex items-center'
+              className='flex items-center cursor-pointer'
             >
               <Car className='w-8 h-8 text-primary mr-2' />
               <h1 className='text-3xl font-bold text-foreground'>MyRide</h1>
@@ -120,7 +120,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
                   Add New Car
                 </Link>
               ) : (
-                <div className='md:inline-flex hidden items-center px-4 py-2 border border-orange-200 text-sm font-medium rounded-md shadow-sm text-orange-700 bg-orange-50 cursor-not-allowed'>
+                <div className='md:inline-flex hidden items-center px-4 py-2 border border-orange-200 dark:border-orange-800 text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 cursor-not-allowed'>
                   <AlertCircle className='w-4 h-4 mr-2' />
                   Car Limit Reached
                 </div>
@@ -167,7 +167,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
 
                         <button
                           onClick={() => handleOptionClick('dashboard')}
-                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
+                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
                         >
                           <Car className='w-4 h-4 mr-3' />
                           Dashboard
@@ -175,7 +175,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
 
                         <button
                           onClick={() => handleOptionClick('profile')}
-                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
+                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
                         >
                           <Settings className='w-4 h-4 mr-3' />
                           Edit Profile
@@ -184,13 +184,13 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
                         {canCreateCar ? (
                           <button
                             onClick={() => handleOptionClick('create')}
-                            className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
+                            className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
                           >
                             <Plus className='w-4 h-4 mr-3' />
                             Add New Car
                           </button>
                         ) : (
-                          <div className='flex items-center w-full px-4 py-2 text-sm text-orange-600 bg-orange-50'>
+                          <div className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950'>
                             <AlertCircle className='w-4 h-4 mr-3' />
                             Car Limit Reached
                           </div>
@@ -200,7 +200,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
 
                         <button
                           onClick={() => handleOptionClick('premium')}
-                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
+                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
                         >
                           <Crown className='w-4 h-4 mr-3 text-yellow-500' />
                           Buy Premium
@@ -208,7 +208,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
 
                         <button
                           onClick={() => handleOptionClick('support')}
-                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent'
+                          className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
                         >
                           <Heart className='w-4 h-4 mr-3 text-red-500' />
                           Support Creator
@@ -218,7 +218,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
 
                         <button
                           onClick={handleSignOut}
-                          className='flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-destructive/10'
+                          className='flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-destructive/10 cursor-pointer'
                         >
                           <LogOut className='w-4 h-4 mr-3' />
                           Sign Out
@@ -232,13 +232,13 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
               <div className='flex items-center space-x-4'>
                 <Link
                   href='/login'
-                  className='text-foreground hover:text-foreground/80 px-3 py-2 rounded-md text-sm font-medium'
+                  className='text-foreground hover:text-foreground/80 px-3 py-2 rounded-md text-sm font-medium cursor-pointer'
                 >
                   Sign In
                 </Link>
                 <Link
                   href='/register'
-                  className='bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90'
+                  className='bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 cursor-pointer'
                 >
                   Sign Up
                 </Link>

@@ -321,7 +321,7 @@ export default function CreateCarPage() {
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
           <div className='flex items-center'>
-            <Link href='/dashboard' className='mr-4'>
+            <Link href='/dashboard' className='mr-4 cursor-pointer'>
               <ArrowLeft />
             </Link>
             <h1 className='text-3xl font-bold text-foreground'>Add New Car</h1>
@@ -1607,7 +1607,7 @@ export default function CreateCarPage() {
                   <div className='flex justify-end space-x-4'>
                     <Link
                       href='/dashboard'
-                      className='px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                      className='px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
                     >
                       Cancel
                     </Link>
@@ -1639,7 +1639,7 @@ export default function CreateCarPage() {
           <DialogFooter>
             <Link
               href='/dashboard'
-              className='px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+              className='px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
             >
               Go to Dashboard
             </Link>

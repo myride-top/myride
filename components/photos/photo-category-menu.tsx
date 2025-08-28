@@ -75,7 +75,7 @@ export default function PhotoCategoryMenu({
                   key={category}
                   type='button'
                   onClick={e => handleCategorySelect(category, e)}
-                  className={`block w-full text-left px-4 py-3 text-sm rounded-md hover:bg-accent ${
+                  className={`block w-full text-left px-4 py-3 text-sm rounded-md hover:bg-accent cursor-pointer ${
                     currentCategory === category
                       ? 'bg-primary/10 text-primary'
                       : 'text-card-foreground'
@@ -87,7 +87,7 @@ export default function PhotoCategoryMenu({
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className='mt-4 w-full px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted/80'
+              className='mt-4 w-full px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted/80 cursor-pointer'
             >
               Cancel
             </button>

@@ -571,7 +571,7 @@ export default function EditCarPage() {
             <p className='text-muted-foreground mb-4'>{error}</p>
             <button
               onClick={() => router.back()}
-              className='bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors'
+              className='bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors cursor-pointer'
             >
               Go Back
             </button>

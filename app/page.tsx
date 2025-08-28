@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import Link from 'next/link'
+import LoadingSpinner from '@/components/ui/loading-spinner'
 
 export default function MainPage() {
   const router = useRouter()
@@ -18,10 +19,7 @@ export default function MainPage() {
   if (loading) {
     return (
       <main className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
-          <p className='mt-4 text-muted-foreground'>Loading...</p>
-        </div>
+        <LoadingSpinner message='Loading...' />
       </main>
     )
   }
@@ -29,10 +27,7 @@ export default function MainPage() {
   if (user) {
     return (
       <main className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
-          <p className='mt-4 text-muted-foreground'>Redirecting to platform...</p>
-        </div>
+        <LoadingSpinner message='Redirecting to platform...' />
       </main>
     )
   }
@@ -48,13 +43,13 @@ export default function MainPage() {
         <div className='space-x-4'>
           <Link
             href='/login'
-            className='inline-block bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors'
+            className='inline-block bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors cursor-pointer'
           >
             Sign In
           </Link>
           <Link
             href='/register'
-            className='inline-block bg-card text-primary px-6 py-3 rounded-md font-medium border border-primary hover:bg-accent transition-colors'
+            className='inline-block bg-card text-primary px-6 py-3 rounded-md font-medium border border-primary hover:bg-accent transition-colors cursor-pointer'
           >
             Create Account
           </Link>
