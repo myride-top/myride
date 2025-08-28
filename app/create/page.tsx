@@ -12,10 +12,10 @@ import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import ProtectedRoute from '@/components/auth/protected-route'
 import Link from 'next/link'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
-import Navbar from '@/components/ui/navbar'
+import Navbar from '@/components/layout/navbar'
 import { ArrowLeft } from 'lucide-react'
+import { Dialog } from '@/components/ui/dialog'
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,

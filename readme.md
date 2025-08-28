@@ -1,5 +1,7 @@
 ### TODO
 
+- all legal pages
+
 - support creator (? can we use stripe in a way that users can choose how much they wanna pay ? or what other service to use ?)
 
 - premium page (coming soon)

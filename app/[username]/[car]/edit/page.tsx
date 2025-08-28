@@ -8,6 +8,7 @@ import {
   updateCarClient,
   deleteCarClient,
   setMainPhoto,
+  fixCarUrlSlug,
 } from '@/lib/database/cars-client'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
@@ -16,7 +17,7 @@ import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
 import { ArrowLeft, Star, X, Loader2, AlertTriangle } from 'lucide-react'
-import Navbar from '@/components/ui/navbar'
+import Navbar from '@/components/layout/navbar'
 import { getUnitLabel, unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
@@ -110,6 +111,10 @@ export default function EditCarPage() {
   useEffect(() => {
     const loadCar = async () => {
       if (carId && user) {
+        console.log('Loading car with params:', {
+          carId,
+          username: params.username,
+        })
         try {
           const carData = await getCarByUrlSlugAndUsernameClient(
             carId,
@@ -121,6 +126,21 @@ export default function EditCarPage() {
               setError('You do not have permission to edit this car')
               setLoading(false)
               return
+            }
+
+            // Check if the URL slug is a UUID and fix it if needed
+            if (
+              /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+                carData.url_slug
+              )
+            ) {
+              console.log('URL slug is UUID, fixing it...')
+              const fixedCar = await fixCarUrlSlug(carData.id)
+              if (fixedCar) {
+                // Redirect to the new URL
+                router.replace(`/${params.username}/${fixedCar.url_slug}/edit`)
+                return
+              }
             }
 
             // Migrate old photo format to new format if needed

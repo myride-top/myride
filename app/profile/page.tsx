@@ -12,7 +12,7 @@ import { Profile } from '@/lib/types/database'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
-import Navbar from '@/components/ui/navbar'
+import Navbar from '@/components/layout/navbar'
 
 export default function ProfilePage() {
   const { user } = useAuth()

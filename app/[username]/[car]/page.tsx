@@ -28,12 +28,12 @@ import {
   unlikeCarClient,
   hasUserLikedCarClient,
 } from '@/lib/database/cars-client'
-import Navbar from '@/components/ui/navbar'
+import Navbar from '@/components/layout/navbar'
+import PageHeader from '@/components/layout/page-header'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import LoadingSpinner from '@/components/ui/loading-spinner'
-import EmptyState from '@/components/ui/empty-state'
-import ShareButton from '@/components/ui/share-button'
-import PageHeader from '@/components/ui/page-header'
+import LoadingSpinner from '@/components/common/loading-spinner'
+import EmptyState from '@/components/common/empty-state'
+import ShareButton from '@/components/common/share-button'
 import CarSpecifications from '@/components/cars/car-specifications'
 
 export default function CarDetailPage() {

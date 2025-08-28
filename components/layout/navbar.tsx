@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { canUserCreateCarClient } from '@/lib/database/cars-client'
 import { Profile } from '@/lib/types/database'
-import { ThemeToggle } from '@/components/theme-toggle'
+import { ThemeToggle } from '../theme/theme-toggle'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {

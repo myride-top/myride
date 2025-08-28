@@ -1,0 +1,178 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { ArrowRight, Sparkles, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { getPlatformStats } from '@/lib/database/stats-client'
+
+const benefits = [
+  'Unlimited car showcases',
+  'High-quality photo galleries',
+  'Detailed specifications',
+  'Easy sharing & social features',
+  'Mobile optimized',
+  'Free forever',
+]
+
+export default function CTASection() {
+  const [userCount, setUserCount] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const stats = await getPlatformStats()
+        setUserCount(stats.totalUsers)
+      } catch (error) {
+        console.error('Error fetching user count:', error)
+        setUserCount(5000) // Fallback to default value
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserCount()
+  }, [])
+
+  return (
+    <section className='py-20 bg-gradient-to-br from-primary/5 via-background to-secondary/5'>
+      <div className='max-w-4xl mx-auto px-4 text-center'>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className='relative'
+        >
+          {/* Floating sparkles */}
+          <motion.div
+            className='absolute -top-8 -left-8 text-primary/30'
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          >
+            <Sparkles className='h-8 w-8' />
+          </motion.div>
+          <motion.div
+            className='absolute -top-4 -right-4 text-secondary/30'
+            animate={{ rotate: -360 }}
+            transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+          >
+            <Sparkles className='h-6 w-6' />
+          </motion.div>
+
+          <h2 className='text-4xl md:text-5xl font-bold text-foreground mb-6'>
+            Ready to Showcase Your Ride?
+          </h2>
+          <p className='text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed'>
+            Join thousands of car enthusiasts who are already showcasing their
+            rides and connecting with the community. It&apos;s completely free
+            and takes just minutes to get started.
+          </p>
+        </motion.div>
+
+        {/* Benefits grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto'
+        >
+          {benefits.map((benefit, index) => (
+            <motion.div
+              key={benefit}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+              viewport={{ once: true }}
+              className='flex items-center gap-3 text-left'
+            >
+              <CheckCircle className='h-5 w-5 text-green-500 flex-shrink-0' />
+              <span className='text-foreground font-medium'>{benefit}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          viewport={{ once: true }}
+          className='flex flex-col sm:flex-row gap-4 justify-center mb-8'
+        >
+          <Link
+            href='/register'
+            className='group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-primary rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl'
+          >
+            <span className='relative z-10 flex items-center gap-2'>
+              Get Started Free
+              <ArrowRight className='h-5 w-5 group-hover:translate-x-1 transition-transform' />
+            </span>
+            <motion.div
+              className='absolute inset-0 bg-gradient-to-r from-primary to-secondary'
+              initial={{ x: '-100%' }}
+              whileHover={{ x: '0%' }}
+              transition={{ duration: 0.3 }}
+            />
+          </Link>
+          <button
+            onClick={() => {
+              console.log('Explore Cars button clicked from CTA')
+              window.location.href = '/browse'
+            }}
+            className='group relative z-10 inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary border-2 border-primary rounded-full transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-105 cursor-pointer'
+          >
+            Explore Cars
+            <ArrowRight className='ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform' />
+          </button>
+        </motion.div>
+
+        {/* Trust indicators */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          viewport={{ once: true }}
+          className='flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground'
+        >
+          <div className='flex items-center gap-2'>
+            <div className='w-2 h-2 bg-green-500 rounded-full animate-pulse' />
+            <span>No credit card required</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <div className='w-2 h-2 bg-blue-500 rounded-full animate-pulse' />
+            <span>Setup in under 2 minutes</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <div className='w-2 h-2 bg-purple-500 rounded-full animate-pulse' />
+            <span>Free forever</span>
+          </div>
+        </motion.div>
+
+        {/* Bottom decoration */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          viewport={{ once: true }}
+          className='mt-12'
+        >
+          <div className='inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20'>
+            <motion.div
+              className='w-2 h-2 bg-primary rounded-full'
+              animate={{ scale: [1, 1.5, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span className='text-sm font-medium text-primary'>
+              {loading
+                ? 'Join car enthusiasts'
+                : `Join ${userCount.toLocaleString()}+ car enthusiasts`}
+            </span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}

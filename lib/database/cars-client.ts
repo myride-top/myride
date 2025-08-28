@@ -226,13 +226,32 @@ export async function getCarByUrlSlugAndUsernameClient(
 
     console.log('Profile found:', profileData)
 
-    // Get the car by url_slug and user_id
-    const { data, error } = await supabase
+    // First try to get the car by url_slug and user_id
+    let { data, error } = await supabase
       .from('cars')
       .select('*')
       .eq('url_slug', urlSlug)
       .eq('user_id', profileData.id)
       .single()
+
+    // If that fails and the urlSlug looks like a UUID, try to get by ID
+    if (error && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(urlSlug)) {
+      console.log('URL slug looks like UUID, trying to fetch by ID:', urlSlug)
+      const { data: carById, error: idError } = await supabase
+        .from('cars')
+        .select('*')
+        .eq('id', urlSlug)
+        .eq('user_id', profileData.id)
+        .single()
+
+      if (idError) {
+        console.error('Error fetching car by ID:', idError)
+        return null
+      }
+
+      console.log('Car found by ID:', carById)
+      return carById
+    }
 
     if (error) {
       console.error('Error fetching car by URL slug:', error)
@@ -240,7 +259,7 @@ export async function getCarByUrlSlugAndUsernameClient(
       return null
     }
 
-    console.log('Car found:', data)
+    console.log('Car found by URL slug:', data)
     return data
   } catch (error) {
     console.error('Error fetching car by URL slug:', error)
@@ -313,6 +332,54 @@ export async function createCarClient(
     return data
   } catch (error) {
     console.error('Error creating car:', error)
+    return null
+  }
+}
+
+export async function fixCarUrlSlug(carId: string): Promise<Car | null> {
+  try {
+    // Get the car first
+    const car = await getCarByIdClient(carId)
+    if (!car) {
+      console.error('Car not found for URL slug fix')
+      return null
+    }
+
+    // Check if the current url_slug is a UUID
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(car.url_slug)) {
+      console.log('Fixing URL slug for car:', car.id)
+      
+      // Generate a proper URL slug from the car name
+      const baseSlug = car.name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+
+      // Make it unique by adding a timestamp
+      const uniqueSlug = `${baseSlug}-${Date.now()}`
+
+      // Update the car with the new URL slug
+      const { data, error } = await supabase
+        .from('cars')
+        .update({ url_slug: uniqueSlug })
+        .eq('id', carId)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error updating URL slug:', error)
+        return null
+      }
+
+      console.log('URL slug fixed:', uniqueSlug)
+      return data
+    }
+
+    return car
+  } catch (error) {
+    console.error('Error fixing URL slug:', error)
     return null
   }
 }
