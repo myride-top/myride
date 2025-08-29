@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { Mail, Car, Instagram, Twitter, Facebook } from 'lucide-react'
+import { Instagram, Twitter, Facebook } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'MyRide - Coming Soon',
