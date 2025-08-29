@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Car, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 
 export interface NavItem {
@@ -85,11 +85,7 @@ export default function BaseNavbar({
               href={logoHref}
               className='flex items-center hover:scale-105 transition-transform'
             >
-              <img
-                src='/logo.svg'
-                alt='MyRide'
-                className='h-8 w-auto'
-              />
+              <img src='/logo.svg' alt='MyRide' className='h-8 w-auto' />
             </Link>
           )}
 

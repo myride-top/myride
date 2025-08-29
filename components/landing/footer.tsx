@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Car, Github, Instagram, Mail } from 'lucide-react'
+import { Github, Instagram, Mail } from 'lucide-react'
 import Link from 'next/link'
 import SupportButton from '@/components/common/support-button'
 
@@ -51,11 +51,7 @@ export default function Footer() {
           {/* Brand */}
           <div className='lg:col-span-2'>
             <div className='flex items-center mb-4'>
-              <img
-                src='/logo.svg'
-                alt='MyRide'
-                className='h-8 w-auto'
-              />
+              <img src='/logo.svg' alt='MyRide' className='h-8 w-auto' />
             </div>
             <p className='text-muted-foreground mb-4 max-w-sm'>
               The ultimate platform for car enthusiasts to showcase their rides
