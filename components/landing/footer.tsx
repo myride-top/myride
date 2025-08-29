@@ -18,16 +18,11 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 )
 
 const footerLinks = {
+  '': [{ name: '', href: '' }],
   product: [{ name: 'Features', href: '#features' }],
-  company: [
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' },
-  ],
-  support: [
-    { name: 'Help Center', href: '#help' },
+  community: [
     { name: 'Community', href: '#community' },
-    { name: 'Status', href: '#status' },
-    { name: 'Privacy', href: '#privacy' },
+    { name: 'Reviews', href: '#reviews' },
   ],
   legal: [
     { name: 'Terms', href: '/legal/terms' },
@@ -57,7 +52,7 @@ export default function Footer() {
           <div className='lg:col-span-2'>
             <div className='flex items-center gap-2 mb-4'>
               <Car className='h-8 w-8 text-primary' />
-              <span className='text-2xl font-bold text-foreground'>MyRide</span>
+              <span className='text-2xl font-bold text-primary'>MyRide</span>
             </div>
             <p className='text-muted-foreground mb-4 max-w-sm'>
               The ultimate platform for car enthusiasts to showcase their rides
