@@ -153,7 +153,7 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
                         <User className='w-4 h-4 text-primary-foreground' />
                       )}
                     </div>
-                    <span className='hidden md:block text-sm font-medium'>
+                    <span className='hidden md:block text-sm md:text-base font-medium font-atkinson'>
                       {profile?.username || user.email}
                     </span>
                     <ChevronDown className='w-4 h-4' />

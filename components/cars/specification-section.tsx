@@ -50,7 +50,9 @@ export default function SpecificationSection({
             <dt className='text-sm font-medium text-muted-foreground'>
               {spec.label}
             </dt>
-            <dd className='text-sm text-foreground'>{formatValue(spec)}</dd>
+            <dd className='text-sm text-foreground font-atkinson'>
+              {formatValue(spec)}
+            </dd>
           </div>
         ))}
       </dl>
