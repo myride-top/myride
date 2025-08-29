@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Instagram, Twitter } from 'lucide-react'
+import { WaitlistForm } from '@/components/common/waitlist-form'
 
 export const metadata: Metadata = {
   title: 'MyRide - Coming Soon',
@@ -64,43 +65,48 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 export default function ComingSoonPage() {
   return (
-    <div className='min-h-screen bg-gradient-to-br from-zinc-50 via-gray-50 to-slate-50 flex items-center justify-center p-4'>
-      <div className='max-w-2xl mx-auto text-center'>
+    <div className='min-h-screen bg-background flex items-center justify-center p-4 pt-20'>
+      <div className='max-w-4xl mx-auto text-center'>
         {/* Logo */}
         <div className='mb-8'>
-          <img
-            src='/logo.svg'
-            alt='MyRide'
-            className='h-16 w-auto mx-auto mb-4'
-          />
+          <img src='/logo.svg' alt='MyRide' className='h-16 w-auto mx-auto' />
         </div>
 
         {/* Main Content */}
-        <h1 className='text-4xl md:text-6xl font-bold mb-6'>Coming Soon</h1>
+        <div className='mb-16'>
+          <h1 className='text-4xl md:text-6xl font-bold text-foreground mb-3'>
+            Coming Soon
+          </h1>
 
-        <p className='text-xl md:text-2xl text-gray-800 mb-8 leading-relaxed'>
-          The ultimate platform for car enthusiasts to showcase their vehicles
-          is almost ready.
-        </p>
+          <p className='text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed'>
+            The ultimate platform for car enthusiasts is almost ready.
+          </p>
 
-        <p className='text-lg text-gray-600 mb-12 max-w-lg mx-auto'>
-          Share detailed specifications, photos, and connect with fellow car
-          lovers worldwide. Fast, easy, and beautiful.
-        </p>
+          {/* Waitlist Form */}
+          <div className='max-w-md mx-auto my-20'>
+            <h2 className='text-lg font-semibold text-foreground mb-3'>
+              Get notified when we launch
+            </h2>
+            <WaitlistForm />
+          </div>
+        </div>
 
-        <img
-          src='/soon.webp'
-          alt='Dashboard Preview'
-          className='border-primary border-2 mt-8 mb-14 rounded-md'
-        />
+        {/* Preview Image */}
+        <div className='mb-16'>
+          <img
+            src='/soon.webp'
+            alt='Dashboard Preview'
+            className='rounded-lg shadow-lg max-w-full h-auto border border-border'
+          />
+        </div>
 
         {/* Social Links */}
-        <div className='flex justify-center space-x-6'>
+        <div className='flex justify-center space-x-6 mb-8'>
           <a
             href='https://instagram.com/myride.top'
             target='_blank'
             rel='noopener noreferrer'
-            className='text-gray-600 hover:text-gray-900 transition-colors duration-200'
+            className='text-muted-foreground hover:text-primary transition-colors duration-200'
           >
             <Instagram className='h-6 w-6' />
           </a>
@@ -108,7 +114,7 @@ export default function ComingSoonPage() {
             href='https://x.com/myride_top'
             target='_blank'
             rel='noopener noreferrer'
-            className='text-gray-600 hover:text-gray-900 transition-colors duration-200'
+            className='text-muted-foreground hover:text-primary transition-colors duration-200'
           >
             <Twitter className='h-6 w-6' />
           </a>
@@ -116,15 +122,15 @@ export default function ComingSoonPage() {
             href='https://tiktok.com/@myride.top'
             target='_blank'
             rel='noopener noreferrer'
-            className='text-gray-600 hover:text-gray-900 transition-colors duration-200'
+            className='text-muted-foreground hover:text-primary transition-colors duration-200'
           >
             <TikTokIcon className='h-6 w-6' />
           </a>
         </div>
 
         {/* Footer */}
-        <div className='mt-12 pt-8 border-t border-white/10'>
-          <p className='text-gray-500 text-sm'>
+        <div className='pt-8 border-t border-border'>
+          <p className='text-muted-foreground text-sm'>
             &copy; {new Date().getFullYear()} MyRide. All rights reserved.
           </p>
         </div>

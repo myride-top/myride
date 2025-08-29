@@ -65,7 +65,7 @@ export default function PrivacyPage() {
             <p>We may collect the following personal information:</p>
             <ul className='list-disc pl-6 mt-2 space-y-1'>
               <li>Name and username</li>
-              <li>Email address</li>
+              <li>Email address (including waitlist signups)</li>
               <li>Profile information and preferences</li>
               <li>Car information and photos you choose to share</li>
               <li>Communication preferences</li>
@@ -96,6 +96,7 @@ export default function PrivacyPage() {
             <ul className='list-disc pl-6 mt-2 space-y-1'>
               <li>Providing and maintaining our services</li>
               <li>Processing your registration and managing your account</li>
+              <li>Sending launch notifications to waitlist subscribers</li>
               <li>Displaying your car information and photos to other users</li>
               <li>Facilitating communication between users</li>
               <li>Improving our platform and user experience</li>
@@ -103,6 +104,24 @@ export default function PrivacyPage() {
               <li>Preventing fraud and ensuring platform security</li>
               <li>Complying with legal obligations</li>
             </ul>
+          </section>
+
+          <section>
+            <h2 className='text-2xl font-semibold text-foreground mb-4'>
+              3.1 Waitlist Communications
+            </h2>
+            <p>When you join our waitlist, we collect your email address to:</p>
+            <ul className='list-disc pl-6 mt-2 space-y-1'>
+              <li>Send you a confirmation email when you join the waitlist</li>
+              <li>Notify you when our platform launches</li>
+              <li>Send you early access invitations if applicable</li>
+              <li>Provide updates about our launch progress</li>
+            </ul>
+            <p className='mt-2'>
+              You can unsubscribe from waitlist communications at any time by
+              clicking the unsubscribe link in our emails or contacting us
+              directly.
+            </p>
           </section>
 
           <section>

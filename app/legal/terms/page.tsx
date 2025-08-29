@@ -63,6 +63,12 @@ export default function TermsPage() {
               vehicles, share photos, connect with other automotive enthusiasts,
               and browse car collections from around the world.
             </p>
+            <p className='mt-2'>
+              We also offer a waitlist service where users can sign up to be
+              notified when our platform launches. By joining the waitlist, you
+              agree to receive email notifications about our launch and related
+              updates.
+            </p>
           </section>
 
           <section>
