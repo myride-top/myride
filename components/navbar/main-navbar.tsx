@@ -17,6 +17,7 @@ import {
   Settings,
   ChevronDown,
   AlertCircle,
+  LayoutDashboard,
 } from 'lucide-react'
 import BaseNavbar, { NavItem } from './base-navbar'
 
@@ -162,7 +163,7 @@ export default function MainNavbar({
                     onClick={() => handleOptionClick('dashboard')}
                     className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
                   >
-                    <Settings className='w-4 h-4 mr-3' />
+                    <LayoutDashboard className='w-4 h-4 mr-3' />
                     Dashboard
                   </button>
 
