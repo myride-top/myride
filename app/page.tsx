@@ -37,23 +37,14 @@ export const metadata: Metadata = {
     title: 'MyRide - Showcase Your Car to the World',
     description:
       'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
-    images: [
-      {
-        url: '/icon.svg',
-        width: 1200,
-        height: 630,
-        alt: 'MyRide - The Ultimate Car Showcase Platform',
-      },
-    ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     site: '@myride',
     creator: '@myride',
     title: 'MyRide - Showcase Your Car to the World',
     description:
       'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
-    images: ['/icon.svg'],
   },
   robots: {
     index: true,
