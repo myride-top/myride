@@ -81,7 +81,7 @@ export default function HeroSection() {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className='group p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] animate-in fade-in slide-in-from-bottom-4 duration-500'
+              className='group p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] animate-in fade-in slide-in-from-bottom-4'
               style={{ animationDelay: `${400 + index * 50}ms` }}
             >
               <div className='flex flex-col items-center text-center'>
