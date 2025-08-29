@@ -50,8 +50,17 @@ export async function getUserCarCountClient(userId: string): Promise<number> {
 
 export async function canUserCreateCarClient(userId: string): Promise<boolean> {
   try {
-    const carCount = await getUserCarCountClient(userId)
-    return carCount < 1 // Limit to 1 car per user
+    // Use the database function that checks premium status
+    const { data, error } = await supabase.rpc('can_user_create_car', {
+      user_id: userId,
+    })
+
+    if (error) {
+      console.error('Error checking if user can create car:', error)
+      return false
+    }
+
+    return data || false
   } catch (error) {
     console.error('Error checking if user can create car:', error)
     return false
