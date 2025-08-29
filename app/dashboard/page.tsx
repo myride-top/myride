@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { getCarsByUserClient } from '@/lib/database/cars-client'
+import { getUserCarSlots } from '@/lib/database/premium-client'
 import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
@@ -24,6 +25,12 @@ export default function DashboardPage() {
     totalLikes: 0,
     totalPhotos: 0,
     memberSince: '',
+  })
+  const [carSlots, setCarSlots] = useState({
+    currentCars: 0,
+    maxAllowedCars: 1,
+    purchasedSlots: 0,
+    isPremium: false,
   })
 
   // Function to recalculate stats
@@ -69,13 +76,14 @@ export default function DashboardPage() {
         })
 
         try {
-          const [userProfile, userCars] = await Promise.all([
+          const [userProfile, userCars, userCarSlots] = await Promise.all([
             getProfileByUserIdClient(user.id),
             getCarsByUserClient(user.id),
+            getUserCarSlots(user.id),
           ])
           setProfile(userProfile)
-
           setCars(userCars || [])
+          setCarSlots(userCarSlots)
 
           // Calculate stats
           recalculateStats(userCars || [])
@@ -219,7 +227,7 @@ export default function DashboardPage() {
                     </Link>
                   }
                 />
-              ) : cars.length === 1 ? (
+              ) : cars.length === 1 && !carSlots.isPremium && carSlots.currentCars >= carSlots.maxAllowedCars ? (
                 <div className='space-y-6'>
                   <div className='bg-blue-50 dark:bg-blue-50/10 border border-blue-200 dark:border-blue-200/50 rounded-lg p-4'>
                     <div className='flex items-center'>
@@ -228,9 +236,10 @@ export default function DashboardPage() {
                       </div>
                       <div className='ml-3'>
                         <p className='text-sm text-blue-700 dark:text-blue-300'>
-                          You have reached the maximum limit of 1 car per user.
-                          To add a new car, you&apos;ll need to delete your
-                          existing car first.
+                          {carSlots.purchasedSlots > 0 
+                            ? `You have reached your car limit (${carSlots.currentCars}/${carSlots.maxAllowedCars}). Purchase more car slots to add additional cars.`
+                            : 'You have reached the maximum limit of 1 car per user. Upgrade to premium or purchase additional car slots to add more cars.'
+                          }
                         </p>
                       </div>
                     </div>

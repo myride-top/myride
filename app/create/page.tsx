@@ -7,13 +7,15 @@ import {
   createCarClient,
   canUserCreateCarClient,
 } from '@/lib/database/cars-client'
+import { getUserCarSlots } from '@/lib/database/premium-client'
 import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import ProtectedRoute from '@/components/auth/protected-route'
 import Link from 'next/link'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
+import { deleteCarPhoto } from '@/lib/storage/photos'
 import { MainNavbar } from '@/components/navbar'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Star, X } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
 import {
   DialogContent,
@@ -32,8 +34,15 @@ export default function CreateCarPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [photos, setPhotos] = useState<CarPhoto[]>([])
+  const [mainPhotoUrl, setMainPhotoUrl] = useState<string | null>(null)
   const [showLimitDialog, setShowLimitDialog] = useState(false)
   const [checkingLimit, setCheckingLimit] = useState(true)
+  const [carSlots, setCarSlots] = useState({
+    currentCars: 0,
+    maxAllowedCars: 1,
+    purchasedSlots: 0,
+    isPremium: false,
+  })
 
   // Check if user can create a car on component mount
   useEffect(() => {
@@ -44,7 +53,11 @@ export default function CreateCarPage() {
       }
 
       try {
-        const canCreate = await canUserCreateCarClient(user.id)
+        const [canCreate, userCarSlots] = await Promise.all([
+          canUserCreateCarClient(user.id),
+          getUserCarSlots(user.id),
+        ])
+        setCarSlots(userCarSlots)
         if (!canCreate) {
           setShowLimitDialog(true)
         }
@@ -163,6 +176,39 @@ export default function CreateCarPage() {
     })
   }
 
+  const handleDeletePhoto = async (photoIndex: number) => {
+    const photo = photos[photoIndex]
+    if (!photo) return
+
+    try {
+      // Delete from storage
+      const photoUrl = typeof photo === 'string' ? photo : photo.url
+      const storageDeleted = await deleteCarPhoto(photoUrl)
+
+      if (!storageDeleted) {
+        setError('Failed to delete photo from storage')
+        return
+      }
+
+      // Remove from local state
+      setPhotos(prev => prev.filter((_, i) => i !== photoIndex))
+
+      // If this was the main photo, clear it
+      if (mainPhotoUrl === photoUrl) {
+        setMainPhotoUrl(null)
+      }
+
+      setError('') // Clear any previous errors
+    } catch (error) {
+      console.error('Error deleting photo:', error)
+      setError('Failed to delete photo')
+    }
+  }
+
+  const handleSetMainPhoto = (photoUrl: string) => {
+    setMainPhotoUrl(photoUrl)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -199,7 +245,7 @@ export default function CreateCarPage() {
           year: carData.year,
           description: carData.description || null,
           photos: photos,
-          main_photo_url: null, // Will be set later when user chooses main photo
+          main_photo_url: mainPhotoUrl, // Use the selected main photo
           like_count: 0, // New cars start with 0 likes
           // Engine Specifications
           engine_displacement: carData.engine_displacement
@@ -1580,17 +1626,49 @@ export default function CreateCarPage() {
                                 )}
                               </div>
 
-                              <button
-                                type='button'
-                                onClick={() =>
-                                  setPhotos(prev =>
-                                    prev.filter((_, i) => i !== index)
-                                  )
-                                }
-                                className='absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 cursor-pointer'
-                              >
-                                ×
-                              </button>
+                              {/* Main Photo Badge */}
+                              {mainPhotoUrl ===
+                                (typeof photo === 'string'
+                                  ? photo
+                                  : photo.url) && (
+                                <div className='absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium'>
+                                  Main
+                                </div>
+                              )}
+
+                              {/* Action Buttons */}
+                              <div className='absolute bottom-2 right-2 flex space-x-1'>
+                                {/* Set as Main Photo Button */}
+                                {mainPhotoUrl !==
+                                  (typeof photo === 'string'
+                                    ? photo
+                                    : photo.url) && (
+                                  <button
+                                    type='button'
+                                    onClick={() =>
+                                      handleSetMainPhoto(
+                                        typeof photo === 'string'
+                                          ? photo
+                                          : photo.url
+                                      )
+                                    }
+                                    className='bg-blue-600 text-white rounded-full p-1 hover:bg-blue-700 transition-colors cursor-pointer'
+                                    title='Set as main photo'
+                                  >
+                                    <Star className='w-3 h-3' />
+                                  </button>
+                                )}
+
+                                {/* Delete Button */}
+                                <button
+                                  type='button'
+                                  onClick={() => handleDeletePhoto(index)}
+                                  className='bg-red-600 text-white rounded-full p-1 hover:bg-red-700 transition-colors cursor-pointer'
+                                  title='Delete photo'
+                                >
+                                  <X className='w-3 h-3' />
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1633,8 +1711,9 @@ export default function CreateCarPage() {
           <DialogHeader>
             <DialogTitle>Car Limit Reached</DialogTitle>
             <DialogDescription>
-              You have already reached the maximum limit of 1 car per user. To
-              add a new car, you&apos;ll need to delete your existing car first.
+              {carSlots.purchasedSlots > 0
+                ? `You have reached your car limit (${carSlots.currentCars}/${carSlots.maxAllowedCars}). Purchase more car slots to add additional cars.`
+                : 'You have reached the maximum limit of 1 car per user. Upgrade to premium or purchase additional car slots to add more cars.'}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

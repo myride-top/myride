@@ -9,6 +9,7 @@ import {
   deleteCarClient,
   setMainPhoto,
   fixCarUrlSlug,
+  removePhotoFromCar,
 } from '@/lib/database/cars-client'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
@@ -16,6 +17,7 @@ import ProtectedRoute from '@/components/auth/protected-route'
 import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
+import { deleteCarPhoto } from '@/lib/storage/photos'
 import { ArrowLeft, Star, X, Loader2, AlertTriangle } from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
 import { getUnitLabel, unitConversions } from '@/lib/utils'
@@ -561,6 +563,31 @@ export default function EditCarPage() {
     } catch (error) {
       console.error('Error setting main photo:', error)
       toast.error('Failed to set main photo')
+    }
+  }
+
+  const handleDeletePhoto = async (photoUrl: string) => {
+    if (!car) return
+
+    try {
+      // First, delete the photo from storage
+      const storageDeleted = await deleteCarPhoto(photoUrl)
+      if (!storageDeleted) {
+        toast.error('Failed to delete photo from storage')
+        return
+      }
+
+      // Then, remove the photo from the car's photos array
+      const updatedCar = await removePhotoFromCar(car.id, photoUrl)
+      if (updatedCar) {
+        setCar(updatedCar)
+        toast.success('Photo deleted successfully!')
+      } else {
+        toast.error('Failed to remove photo from car')
+      }
+    } catch (error) {
+      console.error('Error deleting photo:', error)
+      toast.error('Failed to delete photo')
     }
   }
 
@@ -1911,8 +1938,11 @@ export default function EditCarPage() {
                               {/* Delete Button */}
                               <button
                                 onClick={async () => {
-                                  // TODO: Implement photo deletion
-                                  setError('Photo deletion not implemented yet')
+                                  const photoUrl =
+                                    typeof photo === 'string'
+                                      ? photo
+                                      : photo.url
+                                  await handleDeletePhoto(photoUrl)
                                 }}
                                 className='bg-red-600 text-white rounded-full p-1 hover:bg-red-700 transition-colors cursor-pointer'
                                 title='Delete photo'

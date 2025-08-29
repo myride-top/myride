@@ -6,6 +6,13 @@ export async function uploadCarPhoto(
 ): Promise<string | null> {
   const supabase = createClient()
 
+  // Check if user is authenticated
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    console.error('User not authenticated')
+    return null
+  }
+
   // Generate unique filename
   const fileExt = file.name.split('.').pop()
   const fileName = `${carId}/${Date.now()}.${fileExt}`
@@ -55,6 +62,13 @@ export async function uploadProfileAvatar(
   userId: string
 ): Promise<string | null> {
   const supabase = createClient()
+
+  // Check if user is authenticated
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    console.error('User not authenticated')
+    return null
+  }
 
   // Generate unique filename
   const fileExt = file.name.split('.').pop()

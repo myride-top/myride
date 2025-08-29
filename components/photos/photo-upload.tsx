@@ -33,14 +33,88 @@ export default function PhotoUpload({
     setIsDragOver(false)
   }, [])
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-    const files = Array.from(e.dataTransfer.files)
-    if (files.length > 0) {
-      await handleFiles(files)
-    }
-  }, [])
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return
+
+      setUploading(true)
+      const uploadedPhotos: CarPhoto[] = []
+
+      for (const file of files) {
+        try {
+          // Validate file type
+          if (!file.type.startsWith('image/')) {
+            toast.error(`${file.name} is not an image file`)
+            continue
+          }
+
+          // Validate file size (5MB limit)
+          if (file.size > 5 * 1024 * 1024) {
+            toast.error(`${file.name} is too large. Maximum size is 5MB`)
+            continue
+          }
+
+          setUploadProgress(prev => ({ ...prev, [file.name]: 0 }))
+
+          // Upload the photo
+          const photoUrl = await uploadCarPhoto(file, carId)
+
+          if (!photoUrl) {
+            toast.error(`Failed to upload ${file.name}`)
+            continue
+          }
+
+          // Create CarPhoto object with default 'other' category
+          const photo: CarPhoto = {
+            url: photoUrl,
+            category: 'other',
+            description: '',
+            order: uploadedPhotos.length,
+          }
+
+          uploadedPhotos.push(photo)
+
+          // Update progress to 100%
+          setUploadProgress(prev => ({ ...prev, [file.name]: 100 }))
+
+          // Call individual callback
+          onUploadComplete(photo)
+
+          toast.success(`${file.name} uploaded successfully!`)
+        } catch (error) {
+          console.error('Error uploading photo:', error)
+          toast.error(`Failed to upload ${file.name}`)
+        }
+      }
+
+      // Call batch callback if multiple photos were uploaded
+      if (uploadedPhotos.length > 1) {
+        onBatchUploadComplete(uploadedPhotos)
+      }
+
+      setUploading(false)
+      setUploadProgress({})
+
+      // Reset file input
+      const fileInput = document.getElementById(
+        'file-input'
+      ) as HTMLInputElement
+      if (fileInput) fileInput.value = ''
+    },
+    [carId, onUploadComplete, onBatchUploadComplete]
+  )
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault()
+      setIsDragOver(false)
+      const files = Array.from(e.dataTransfer.files)
+      if (files.length > 0) {
+        await handleFiles(files)
+      }
+    },
+    [handleFiles]
+  )
 
   const handleFileSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,74 +123,8 @@ export default function PhotoUpload({
         await handleFiles(files)
       }
     },
-    []
+    [handleFiles]
   )
-
-  const handleFiles = async (files: File[]) => {
-    if (files.length === 0) return
-
-    setUploading(true)
-    const uploadedPhotos: CarPhoto[] = []
-
-    for (const file of files) {
-      try {
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          toast.error(`${file.name} is not an image file`)
-          continue
-        }
-
-        // Validate file size (5MB limit)
-        if (file.size > 5 * 1024 * 1024) {
-          toast.error(`${file.name} is too large. Maximum size is 5MB`)
-          continue
-        }
-
-        setUploadProgress(prev => ({ ...prev, [file.name]: 0 }))
-
-        // Upload the photo
-        const photoUrl = await uploadCarPhoto(file, carId)
-
-        if (!photoUrl) {
-          toast.error(`Failed to upload ${file.name}`)
-          continue
-        }
-
-        // Create CarPhoto object with default 'other' category
-        const photo: CarPhoto = {
-          url: photoUrl,
-          category: 'other',
-          description: '',
-          order: uploadedPhotos.length,
-        }
-
-        uploadedPhotos.push(photo)
-
-        // Update progress to 100%
-        setUploadProgress(prev => ({ ...prev, [file.name]: 100 }))
-
-        // Call individual callback
-        onUploadComplete(photo)
-
-        toast.success(`${file.name} uploaded successfully!`)
-      } catch (error) {
-        console.error('Error uploading photo:', error)
-        toast.error(`Failed to upload ${file.name}`)
-      }
-    }
-
-    // Call batch callback if multiple photos were uploaded
-    if (uploadedPhotos.length > 1) {
-      onBatchUploadComplete(uploadedPhotos)
-    }
-
-    setUploading(false)
-    setUploadProgress({})
-
-    // Reset file input
-    const fileInput = document.getElementById('file-input') as HTMLInputElement
-    if (fileInput) fileInput.value = ''
-  }
 
   return (
     <div className='space-y-4'>
