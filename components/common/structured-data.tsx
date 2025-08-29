@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 
 interface StructuredDataProps {
-  data: Record<string, any>
+  data: Record<string, string | number | boolean | object | null>
 }
 
 export default function StructuredData({ data }: StructuredDataProps) {
@@ -59,7 +59,19 @@ export const organizationSchema = {
   ],
 }
 
-export const carShowcaseSchema = (carData: any) => ({
+export const carShowcaseSchema = (carData: {
+  name: string
+  description: string
+  make: string
+  model: string
+  year?: number
+  main_photo_url?: string
+  photos?: { url: string }[]
+  profile?: {
+    full_name?: string
+    username?: string
+  }
+}) => ({
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: carData.name,
