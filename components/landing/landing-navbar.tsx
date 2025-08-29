@@ -29,7 +29,9 @@ export default function LandingNavbar() {
             className='flex items-center gap-2'
           >
             <Car className='h-8 w-8 text-primary' />
-            <span className='text-xl font-bold text-foreground'>MyRide</span>
+            <span className='text-xl md:text-2xl font-black text-primary'>
+              MyRide
+            </span>
           </motion.div>
 
           {/* Desktop Navigation */}

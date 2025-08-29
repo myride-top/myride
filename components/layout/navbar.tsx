@@ -103,7 +103,9 @@ export default function Navbar({ showCreateButton = false }: NavbarProps) {
               className='flex items-center cursor-pointer'
             >
               <Car className='w-8 h-8 text-primary mr-2' />
-              <h1 className='text-3xl font-bold text-foreground'>MyRide</h1>
+              <h1 className='text-xl md:text-2xl font-black text-primary'>
+                MyRide
+              </h1>
             </Link>
           </div>
 

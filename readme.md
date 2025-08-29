@@ -1,5 +1,7 @@
 ### TODO
 
+- optimize metadata for every page
+
 - premium page (coming soon)
 
 ### Wanted features after launch

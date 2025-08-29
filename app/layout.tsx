@@ -1,19 +1,20 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
+import { Commissioner, Atkinson_Hyperlegible } from 'next/font/google'
 import { AuthProvider } from '@/lib/context/auth-context'
 import { UnitProvider } from '@/lib/context/unit-context'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { Toaster } from 'sonner'
 import CookieConsent from '@/components/common/cookie-consent'
+import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const commissioner = Commissioner({
+  variable: '--font-commissioner',
   subsets: ['latin'],
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const atkinson = Atkinson_Hyperlegible({
+  variable: '--font-atkinson',
+  weight: ['400', '700'],
   subsets: ['latin'],
 })
 
@@ -31,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${commissioner.variable} ${atkinson.variable} antialiased`}
       >
         <ThemeProvider
           attribute='class'

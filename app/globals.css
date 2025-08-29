@@ -36,8 +36,8 @@
   --sidebar-accent-foreground: oklch(0 0 0);
   --sidebar-border: oklch(0.9401 0 0);
   --sidebar-ring: oklch(0 0 0);
-  --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Lora, serif;
+  --font-sans: var(--font-commissioner), system-ui, sans-serif;
+  --font-serif: var(--font-atkinson), Georgia, serif;
   --font-mono: IBM Plex Mono, monospace;
   --radius: 1.4rem;
   --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
@@ -90,8 +90,8 @@
   --sidebar-accent-foreground: oklch(0.6132 0.2294 291.7437);
   --sidebar-border: oklch(0.3289 0.0092 268.3843);
   --sidebar-ring: oklch(0.6132 0.2294 291.7437);
-  --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Lora, serif;
+  --font-sans: var(--font-commissioner), system-ui, sans-serif;
+  --font-serif: var(--font-atkinson), Georgia, serif;
   --font-mono: IBM Plex Mono, monospace;
   --radius: 1.4rem;
   --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
@@ -180,16 +180,29 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Improve placeholder text contrast */
   input::placeholder,
   textarea::placeholder {
     @apply text-muted-foreground/70;
   }
-  
+
   /* Dark mode placeholder adjustments */
   .dark input::placeholder,
   .dark textarea::placeholder {
     @apply text-muted-foreground/80;
   }
+}
+
+/* Custom font utility classes */
+.font-commissioner {
+  font-family: var(--font-commissioner), system-ui, sans-serif;
+}
+
+.font-atkinson {
+  font-family: var(--font-atkinson), Georgia, serif;
+}
+
+.font-mono {
+  font-family: IBM Plex Mono, monospace;
 }
