@@ -3,12 +3,19 @@
 import { useState, useEffect } from 'react'
 import { X, Cookie } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useCookieConsent } from '@/lib/hooks/use-cookie-consent'
 
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false)
+  const pathname = usePathname()
   const { consentStatus, isLoaded, acceptCookies, declineCookies } =
     useCookieConsent()
+
+  // Don't show cookie consent on coming-soon page
+  if (pathname === '/coming-soon') {
+    return null
+  }
 
   useEffect(() => {
     // Only show if consent hasn't been given and component is loaded
