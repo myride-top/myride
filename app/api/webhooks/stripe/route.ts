@@ -69,7 +69,7 @@ async function handleCheckoutSessionCompleted(
     paymentStatus: session.payment_status,
   })
 
-  const { type, userId, supportType } = session.metadata || {}
+  const { type } = session.metadata || {}
 
   try {
     if (type === 'support') {
@@ -156,19 +156,5 @@ async function handlePremiumPurchase(session: Stripe.Checkout.Session) {
     } catch (error) {
       console.error('Error activating premium user:', error)
     }
-  }
-}
-
-// Helper function to get customer email
-async function getCustomerEmail(customerId: string): Promise<string | null> {
-  try {
-    const customer = await stripe.customers.retrieve(customerId)
-    if (customer && 'email' in customer) {
-      return customer.email
-    }
-    return null
-  } catch (error) {
-    console.error('Error retrieving customer:', error)
-    return null
   }
 }
