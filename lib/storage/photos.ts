@@ -81,3 +81,30 @@ export async function uploadProfileAvatar(
 
   return publicUrl
 }
+
+export async function deleteProfileAvatar(userId: string): Promise<boolean> {
+  const supabase = createClient()
+
+  // Try to delete any existing avatar file
+  const { data: files, error: listError } = await supabase.storage
+    .from('avatars')
+    .list(userId)
+
+  if (listError) {
+    console.error('Error listing avatar files:', listError)
+    return false
+  }
+
+  if (files && files.length > 0) {
+    // Delete all avatar files for this user
+    const fileNames = files.map(file => `${userId}/${file.name}`)
+    const { error } = await supabase.storage.from('avatars').remove(fileNames)
+
+    if (error) {
+      console.error('Error deleting avatar:', error)
+      return false
+    }
+  }
+
+  return true
+}

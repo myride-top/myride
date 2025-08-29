@@ -13,6 +13,7 @@ import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
+import AvatarUpload from '@/components/common/avatar-upload'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -26,6 +27,7 @@ export default function ProfilePage() {
     full_name: '',
     unit_preference: 'metric' as 'metric' | 'imperial',
   })
+  const [avatarUrl, setAvatarUrl] = useState<string>('')
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -40,6 +42,7 @@ export default function ProfilePage() {
               full_name: userProfile.full_name || '',
               unit_preference: userProfile.unit_preference || 'metric',
             })
+            setAvatarUrl(userProfile.avatar_url || '')
           } else {
             // If no profile exists, set default values
             setFormData({
@@ -47,6 +50,7 @@ export default function ProfilePage() {
               full_name: user.email || '',
               unit_preference: 'metric',
             })
+            setAvatarUrl('')
           }
         } catch (error) {
           console.error('Error loading profile:', error)
@@ -90,6 +94,7 @@ export default function ProfilePage() {
         username: formData.username,
         full_name: formData.full_name,
         unit_preference: formData.unit_preference,
+        avatar_url: avatarUrl,
       })
 
       if (result.success && result.data) {
@@ -114,6 +119,10 @@ export default function ProfilePage() {
       ...prev,
       [name]: value,
     }))
+  }
+
+  const handleAvatarUpdate = (newAvatarUrl: string) => {
+    setAvatarUrl(newAvatarUrl)
   }
 
   if (loading) {
@@ -186,6 +195,19 @@ export default function ProfilePage() {
 
                 {/* Profile Form */}
                 <form onSubmit={handleSubmit} className='space-y-6'>
+                  {/* Avatar Upload */}
+                  <div className='flex flex-col items-center space-y-4'>
+                    <h3 className='text-lg font-medium text-foreground'>
+                      Profile Avatar
+                    </h3>
+                    <AvatarUpload
+                      currentAvatarUrl={avatarUrl}
+                      userId={user?.id || ''}
+                      onAvatarUpdate={handleAvatarUpdate}
+                      size='lg'
+                    />
+                  </div>
+
                   <div>
                     <label
                       htmlFor='username'

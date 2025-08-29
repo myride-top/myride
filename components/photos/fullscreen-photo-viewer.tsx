@@ -6,9 +6,6 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  ZoomIn,
-  ZoomOut,
-  RotateCw,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
