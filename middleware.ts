@@ -1,72 +1,47 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set(name, value)
-          )
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
+  // Developer bypass - only in development mode
+  const isDevMode = process.env.NODE_ENV === 'development'
 
-  // Refresh session if expired - required for Server Components
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // If user is authenticated and trying to access auth pages, redirect to dashboard
-  if (
-    user &&
-    (request.nextUrl.pathname === '/login' ||
-      request.nextUrl.pathname === '/register')
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Allow developer access only in development
+  if (isDevMode) {
+    return NextResponse.next()
   }
 
-  // If user is not authenticated and trying to access protected pages, redirect to login
-  // But allow public access to car detail pages ([username]/[car])
-  if (
-    !user &&
-    (request.nextUrl.pathname.startsWith('/create') ||
-      request.nextUrl.pathname.startsWith('/profile') ||
-      request.nextUrl.pathname.startsWith('/dashboard'))
-  ) {
-    // Redirect to login for protected routes
-    return NextResponse.redirect(new URL('/login', request.url))
+  // Allow access to coming-soon page
+  if (pathname === '/coming-soon') {
+    return NextResponse.next()
   }
 
-  return supabaseResponse
+  // Allow access to static assets (images, CSS, JS, etc.)
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/api/') ||
+    pathname.includes('.') ||
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/icon') ||
+    pathname.startsWith('/logo')
+  ) {
+    return NextResponse.next()
+  }
+
+  // Redirect everything else to coming soon
+  return NextResponse.redirect(new URL('/coming-soon', request.url))
 }
 
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
