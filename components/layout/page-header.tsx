@@ -24,7 +24,7 @@ export default function PageHeader({
         className
       )}
     >
-      <div className='flex justify-between items-center'>
+      <div className='flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0'>
         <div className='flex items-center'>
           {backHref && (
             <Link
@@ -34,15 +34,15 @@ export default function PageHeader({
               <ArrowLeft className='w-5 h-5' />
             </Link>
           )}
-          <div>
-            <h1 className='text-3xl font-bold text-foreground'>{title}</h1>
+          <div className='min-w-0 flex-1'>
+            <h1 className='text-2xl sm:text-3xl font-bold text-foreground truncate'>{title}</h1>
             {subtitle && (
-              <div className='text-sm text-muted-foreground'>{subtitle}</div>
+              <div className='text-sm text-muted-foreground truncate'>{subtitle}</div>
             )}
           </div>
         </div>
         {actions && (
-          <div className='flex items-center space-x-4'>{actions}</div>
+          <div className='flex flex-wrap items-center gap-2 sm:gap-4'>{actions}</div>
         )}
       </div>
     </div>

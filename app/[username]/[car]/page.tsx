@@ -14,15 +14,7 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
-import {
-  Edit,
-  Image,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-  Heart,
-} from 'lucide-react'
+import { Edit, Image, ArrowLeft, Heart } from 'lucide-react'
 import {
   likeCarClient,
   unlikeCarClient,
@@ -30,11 +22,11 @@ import {
 } from '@/lib/database/cars-client'
 import { MainNavbar, LandingNavbar } from '@/components/navbar'
 import PageHeader from '@/components/layout/page-header'
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import ShareButton from '@/components/common/share-button'
 import CarSpecifications from '@/components/cars/car-specifications'
+import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -163,38 +155,6 @@ export default function CarDetailPage() {
     setIsPhotoDialogOpen(true)
   }
 
-  const navigatePhoto = (direction: 'prev' | 'next') => {
-    if (sortedPhotos.length === 0) return
-
-    if (direction === 'prev') {
-      setFullscreenPhotoIndex(prev =>
-        prev === 0 ? sortedPhotos.length - 1 : prev - 1
-      )
-    } else {
-      setFullscreenPhotoIndex(prev =>
-        prev === sortedPhotos.length - 1 ? 0 : prev + 1
-      )
-    }
-  }
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!isPhotoDialogOpen) return
-
-    if (e.key === 'ArrowLeft') {
-      navigatePhoto('prev')
-    } else if (e.key === 'ArrowRight') {
-      navigatePhoto('next')
-    } else if (e.key === 'Escape') {
-      setIsPhotoDialogOpen(false)
-    }
-  }
-
-  // Add keyboard event listener
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isPhotoDialogOpen, sortedPhotos.length])
-
   const handleLike = async () => {
     if (!user || !car) return
 
@@ -250,9 +210,9 @@ export default function CarDetailPage() {
     )
   }
 
-      return (
-      <div className='min-h-screen bg-background'>
-        {user ? <MainNavbar /> : <LandingNavbar />}
+  return (
+    <div className='min-h-screen bg-background'>
+      {user ? <MainNavbar /> : <LandingNavbar />}
 
       <PageHeader
         title={car.name}
@@ -307,22 +267,22 @@ export default function CarDetailPage() {
       />
 
       {/* Main Content */}
-      <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'>
-        <div className='px-4 py-6 sm:px-0'>
-          <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+      <main className='max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8'>
+        <div className='py-4 sm:py-6'>
+          <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8'>
             {/* Photos Section */}
-            <div className='lg:col-span-2'>
-              <h2 className='text-2xl font-bold text-foreground mb-6'>
+            <div className='lg:col-span-2 order-first'>
+              <h2 className='text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6'>
                 Photos
               </h2>
 
               {/* Category Filter */}
               {car.photos && car.photos.length > 0 && (
-                <div className='mb-6'>
+                <div className='mb-4 sm:mb-6'>
                   <div className='flex flex-wrap gap-2'>
                     <button
                       onClick={() => setSelectedCategory('all')}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
                         selectedCategory === 'all'
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -344,7 +304,7 @@ export default function CarDetailPage() {
                         <button
                           key={category}
                           onClick={() => setSelectedCategory(category)}
-                          className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                          className={`px-3 py-2 rounded-full text-sm font-medium capitalize transition-colors ${
                             selectedCategory === category
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -362,26 +322,28 @@ export default function CarDetailPage() {
               selectedPhoto < sortedPhotos.length ? (
                 <div className='space-y-4'>
                   {/* Main Photo */}
-                  <div className='aspect-w-16 aspect-h-9'>
+                  <div className='relative'>
                     <img
                       src={getPhotoInfo(sortedPhotos[selectedPhoto]).url}
                       alt={`${car.name} - ${
                         getPhotoInfo(sortedPhotos[selectedPhoto]).category
                       } ${selectedPhoto + 1}`}
-                      className='w-full h-96 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
+                      className='w-full h-64 sm:h-80 md:h-96 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
                       onClick={() => openFullscreenPhoto(selectedPhoto)}
                     />
                   </div>
 
                   {/* Photo Thumbnails */}
                   {sortedPhotos.length > 1 && (
-                    <div className='grid grid-cols-4 gap-2'>
+                    <div className='grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3'>
                       {sortedPhotos.map((photo, index) => (
                         <button
                           key={index}
                           onClick={() => setSelectedPhoto(index)}
-                          className={`aspect-w-1 aspect-h-1 rounded-md overflow-hidden cursor-pointer ${
-                            selectedPhoto === index ? 'ring-2 ring-primary' : ''
+                          className={`aspect-square rounded-md overflow-hidden cursor-pointer transition-all ${
+                            selectedPhoto === index
+                              ? 'ring-2 ring-primary ring-offset-2'
+                              : 'hover:opacity-80'
                           }`}
                         >
                           <img
@@ -389,7 +351,7 @@ export default function CarDetailPage() {
                             alt={`${car.name} ${getPhotoInfo(photo).category} ${
                               index + 1
                             }`}
-                            className='w-full h-20 object-cover'
+                            className='w-full h-full object-cover'
                           />
                         </button>
                       ))}
@@ -429,7 +391,7 @@ export default function CarDetailPage() {
             </div>
 
             {/* Specifications Section */}
-            <div className='lg:col-span-1'>
+            <div className='lg:col-span-1 order-last'>
               <CarSpecifications car={car} />
             </div>
           </div>
@@ -437,59 +399,13 @@ export default function CarDetailPage() {
       </main>
 
       {/* Fullscreen Photo Viewer */}
-      <Dialog open={isPhotoDialogOpen} onOpenChange={setIsPhotoDialogOpen}>
-        <DialogContent className='max-w-none w-screen h-screen p-0 bg-black/95 border-0 rounded-none'>
-          <DialogTitle className='sr-only'>
-            {car.name} - Photo {fullscreenPhotoIndex + 1} of{' '}
-            {sortedPhotos.length}
-          </DialogTitle>
-          <div className='relative w-full h-full flex items-center justify-center'>
-            {/* Close Button */}
-            <button
-              onClick={() => setIsPhotoDialogOpen(false)}
-              className='absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer'
-            >
-              <X className='w-6 h-6' />
-            </button>
-
-            {/* Navigation Buttons */}
-            {sortedPhotos.length > 1 && (
-              <>
-                <button
-                  onClick={() => navigatePhoto('prev')}
-                  className='absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer'
-                >
-                  <ChevronLeft className='w-8 h-8' />
-                </button>
-                <button
-                  onClick={() => navigatePhoto('next')}
-                  className='absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer'
-                >
-                  <ChevronRight className='w-8 h-8' />
-                </button>
-              </>
-            )}
-
-            {/* Photo Counter */}
-            {sortedPhotos.length > 1 && (
-              <div className='absolute top-4 left-4 z-10 px-3 py-1 bg-black/50 text-white text-sm rounded-full'>
-                {fullscreenPhotoIndex + 1} / {sortedPhotos.length}
-              </div>
-            )}
-
-            {/* Main Photo */}
-            {sortedPhotos[fullscreenPhotoIndex] && (
-              <img
-                src={getPhotoInfo(sortedPhotos[fullscreenPhotoIndex]).url}
-                alt={`${car.name} - ${
-                  getPhotoInfo(sortedPhotos[fullscreenPhotoIndex]).category
-                } ${fullscreenPhotoIndex + 1}`}
-                className='max-w-full max-h-full object-contain'
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <FullscreenPhotoViewer
+        isOpen={isPhotoDialogOpen}
+        onClose={() => setIsPhotoDialogOpen(false)}
+        photos={sortedPhotos.map(photo => getPhotoInfo(photo))}
+        initialIndex={fullscreenPhotoIndex}
+        carName={car.name}
+      />
     </div>
   )
 }

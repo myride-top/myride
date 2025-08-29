@@ -2,7 +2,6 @@
 
 - optimize metadata for every page
 - upload custom avatar image
-- optimize fullscreen image viewer (use baudys.dev code)
 - internazionalization (english, czech, spanish, german)
 
 - what company emails to create? (should I create new accounts on the company mail? (github, vercel, supabase)?

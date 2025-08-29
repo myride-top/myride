@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
-import { Car } from 'lucide-react'
+import React, { useState, useEffect, useRef } from 'react'
+import { Car, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 
 export interface NavItem {
@@ -31,6 +31,23 @@ export default function BaseNavbar({
   renderNavItem,
   layout = 'centered',
 }: BaseNavbarProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
   const getVariantStyles = () => {
     switch (variant) {
       case 'transparent':
@@ -122,9 +139,54 @@ export default function BaseNavbar({
                 )}
               </div>
             )}
+
+            {/* Mobile menu button */}
+            {navItems.length > 0 && (
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className='md:hidden p-2 text-muted-foreground hover:text-primary transition-colors'
+                aria-label='Toggle mobile menu'
+              >
+                {isMobileMenuOpen ? (
+                  <X className='h-6 w-6' />
+                ) : (
+                  <Menu className='h-6 w-6' />
+                )}
+              </button>
+            )}
+
             {children}
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && navItems.length > 0 && (
+          <div
+            ref={mobileMenuRef}
+            className='md:hidden border-t border-border bg-card'
+          >
+            <div className='px-4 py-2 space-y-1'>
+              {navItems.map(item =>
+                renderNavItem ? (
+                  <React.Fragment key={item.name}>
+                    {renderNavItem(item)}
+                  </React.Fragment>
+                ) : (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener noreferrer' : undefined}
+                    className='block px-3 py-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors duration-300 font-medium'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                )
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )
