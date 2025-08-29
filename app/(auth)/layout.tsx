@@ -3,15 +3,17 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: {
     default: 'Authentication - MyRide',
-    template: '%s - MyRide'
+    template: '%s - MyRide',
   },
-  description: 'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
+  description:
+    'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
   keywords: 'login, register, sign up, authentication, car showcase account',
   openGraph: {
     title: 'Authentication - MyRide',
-    description: 'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
+    description:
+      'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
     type: 'website',
-    url: 'https://myride.cz',
+    url: 'https://myride.top',
     siteName: 'MyRide',
     images: [
       {
@@ -25,7 +27,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Authentication - MyRide',
-    description: 'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
+    description:
+      'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
     images: ['/og-image-default.svg'],
   },
   robots: {

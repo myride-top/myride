@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Browse Cars - MyRide',
-  description: 'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
-  keywords: 'browse cars, car gallery, vehicle showcase, automotive community, car photos, car specifications, car modifications',
+  description:
+    'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
+  keywords:
+    'browse cars, car gallery, vehicle showcase, automotive community, car photos, car specifications, car modifications',
   openGraph: {
     title: 'Browse Cars - MyRide',
-    description: 'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
+    description:
+      'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
     type: 'website',
-    url: 'https://myride.cz/browse',
+    url: 'https://myride.top/browse',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Browse Cars - MyRide',
-    description: 'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
+    description:
+      'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
     images: ['/og-image-default.svg'],
   },
   robots: {

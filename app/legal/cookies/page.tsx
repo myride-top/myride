@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Cookie Policy - MyRide',
-  description: 'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
-  keywords: 'cookie policy, cookies, tracking technologies, data collection, car showcase platform, automotive community',
+  description:
+    'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+  keywords:
+    'cookie policy, cookies, tracking technologies, data collection, car showcase platform, automotive community',
   openGraph: {
     title: 'Cookie Policy - MyRide',
-    description: 'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+    description:
+      'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
     type: 'website',
-    url: 'https://myride.cz/legal/cookies',
+    url: 'https://myride.top/legal/cookies',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Cookie Policy - MyRide',
-    description: 'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+    description:
+      'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
     images: ['/og-image-default.svg'],
   },
   robots: {
@@ -294,7 +298,7 @@ export default function CookiesPage() {
               Policy, please contact us:
             </p>
             <p className='mt-2'>
-              Email: tonyasek007@gmail.com
+              Email: support@myride.top
               <br />
               GitHub:{' '}
               <a

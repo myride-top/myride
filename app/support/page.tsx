@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description:
       'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
     type: 'website',
-    url: 'https://myride.cz/support',
+    url: 'https://myride.top/support',
     siteName: 'MyRide',
     images: [
       {

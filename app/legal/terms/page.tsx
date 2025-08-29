@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Terms of Service - MyRide',
-  description: 'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
-  keywords: 'terms of service, terms and conditions, legal, car showcase platform, automotive community',
+  description:
+    'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+  keywords:
+    'terms of service, terms and conditions, legal, car showcase platform, automotive community',
   openGraph: {
     title: 'Terms of Service - MyRide',
-    description: 'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+    description:
+      'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
     type: 'website',
-    url: 'https://myride.cz/legal/terms',
+    url: 'https://myride.top/legal/terms',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Terms of Service - MyRide',
-    description: 'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+    description:
+      'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
     images: ['/og-image-default.svg'],
   },
   robots: {
@@ -201,7 +205,7 @@ export default function TermsPage() {
               contact us at:
             </p>
             <p className='mt-2'>
-              Email: tonyasek007@gmail.com
+              Email: support@myride.top
               <br />
               GitHub:{' '}
               <a

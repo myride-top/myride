@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         type: 'redirect',
         redirect: {
           url: `${
-            process.env.NEXT_PUBLIC_APP_URL || 'https://myride.cz'
+            process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
           }/support/thank-you`,
         },
       },

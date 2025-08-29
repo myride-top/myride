@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description:
       'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
     type: 'website',
-    url: 'https://myride.cz/support/thank-you',
+    url: 'https://myride.top/support/thank-you',
     siteName: 'MyRide',
     images: [
       {
@@ -111,10 +111,10 @@ export default function ThankYouPage() {
           <p className='text-sm text-muted-foreground'>
             Have questions? Contact us at{' '}
             <a
-              href='mailto:tonyasek007@gmail.com'
+              href='mailto:support@myride.top'
               className='text-primary hover:underline'
             >
-              tonyasek007@gmail.com
+              support@myride.top
             </a>
           </p>
         </div>

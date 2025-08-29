@@ -40,7 +40,7 @@ const socialLinks = [
     href: 'https://instagram.com/baudys.me',
   },
   { name: 'GitHub', icon: Github, href: 'https://github.com/baudys' },
-  { name: 'Email', icon: Mail, href: 'mailto:tonyasek007@gmail.com' },
+  { name: 'Email', icon: Mail, href: 'mailto:support@myride.top' },
 ]
 
 export default function Footer() {

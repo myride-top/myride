@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - MyRide',
-  description: 'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
-  keywords: 'privacy policy, data protection, personal information, car showcase platform, automotive community',
+  description:
+    'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
+  keywords:
+    'privacy policy, data protection, personal information, car showcase platform, automotive community',
   openGraph: {
     title: 'Privacy Policy - MyRide',
-    description: 'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
+    description:
+      'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
     type: 'website',
-    url: 'https://myride.cz/legal/privacy',
+    url: 'https://myride.top/legal/privacy',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Privacy Policy - MyRide',
-    description: 'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
+    description:
+      'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
     images: ['/og-image-default.svg'],
   },
   robots: {
@@ -266,7 +270,7 @@ export default function PrivacyPage() {
               Privacy Policy or our data practices, please contact us:
             </p>
             <p className='mt-2'>
-              Email: tonyasek007@gmail.com
+              Email: support@myride.top
               <br />
               GitHub:{' '}
               <a

@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Dashboard - MyRide',
-  description: 'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
-  keywords: 'dashboard, car management, profile, statistics, my cars, automotive showcase',
+  description:
+    'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
+  keywords:
+    'dashboard, car management, profile, statistics, my cars, automotive showcase',
   openGraph: {
     title: 'Dashboard - MyRide',
-    description: 'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
+    description:
+      'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
     type: 'website',
-    url: 'https://myride.cz/dashboard',
+    url: 'https://myride.top/dashboard',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Dashboard - MyRide',
-    description: 'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
+    description:
+      'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
     images: ['/og-image-default.svg'],
   },
   robots: {

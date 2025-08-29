@@ -13,8 +13,10 @@ import AuthWrapper from '@/components/landing/auth-wrapper'
 
 export const metadata: Metadata = {
   title: 'MyRide - Showcase Your Car to the World',
-  description: 'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers. Fast, easy, and beautiful.',
-  keywords: 'car showcase, vehicle gallery, car enthusiasts, automotive community, car photos, vehicle specifications, car modifications',
+  description:
+    'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers. Fast, easy, and beautiful.',
+  keywords:
+    'car showcase, vehicle gallery, car enthusiasts, automotive community, car photos, vehicle specifications, car modifications',
   authors: [{ name: 'MyRide Team' }],
   creator: 'MyRide',
   publisher: 'MyRide',
@@ -23,17 +25,18 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://myride.cz'),
+  metadataBase: new URL('https://myride.top'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://myride.cz',
+    url: 'https://myride.top',
     siteName: 'MyRide',
     title: 'MyRide - Showcase Your Car to the World',
-    description: 'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    description:
+      'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
     images: [
       {
         url: '/og-image-default.svg',
@@ -48,7 +51,8 @@ export const metadata: Metadata = {
     site: '@myride',
     creator: '@myride',
     title: 'MyRide - Showcase Your Car to the World',
-    description: 'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    description:
+      'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
     images: ['/og-image-default.svg'],
   },
   robots: {

@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Edit Car - MyRide',
-  description: 'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
-  keywords: 'edit car, car specifications, car photos, vehicle modifications, automotive showcase',
+  description:
+    'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
+  keywords:
+    'edit car, car specifications, car photos, vehicle modifications, automotive showcase',
   openGraph: {
     title: 'Edit Car - MyRide',
-    description: 'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
+    description:
+      'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
     type: 'website',
-    url: 'https://myride.cz',
+    url: 'https://myride.top',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Edit Car - MyRide',
-    description: 'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
+    description:
+      'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
     images: ['/og-image-default.svg'],
   },
   robots: {

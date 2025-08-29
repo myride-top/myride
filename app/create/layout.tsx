@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Add New Car - MyRide',
-  description: 'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
-  keywords: 'add car, car showcase, vehicle profile, car specifications, car photos, car modifications',
+  description:
+    'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
+  keywords:
+    'add car, car showcase, vehicle profile, car specifications, car photos, car modifications',
   openGraph: {
     title: 'Add New Car - MyRide',
-    description: 'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
+    description:
+      'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
     type: 'website',
-    url: 'https://myride.cz/create',
+    url: 'https://myride.top/create',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Add New Car - MyRide',
-    description: 'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
+    description:
+      'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
     images: ['/og-image-default.svg'],
   },
   robots: {

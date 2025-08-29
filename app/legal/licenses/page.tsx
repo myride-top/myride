@@ -2,13 +2,16 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Licenses - MyRide',
-  description: 'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
-  keywords: 'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
+  description:
+    'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
+  keywords:
+    'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
   openGraph: {
     title: 'Licenses - MyRide',
-    description: 'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
+    description:
+      'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
     type: 'website',
-    url: 'https://myride.cz/legal/licenses',
+    url: 'https://myride.top/legal/licenses',
     siteName: 'MyRide',
     images: [
       {
@@ -22,7 +25,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Licenses - MyRide',
-    description: 'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
+    description:
+      'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
     images: ['/og-image-default.svg'],
   },
   robots: {
@@ -341,7 +345,7 @@ export default function LicensesPage() {
               request permission to use MyRide trademarks, please contact us:
             </p>
             <p className='mt-2'>
-              Email: tonyasek007@gmail.com
+              Email: support@myride.top
               <br />
               GitHub:{' '}
               <a

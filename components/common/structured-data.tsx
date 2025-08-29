@@ -36,10 +36,10 @@ export const websiteSchema = {
   name: 'MyRide',
   description:
     'The ultimate platform for car enthusiasts to showcase their vehicles',
-  url: 'https://myride.cz',
+  url: 'https://myride.top',
   potentialAction: {
     '@type': 'SearchAction',
-    target: 'https://myride.cz/browse?q={search_term_string}',
+    target: 'https://myride.top/browse?q={search_term_string}',
     'query-input': 'required name=search_term_string',
   },
 }
@@ -50,8 +50,8 @@ export const organizationSchema = {
   name: 'MyRide',
   description:
     'The ultimate platform for car enthusiasts to showcase their vehicles',
-  url: 'https://myride.cz',
-  logo: 'https://myride.cz/og-image-default.svg',
+  url: 'https://myride.top',
+  logo: 'https://myride.top/og-image-default.svg',
   sameAs: [
     'https://twitter.com/myride',
     'https://facebook.com/myride',

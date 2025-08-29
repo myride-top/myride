@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://myride.cz'),
+  metadataBase: new URL('https://myride.top'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://myride.cz',
+    url: 'https://myride.top',
     siteName: 'MyRide',
     title: 'MyRide - Showcase Your Car to the World',
     description:
