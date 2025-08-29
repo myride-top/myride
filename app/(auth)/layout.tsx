@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Authentication - MyRide',
-    template: '%s - MyRide',
+    default: 'Authentication | MyRide',
+    template: '%s | MyRide',
   },
   description:
     'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',

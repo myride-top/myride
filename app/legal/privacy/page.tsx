@@ -1,13 +1,13 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - MyRide',
+  title: 'Privacy Policy',
   description:
     'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
   keywords:
     'privacy policy, data protection, personal information, car showcase platform, automotive community',
   openGraph: {
-    title: 'Privacy Policy - MyRide',
+    title: 'MyRide - Privacy Policy',
     description:
       'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
     type: 'website',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Privacy Policy - MyRide',
+    title: 'MyRide - Privacy Policy',
     description:
       'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
     images: ['/og-image-default.svg'],

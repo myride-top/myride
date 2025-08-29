@@ -1,13 +1,13 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Licenses - MyRide',
+  title: 'Licenses',
   description:
     'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
   keywords:
     'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
   openGraph: {
-    title: 'Licenses - MyRide',
+    title: 'MyRide - Licensese',
     description:
       'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
     type: 'website',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Licenses - MyRide',
+    title: 'MyRide - Licenses',
     description:
       'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
     images: ['/og-image-default.svg'],

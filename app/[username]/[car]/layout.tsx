@@ -23,7 +23,7 @@ export async function generateMetadata({
 
     if (!car) {
       return {
-        title: 'Car Not Found - MyRide',
+        title: 'Car Not Found',
         description: 'The requested car could not be found.',
       }
     }
@@ -43,7 +43,7 @@ export async function generateMetadata({
       }
     }
 
-    const title = `${car.name} by @${profile?.username || username} - MyRide`
+    const title = `${car.name} by @${profile?.username || username}`
     const description = car.description
       ? `${car.description} - ${car.year} ${car.make} ${car.model}`
       : `Check out this ${car.year} ${car.make} ${car.model} by @${

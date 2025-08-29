@@ -3,13 +3,13 @@ import { Heart, Users, Code, Server, Zap } from 'lucide-react'
 import SupportCreator from '@/components/common/support-creator'
 
 export const metadata: Metadata = {
-  title: 'Support MyRide - Help Keep It Free',
+  title: 'Support Creator',
   description:
     'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
   keywords:
     'support, donate, car enthusiasts, automotive community, free platform, car showcase',
   openGraph: {
-    title: 'Support MyRide - Help Keep It Free',
+    title: 'MyRide - Support Creator',
     description:
       'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
     type: 'website',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Support MyRide - Help Keep It Free',
+    title: 'MyRide - Support Creator',
     description:
       'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
     images: ['/og-image-default.svg'],

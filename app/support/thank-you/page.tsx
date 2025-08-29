@@ -3,13 +3,13 @@ import Link from 'next/link'
 import { Heart, CheckCircle, ArrowLeft, Home, Car } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Thank You for Your Support - MyRide',
+  title: 'Thank You for Your Support',
   description:
     'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
   keywords:
     'thank you, support, donation, car enthusiasts, automotive community, free platform',
   openGraph: {
-    title: 'Thank You for Your Support - MyRide',
+    title: 'MyRide - Thank You for Your Support',
     description:
       'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
     type: 'website',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Thank You for Your Support - MyRide',
+    title: 'MyRide - Thank You for Your Support',
     description:
       'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
     images: ['/og-image-default.svg'],

@@ -1,13 +1,13 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Browse Cars - MyRide',
+  title: 'Browse Cars',
   description:
     'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
   keywords:
     'browse cars, car gallery, vehicle showcase, automotive community, car photos, car specifications, car modifications',
   openGraph: {
-    title: 'Browse Cars - MyRide',
+    title: 'MyRide - Browse Cars',
     description:
       'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
     type: 'website',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Browse Cars - MyRide',
+    title: 'MyRide - Browse Cars',
     description:
       'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
     images: ['/og-image-default.svg'],

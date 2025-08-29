@@ -3,7 +3,7 @@ import { Instagram, Twitter } from 'lucide-react'
 import { WaitlistForm } from '@/components/common/waitlist-form'
 
 export const metadata: Metadata = {
-  title: 'MyRide - Coming Soon',
+  title: 'Coming Soon',
   description:
     'The ultimate platform for car enthusiasts is coming soon. Join the waitlist to be the first to know when we launch.',
   keywords:

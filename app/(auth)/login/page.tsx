@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   description:
     'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
   openGraph: {
-    title: 'Sign In - MyRide',
+    title: 'MyRide - Sign In',
     description:
       'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
   },
   twitter: {
-    title: 'Sign In - MyRide',
+    title: 'MyRide - Sign In',
     description:
       'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
   },

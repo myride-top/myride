@@ -25,7 +25,7 @@ const atkinson = Atkinson_Hyperlegible({
 export const metadata: Metadata = {
   title: {
     default: 'MyRide - Showcase Your Car to the World',
-    template: '%s - MyRide',
+    template: '%s | MyRide',
   },
   description:
     'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers. Fast, easy, and beautiful.',

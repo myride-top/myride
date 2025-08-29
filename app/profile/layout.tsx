@@ -1,13 +1,13 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Edit Profile - MyRide',
+  title: 'Edit Profile',
   description:
     'Update your MyRide profile settings, avatar, and preferences. Customize your automotive showcase experience.',
   keywords:
     'profile settings, account management, user preferences, avatar upload, unit preferences',
   openGraph: {
-    title: 'Edit Profile - MyRide',
+    title: 'MyRide - Edit Profile',
     description:
       'Update your MyRide profile settings, avatar, and preferences. Customize your automotive showcase experience.',
     type: 'website',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Edit Profile - MyRide',
+    title: 'MyRide - Edit Profile',
     description:
       'Update your MyRide profile settings, avatar, and preferences. Customize your automotive showcase experience.',
     images: ['/og-image-default.svg'],

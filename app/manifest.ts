@@ -4,7 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'MyRide - Car Showcase Platform',
     short_name: 'MyRide',
-    description: 'The ultimate platform for car enthusiasts to showcase their vehicles',
+    description:
+      'The ultimate platform for car enthusiasts to showcase their vehicles',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
