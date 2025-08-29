@@ -2,8 +2,33 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - MyRide',
-  description:
-    'Privacy Policy for MyRide - Learn how we protect your personal information',
+  description: 'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
+  keywords: 'privacy policy, data protection, personal information, car showcase platform, automotive community',
+  openGraph: {
+    title: 'Privacy Policy - MyRide',
+    description: 'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
+    type: 'website',
+    url: 'https://myride.cz/legal/privacy',
+    siteName: 'MyRide',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'MyRide Privacy Policy',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy - MyRide',
+    description: 'Privacy Policy for MyRide - Learn how we protect your personal information and handle your data on our automotive showcase platform.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function PrivacyPage() {

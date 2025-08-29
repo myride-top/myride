@@ -5,6 +5,10 @@ import { UnitProvider } from '@/lib/context/unit-context'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { Toaster } from 'sonner'
 import CookieConsent from '@/components/common/cookie-consent'
+import StructuredData, {
+  websiteSchema,
+  organizationSchema,
+} from '@/components/common/structured-data'
 import './globals.css'
 
 const commissioner = Commissioner({
@@ -19,9 +23,68 @@ const atkinson = Atkinson_Hyperlegible({
 })
 
 export const metadata: Metadata = {
-  title: 'MyRide - Showcase Your Car',
+  title: {
+    default: 'MyRide - Showcase Your Car to the World',
+    template: '%s - MyRide',
+  },
   description:
-    'Showcase your car to friends and audience with super fast and easy to use platform',
+    'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers. Fast, easy, and beautiful.',
+  keywords:
+    'car showcase, vehicle gallery, car enthusiasts, automotive community, car photos, vehicle specifications, car modifications, automotive platform',
+  authors: [{ name: 'MyRide Team' }],
+  creator: 'MyRide',
+  publisher: 'MyRide',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://myride.cz'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://myride.cz',
+    siteName: 'MyRide',
+    title: 'MyRide - Showcase Your Car to the World',
+    description:
+      'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'MyRide - The Ultimate Car Showcase Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@myride',
+    creator: '@myride',
+    title: 'MyRide - Showcase Your Car to the World',
+    description:
+      'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  category: 'automotive',
+  classification: 'car showcase platform',
 }
 
 export default function RootLayout({
@@ -50,6 +113,8 @@ export default function RootLayout({
                 duration={4000}
               />
               <CookieConsent />
+              <StructuredData data={websiteSchema} />
+              <StructuredData data={organizationSchema} />
             </UnitProvider>
           </AuthProvider>
         </ThemeProvider>

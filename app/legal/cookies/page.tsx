@@ -2,8 +2,33 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Cookie Policy - MyRide',
-  description:
-    'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies',
+  description: 'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+  keywords: 'cookie policy, cookies, tracking technologies, data collection, car showcase platform, automotive community',
+  openGraph: {
+    title: 'Cookie Policy - MyRide',
+    description: 'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+    type: 'website',
+    url: 'https://myride.cz/legal/cookies',
+    siteName: 'MyRide',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'MyRide Cookie Policy',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cookie Policy - MyRide',
+    description: 'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function CookiesPage() {

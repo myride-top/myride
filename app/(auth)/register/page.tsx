@@ -1,5 +1,19 @@
+import { Metadata } from 'next'
 import RegisterForm from '@/components/auth/register-form'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Create Account',
+  description: 'Create your MyRide account to start showcasing your cars and join the automotive community.',
+  openGraph: {
+    title: 'Create Account - MyRide',
+    description: 'Create your MyRide account to start showcasing your cars and join the automotive community.',
+  },
+  twitter: {
+    title: 'Create Account - MyRide',
+    description: 'Create your MyRide account to start showcasing your cars and join the automotive community.',
+  },
+}
 
 export default function RegisterPage() {
   return (

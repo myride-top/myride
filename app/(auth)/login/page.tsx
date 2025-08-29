@@ -1,5 +1,22 @@
+import { Metadata } from 'next'
 import LoginForm from '@/components/auth/login-form'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Sign In',
+  description:
+    'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
+  openGraph: {
+    title: 'Sign In - MyRide',
+    description:
+      'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
+  },
+  twitter: {
+    title: 'Sign In - MyRide',
+    description:
+      'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
+  },
+}
 
 export default function LoginPage() {
   return (

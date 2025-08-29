@@ -2,8 +2,33 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Terms of Service - MyRide',
-  description:
-    'Terms of Service for MyRide - The ultimate platform for car enthusiasts',
+  description: 'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+  keywords: 'terms of service, terms and conditions, legal, car showcase platform, automotive community',
+  openGraph: {
+    title: 'Terms of Service - MyRide',
+    description: 'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+    type: 'website',
+    url: 'https://myride.cz/legal/terms',
+    siteName: 'MyRide',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'MyRide Terms of Service',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms of Service - MyRide',
+    description: 'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function TermsPage() {

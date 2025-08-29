@@ -117,19 +117,19 @@ export default function DashboardPage() {
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           <div className='px-4 py-6 sm:px-0'>
             {/* Stats Overview */}
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8'>
               <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
+                <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <CarIcon className='w-6 h-6 text-muted-foreground' />
+                      <CarIcon className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
                     </div>
-                    <div className='ml-5 w-0 flex-1'>
+                    <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
                           Total Cars
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
                           {cars.length}
                         </dd>
                       </dl>
@@ -139,17 +139,17 @@ export default function DashboardPage() {
               </div>
 
               <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
+                <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Heart className='w-6 h-6 text-red-500' />
+                      <Heart className='w-5 h-5 md:w-6 md:h-6 text-red-500' />
                     </div>
-                    <div className='ml-5 w-0 flex-1'>
+                    <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
                           Total Likes
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
                           {stats.totalLikes}
                         </dd>
                       </dl>
@@ -159,17 +159,17 @@ export default function DashboardPage() {
               </div>
 
               <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
+                <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Image className='w-6 h-6 text-muted-foreground' />
+                      <Image className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
                     </div>
-                    <div className='ml-5 w-0 flex-1'>
+                    <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
                           Total Photos
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
                           {stats.totalPhotos}
                         </dd>
                       </dl>
@@ -179,17 +179,17 @@ export default function DashboardPage() {
               </div>
 
               <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-5'>
+                <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Calendar className='w-6 h-6 text-muted-foreground' />
+                      <Calendar className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
                     </div>
-                    <div className='ml-5 w-0 flex-1'>
+                    <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-sm font-medium text-muted-foreground truncate'>
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
                           Member Since
                         </dt>
-                        <dd className='text-lg font-medium text-card-foreground'>
+                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
                           {stats.memberSince}
                         </dd>
                       </dl>

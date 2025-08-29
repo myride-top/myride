@@ -5,7 +5,36 @@ import SupportCreator from '@/components/common/support-creator'
 export const metadata: Metadata = {
   title: 'Support MyRide - Help Keep It Free',
   description:
-    'Support MyRide development and help keep the platform free for car enthusiasts worldwide',
+    'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
+  keywords:
+    'support, donate, car enthusiasts, automotive community, free platform, car showcase',
+  openGraph: {
+    title: 'Support MyRide - Help Keep It Free',
+    description:
+      'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
+    type: 'website',
+    url: 'https://myride.cz/support',
+    siteName: 'MyRide',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'Support MyRide',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Support MyRide - Help Keep It Free',
+    description:
+      'Support MyRide development and help keep the platform free for car enthusiasts worldwide. Contribute to the automotive community showcase platform.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 const features = [

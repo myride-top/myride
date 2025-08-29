@@ -4,7 +4,37 @@ import { Heart, CheckCircle, ArrowLeft, Home, Car } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Thank You for Your Support - MyRide',
-  description: 'Thank you for supporting MyRide development',
+  description:
+    'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
+  keywords:
+    'thank you, support, donation, car enthusiasts, automotive community, free platform',
+  openGraph: {
+    title: 'Thank You for Your Support - MyRide',
+    description:
+      'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
+    type: 'website',
+    url: 'https://myride.cz/support/thank-you',
+    siteName: 'MyRide',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'Thank You for Supporting MyRide',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Thank You for Your Support - MyRide',
+    description:
+      'Thank you for supporting MyRide development and helping keep the automotive showcase platform free for car enthusiasts worldwide.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default function ThankYouPage() {

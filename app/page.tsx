@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { getPlatformStatsServer } from '@/lib/database/stats-server'
 import { LandingNavbar } from '@/components/navbar'
@@ -9,6 +10,62 @@ import CTASection from '@/components/landing/cta-section'
 import Footer from '@/components/landing/footer'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import AuthWrapper from '@/components/landing/auth-wrapper'
+
+export const metadata: Metadata = {
+  title: 'MyRide - Showcase Your Car to the World',
+  description: 'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers. Fast, easy, and beautiful.',
+  keywords: 'car showcase, vehicle gallery, car enthusiasts, automotive community, car photos, vehicle specifications, car modifications',
+  authors: [{ name: 'MyRide Team' }],
+  creator: 'MyRide',
+  publisher: 'MyRide',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://myride.cz'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://myride.cz',
+    siteName: 'MyRide',
+    title: 'MyRide - Showcase Your Car to the World',
+    description: 'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    images: [
+      {
+        url: '/og-image-default.svg',
+        width: 1200,
+        height: 630,
+        alt: 'MyRide - The Ultimate Car Showcase Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@myride',
+    creator: '@myride',
+    title: 'MyRide - Showcase Your Car to the World',
+    description: 'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    images: ['/og-image-default.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+}
 
 // Create a server component wrapper for the landing content
 async function LandingContent() {
