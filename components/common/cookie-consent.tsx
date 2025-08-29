@@ -12,11 +12,6 @@ export default function CookieConsent() {
   const { consentStatus, isLoaded, acceptCookies, declineCookies } =
     useCookieConsent()
 
-  // Don't show cookie consent on coming-soon page
-  if (pathname === '/coming-soon') {
-    return null
-  }
-
   useEffect(() => {
     // Only show if consent hasn't been given and component is loaded
     if (isLoaded && !consentStatus) {
@@ -27,6 +22,11 @@ export default function CookieConsent() {
       return () => clearTimeout(timer)
     }
   }, [isLoaded, consentStatus])
+
+  // Don't show cookie consent on coming-soon page
+  if (pathname === '/coming-soon') {
+    return null
+  }
 
   const handleAccept = () => {
     acceptCookies()
