@@ -50,17 +50,94 @@ export async function getUserCarCountClient(userId: string): Promise<number> {
 
 export async function canUserCreateCarClient(userId: string): Promise<boolean> {
   try {
-    // Use the database function that checks premium status
-    const { data, error } = await supabase.rpc('can_user_create_car', {
-      user_id: userId,
-    })
+    // First check if user is premium
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_premium, car_slots_purchased')
+      .eq('id', userId)
+      .single()
 
-    if (error) {
-      console.error('Error checking if user can create car:', error)
+    let isPremium = false
+    let carSlotsPurchased = 0
+    if (profileError) {
+      console.error('Error fetching profile:', profileError)
+      // If profile doesn't exist yet, treat as non-premium
+      isPremium = false
+      carSlotsPurchased = 0
+    } else {
+      isPremium = profile?.is_premium || false
+      carSlotsPurchased = profile?.car_slots_purchased || 0
+    }
+
+    // If premium, they can create unlimited cars
+    if (isPremium) {
+      return true
+    }
+
+    // If not premium, check car count
+    const { count, error: carError } = await supabase
+      .from('cars')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+
+    if (carError) {
+      console.error('Error counting cars:', carError)
       return false
     }
 
-    return data || false
+    const currentCarCount = count || 0
+    const maxAllowedCars = 1 + carSlotsPurchased // 1 free + purchased slots
+
+    return currentCarCount < maxAllowedCars
+  } catch (error) {
+    console.error('Error checking if user can create car:', error)
+    return false
+  }
+}
+
+// Simple fallback function that doesn't rely on database functions
+export async function canUserCreateCarSimpleClient(
+  userId: string
+): Promise<boolean> {
+  try {
+    // Check profile for purchased slots
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_premium, car_slots_purchased')
+      .eq('id', userId)
+      .single()
+
+    let isPremium = false
+    let carSlotsPurchased = 0
+    if (profileError) {
+      // If profile doesn't exist yet, treat as non-premium
+      isPremium = false
+      carSlotsPurchased = 0
+    } else {
+      isPremium = profile?.is_premium || false
+      carSlotsPurchased = profile?.car_slots_purchased || 0
+    }
+
+    // If premium, they can create unlimited cars
+    if (isPremium) {
+      return true
+    }
+
+    // Check car count
+    const { count, error } = await supabase
+      .from('cars')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+
+    if (error) {
+      console.error('Error counting cars:', error)
+      return false
+    }
+
+    const currentCarCount = count || 0
+    const maxAllowedCars = 1 + carSlotsPurchased // 1 free + purchased slots
+
+    return currentCarCount < maxAllowedCars
   } catch (error) {
     console.error('Error checking if user can create car:', error)
     return false

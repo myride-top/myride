@@ -78,6 +78,9 @@ async function handleCheckoutSessionCompleted(
     } else if (type === 'premium') {
       // Handle premium purchase
       await handlePremiumPurchase(session)
+    } else if (type === 'car_slot') {
+      // Handle car slot purchase
+      await handleCarSlotPurchase(session)
     } else {
       console.log('Unknown payment type:', type)
     }
@@ -155,6 +158,37 @@ async function handlePremiumPurchase(session: Stripe.Checkout.Session) {
       }
     } catch (error) {
       console.error('Error activating premium user:', error)
+    }
+  }
+}
+
+// Handle car slot purchases
+async function handleCarSlotPurchase(session: Stripe.Checkout.Session) {
+  const { userId } = session.metadata || {}
+
+  console.log('Processing car slot purchase:', {
+    userId,
+    sessionId: session.id,
+    amount: session.amount_total,
+  })
+
+  if (userId) {
+    try {
+      // Import the premium client function
+      const { addCarSlot } = await import('@/lib/database/premium-client')
+
+      // Add one car slot to the user
+      const success = await addCarSlot(userId)
+
+      if (success) {
+        console.log(`Car slot added for user: ${userId}`)
+        // TODO: Send confirmation email
+        // await sendCarSlotConfirmationEmail(userId)
+      } else {
+        console.error(`Failed to add car slot for user: ${userId}`)
+      }
+    } catch (error) {
+      console.error('Error adding car slot:', error)
     }
   }
 }
