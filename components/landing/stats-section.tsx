@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useInView } from 'framer-motion'
+import React from 'react'
 import { useRef, useState, useEffect } from 'react'
 import { Car, Users, Heart, Star } from 'lucide-react'
 import { getPlatformStats, PlatformStats } from '@/lib/database/stats-client'
@@ -38,67 +38,84 @@ const stats = [
 
 function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [count, setCount] = useState(0)
+  const [hasAnimated, setHasAnimated] = useState(false)
 
   useEffect(() => {
-    if (isInView) {
-      const duration = 2000 // 2 seconds
-      const steps = 60
-      const increment = value / steps
-      let current = 0
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true)
+          const duration = 1500 // 1.5 seconds
+          const steps = 30
+          const increment = value / steps
+          let current = 0
 
-      const timer = setInterval(() => {
-        current += increment
-        if (current >= value) {
-          setCount(value)
-          clearInterval(timer)
-        } else {
-          setCount(Math.floor(current))
+          const timer = setInterval(() => {
+            current += increment
+            if (current >= value) {
+              setCount(value)
+              clearInterval(timer)
+            } else {
+              setCount(Math.floor(current))
+            }
+          }, duration / steps)
+
+          return () => clearInterval(timer)
         }
-      }, duration / steps)
+      },
+      { threshold: 0.1 }
+    )
 
-      return () => clearInterval(timer)
+    if (ref.current) {
+      observer.observe(ref.current)
     }
-  }, [isInView, value])
+
+    return () => observer.disconnect()
+  }, [value, hasAnimated])
 
   return (
-    <motion.span
+    <span
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.8 }}
-      className='text-4xl md:text-5xl font-bold'
+      className='text-4xl md:text-5xl font-bold animate-in fade-in slide-in-from-bottom-2 duration-500'
     >
       {count}
       {suffix}
-    </motion.span>
+    </span>
   )
 }
 
-export default function StatsSection() {
-  const [platformStats, setPlatformStats] = useState<PlatformStats>({
-    totalCars: 0,
-    totalUsers: 0,
-    totalLikes: 0,
-    averageRating: 4.9,
-  })
-  const [loading, setLoading] = useState(true)
+interface StatsSectionProps {
+  initialStats?: PlatformStats
+}
+
+export default function StatsSection({ initialStats }: StatsSectionProps) {
+  const [platformStats, setPlatformStats] = useState<PlatformStats>(
+    initialStats || {
+      totalCars: 0,
+      totalUsers: 0,
+      totalLikes: 0,
+      averageRating: 4.9,
+    }
+  )
+  const [loading, setLoading] = useState(!initialStats)
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const stats = await getPlatformStats()
-        setPlatformStats(stats)
-      } catch (error) {
-        console.error('Error fetching platform stats:', error)
-      } finally {
-        setLoading(false)
+    if (!initialStats) {
+      const fetchStats = async () => {
+        try {
+          const stats = await getPlatformStats()
+          setPlatformStats(stats)
+        } catch (error) {
+          console.error('Error fetching platform stats:', error)
+        } finally {
+          setLoading(false)
+        }
       }
-    }
 
-    fetchStats()
-  }, [])
+      fetchStats()
+    }
+  }, [initialStats])
 
   return (
     <section
@@ -106,13 +123,7 @@ export default function StatsSection() {
       className='py-20 bg-gradient-to-r from-muted/30 to-background'
     >
       <div className='max-w-7xl mx-auto px-4'>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className='text-center mb-16'
-        >
+        <div className='text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700'>
           <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-4'>
             Trusted by Car Enthusiasts Worldwide
           </h2>
@@ -120,18 +131,14 @@ export default function StatsSection() {
             Join thousands of car lovers who are already showcasing their rides
             and connecting with the community
           </p>
-        </motion.div>
+        </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
           {stats.map((stat, index) => (
-            <motion.div
+            <div
               key={stat.label}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className='text-center group'
+              className='text-center group animate-in fade-in slide-in-from-bottom-4 duration-500 hover:-translate-y-1 hover:scale-[1.02] transition-transform'
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className='relative'>
                 <div className='p-4 rounded-2xl bg-card border border-border/50 group-hover:border-primary/50 transition-all duration-300 mb-6'>
@@ -139,21 +146,13 @@ export default function StatsSection() {
                     className={`h-12 w-12 mx-auto ${stat.color} group-hover:scale-110 transition-transform duration-300`}
                   />
                 </div>
-                <motion.div
-                  className='absolute -top-2 -right-2 w-4 h-4 bg-primary rounded-full'
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: index * 0.5,
-                  }}
-                />
+                <div className='absolute -top-2 -right-2 w-4 h-4 bg-primary rounded-full animate-pulse' />
               </div>
 
               <div className='space-y-2'>
                 <div className='flex items-center justify-center gap-1'>
                   {loading ? (
-                    <div className='text-4xl md:text-5xl font-bold text-muted-foreground'>
+                    <div className='text-4xl md:text-5xl font-bold text-muted-foreground animate-pulse'>
                       ...
                     </div>
                   ) : (
@@ -167,30 +166,18 @@ export default function StatsSection() {
                   {stat.label}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Additional visual element */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          viewport={{ once: true }}
-          className='mt-16 text-center'
-        >
+        <div className='mt-16 text-center animate-in fade-in scale-in-95 duration-700 delay-500'>
           <div className='inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 border border-primary/20'>
             <div className='flex -space-x-2'>
               {[...Array(5)].map((_, i) => (
-                <motion.div
+                <div
                   key={i}
                   className='w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary border-2 border-background'
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    delay: i * 0.1,
-                  }}
                 />
               ))}
             </div>
@@ -198,7 +185,7 @@ export default function StatsSection() {
               Growing community
             </span>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

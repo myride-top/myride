@@ -1,8 +1,17 @@
 ### TODO
 
 - optimize metadata for every page
+- upload custom avatar image
+- optimize fullscreen image viewer (use baudys.dev code)
+- internazionalization (english, czech, spanish, german)
 
-- premium page (coming soon)
+- what company emails to create? (should I create new accounts on the company mail? (github, vercel, supabase)?
+
+### Before launch
+
+- hide info about exceeding car limit (I want the app simple when being released)
+- hide Premium link in profile dropdown menu
+- hide browse cars link
 
 ### Wanted features after launch
 

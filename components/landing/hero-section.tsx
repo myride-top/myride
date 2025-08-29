@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import React from 'react'
 import { ChevronDown, Car, Users, Zap, Shield, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
@@ -31,65 +31,29 @@ const features = [
 export default function HeroSection() {
   return (
     <section className='relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 pt-28 lg:pt-0'>
-      {/* Animated background elements */}
+      {/* Simplified background elements */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        <motion.div
-          className='absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl'
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
-        <motion.div
-          className='absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl'
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
+        <div className='absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl' />
+        <div className='absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl' />
       </div>
 
       <div className='text-center max-w-6xl mx-auto px-4'>
         {/* Main heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
+        <div className='animate-in fade-in slide-in-from-bottom-4 duration-700'>
           <h1 className='text-6xl md:text-8xl font-bold bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent mb-6 py-2'>
             MyRide
           </h1>
-        </motion.div>
+        </div>
 
         {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className='text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed'
-        >
+        <p className='text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100'>
           Showcase your car to friends and audience with our super fast and
           easy-to-use platform. Connect with fellow car enthusiasts and share
           your automotive passion.
-        </motion.p>
+        </p>
 
         {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className='flex flex-col sm:flex-row gap-4 justify-center mb-16'
-        >
+        <div className='flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200'>
           <Link
             href='/register'
             className='group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-primary rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl'
@@ -98,12 +62,7 @@ export default function HeroSection() {
               Get Started Free
               <ArrowRight className='h-5 w-5 group-hover:translate-x-1 transition-transform' />
             </span>
-            <motion.div
-              className='absolute inset-0 bg-gradient-to-r from-primary to-secondary'
-              initial={{ x: '-100%' }}
-              whileHover={{ x: '0%' }}
-              transition={{ duration: 0.3 }}
-            />
+            <div className='absolute inset-0 bg-gradient-to-r from-primary to-secondary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300' />
           </Link>
           <button
             onClick={() => {
@@ -115,23 +74,15 @@ export default function HeroSection() {
             Explore Cars
             <ArrowRight className='ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform' />
           </button>
-        </motion.div>
+        </div>
 
         {/* Features Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto'
-        >
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300'>
           {features.map((feature, index) => (
-            <motion.div
+            <div
               key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className='group p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300'
+              className='group p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] animate-in fade-in slide-in-from-bottom-4 duration-500'
+              style={{ animationDelay: `${400 + index * 50}ms` }}
             >
               <div className='flex flex-col items-center text-center'>
                 <div className='p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors mb-4'>
@@ -144,26 +95,17 @@ export default function HeroSection() {
                   {feature.description}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className='absolute bottom-4 left-1/2 transform -translate-x-1/2'
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className='flex flex-col items-center text-muted-foreground'
-          >
+        <div className='absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-in fade-in duration-1000 delay-600'>
+          <div className='flex flex-col items-center text-muted-foreground'>
             <span className='text-sm mb-2'>Scroll to explore</span>
-            <ChevronDown className='h-6 w-6' />
-          </motion.div>
-        </motion.div>
+            <ChevronDown className='h-6 w-6 animate-bounce' />
+          </div>
+        </div>
       </div>
     </section>
   )

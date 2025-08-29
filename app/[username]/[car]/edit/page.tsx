@@ -17,7 +17,7 @@ import PhotoUpload from '@/components/photos/photo-upload'
 import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import { toast } from 'sonner'
 import { ArrowLeft, Star, X, Loader2, AlertTriangle } from 'lucide-react'
-import Navbar from '@/components/layout/navbar'
+import { MainNavbar } from '@/components/navbar'
 import { getUnitLabel, unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
@@ -604,7 +604,7 @@ export default function EditCarPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
-        <Navbar />
+        <MainNavbar />
 
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>

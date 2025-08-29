@@ -12,7 +12,7 @@ import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import ProtectedRoute from '@/components/auth/protected-route'
 import Link from 'next/link'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
-import Navbar from '@/components/layout/navbar'
+import { MainNavbar } from '@/components/navbar'
 import { ArrowLeft } from 'lucide-react'
 import { Dialog } from '@/components/ui/dialog'
 import {
@@ -300,7 +300,7 @@ export default function CreateCarPage() {
     return (
       <ProtectedRoute>
         <div className='min-h-screen bg-background'>
-          <Navbar />
+          <MainNavbar />
           <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
             <div className='flex items-center justify-center'>
               <div className='text-center'>
@@ -317,7 +317,7 @@ export default function CreateCarPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
-        <Navbar />
+        <MainNavbar />
 
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>

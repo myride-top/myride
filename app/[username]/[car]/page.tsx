@@ -28,7 +28,7 @@ import {
   unlikeCarClient,
   hasUserLikedCarClient,
 } from '@/lib/database/cars-client'
-import Navbar from '@/components/layout/navbar'
+import { MainNavbar, LandingNavbar } from '@/components/navbar'
 import PageHeader from '@/components/layout/page-header'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import LoadingSpinner from '@/components/common/loading-spinner'
@@ -250,9 +250,9 @@ export default function CarDetailPage() {
     )
   }
 
-  return (
-    <div className='min-h-screen bg-background'>
-      <Navbar />
+      return (
+      <div className='min-h-screen bg-background'>
+        {user ? <MainNavbar /> : <LandingNavbar />}
 
       <PageHeader
         title={car.name}

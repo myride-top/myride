@@ -9,7 +9,7 @@ import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { Plus, CarIcon, Info, Heart, Calendar, Image } from 'lucide-react'
-import Navbar from '@/components/layout/navbar'
+import { MainNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
@@ -111,7 +111,7 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
-        <Navbar showCreateButton={true} />
+        <MainNavbar showCreateButton={true} />
 
         {/* Main Content */}
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>

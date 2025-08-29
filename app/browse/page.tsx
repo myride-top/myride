@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { getAllCarsClient } from '@/lib/database/cars-client'
 import { Car, Profile } from '@/lib/types/database'
-import Navbar from '@/components/layout/navbar'
+import { MainNavbar, LandingNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
@@ -38,7 +38,7 @@ export default function BrowsePage() {
   if (loading) {
     return (
       <div className='min-h-screen bg-background'>
-        <Navbar />
+        {user ? <MainNavbar /> : <LandingNavbar />}
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           <div className='px-4 py-6 sm:px-0'>
             <LoadingSpinner message='Loading cars...' />
@@ -50,7 +50,7 @@ export default function BrowsePage() {
 
   return (
     <div className='min-h-screen bg-background'>
-      <Navbar />
+      {user ? <MainNavbar /> : <LandingNavbar />}
 
       {/* Main Content */}
       <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>

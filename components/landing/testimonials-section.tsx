@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import React from 'react'
 import { Star, Quote } from 'lucide-react'
 
 const testimonials = [
@@ -62,33 +62,26 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   return (
-    <section className='py-20 bg-gradient-to-br from-muted/20 to-background'>
+    <section
+      id='reviews'
+      className='py-20 bg-gradient-to-br from-muted/20 to-background'
+    >
       <div className='max-w-7xl mx-auto px-4'>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className='text-center mb-16'
-        >
+        <div className='text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700'>
           <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-4'>
             Loved by Car Enthusiasts Worldwide
           </h2>
           <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
             See what our community has to say about their MyRide experience
           </p>
-        </motion.div>
+        </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <div
               key={testimonial.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className='group relative'
+              className='group relative animate-in fade-in slide-in-from-bottom-4 duration-500 hover:-translate-y-1 hover:scale-[1.01] transition-transform'
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className='relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-300 h-full'>
                 {/* Quote icon */}
@@ -134,23 +127,14 @@ export default function TestimonialsSection() {
                 </div>
 
                 {/* Hover effect */}
-                <motion.div
-                  className='absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'
-                  initial={false}
-                />
+                <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className='text-center mt-16'
-        >
+        <div className='text-center mt-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500'>
           <div className='inline-flex flex-col sm:flex-row items-center gap-4 p-8 rounded-2xl bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20'>
             <div className='text-center sm:text-left'>
               <h3 className='text-xl font-semibold text-foreground mb-2'>
@@ -161,19 +145,17 @@ export default function TestimonialsSection() {
                 enthusiasts
               </p>
             </div>
-            <motion.button
+            <button
               onClick={() => {
                 console.log('Get Started Free button clicked from testimonials')
                 window.location.href = '/register'
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className='px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors whitespace-nowrap cursor-pointer'
+              className='px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors whitespace-nowrap cursor-pointer hover:scale-105 active:scale-95'
             >
               Get Started Free
-            </motion.button>
+            </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

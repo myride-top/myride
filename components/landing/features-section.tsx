@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import React from 'react'
 import { Camera, Settings, Share2, Smartphone, Globe, Zap } from 'lucide-react'
 
 const features = [
@@ -58,13 +58,7 @@ export default function FeaturesSection() {
   return (
     <section id='features' className='py-20 bg-background'>
       <div className='max-w-7xl mx-auto px-4'>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className='text-center mb-16'
-        >
+        <div className='text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700'>
           <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-4'>
             Everything You Need to Showcase Your Ride
           </h2>
@@ -72,18 +66,14 @@ export default function FeaturesSection() {
             Powerful features designed specifically for car enthusiasts to
             create the perfect showcase
           </p>
-        </motion.div>
+        </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {features.map((feature, index) => (
-            <motion.div
+            <div
               key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className='group relative'
+              className='group relative animate-in fade-in slide-in-from-bottom-4 duration-500 hover:-translate-y-1 hover:scale-[1.01] transition-transform'
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className='relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-300 h-full'>
                 {/* Background gradient on hover */}
@@ -111,48 +101,32 @@ export default function FeaturesSection() {
                 </div>
 
                 {/* Hover effect overlay */}
-                <motion.div
-                  className='absolute inset-0 rounded-2xl border-2 border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300'
-                  initial={false}
-                  whileHover={{ scale: 1.02 }}
-                />
+                <div className='absolute inset-0 rounded-2xl border-2 border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Call to action */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className='text-center mt-16'
-        >
+        <div className='text-center mt-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500'>
           <div className='inline-flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20'>
             <div className='flex items-center gap-2'>
-              <motion.div
-                className='w-3 h-3 bg-primary rounded-full'
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
+              <div className='w-3 h-3 bg-primary rounded-full animate-pulse' />
               <span className='text-sm font-medium text-primary'>
                 Ready to get started?
               </span>
             </div>
-            <motion.button
+            <button
               onClick={() => {
                 console.log('Start Showcasing button clicked from features')
                 window.location.href = '/register'
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className='px-6 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer'
+              className='px-6 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer hover:scale-105 active:scale-95'
             >
               Start Showcasing
-            </motion.button>
+            </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import React from 'react'
 import { ArrowRight, Sparkles, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -15,51 +15,43 @@ const benefits = [
   'Free forever',
 ]
 
-export default function CTASection() {
-  const [userCount, setUserCount] = useState<number>(0)
-  const [loading, setLoading] = useState(true)
+interface CTASectionProps {
+  initialUserCount?: number
+}
+
+export default function CTASection({ initialUserCount }: CTASectionProps) {
+  const [userCount, setUserCount] = useState<number>(initialUserCount || 0)
+  const [loading, setLoading] = useState(!initialUserCount)
 
   useEffect(() => {
-    const fetchUserCount = async () => {
-      try {
-        const stats = await getPlatformStats()
-        setUserCount(stats.totalUsers)
-      } catch (error) {
-        console.error('Error fetching user count:', error)
-        setUserCount(5000) // Fallback to default value
-      } finally {
-        setLoading(false)
+    if (!initialUserCount) {
+      const fetchUserCount = async () => {
+        try {
+          const stats = await getPlatformStats()
+          setUserCount(stats.totalUsers)
+        } catch (error) {
+          console.error('Error fetching user count:', error)
+          setUserCount(5000) // Fallback to default value
+        } finally {
+          setLoading(false)
+        }
       }
-    }
 
-    fetchUserCount()
-  }, [])
+      fetchUserCount()
+    }
+  }, [initialUserCount])
 
   return (
     <section className='py-20 bg-gradient-to-br from-primary/5 via-background to-secondary/5'>
       <div className='max-w-4xl mx-auto px-4 text-center'>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className='relative'
-        >
-          {/* Floating sparkles */}
-          <motion.div
-            className='absolute -top-8 -left-8 text-primary/30'
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          >
+        <div className='relative animate-in fade-in slide-in-from-bottom-4 duration-700'>
+          {/* Static sparkles */}
+          <div className='absolute -top-8 -left-8 text-primary/30'>
             <Sparkles className='h-8 w-8' />
-          </motion.div>
-          <motion.div
-            className='absolute -top-4 -right-4 text-secondary/30'
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-          >
+          </div>
+          <div className='absolute -top-4 -right-4 text-secondary/30'>
             <Sparkles className='h-6 w-6' />
-          </motion.div>
+          </div>
 
           <h2 className='text-4xl md:text-5xl font-bold text-foreground mb-6'>
             Ready to Showcase Your Ride?
@@ -69,39 +61,24 @@ export default function CTASection() {
             rides and connecting with the community. It&apos;s completely free
             and takes just minutes to get started.
           </p>
-        </motion.div>
+        </div>
 
         {/* Benefits grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-          className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto'
-        >
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200'>
           {benefits.map((benefit, index) => (
-            <motion.div
+            <div
               key={benefit}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-              viewport={{ once: true }}
-              className='flex items-center gap-3 text-left'
+              className='flex items-center gap-3 text-left animate-in fade-in slide-in-from-left-4 duration-500'
+              style={{ animationDelay: `${400 + index * 100}ms` }}
             >
               <CheckCircle className='h-5 w-5 text-green-500 flex-shrink-0' />
               <span className='text-foreground font-medium'>{benefit}</span>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          viewport={{ once: true }}
-          className='flex flex-col sm:flex-row gap-4 justify-center mb-8'
-        >
+        <div className='flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-400'>
           <Link
             href='/register'
             className='group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-primary rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl'
@@ -110,12 +87,7 @@ export default function CTASection() {
               Get Started Free
               <ArrowRight className='h-5 w-5 group-hover:translate-x-1 transition-transform' />
             </span>
-            <motion.div
-              className='absolute inset-0 bg-gradient-to-r from-primary to-secondary'
-              initial={{ x: '-100%' }}
-              whileHover={{ x: '0%' }}
-              transition={{ duration: 0.3 }}
-            />
+            <div className='absolute inset-0 bg-gradient-to-r from-primary to-secondary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300' />
           </Link>
           <button
             onClick={() => {
@@ -127,16 +99,10 @@ export default function CTASection() {
             Explore Cars
             <ArrowRight className='ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform' />
           </button>
-        </motion.div>
+        </div>
 
         {/* Trust indicators */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          viewport={{ once: true }}
-          className='flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground'
-        >
+        <div className='flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground animate-in fade-in duration-700 delay-600'>
           <div className='flex items-center gap-2'>
             <div className='w-2 h-2 bg-green-500 rounded-full animate-pulse' />
             <span>No credit card required</span>
@@ -149,29 +115,19 @@ export default function CTASection() {
             <div className='w-2 h-2 bg-purple-500 rounded-full animate-pulse' />
             <span>Free forever</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Bottom decoration */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          viewport={{ once: true }}
-          className='mt-12'
-        >
+        <div className='mt-12 animate-in fade-in scale-in-95 duration-700 delay-800'>
           <div className='inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20'>
-            <motion.div
-              className='w-2 h-2 bg-primary rounded-full'
-              animate={{ scale: [1, 1.5, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+            <div className='w-2 h-2 bg-primary rounded-full animate-pulse' />
             <span className='text-sm font-medium text-primary'>
               {loading
                 ? 'Join car enthusiasts'
                 : `Join ${userCount.toLocaleString()}+ car enthusiasts`}
             </span>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

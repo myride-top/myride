@@ -12,7 +12,7 @@ import { Profile } from '@/lib/types/database'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
-import Navbar from '@/components/layout/navbar'
+import { MainNavbar } from '@/components/navbar'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -132,7 +132,7 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
-        <Navbar />
+        <MainNavbar />
 
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-28'>
