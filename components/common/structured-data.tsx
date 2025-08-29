@@ -54,7 +54,7 @@ export const organizationSchema = {
   logo: 'https://myride.top/og-image-default.svg',
   sameAs: [
     'https://twitter.com/myride',
-    'https://facebook.com/myride',
+    'https://tiktok.com/@myride.top',
     'https://instagram.com/myride',
   ],
 }
