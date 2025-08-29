@@ -115,10 +115,26 @@ export async function getStripeCustomerId(
 // Add a car slot to user (for $1 purchases)
 export async function addCarSlot(userId: string): Promise<boolean> {
   try {
+    // First get current value
+    const { data: currentProfile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('car_slots_purchased')
+      .eq('id', userId)
+      .single()
+
+    if (fetchError) {
+      console.error('Error fetching current car slots:', fetchError)
+      return false
+    }
+
+    const currentSlots = currentProfile?.car_slots_purchased || 0
+    const newSlots = currentSlots + 1
+
+    // Update with new value
     const { data, error } = await supabase
       .from('profiles')
       .update({
-        car_slots_purchased: supabase.sql`car_slots_purchased + 1`,
+        car_slots_purchased: newSlots,
       })
       .eq('id', userId)
       .select('car_slots_purchased')
