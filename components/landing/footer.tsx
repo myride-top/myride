@@ -50,9 +50,12 @@ export default function Footer() {
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8'>
           {/* Brand */}
           <div className='lg:col-span-2'>
-            <div className='flex items-center gap-2 mb-4'>
-              <Car className='h-8 w-8 text-primary' />
-              <span className='text-2xl font-bold text-primary'>MyRide</span>
+            <div className='flex items-center mb-4'>
+              <img
+                src='/logo.svg'
+                alt='MyRide'
+                className='h-8 w-auto'
+              />
             </div>
             <p className='text-muted-foreground mb-4 max-w-sm'>
               The ultimate platform for car enthusiasts to showcase their rides

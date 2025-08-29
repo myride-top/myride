@@ -83,12 +83,13 @@ export default function BaseNavbar({
           {showLogo && (
             <Link
               href={logoHref}
-              className='flex items-center gap-2 hover:scale-105 transition-transform'
+              className='flex items-center hover:scale-105 transition-transform'
             >
-              <Car className='h-8 w-8 text-primary' />
-              <span className='text-xl md:text-2xl font-black text-primary'>
-                MyRide
-              </span>
+              <img
+                src='/logo.svg'
+                alt='MyRide'
+                className='h-8 w-auto'
+              />
             </Link>
           )}
 

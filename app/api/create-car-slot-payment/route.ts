@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: 'Additional Car Slot',
               description: 'Purchase an additional car slot for MyRide',
-              images: ['https://myride.top/og-image-default.svg'], // Add your product image
+              images: ['https://myride.top/icon.jpg'], // Add your product image
             },
             unit_amount: 100, // $1.00 in cents
           },

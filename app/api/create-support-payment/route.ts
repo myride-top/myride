@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: 'Support MyRide',
               description: description || 'Support for MyRide development',
+              images: ['https://myride.top/icon.jpg'],
             },
             unit_amount: amount,
           },

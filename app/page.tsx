@@ -39,7 +39,7 @@ export const metadata: Metadata = {
       'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/icon.svg',
         width: 1200,
         height: 630,
         alt: 'MyRide - The Ultimate Car Showcase Platform',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'MyRide - Showcase Your Car to the World',
     description:
       'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
-    images: ['/og-image-default.svg'],
+    images: ['/icon.svg'],
   },
   robots: {
     index: true,

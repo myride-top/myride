@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: 'MyRide Premium',
               description: 'Lifetime premium access to MyRide features',
-              images: ['https://myride.top/og-image-default.svg'], // Add your premium product image
+              images: ['https://myride.top/icon.jpg'], // Add your premium product image
             },
             unit_amount: 1000, // $10.00 in cents
           },
