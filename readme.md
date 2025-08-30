@@ -1,7 +1,5 @@
 ## TODO
 
-- 404 page not found custom page
-
 - fix site name (Dashboard - MyRide - MyRide -> Dashboard | MyRide)
 - dynamic edit car site name (Editing {car_name} | MyRide)
 
