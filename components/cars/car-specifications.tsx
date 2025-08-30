@@ -212,6 +212,58 @@ export default function CarSpecifications({
       label: 'Maintenance History',
       value: car.maintenance_history,
     },
+    {
+      key: 'modifications',
+      label: 'Modifications',
+      value: car.modifications && car.modifications.length > 0 
+        ? car.modifications.join(', ')
+        : null,
+    },
+    {
+      key: 'dyno_results',
+      label: 'Dyno Results',
+      value: car.dyno_results,
+    },
+  ]
+
+  const buildStory: SpecificationItem[] = [
+    { key: 'build_story', label: 'Build Story', value: car.build_story },
+    {
+      key: 'build_start_date',
+      label: 'Build Start Date',
+      value: car.build_start_date,
+    },
+    {
+      key: 'total_build_cost',
+      label: 'Total Build Cost',
+      value: car.total_build_cost
+        ? `$${car.total_build_cost.toLocaleString()}`
+        : null,
+    },
+    { key: 'inspiration', label: 'Inspiration', value: car.inspiration },
+  ]
+
+  const socialLinks: SpecificationItem[] = [
+    { 
+      key: 'instagram_handle', 
+      label: 'Instagram', 
+      value: car.instagram_handle ? `@${car.instagram_handle.replace('@', '')}` : null 
+    },
+    { 
+      key: 'youtube_channel', 
+      label: 'YouTube', 
+      value: car.youtube_channel 
+    },
+    { 
+      key: 'build_thread_url', 
+      label: 'Build Thread', 
+      value: car.build_thread_url 
+    },
+    { 
+      key: 'website_url', 
+      label: 'Website', 
+      value: car.website_url 
+    },
   ]
 
   return (
@@ -221,6 +273,7 @@ export default function CarSpecifications({
       </h2>
 
       <div className='bg-card shadow rounded-lg divide-y divide-border'>
+        {/* Basic Information - Always show since it has required fields */}
         <div className='p-6'>
           <SpecificationSection
             title='Basic Information'
@@ -228,67 +281,100 @@ export default function CarSpecifications({
           />
         </div>
 
-        <div className='p-6'>
-          <SpecificationSection
-            title='Engine & Performance'
-            specifications={engineSpecs}
-          />
-        </div>
-
-        <div className='p-6'>
-          <SpecificationSection
-            title='Wheels & Tires'
-            specifications={wheelsAndTires}
-          />
-        </div>
-
-        <div className='p-6'>
-          <SpecificationSection title='Brake System' specifications={brakes} />
-        </div>
-
-        <div className='p-6'>
-          <SpecificationSection
-            title='Suspension'
-            specifications={suspension}
-          />
-        </div>
-
-        <div className='p-6'>
-          <SpecificationSection title='Exterior' specifications={exterior} />
-        </div>
-
-        <div className='p-6'>
-          <SpecificationSection title='Interior' specifications={interior} />
-        </div>
-
-        <div className='p-6'>
-          <SpecificationSection
-            title='Additional Details'
-            specifications={additionalDetails}
-          />
-        </div>
-
-        {car.modifications && car.modifications.length > 0 && (
+        {/* Build Story Section - Only show if there's content */}
+        {buildStory.some(spec => spec.value) && (
           <div className='p-6'>
-            <h3 className='text-lg font-medium text-foreground mb-4'>
-              Modifications
-            </h3>
-            <ul className='space-y-2'>
-              {car.modifications.map((mod, index) => (
-                <li key={index} className='text-sm text-foreground'>
-                  • {mod}
-                </li>
-              ))}
-            </ul>
+            <SpecificationSection
+              title='Build Story & Project Info'
+              specifications={buildStory}
+            />
           </div>
         )}
 
-        {car.dyno_results && (
+        {/* Engine & Performance - Only show if there's content */}
+        {engineSpecs.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection
+              title='Engine & Performance'
+              specifications={engineSpecs}
+            />
+          </div>
+        )}
+
+        {/* Wheels & Tires - Only show if there's content */}
+        {wheelsAndTires.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection
+              title='Wheels & Tires'
+              specifications={wheelsAndTires}
+            />
+          </div>
+        )}
+
+        {/* Brake System - Only show if there's content */}
+        {brakes.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection title='Brake System' specifications={brakes} />
+          </div>
+        )}
+
+        {/* Suspension - Only show if there's content */}
+        {suspension.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection
+              title='Suspension'
+              specifications={suspension}
+            />
+          </div>
+        )}
+
+        {/* Exterior - Only show if there's content */}
+        {exterior.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection title='Exterior' specifications={exterior} />
+          </div>
+        )}
+
+        {/* Interior - Only show if there's content */}
+        {interior.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection title='Interior' specifications={interior} />
+          </div>
+        )}
+
+        {/* Additional Details - Only show if there's content */}
+        {additionalDetails.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection
+              title='Additional Details'
+              specifications={additionalDetails}
+            />
+          </div>
+        )}
+
+        {/* Social Links Section - Only show if there's content */}
+        {socialLinks.some(spec => spec.value) && (
+          <div className='p-6'>
+            <SpecificationSection
+              title='Social & Links'
+              specifications={socialLinks}
+            />
+          </div>
+        )}
+
+        {/* Build Goals Section - Only show if there are goals */}
+        {car.build_goals && car.build_goals.length > 0 && (
           <div className='p-6'>
             <h3 className='text-lg font-medium text-foreground mb-4'>
-              Dyno Results
+              Build Goals
             </h3>
-            <p className='text-sm text-foreground'>{car.dyno_results}</p>
+            <ul className='space-y-2'>
+              {car.build_goals.map((goal, index) => (
+                <li key={index} className='text-sm text-foreground'>
+                  • {goal}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

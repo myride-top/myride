@@ -81,6 +81,14 @@ export interface Car {
   year: number
   description: string | null
 
+  // Build Story & Project Info
+  build_story: string | null // The story behind the build
+  project_status: 'planning' | 'in_progress' | 'completed' | 'ongoing' | null
+  build_start_date: string | null // When the build started
+  total_build_cost: number | null // Total cost in cents
+  build_goals: string[] | null // What the owner wants to achieve
+  inspiration: string | null // What inspired this build
+
   // Engine Specifications
   engine_displacement: number | null // in liters
   engine_cylinders: number | null
@@ -156,13 +164,16 @@ export interface Car {
   fuel_economy: string | null
   maintenance_history: string | null
 
+  // Social & Links
+  instagram_handle: string | null
+  youtube_channel: string | null
+  build_thread_url: string | null // Link to forum build thread
+  website_url: string | null
+
   // Photo organization
   photos: CarPhoto[] | null
-  main_photo_url: string | null // URL of the main/featured photo
-
-  // Like count
+  main_photo_url: string | null
   like_count: number
-
   created_at: string
   updated_at: string
 }

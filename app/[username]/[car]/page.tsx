@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
+import {
+  getCarByUrlSlugAndUsernameClient,
+  getCarByUrlSlugClient,
+} from '@/lib/database/cars-client'
 import { getProfileByUsernameClient } from '@/lib/database/profiles-client'
 import {
   Car,
@@ -14,7 +17,15 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
-import { Edit, Image, ArrowLeft, Heart, User, Star } from 'lucide-react'
+import {
+  Edit,
+  Heart,
+  Share,
+  Star,
+  User,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import {
   likeCarClient,
   unlikeCarClient,
@@ -28,10 +39,12 @@ import ShareButton from '@/components/common/share-button'
 import CarSpecifications from '@/components/cars/car-specifications'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
 import { hasUserSupportedCreator } from '@/lib/database/support-client'
+import { useRouter } from 'next/navigation'
 
 export default function CarDetailPage() {
   const params = useParams()
   const { user } = useAuth()
+  const router = useRouter()
 
   const [car, setCar] = useState<Car | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -49,19 +62,39 @@ export default function CarDetailPage() {
   useEffect(() => {
     const loadCarData = async () => {
       try {
-        const [carData, profileData] = await Promise.all([
-          getCarByUrlSlugAndUsernameClient(
-            params.car as string,
-            params.username as string
-          ),
-          getProfileByUsernameClient(params.username as string),
-        ])
+        // First, get the car by URL slug (public access)
+        const carData = await getCarByUrlSlugClient(params.car as string)
 
-        if (carData) {
-          setCar(carData)
-          setLikeCount(carData.like_count || 0)
-        } else {
+        if (!carData) {
           setError('Car not found')
+          setLoading(false)
+          return
+        }
+
+        // Set the car data immediately
+        setCar(carData)
+        setLikeCount(carData.like_count || 0)
+
+        // Now get the profile for the username in the URL
+        const profileData = await getProfileByUsernameClient(
+          params.username as string
+        )
+
+        if (profileData) {
+          setProfile(profileData)
+        } else {
+          // If the profile from URL doesn't exist, get the car owner's profile by user_id
+          const { createClient } = await import('@/lib/supabase/client')
+          const supabase = createClient()
+          const { data: ownerProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', carData.user_id)
+            .single()
+
+          if (ownerProfile) {
+            setProfile(ownerProfile)
+          }
         }
 
         if (profileData) {
@@ -116,7 +149,7 @@ export default function CarDetailPage() {
   const getPhotoInfo = (photo: string | CarPhoto) => {
     if (typeof photo === 'string') {
       // Handle old string format
-      return { url: photo, category: 'other' as const }
+      return { url: photo, category: 'other' as const, description: '' }
     }
 
     // Handle normal photo objects
@@ -128,11 +161,12 @@ export default function CarDetailPage() {
           PHOTO_CATEGORIES.includes(photo.category as PhotoCategory)
             ? photo.category
             : ('other' as const),
+        description: photo.description || '',
       }
     }
 
     // Fallback
-    return { url: '', category: 'other' as const }
+    return { url: '', category: 'other' as const, description: '' }
   }
 
   // Filter photos by category and remove invalid photos
@@ -173,6 +207,33 @@ export default function CarDetailPage() {
     setIsPhotoDialogOpen(true)
   }
 
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (sortedPhotos.length <= 1) return
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setSelectedPhoto(prev =>
+          prev === 0 ? sortedPhotos.length - 1 : prev - 1
+        )
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        setSelectedPhoto(prev =>
+          prev === sortedPhotos.length - 1 ? 0 : prev + 1
+        )
+      }
+    }
+
+    // Add event listener when component mounts
+    document.addEventListener('keydown', handleKeyDown)
+
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [sortedPhotos.length])
+
   const handleLike = async () => {
     if (!user || !car) return
 
@@ -210,19 +271,112 @@ export default function CarDetailPage() {
 
   if (error || !car) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='text-center'>
-          <h1 className='text-2xl font-bold text-card-foreground mb-4'>
-            Car Not Found
-          </h1>
-          <p className='text-muted-foreground mb-4'>{error}</p>
-          <Link
-            href={user ? '/dashboard' : '/'}
-            className='text-primary hover:text-primary/80 flex items-center gap-1 cursor-pointer'
-          >
-            <ArrowLeft className='w-5 h-5' />
-            {user ? 'Dashboard' : 'Home'}
-          </Link>
+      <div className='min-h-screen bg-background'>
+        {user ? <MainNavbar /> : <LandingNavbar />}
+
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
+          <div className='flex items-center mb-6'>
+            <button
+              onClick={() => router.back()}
+              className='mr-4 text-foreground hover:text-foreground/80 cursor-pointer'
+            >
+              <svg
+                className='w-6 h-6'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M15 19l-7-7 7-7'
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className='max-w-2xl mx-auto text-center'>
+            <div className='mb-8'>
+              <div className='w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center'>
+                <svg
+                  className='w-12 h-12 text-muted-foreground'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33M15 9.75a3 3 0 11-6 0 3 3 0 016 0z'
+                  />
+                </svg>
+              </div>
+
+              <h1 className='text-4xl font-bold text-foreground mb-4'>
+                Car Not Found
+              </h1>
+
+              <p className='text-lg text-muted-foreground mb-8 max-w-md mx-auto'>
+                {error === 'Car not found'
+                  ? "We couldn't find the car you're looking for. It might have been moved, deleted, or you entered the wrong URL."
+                  : error ||
+                    'Something went wrong while loading the car details.'}
+              </p>
+            </div>
+
+            <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+              <Link
+                href={user ? '/dashboard' : '/'}
+                className='inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+              >
+                <svg
+                  className='w-5 h-5 mr-2'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+                  />
+                </svg>
+                {user ? 'Go to Dashboard' : 'Go Home'}
+              </Link>
+
+              <Link
+                href='/browse'
+                className='inline-flex items-center px-6 py-3 border border-input text-base font-medium rounded-md shadow-sm text-foreground bg-background hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+              >
+                <svg
+                  className='w-5 h-5 mr-2'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                  />
+                </svg>
+                Browse Cars
+              </Link>
+            </div>
+
+            {error === 'Car not found' && (
+              <div className='mt-8 p-4 bg-muted/50 rounded-lg'>
+                <p className='text-sm text-muted-foreground'>
+                  <strong>Tip:</strong> Make sure the URL is correct and the car
+                  hasn't been deleted by its owner.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -285,7 +439,7 @@ export default function CarDetailPage() {
                 title={isLiked ? 'Unlike car' : 'Like car'}
               >
                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-                {likeCount > 0 && <span>{likeCount}</span>}
+                <span>{isLiked ? 'Unlike' : 'Like'}</span>
               </button>
             )}
 
@@ -297,7 +451,7 @@ export default function CarDetailPage() {
             />
             {user && car && user.id === car.user_id && (
               <Link
-                href={`/${profile?.username}/${car.id}/edit`}
+                href={`/${profile?.username}/${car.url_slug}/edit`}
                 className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
               >
                 <Edit className='w-4 h-4 mr-2' />
@@ -365,14 +519,66 @@ export default function CarDetailPage() {
                 <div className='space-y-4'>
                   {/* Main Photo */}
                   <div className='relative'>
-                    <img
-                      src={getPhotoInfo(sortedPhotos[selectedPhoto]).url}
-                      alt={`${car.name} - ${
-                        getPhotoInfo(sortedPhotos[selectedPhoto]).category
-                      } ${selectedPhoto + 1}`}
-                      className='w-full h-64 sm:h-80 md:h-96 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
-                      onClick={() => openFullscreenPhoto(selectedPhoto)}
-                    />
+                    <div className='relative'>
+                      <img
+                        src={getPhotoInfo(sortedPhotos[selectedPhoto]).url}
+                        alt={`${car.name} - ${
+                          getPhotoInfo(sortedPhotos[selectedPhoto]).category
+                        } ${selectedPhoto + 1}`}
+                        className='w-full h-64 sm:h-80 md:h-96 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
+                        onClick={() => openFullscreenPhoto(selectedPhoto)}
+                      />
+
+                      {/* Navigation Controls - Only show when there are multiple photos */}
+                      {sortedPhotos.length > 1 && (
+                        <>
+                          {/* Previous Button */}
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              setSelectedPhoto(prev =>
+                                prev === 0 ? sortedPhotos.length - 1 : prev - 1
+                              )
+                            }}
+                            className='absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer'
+                            aria-label='Previous photo'
+                          >
+                            <ChevronLeft className='w-5 h-5' />
+                          </button>
+
+                          {/* Next Button */}
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              setSelectedPhoto(prev =>
+                                prev === sortedPhotos.length - 1 ? 0 : prev + 1
+                              )
+                            }}
+                            className='absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer'
+                            aria-label='Next photo'
+                          >
+                            <ChevronRight className='w-5 h-5' />
+                          </button>
+
+                          {/* Photo Counter - Overlay on bottom right of image */}
+                          <div className='absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm'>
+                            {selectedPhoto + 1} / {sortedPhotos.length}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Photo Description */}
+                    {getPhotoInfo(sortedPhotos[selectedPhoto]).description && (
+                      <div className='mt-3 p-3 bg-muted rounded-lg'>
+                        <p className='text-sm text-muted-foreground'>
+                          {
+                            getPhotoInfo(sortedPhotos[selectedPhoto])
+                              .description
+                          }
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Photo Thumbnails */}
@@ -402,7 +608,7 @@ export default function CarDetailPage() {
                 </div>
               ) : (
                 <EmptyState
-                  icon={Image}
+                  icon={Share}
                   title={
                     car.photos && car.photos.length > 0
                       ? 'Photos Corrupted'

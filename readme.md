@@ -1,14 +1,6 @@
 ## TODO
 
-- optimize image categories and maybe add optional description for each photo
-
-- add more info about car
-
-- automatically calculate power to weight ratio if user entered both power and weight
-
-- improve the edit car page to look like add new car page
-
-- prepare platform for premium features
+- prepare platform for all the features in the future
 
 ## Before launch
 
@@ -43,7 +35,7 @@
     - could also serve as a service history book
     - user will decide if it's public or private just for him
 
-- export QR code with url to your car for $1
+- export QR code with url to your car
 
 - add filters and sorting options for browse cars page
 

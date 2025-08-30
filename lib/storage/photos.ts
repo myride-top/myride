@@ -57,6 +57,42 @@ export async function deleteCarPhoto(photoUrl: string): Promise<boolean> {
   return true
 }
 
+export async function deleteAllCarPhotos(carId: string): Promise<boolean> {
+  const supabase = createClient()
+
+  try {
+    // List all files in the car's folder
+    const { data: files, error: listError } = await supabase.storage
+      .from('car-photos')
+      .list(carId)
+
+    if (listError) {
+      console.error('Error listing car photos:', listError)
+      return false
+    }
+
+    if (files && files.length > 0) {
+      // Delete all photos for this car
+      const fileNames = files.map(file => `${carId}/${file.name}`)
+      const { error: deleteError } = await supabase.storage
+        .from('car-photos')
+        .remove(fileNames)
+
+      if (deleteError) {
+        console.error('Error deleting car photos:', deleteError)
+        return false
+      }
+
+      console.log(`Deleted ${fileNames.length} photos for car ${carId}`)
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error deleting all car photos:', error)
+    return false
+  }
+}
+
 export async function uploadProfileAvatar(
   file: File,
   userId: string

@@ -38,6 +38,35 @@ export default function SpecificationSection({
       return `${spec.value} ${spec.unit}`
     }
 
+    // Check if this is a social media link
+    if (typeof spec.value === 'string' && spec.value.startsWith('http')) {
+      return (
+        <a
+          href={spec.value}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-primary hover:text-primary/80 underline'
+        >
+          {spec.value}
+        </a>
+      )
+    }
+
+    // Check if this is an Instagram handle
+    if (spec.key === 'instagram_handle' && spec.value) {
+      const handle = spec.value.replace('@', '')
+      return (
+        <a
+          href={`https://instagram.com/${handle}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-primary hover:text-primary/80 underline'
+        >
+          {spec.value}
+        </a>
+      )
+    }
+
     return spec.value
   }
 

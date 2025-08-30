@@ -64,33 +64,35 @@ export default function PhotoCategoryMenu({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className='fixed z-[9999] top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center'>
-          <div className='bg-card rounded-lg shadow-xl p-4 max-w-sm w-full mx-4 border border-border'>
-            <h3 className='text-lg font-medium mb-4 text-card-foreground'>
-              Select Category
-            </h3>
-            <div className='space-y-2'>
-              {PHOTO_CATEGORIES.map(category => (
-                <button
-                  key={category}
-                  type='button'
-                  onClick={e => handleCategorySelect(category, e)}
-                  className={`block w-full text-left px-4 py-3 text-sm rounded-md hover:bg-accent cursor-pointer ${
-                    currentCategory === category
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-card-foreground'
-                  }`}
-                >
-                  <span className='capitalize'>{category}</span>
-                </button>
-              ))}
+        <div className='fixed inset-0 z-[999999] bg-black/95 flex items-center justify-center'>
+          <div className='bg-white rounded-lg shadow-2xl p-6 max-w-sm w-full mx-4 border border-border relative overflow-hidden'>
+            <div className='bg-white relative z-10'>
+              <h3 className='text-lg font-medium mb-4 text-gray-900'>
+                Select Category
+              </h3>
+              <div className='space-y-2 max-h-64 overflow-y-auto bg-white'>
+                {PHOTO_CATEGORIES.map(category => (
+                  <button
+                    key={category}
+                    type='button'
+                    onClick={e => handleCategorySelect(category, e)}
+                    className={`block w-full text-left px-4 py-3 text-sm rounded-md hover:bg-gray-100 cursor-pointer transition-colors bg-white ${
+                      currentCategory === category
+                        ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className='capitalize'>{category}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className='mt-6 w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cursor-pointer transition-colors'
+              >
+                Cancel
+              </button>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className='mt-4 w-full px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted/80 cursor-pointer'
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}

@@ -16,7 +16,7 @@ interface OptimizedImage {
 
 /**
  * Optimizes an image file to reduce size while maintaining quality
- * Target: Max 500KB with reasonable quality
+ * Target: Max 1500KB with reasonable quality
  */
 export async function optimizeImage(
   file: File,
@@ -25,9 +25,9 @@ export async function optimizeImage(
   const {
     maxWidth = 1920,
     maxHeight = 1080,
-    quality = 0.8,
-    maxSizeKB = 500,
-    format = 'jpeg'
+    quality = 0.9, // Start with higher quality
+    maxSizeKB = 1500,
+    format = 'jpeg',
   } = options
 
   return new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ export async function optimizeImage(
 
         // Convert to blob with specified quality
         canvas.toBlob(
-          (blob) => {
+          blob => {
             if (!blob) {
               reject(new Error('Failed to create blob'))
               return
@@ -69,7 +69,7 @@ export async function optimizeImage(
               originalSize,
               optimizedSize,
               compressionRatio,
-              dimensions: { width, height }
+              dimensions: { width, height },
             })
           },
           `image/${format}`,
@@ -90,24 +90,24 @@ export async function optimizeImage(
  */
 export async function compressToTargetSize(
   file: File,
-  targetSizeKB: number = 500
+  targetSizeKB: number = 1500
 ): Promise<OptimizedImage> {
-  let currentQuality = 0.8
-  let minQuality = 0.1
-  let maxAttempts = 10
+  let currentQuality = 0.9 // Start with higher quality
+  let minQuality = 0.3 // Allow lower quality as fallback
+  let maxAttempts = 8 // Fewer attempts needed
   let attempt = 0
 
   while (attempt < maxAttempts) {
     try {
       const result = await optimizeImage(file, { quality: currentQuality })
-      
+
       // If we're under target size, return the result
       if (result.optimizedSize <= targetSizeKB * 1024) {
         return result
       }
 
-      // Reduce quality for next attempt
-      currentQuality = Math.max(minQuality, currentQuality - 0.1)
+      // Reduce quality more gradually for better results
+      currentQuality = Math.max(minQuality, currentQuality - 0.15)
       attempt++
     } catch (error) {
       console.error('Compression attempt failed:', error)
@@ -153,25 +153,30 @@ function calculateDimensions(
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes'
-  
+
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
 /**
  * Checks if image needs optimization
  */
-export function needsOptimization(file: File, targetSizeKB: number = 500): boolean {
+export function needsOptimization(
+  file: File,
+  targetSizeKB: number = 1500
+): boolean {
   return file.size > targetSizeKB * 1024
 }
 
 /**
  * Gets image dimensions without loading the full image
  */
-export function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+export function getImageDimensions(
+  file: File
+): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => {

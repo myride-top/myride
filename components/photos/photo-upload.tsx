@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { uploadCarPhoto } from '@/lib/storage/photos'
 import { CarPhoto } from '@/lib/types/database'
 import { toast } from 'sonner'
@@ -34,6 +34,48 @@ export default function PhotoUpload({
       details?: string
     }
   }>({})
+  const [photos, setPhotos] = useState<CarPhoto[]>([])
+  const [mainPhotoUrl, setMainPhotoUrl] = useState<string | null>(null)
+  const [showLimitDialog, setShowLimitDialog] = useState(false)
+  const [checkingLimit, setCheckingLimit] = useState(true)
+  const [carSlots, setCarSlots] = useState({
+    currentCars: 0,
+    maxAllowedCars: 1,
+    purchasedSlots: 0,
+    isPremium: false,
+  })
+  const [photoDescriptions, setPhotoDescriptions] = useState<{
+    [key: string]: string
+  }>({})
+
+  // Auto-add photos when they're uploaded
+  useEffect(() => {
+    if (Object.keys(photoDescriptions).length > 0) {
+      // Wait a short moment for user to add descriptions, then auto-add photos
+      const timer = setTimeout(() => {
+        const photosWithDescriptions = Object.entries(photoDescriptions).map(
+          ([url, description], index) => ({
+            url,
+            category: 'other' as const,
+            description: description || '',
+            order: index,
+          })
+        )
+
+        // Add photos to car
+        if (photosWithDescriptions.length === 1) {
+          onUploadComplete(photosWithDescriptions[0])
+        } else if (photosWithDescriptions.length > 1) {
+          onBatchUploadComplete(photosWithDescriptions)
+        }
+
+        // Clear descriptions
+        setPhotoDescriptions({})
+      }, 2000) // 2 second delay to allow user to add descriptions
+
+      return () => clearTimeout(timer)
+    }
+  }, [photoDescriptions, onUploadComplete, onBatchUploadComplete])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -75,7 +117,7 @@ export default function PhotoUpload({
           let optimizedFile: File
 
           // Check if image needs optimization
-          if (needsOptimization(file, 500)) {
+          if (needsOptimization(file, 1500)) {
             setOptimizationProgress(prev => ({
               ...prev,
               [file.name]: {
@@ -86,7 +128,7 @@ export default function PhotoUpload({
 
             try {
               // Optimize image to target size
-              const optimized = await compressToTargetSize(file, 500)
+              const optimized = await compressToTargetSize(file, 1500)
 
               // Convert blob to file
               optimizedFile = new File([optimized.blob], file.name, {
@@ -153,24 +195,22 @@ export default function PhotoUpload({
             order: uploadedPhotos.length,
           }
 
+          // Add to descriptions state for user input
+          setPhotoDescriptions(prev => ({
+            ...prev,
+            [photoUrl]: '',
+          }))
+
           uploadedPhotos.push(photo)
 
           // Update progress to 100%
           setUploadProgress(prev => ({ ...prev, [file.name]: 100 }))
-
-          // Call individual callback
-          onUploadComplete(photo)
 
           toast.success(`${file.name} uploaded successfully!`)
         } catch (error) {
           console.error('Error uploading photo:', error)
           toast.error(`Failed to upload ${file.name}`)
         }
-      }
-
-      // Call batch callback if multiple photos were uploaded
-      if (uploadedPhotos.length > 1) {
-        onBatchUploadComplete(uploadedPhotos)
       }
 
       setUploading(false)
@@ -185,7 +225,7 @@ export default function PhotoUpload({
         fileInput.value = ''
       }
     },
-    [carId, onUploadComplete, onBatchUploadComplete]
+    [carId]
   )
 
   const handleDrop = useCallback(
@@ -210,115 +250,202 @@ export default function PhotoUpload({
     [handleFiles]
   )
 
+  const handlePhotoUpload = (photo: CarPhoto) => {
+    // Add description if user provided one
+    const photoWithDescription = {
+      ...photo,
+      description: photoDescriptions[photo.url] || '',
+    }
+
+    // Call parent callback
+    onUploadComplete(photoWithDescription)
+
+    // Clear the description for this photo
+    setPhotoDescriptions(prev => {
+      const newState = { ...prev }
+      delete newState[photo.url]
+      return newState
+    })
+  }
+
+  const handleBatchUploadComplete = (photos: CarPhoto[]) => {
+    // Add descriptions to all photos
+    const photosWithDescriptions = photos.map(photo => ({
+      ...photo,
+      description: photoDescriptions[photo.url] || '',
+    }))
+
+    // Call parent callback
+    onBatchUploadComplete(photosWithDescriptions)
+
+    // Clear descriptions for these photos
+    setPhotoDescriptions(prev => {
+      const newState = { ...prev }
+      photos.forEach(photo => delete newState[photo.url])
+      return newState
+    })
+  }
+
+  const handlePhotoDescriptionChange = (
+    photoUrl: string,
+    description: string
+  ) => {
+    setPhotoDescriptions(prev => ({
+      ...prev,
+      [photoUrl]: description,
+    }))
+  }
+
   return (
     <div className='space-y-4'>
-      {/* Upload Area */}
-      <div
-        className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          isDragOver
-            ? 'border-primary bg-primary/10'
-            : 'border-border hover:border-primary/50'
-        }`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <div className='space-y-2'>
-          <Upload className='mx-auto h-12 w-12 text-muted-foreground' />
-          <div className='text-sm text-muted-foreground'>
-            <label
-              htmlFor='file-input'
-              className='relative cursor-pointer bg-background rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-ring'
-            >
-              <span>Upload photos</span>
-              <input
-                id='file-input'
-                name='file-input'
-                type='file'
-                className='sr-only'
-                multiple
-                accept='image/*'
-                onChange={handleFileSelect}
-                disabled={uploading}
-              />
-            </label>
-            <p className='pl-1'>or drag and drop</p>
+      {/* Photo Upload with Descriptions */}
+      <div className='space-y-4'>
+        {/* Upload Area */}
+        <div
+          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+            isDragOver
+              ? 'border-primary bg-primary/10'
+              : 'border-border hover:border-primary/50'
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <div className='space-y-2'>
+            <Upload className='mx-auto h-12 w-12 text-muted-foreground' />
+            <div className='text-sm text-muted-foreground'>
+              <label
+                htmlFor='file-input'
+                className='relative cursor-pointer bg-background rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-ring'
+              >
+                <span>Upload photos</span>
+                <input
+                  id='file-input'
+                  name='file-input'
+                  type='file'
+                  className='sr-only'
+                  multiple
+                  accept='image/*'
+                  onChange={handleFileSelect}
+                  disabled={uploading}
+                />
+              </label>
+              <p className='pl-1'>or drag and drop</p>
+            </div>
+            <p className='text-xs text-muted-foreground'>
+              PNG, JPG, GIF, WebP up to 10MB each (auto-optimized to 1.5MB)
+            </p>
+            <p className='text-xs text-primary font-medium'>
+              You can add descriptions and categorize photos after uploading
+            </p>
           </div>
-          <p className='text-xs text-muted-foreground'>
-            PNG, JPG, GIF, WebP up to 10MB each (auto-optimized to 500KB)
-          </p>
-          <p className='text-xs text-primary font-medium'>
-            You can categorize photos after uploading
-          </p>
         </div>
-      </div>
 
-      {/* Upload Progress */}
-      {Object.keys(uploadProgress).length > 0 && (
-        <div className='space-y-2'>
-          <h4 className='text-sm font-medium text-foreground'>
-            Upload Progress
-          </h4>
-          {Object.entries(uploadProgress).map(([fileName, progress]) => {
-            const optimization = optimizationProgress[fileName]
-            return (
-              <div key={fileName} className='space-y-1'>
-                <div className='flex justify-between text-xs text-muted-foreground'>
-                  <span>{fileName}</span>
-                  <span>{progress}%</span>
-                </div>
-
-                {/* Optimization Status */}
-                {optimization && (
-                  <div className='flex items-center gap-2 text-xs'>
-                    {optimization.status === 'pending' && (
-                      <div className='flex items-center gap-1 text-muted-foreground'>
-                        <div className='w-3 h-3 rounded-full border-2 border-muted-foreground'></div>
-                        <span>Pending optimization...</span>
-                      </div>
-                    )}
-
-                    {optimization.status === 'optimizing' && (
-                      <div className='flex items-center gap-1 text-blue-600'>
-                        <Zap className='w-3 h-3 animate-pulse' />
-                        <span>{optimization.details}</span>
-                      </div>
-                    )}
-
-                    {optimization.status === 'optimized' && (
-                      <div className='flex items-center gap-1 text-green-600'>
-                        <CheckCircle className='w-3 h-3' />
-                        <span>{optimization.details}</span>
-                      </div>
-                    )}
-
-                    {optimization.status === 'failed' && (
-                      <div className='flex items-center gap-1 text-orange-600'>
-                        <div className='w-3 h-3 rounded-full bg-orange-600'></div>
-                        <span>{optimization.details}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Progress Bar */}
-                <div className='w-full bg-muted rounded-full h-2'>
-                  <div
-                    className='bg-primary h-2 rounded-full transition-all duration-300'
-                    style={{ width: `${progress}%` }}
+        {/* Photo Descriptions Input - Auto-add photos immediately */}
+        {Object.keys(photoDescriptions).length > 0 && (
+          <div className='space-y-3'>
+            <h4 className='text-sm font-medium text-card-foreground'>
+              Photo Descriptions (Optional)
+            </h4>
+            {Object.entries(photoDescriptions).map(
+              ([photoUrl, description]) => (
+                <div key={photoUrl} className='flex items-center gap-3'>
+                  <img
+                    src={photoUrl}
+                    alt='Photo preview'
+                    className='w-16 h-16 object-cover rounded-md'
                   />
+                  <div className='flex-1'>
+                    <input
+                      type='text'
+                      placeholder='Describe this photo (optional)'
+                      value={description}
+                      onChange={e =>
+                        handlePhotoDescriptionChange(photoUrl, e.target.value)
+                      }
+                      className='w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+                    />
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
+              )
+            )}
 
-      {/* File Size Info */}
-      <div className='text-xs text-muted-foreground space-y-1'>
-        <p>• Images are automatically optimized to under 500KB</p>
-        <p>• Maximum original file size: 10MB</p>
-        <p>• Supported formats: PNG, JPG, GIF, WebP</p>
+            {/* Auto-add photos after a short delay */}
+            <div className='text-center pt-2'>
+              <div className='text-sm text-muted-foreground'>
+                Photos will be added to your car automatically...
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Upload Progress */}
+        {Object.keys(uploadProgress).length > 0 && (
+          <div className='space-y-2'>
+            <h4 className='text-sm font-medium text-foreground'>
+              Upload Progress
+            </h4>
+            {Object.entries(uploadProgress).map(([fileName, progress]) => {
+              const optimization = optimizationProgress[fileName]
+              return (
+                <div key={fileName} className='space-y-1'>
+                  <div className='flex justify-between text-xs text-muted-foreground'>
+                    <span>{fileName}</span>
+                    <span>{progress}%</span>
+                  </div>
+
+                  {/* Optimization Status */}
+                  {optimization && (
+                    <div className='flex items-center gap-2 text-xs'>
+                      {optimization.status === 'pending' && (
+                        <div className='flex items-center gap-1 text-muted-foreground'>
+                          <div className='w-3 h-3 rounded-full border-2 border-muted-foreground'></div>
+                          <span>Pending optimization...</span>
+                        </div>
+                      )}
+
+                      {optimization.status === 'optimizing' && (
+                        <div className='flex items-center gap-1 text-blue-600'>
+                          <Zap className='w-3 h-3 animate-pulse' />
+                          <span>{optimization.details}</span>
+                        </div>
+                      )}
+
+                      {optimization.status === 'optimized' && (
+                        <div className='flex items-center gap-1 text-green-600'>
+                          <CheckCircle className='w-3 h-3' />
+                          <span>{optimization.details}</span>
+                        </div>
+                      )}
+
+                      {optimization.status === 'failed' && (
+                        <div className='flex items-center gap-1 text-orange-600'>
+                          <div className='w-3 h-3 rounded-full bg-orange-600'></div>
+                          <span>{optimization.details}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Progress Bar */}
+                  <div className='w-full bg-muted rounded-full h-2'>
+                    <div
+                      className='bg-primary h-2 rounded-full transition-all duration-300'
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* File Size Info */}
+        <div className='text-xs text-muted-foreground space-y-1'>
+          <p>• Images are automatically optimized to under 1.5MB</p>
+          <p>• Maximum original file size: 10MB</p>
+          <p>• Supported formats: PNG, JPG, GIF, WebP</p>
+        </div>
       </div>
 
       {/* Upload Status */}

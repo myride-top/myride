@@ -1,6 +1,7 @@
 import { createBrowserClient } from '@supabase/ssr'
 import { Car, CarPhoto } from '@/lib/types/database'
 import { unitConversions } from '@/lib/utils'
+import { deleteAllCarPhotos } from '@/lib/storage/photos'
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -312,41 +313,74 @@ export async function getCarByUrlSlugAndUsernameClient(
 
     console.log('Profile found:', profileData)
 
-    // First try to get the car by url_slug and user_id
+    // Get the car by url_slug (cars should be publicly viewable by url_slug)
     const { data, error } = await supabase
       .from('cars')
       .select('*')
       .eq('url_slug', urlSlug)
-      .eq('user_id', profileData.id)
       .single()
-
-    // If that fails and the urlSlug looks like a UUID, try to get by ID
-    if (
-      error &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        urlSlug
-      )
-    ) {
-      console.log('URL slug looks like UUID, trying to fetch by ID:', urlSlug)
-      const { data: carById, error: idError } = await supabase
-        .from('cars')
-        .select('*')
-        .eq('id', urlSlug)
-        .eq('user_id', profileData.id)
-        .single()
-
-      if (idError) {
-        console.error('Error fetching car by ID:', idError)
-        return null
-      }
-
-      console.log('Car found by ID:', carById)
-      return carById
-    }
 
     if (error) {
       console.error('Error fetching car by URL slug:', error)
-      console.error('Query details:', { urlSlug, userId: profileData.id })
+      console.error('Query details:', { urlSlug })
+      return null
+    }
+
+    // Verify that the car belongs to the profile we're looking up
+    if (data.user_id !== profileData.id) {
+      console.error('Car found but belongs to different user:', {
+        carUserId: data.user_id,
+        profileUserId: profileData.id,
+        urlSlug,
+        username
+      })
+      
+      // Instead of failing, let's try to find the correct profile for this car
+      const { data: correctProfile, error: profileLookupError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', data.user_id)
+        .single()
+      
+      if (profileLookupError || !correctProfile) {
+        console.error('Could not find profile for car owner:', profileLookupError)
+        return null
+      }
+      
+      // The car exists but belongs to a different username
+      // We could either redirect to the correct URL or show an error
+      console.log('Car belongs to different username:', {
+        expectedUsername: username,
+        actualUsername: correctProfile.username,
+        urlSlug
+      })
+      
+      // For now, return null to trigger the error page
+      // In the future, we could redirect to the correct URL
+      return null
+    }
+
+    console.log('Car found by URL slug:', data)
+    return data
+  } catch (error) {
+    console.error('Error fetching car by URL slug:', error)
+    return null
+  }
+}
+
+// New function to get car by just url_slug (for public access)
+export async function getCarByUrlSlugClient(urlSlug: string): Promise<Car | null> {
+  try {
+    console.log('getCarByUrlSlugClient called with:', { urlSlug })
+
+    const { data, error } = await supabase
+      .from('cars')
+      .select('*')
+      .eq('url_slug', urlSlug)
+      .single()
+
+    if (error) {
+      console.error('Error fetching car by URL slug:', error)
       return null
     }
 
@@ -563,6 +597,15 @@ export async function updateCarClient(
 
 export async function deleteCarClient(carId: string): Promise<boolean> {
   try {
+    // First, delete all photos from storage
+    const photosDeleted = await deleteAllCarPhotos(carId)
+    if (!photosDeleted) {
+      console.warn(
+        `Failed to delete photos for car ${carId}, but continuing with car deletion`
+      )
+    }
+
+    // Then delete the car record
     const { error } = await supabase.from('cars').delete().eq('id', carId)
 
     if (error) {

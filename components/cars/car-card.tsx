@@ -136,7 +136,7 @@ export default function CarCard({
         <div className='p-6 cursor-pointer'>
           <div className='flex items-center justify-between mb-4'>
             <h3 className='text-lg font-medium text-card-foreground'>
-              {car.make} {car.model}
+              {car.name}
             </h3>
             <div className='flex items-center space-x-2'>
               {photoCount > 0 && (

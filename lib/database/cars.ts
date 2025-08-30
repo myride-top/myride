@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { Car } from '@/lib/types/database'
+import { deleteAllCarPhotos } from '@/lib/storage/photos'
 
 export async function getCarsByUser(userId: string): Promise<Car[] | null> {
   const cookieStore = await cookies()
@@ -189,14 +190,28 @@ export async function deleteCar(carId: string): Promise<boolean> {
     }
   )
 
-  const { error } = await supabase.from('cars').delete().eq('id', carId)
+  try {
+    // First, delete all photos from storage
+    const photosDeleted = await deleteAllCarPhotos(carId)
+    if (!photosDeleted) {
+      console.warn(
+        `Failed to delete photos for car ${carId}, but continuing with car deletion`
+      )
+    }
 
-  if (error) {
+    // Then delete the car record
+    const { error } = await supabase.from('cars').delete().eq('id', carId)
+
+    if (error) {
+      console.error('Error deleting car:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
     console.error('Error deleting car:', error)
     return false
   }
-
-  return true
 }
 
 export async function getCarByUrlSlugAndUsername(
@@ -240,16 +255,26 @@ export async function getCarByUrlSlugAndUsername(
       return null
     }
 
-    // Get the car by url_slug and user_id
+    // Get the car by url_slug (cars should be publicly viewable by url_slug)
     const { data, error } = await supabase
       .from('cars')
       .select('*')
       .eq('url_slug', urlSlug)
-      .eq('user_id', profileData.id)
       .single()
 
     if (error) {
       console.error('Error fetching car by URL slug:', error)
+      return null
+    }
+
+    // Verify that the car belongs to the profile we're looking up
+    if (data.user_id !== profileData.id) {
+      console.error('Car found but belongs to different user:', {
+        carUserId: data.user_id,
+        profileUserId: profileData.id,
+        urlSlug,
+        username,
+      })
       return null
     }
 
