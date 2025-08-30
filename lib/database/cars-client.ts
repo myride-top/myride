@@ -332,29 +332,32 @@ export async function getCarByUrlSlugAndUsernameClient(
         carUserId: data.user_id,
         profileUserId: profileData.id,
         urlSlug,
-        username
+        username,
       })
-      
+
       // Instead of failing, let's try to find the correct profile for this car
       const { data: correctProfile, error: profileLookupError } = await supabase
         .from('profiles')
         .select('username')
         .eq('id', data.user_id)
         .single()
-      
+
       if (profileLookupError || !correctProfile) {
-        console.error('Could not find profile for car owner:', profileLookupError)
+        console.error(
+          'Could not find profile for car owner:',
+          profileLookupError
+        )
         return null
       }
-      
+
       // The car exists but belongs to a different username
       // We could either redirect to the correct URL or show an error
       console.log('Car belongs to different username:', {
         expectedUsername: username,
         actualUsername: correctProfile.username,
-        urlSlug
+        urlSlug,
       })
-      
+
       // For now, return null to trigger the error page
       // In the future, we could redirect to the correct URL
       return null
@@ -369,7 +372,9 @@ export async function getCarByUrlSlugAndUsernameClient(
 }
 
 // New function to get car by just url_slug (for public access)
-export async function getCarByUrlSlugClient(urlSlug: string): Promise<Car | null> {
+export async function getCarByUrlSlugClient(
+  urlSlug: string
+): Promise<Car | null> {
   try {
     console.log('getCarByUrlSlugClient called with:', { urlSlug })
 
@@ -702,30 +707,38 @@ export async function likeCarClient(
   carId: string,
   userId: string
 ): Promise<void> {
-  const { error } = await supabase
+  // Insert the like
+  const { error: likeError } = await supabase
     .from('car_likes')
     .insert({ car_id: carId, user_id: userId })
 
-  if (error) {
-    console.error('Error liking car:', error)
+  if (likeError) {
+    console.error('Error liking car:', likeError)
     throw new Error('Failed to like car')
   }
+
+  // Note: We no longer update the cars.like_count field since we calculate it from car_likes table
+  console.log('Like added to car_likes table successfully')
 }
 
 export async function unlikeCarClient(
   carId: string,
   userId: string
 ): Promise<void> {
-  const { error } = await supabase
+  // Delete the like
+  const { error: unlikeError } = await supabase
     .from('car_likes')
     .delete()
     .eq('car_id', carId)
     .eq('user_id', userId)
 
-  if (error) {
-    console.error('Error unliking car:', error)
+  if (unlikeError) {
+    console.error('Error unliking car:', unlikeError)
     throw new Error('Failed to unlike car')
   }
+
+  // Note: We no longer update the cars.like_count field since we calculate it from car_likes table
+  console.log('Like removed from car_likes table successfully')
 }
 
 export async function hasUserLikedCarClient(
@@ -749,18 +762,30 @@ export async function hasUserLikedCarClient(
 }
 
 export async function getCarLikeCountClient(carId: string): Promise<number> {
-  const { data, error } = await supabase
-    .from('cars')
-    .select('like_count')
-    .eq('id', carId)
-    .single()
+  // Calculate like count from car_likes table instead of relying on cars.like_count field
+  const { count, error } = await supabase
+    .from('car_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('car_id', carId)
 
   if (error) {
-    console.error('Error getting car like count:', error)
-    throw new Error('Failed to get like count')
+    console.error('Error getting car like count from car_likes:', error)
+    // Fallback to cars table if car_likes query fails
+    const { data: carData, error: carError } = await supabase
+      .from('cars')
+      .select('like_count')
+      .eq('id', carId)
+      .single()
+
+    if (carError) {
+      console.error('Error getting car like count from cars table:', carError)
+      throw new Error('Failed to get like count')
+    }
+
+    return carData.like_count || 0
   }
 
-  return data.like_count || 0
+  return count || 0
 }
 
 export async function getAllCarsClient(): Promise<Car[] | null> {
