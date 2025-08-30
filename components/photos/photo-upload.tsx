@@ -4,7 +4,13 @@ import { useState, useCallback } from 'react'
 import { uploadCarPhoto } from '@/lib/storage/photos'
 import { CarPhoto } from '@/lib/types/database'
 import { toast } from 'sonner'
-import { Upload, Loader2 } from 'lucide-react'
+import { Upload, Loader2, Compress, CheckCircle } from 'lucide-react'
+import { 
+  optimizeImage, 
+  compressToTargetSize, 
+  needsOptimization, 
+  formatFileSize 
+} from '@/lib/utils/image-optimization'
 
 interface PhotoUploadProps {
   carId: string
@@ -21,6 +27,9 @@ export default function PhotoUpload({
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number
+  }>({})
+  const [optimizationProgress, setOptimizationProgress] = useState<{
+    [key: string]: { status: 'pending' | 'optimizing' | 'optimized' | 'failed'; details?: string }
   }>({})
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -48,16 +57,71 @@ export default function PhotoUpload({
             continue
           }
 
-          // Validate file size (5MB limit)
-          if (file.size > 5 * 1024 * 1024) {
-            toast.error(`${file.name} is too large. Maximum size is 5MB`)
+          // Validate file size (10MB limit for original files)
+          if (file.size > 10 * 1024 * 1024) {
+            toast.error(`${file.name} is too large. Maximum size is 10MB`)
             continue
+          }
+
+          // Initialize optimization progress
+          setOptimizationProgress(prev => ({ 
+            ...prev, 
+            [file.name]: { status: 'pending' } 
+          }))
+
+          let optimizedFile: File
+
+          // Check if image needs optimization
+          if (needsOptimization(file, 500)) {
+            setOptimizationProgress(prev => ({ 
+              ...prev, 
+              [file.name]: { status: 'optimizing', details: 'Compressing image...' } 
+            }))
+
+            try {
+              // Optimize image to target size
+              const optimized = await compressToTargetSize(file, 500)
+              
+              // Convert blob to file
+              optimizedFile = new File([optimized.blob], file.name, {
+                type: `image/${file.name.endsWith('.webp') ? 'webp' : 'jpeg'}`,
+                lastModified: Date.now()
+              })
+
+              setOptimizationProgress(prev => ({ 
+                ...prev, 
+                [file.name]: { 
+                  status: 'optimized', 
+                  details: `${formatFileSize(file.size)} → ${formatFileSize(optimizedFile.size)} (${optimized.compressionRatio.toFixed(1)}% smaller)` 
+                } 
+              }))
+
+              toast.success(`${file.name} optimized: ${formatFileSize(file.size)} → ${formatFileSize(optimizedFile.size)}`)
+            } catch (error) {
+              console.error('Image optimization failed:', error)
+              setOptimizationProgress(prev => ({ 
+                ...prev, 
+                [file.name]: { status: 'failed', details: 'Optimization failed, using original' } 
+              }))
+              optimizedFile = file
+              toast.warning(`${file.name} optimization failed, using original file`)
+            }
+          } else {
+            // Image is already under 500KB
+            optimizedFile = file
+            setOptimizationProgress(prev => ({ 
+              ...prev, 
+              [file.name]: { 
+                status: 'optimized', 
+                details: 'Already optimized' 
+              } 
+            }))
           }
 
           setUploadProgress(prev => ({ ...prev, [file.name]: 0 }))
 
-          // Upload the photo
-          const photoUrl = await uploadCarPhoto(file, carId)
+          // Upload the optimized photo
+          const photoUrl = await uploadCarPhoto(optimizedFile, carId)
 
           if (!photoUrl) {
             toast.error(`Failed to upload ${file.name}`)
@@ -94,12 +158,15 @@ export default function PhotoUpload({
 
       setUploading(false)
       setUploadProgress({})
+      setOptimizationProgress({})
 
       // Reset file input
       const fileInput = document.getElementById(
         'file-input'
       ) as HTMLInputElement
-      if (fileInput) fileInput.value = ''
+      if (fileInput) {
+        fileInput.value = ''
+      }
     },
     [carId, onUploadComplete, onBatchUploadComplete]
   )

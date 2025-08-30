@@ -42,6 +42,13 @@ export interface Profile {
   unit_preference: 'metric' | 'imperial'
   created_at: string
   updated_at: string
+  is_premium: boolean
+  premium_purchased_at: string | null
+  car_slots_purchased: number
+  stripe_customer_id: string | null
+  stripe_subscription_id: string | null
+  total_supported_amount: number // Total amount supported across all creators
+  is_supporter: boolean // Whether this user has supported any creator
 }
 
 export interface CarLike {
@@ -156,6 +163,17 @@ export interface Car {
   // Like count
   like_count: number
 
+  created_at: string
+  updated_at: string
+}
+
+export interface SupportTransaction {
+  id: string
+  supporter_id: string // User who is supporting
+  creator_id: string // User being supported
+  amount: number // Amount in cents
+  payment_intent_id: string // Stripe payment intent ID
+  status: 'pending' | 'completed' | 'failed' | 'refunded'
   created_at: string
   updated_at: string
 }

@@ -1,11 +1,5 @@
 ## TODO
 
-- prepare platform for premium features
-
-- show avatar on car detail page left to the username
-
-- badge after name if user supported creator
-
 - optimize images before uploading to db (max 500kb)
 
 - optimize image categories and maybe add optional description for each photo
@@ -15,6 +9,8 @@
 - automatically calculate power to weight ratio if user entered both power and weight
 
 - improve the edit car page to look like add new car page
+
+- prepare platform for premium features
 
 ## Before launch
 

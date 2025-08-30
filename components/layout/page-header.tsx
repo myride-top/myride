@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 interface PageHeaderProps {
   title: string
-  subtitle?: string
+  subtitle?: string | React.ReactNode
   backHref?: string
   actions?: React.ReactNode
   className?: string

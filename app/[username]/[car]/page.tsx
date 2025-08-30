@@ -14,7 +14,7 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
-import { Edit, Image, ArrowLeft, Heart } from 'lucide-react'
+import { Edit, Image, ArrowLeft, Heart, User, Star } from 'lucide-react'
 import {
   likeCarClient,
   unlikeCarClient,
@@ -27,6 +27,7 @@ import EmptyState from '@/components/common/empty-state'
 import ShareButton from '@/components/common/share-button'
 import CarSpecifications from '@/components/cars/car-specifications'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
+import { hasUserSupportedCreator } from '@/lib/database/support-client'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -43,6 +44,7 @@ export default function CarDetailPage() {
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
   const [isLikeLoading, setIsLikeLoading] = useState(false)
+  const [hasSupported, setHasSupported] = useState(false)
 
   useEffect(() => {
     const loadCarData = async () => {
@@ -93,6 +95,22 @@ export default function CarDetailPage() {
 
     checkLikeStatus()
   }, [user, car])
+
+  // Check if current user has supported the creator
+  useEffect(() => {
+    const checkSupportStatus = async () => {
+      if (user && profile && user.id !== profile.id) {
+        try {
+          const supported = await hasUserSupportedCreator(user.id, profile.id)
+          setHasSupported(supported)
+        } catch (error) {
+          console.error('Error checking support status:', error)
+        }
+      }
+    }
+
+    checkSupportStatus()
+  }, [user, profile])
 
   // Helper function to get photo URL and category
   const getPhotoInfo = (photo: string | CarPhoto) => {
@@ -216,7 +234,31 @@ export default function CarDetailPage() {
 
       <PageHeader
         title={car.name}
-        subtitle={`by @${profile?.username || params.username || 'Unknown'}`}
+        subtitle={
+          <div className='flex items-center gap-0'>
+            <span>by</span>
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={`${profile.username}'s avatar`}
+                className='w-5 h-5 rounded-full object-cover ml-2.5 mr-1'
+              />
+            ) : (
+              <div className='w-5 h-5 rounded-full bg-muted flex items-center justify-center ml-2.5 mr-1'>
+                <User className='w-3 h-3 text-muted-foreground' />
+              </div>
+            )}
+            <span>@{profile?.username || params.username || 'Unknown'}</span>
+            {user && profile && user.id !== profile.id && hasSupported && (
+              <div className='ml-2 flex items-center'>
+                <div className='bg-yellow-500 text-white px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1'>
+                  <Star className='w-3 h-3 fill-current' />
+                  <span>Supporter</span>
+                </div>
+              </div>
+            )}
+          </div>
+        }
         backHref={user ? '/dashboard' : undefined}
         actions={
           <div className='flex items-center space-x-4'>
