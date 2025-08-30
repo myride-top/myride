@@ -4,12 +4,12 @@ import { useState, useCallback } from 'react'
 import { uploadCarPhoto } from '@/lib/storage/photos'
 import { CarPhoto } from '@/lib/types/database'
 import { toast } from 'sonner'
-import { Upload, Loader2, Compress, CheckCircle } from 'lucide-react'
-import { 
-  optimizeImage, 
-  compressToTargetSize, 
-  needsOptimization, 
-  formatFileSize 
+import { Upload, Loader2, Zap, CheckCircle } from 'lucide-react'
+import {
+  optimizeImage,
+  compressToTargetSize,
+  needsOptimization,
+  formatFileSize,
 } from '@/lib/utils/image-optimization'
 
 interface PhotoUploadProps {
@@ -29,7 +29,10 @@ export default function PhotoUpload({
     [key: string]: number
   }>({})
   const [optimizationProgress, setOptimizationProgress] = useState<{
-    [key: string]: { status: 'pending' | 'optimizing' | 'optimized' | 'failed'; details?: string }
+    [key: string]: {
+      status: 'pending' | 'optimizing' | 'optimized' | 'failed'
+      details?: string
+    }
   }>({})
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -64,57 +67,71 @@ export default function PhotoUpload({
           }
 
           // Initialize optimization progress
-          setOptimizationProgress(prev => ({ 
-            ...prev, 
-            [file.name]: { status: 'pending' } 
+          setOptimizationProgress(prev => ({
+            ...prev,
+            [file.name]: { status: 'pending' },
           }))
 
           let optimizedFile: File
 
           // Check if image needs optimization
           if (needsOptimization(file, 500)) {
-            setOptimizationProgress(prev => ({ 
-              ...prev, 
-              [file.name]: { status: 'optimizing', details: 'Compressing image...' } 
+            setOptimizationProgress(prev => ({
+              ...prev,
+              [file.name]: {
+                status: 'optimizing',
+                details: 'Compressing image...',
+              },
             }))
 
             try {
               // Optimize image to target size
               const optimized = await compressToTargetSize(file, 500)
-              
+
               // Convert blob to file
               optimizedFile = new File([optimized.blob], file.name, {
                 type: `image/${file.name.endsWith('.webp') ? 'webp' : 'jpeg'}`,
-                lastModified: Date.now()
+                lastModified: Date.now(),
               })
 
-              setOptimizationProgress(prev => ({ 
-                ...prev, 
-                [file.name]: { 
-                  status: 'optimized', 
-                  details: `${formatFileSize(file.size)} → ${formatFileSize(optimizedFile.size)} (${optimized.compressionRatio.toFixed(1)}% smaller)` 
-                } 
+              setOptimizationProgress(prev => ({
+                ...prev,
+                [file.name]: {
+                  status: 'optimized',
+                  details: `${formatFileSize(file.size)} → ${formatFileSize(
+                    optimizedFile.size
+                  )} (${optimized.compressionRatio.toFixed(1)}% smaller)`,
+                },
               }))
 
-              toast.success(`${file.name} optimized: ${formatFileSize(file.size)} → ${formatFileSize(optimizedFile.size)}`)
+              toast.success(
+                `${file.name} optimized: ${formatFileSize(
+                  file.size
+                )} → ${formatFileSize(optimizedFile.size)}`
+              )
             } catch (error) {
               console.error('Image optimization failed:', error)
-              setOptimizationProgress(prev => ({ 
-                ...prev, 
-                [file.name]: { status: 'failed', details: 'Optimization failed, using original' } 
+              setOptimizationProgress(prev => ({
+                ...prev,
+                [file.name]: {
+                  status: 'failed',
+                  details: 'Optimization failed, using original',
+                },
               }))
               optimizedFile = file
-              toast.warning(`${file.name} optimization failed, using original file`)
+              toast.warning(
+                `${file.name} optimization failed, using original file`
+              )
             }
           } else {
             // Image is already under 500KB
             optimizedFile = file
-            setOptimizationProgress(prev => ({ 
-              ...prev, 
-              [file.name]: { 
-                status: 'optimized', 
-                details: 'Already optimized' 
-              } 
+            setOptimizationProgress(prev => ({
+              ...prev,
+              [file.name]: {
+                status: 'optimized',
+                details: 'Already optimized',
+              },
             }))
           }
 
@@ -228,7 +245,7 @@ export default function PhotoUpload({
             <p className='pl-1'>or drag and drop</p>
           </div>
           <p className='text-xs text-muted-foreground'>
-            PNG, JPG, GIF up to 5MB each
+            PNG, JPG, GIF, WebP up to 10MB each (auto-optimized to 500KB)
           </p>
           <p className='text-xs text-primary font-medium'>
             You can categorize photos after uploading
@@ -242,22 +259,67 @@ export default function PhotoUpload({
           <h4 className='text-sm font-medium text-foreground'>
             Upload Progress
           </h4>
-          {Object.entries(uploadProgress).map(([fileName, progress]) => (
-            <div key={fileName} className='space-y-1'>
-              <div className='flex justify-between text-xs text-muted-foreground'>
-                <span>{fileName}</span>
-                <span>{progress}%</span>
+          {Object.entries(uploadProgress).map(([fileName, progress]) => {
+            const optimization = optimizationProgress[fileName]
+            return (
+              <div key={fileName} className='space-y-1'>
+                <div className='flex justify-between text-xs text-muted-foreground'>
+                  <span>{fileName}</span>
+                  <span>{progress}%</span>
+                </div>
+
+                {/* Optimization Status */}
+                {optimization && (
+                  <div className='flex items-center gap-2 text-xs'>
+                    {optimization.status === 'pending' && (
+                      <div className='flex items-center gap-1 text-muted-foreground'>
+                        <div className='w-3 h-3 rounded-full border-2 border-muted-foreground'></div>
+                        <span>Pending optimization...</span>
+                      </div>
+                    )}
+
+                    {optimization.status === 'optimizing' && (
+                      <div className='flex items-center gap-1 text-blue-600'>
+                        <Zap className='w-3 h-3 animate-pulse' />
+                        <span>{optimization.details}</span>
+                      </div>
+                    )}
+
+                    {optimization.status === 'optimized' && (
+                      <div className='flex items-center gap-1 text-green-600'>
+                        <CheckCircle className='w-3 h-3' />
+                        <span>{optimization.details}</span>
+                      </div>
+                    )}
+
+                    {optimization.status === 'failed' && (
+                      <div className='flex items-center gap-1 text-orange-600'>
+                        <div className='w-3 h-3 rounded-full bg-orange-600'></div>
+                        <span>{optimization.details}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Progress Bar */}
+                <div className='w-full bg-muted rounded-full h-2'>
+                  <div
+                    className='bg-primary h-2 rounded-full transition-all duration-300'
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
               </div>
-              <div className='w-full bg-muted rounded-full h-2'>
-                <div
-                  className='bg-primary h-2 rounded-full transition-all duration-300'
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
+
+      {/* File Size Info */}
+      <div className='text-xs text-muted-foreground space-y-1'>
+        <p>• Images are automatically optimized to under 500KB</p>
+        <p>• Maximum original file size: 10MB</p>
+        <p>• Supported formats: PNG, JPG, GIF, WebP</p>
+      </div>
 
       {/* Upload Status */}
       {uploading && (

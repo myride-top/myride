@@ -1,7 +1,5 @@
 ## TODO
 
-- optimize images before uploading to db (max 500kb)
-
 - optimize image categories and maybe add optional description for each photo
 
 - add more info about car
