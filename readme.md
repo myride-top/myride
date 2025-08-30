@@ -1,8 +1,5 @@
 ## TODO
 
-- fix site name (Dashboard - MyRide - MyRide -> Dashboard | MyRide)
-- dynamic edit car site name (Editing {car_name} | MyRide)
-
 - when clicking on share button it redirects me to details page
 
 - prepare platform for premium features

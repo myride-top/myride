@@ -1,38 +1,85 @@
 import { Metadata } from 'next'
+import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
 
-export const metadata: Metadata = {
-  title: 'Edit Car - MyRide',
-  description:
-    'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
-  keywords:
-    'edit car, car specifications, car photos, vehicle modifications, automotive showcase',
-  openGraph: {
-    title: 'Edit Car - MyRide',
-    description:
-      'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
-    type: 'website',
-    url: 'https://myride.top',
-    siteName: 'MyRide',
-    images: [
-      {
-        url: '/og-image-default.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Edit Car on MyRide',
+export async function generateMetadata({
+  params,
+}: {
+  params: { username: string; car: string }
+}): Promise<Metadata> {
+  try {
+    const car = await getCarByUrlSlugAndUsernameClient(
+      params.car,
+      params.username
+    )
+    const carName = car?.name || 'Car'
+
+    return {
+      title: `Editing ${carName} | MyRide`,
+      description: `Edit your ${carName} details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.`,
+      keywords:
+        'edit car, car specifications, car photos, vehicle modifications, automotive showcase',
+      openGraph: {
+        title: `MyRide - Editing ${carName}`,
+        description: `Edit your ${carName} details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.`,
+        type: 'website',
+        url: 'https://myride.top',
+        siteName: 'MyRide',
+        images: [
+          {
+            url: '/og-image-default.svg',
+            width: 1200,
+            height: 630,
+            alt: `Edit ${carName} on MyRide`,
+          },
+        ],
       },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Edit Car - MyRide',
-    description:
-      'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
-    images: ['/og-image-default.svg'],
-  },
-  robots: {
-    index: false,
-    follow: false,
-  },
+      twitter: {
+        card: 'summary_large_image',
+        title: `MyRide - Editing ${carName}`,
+        description: `Edit your ${carName} details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.`,
+        images: ['/og-image-default.svg'],
+      },
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }
+  } catch (error) {
+    return {
+      title: 'Editing Car | MyRide',
+      description:
+        'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
+      keywords:
+        'edit car, car specifications, car photos, vehicle modifications, automotive showcase',
+      openGraph: {
+        title: 'MyRide - Editing Car',
+        description:
+          'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
+        type: 'website',
+        url: 'https://myride.top',
+        siteName: 'MyRide',
+        images: [
+          {
+            url: '/og-image-default.svg',
+            width: 1200,
+            height: 630,
+            alt: 'Edit Car on MyRide',
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'MyRide - Editing Car',
+        description:
+          'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
+        images: ['/og-image-default.svg'],
+      },
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }
+  }
 }
 
 export default function EditCarLayout({
