@@ -1,7 +1,5 @@
 ## TODO
 
-- when clicking on share button it redirects me to details page
-
 - prepare platform for premium features
 
 - show avatar on car detail page left to the username

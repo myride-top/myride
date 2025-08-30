@@ -14,6 +14,7 @@ import { MainNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
+import { toast } from 'sonner'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -62,6 +63,34 @@ export default function DashboardPage() {
       )
       return updatedCars
     })
+  }
+
+  // Handle sharing cars
+  const handleShare = async (car: Car) => {
+    const carUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
+    
+    try {
+      if (navigator.share) {
+        // Use native sharing if available
+        await navigator.share({
+          title: `${car.name} - ${car.make} ${car.model}`,
+          text: `Check out my ${car.make} ${car.model} on MyRide!`,
+          url: carUrl,
+        })
+      } else {
+        // Fallback to clipboard copy
+        await navigator.clipboard.writeText(carUrl)
+        toast.success('Car URL copied to clipboard!')
+      }
+    } catch (error) {
+      // Fallback to clipboard copy if native sharing fails
+      try {
+        await navigator.clipboard.writeText(carUrl)
+        toast.success('Car URL copied to clipboard!')
+      } catch (clipboardError) {
+        toast.error('Failed to share car')
+      }
+    }
   }
 
   useEffect(() => {
@@ -257,7 +286,7 @@ export default function DashboardPage() {
                           )
                         }
                         onShare={car =>
-                          router.push(`/${profile?.username}/${car.url_slug}`)
+                          handleShare(car)
                         }
                         onLikeChange={handleLikeChange}
                       />
@@ -278,7 +307,7 @@ export default function DashboardPage() {
                         )
                       }
                       onShare={car =>
-                        router.push(`/${profile?.username}/${car.url_slug}`)
+                        handleShare(car)
                       }
                       onLikeChange={handleLikeChange}
                     />
