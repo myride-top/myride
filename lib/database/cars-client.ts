@@ -1215,3 +1215,178 @@ export async function unpinCarCommentClient(
     return false
   }
 }
+
+// Comment like functions
+export async function likeCommentClient(
+  commentId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    // Check if user already liked this comment
+    const { data: existingLike, error: checkError } = await supabase
+      .from('comment_likes')
+      .select('id')
+      .eq('comment_id', commentId)
+      .eq('user_id', userId)
+      .single()
+
+    if (checkError && checkError.code === '42P01') {
+      console.warn('Comment likes table does not exist yet')
+      return false
+    }
+
+    if (existingLike) {
+      // User already liked this comment
+      return true
+    }
+
+    // Insert the like
+    const { error: likeError } = await supabase
+      .from('comment_likes')
+      .insert({ comment_id: commentId, user_id: userId })
+
+    if (likeError) {
+      if (likeError.code === '42P01') {
+        console.warn('Comment likes table does not exist yet')
+        return false
+      }
+      throw new Error('Failed to like comment')
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error liking comment:', error)
+    return false
+  }
+}
+
+export async function unlikeCommentClient(
+  commentId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('comment_likes')
+      .delete()
+      .eq('comment_id', commentId)
+      .eq('user_id', userId)
+
+    if (error) {
+      throw new Error('Failed to unlike comment')
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error unliking comment:', error)
+    return false
+  }
+}
+
+export async function hasUserLikedCommentClient(
+  commentId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('comment_likes')
+      .select('id')
+      .eq('comment_id', commentId)
+      .eq('user_id', userId)
+      .maybeSingle()
+
+    if (error) {
+      // Check if it's a table not found error (code 42P01)
+      if (error.code === '42P01') {
+        console.warn('Comment likes table does not exist yet')
+        return false
+      }
+      // Log the specific error for debugging
+      console.error('Error checking like status:', error)
+      return false
+    }
+
+    return !!data
+  } catch (error) {
+    console.error('Error checking comment like status:', error)
+    return false
+  }
+}
+
+export async function getCommentLikeCountClient(
+  commentId: string
+): Promise<number> {
+  try {
+    const { count, error } = await supabase
+      .from('comment_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('comment_id', commentId)
+
+    if (error) {
+      // Check if it's a table not found error (code 42P01)
+      if (error.code === '42P01') {
+        console.warn('Comment likes table does not exist yet')
+        return 0
+      }
+      // Log the specific error for debugging
+      console.error(
+        'Error getting comment like count for commentId:',
+        commentId,
+        'Error:',
+        error
+      )
+      throw new Error('Failed to get comment like count')
+    }
+
+    return count || 0
+  } catch (error) {
+    console.error('Error getting comment like count:', error)
+    return 0
+  }
+}
+
+export async function getCommentLikesWithProfilesClient(
+  commentId: string
+): Promise<
+  {
+    user_id: string
+    username: string
+    full_name: string | null
+    avatar_url: string | null
+  }[]
+> {
+  try {
+    const { data, error } = await supabase
+      .from('comment_likes')
+      .select(
+        `
+        user_id,
+        profiles:user_id (
+          username,
+          full_name,
+          avatar_url
+        )
+      `
+      )
+      .eq('comment_id', commentId)
+
+    if (error) {
+      if (error.code === '42P01') {
+        console.warn('Comment likes table does not exist yet')
+        return []
+      }
+      throw new Error('Failed to get comment likes with profiles')
+    }
+
+    if (!data) return []
+
+    return data.map(like => ({
+      user_id: like.user_id,
+      username: like.profiles?.[0]?.username || 'Unknown User',
+      full_name: like.profiles?.[0]?.full_name,
+      avatar_url: like.profiles?.[0]?.avatar_url,
+    }))
+  } catch (error) {
+    console.error('Error getting comment likes with profiles:', error)
+    return []
+  }
+}

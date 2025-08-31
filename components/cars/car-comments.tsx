@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import {
   addCarCommentClient,
@@ -9,6 +9,10 @@ import {
   deleteCarCommentAsOwnerClient,
   pinCarCommentClient,
   unpinCarCommentClient,
+  likeCommentClient,
+  unlikeCommentClient,
+  hasUserLikedCommentClient,
+  getCommentLikeCountClient,
 } from '@/lib/database/cars-client'
 import { CarComment } from '@/lib/types/database'
 import {
@@ -19,13 +23,17 @@ import {
   Trash2,
   Pin,
   PinOff,
+  Heart,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Profile } from '@/lib/types/database'
+import { createClient } from '@/lib/supabase/client'
 
 interface CommentWithProfile extends CarComment {
   profiles: Profile | null
   replies?: CommentWithProfile[]
+  like_count?: number
+  is_liked_by_user?: boolean
 }
 
 interface CarCommentsProps {
@@ -49,10 +57,61 @@ export default function CarComments({
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set())
   const [deletingComment, setDeletingComment] = useState<string | null>(null)
   const [pinningComment, setPinningComment] = useState<string | null>(null)
+  const [likingComment, setLikingComment] = useState<string | null>(null)
+  const [databaseError, setDatabaseError] = useState<string | null>(null)
+  const [databaseAvailable, setDatabaseAvailable] = useState(false)
+  const databaseTestedRef = useRef(false)
 
   useEffect(() => {
     loadComments()
   }, [carId])
+
+  useEffect(() => {
+    // Test database connection once when component mounts
+    testDatabaseConnection()
+  }, [])
+
+  const testDatabaseConnection = async () => {
+    if (databaseTestedRef.current) {
+      return databaseAvailable
+    }
+    try {
+      // Try to get a simple count from comment_likes table
+      // Use a more realistic approach - just check if the table is accessible
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('comment_likes')
+        .select('id')
+        .limit(1)
+
+      if (error) {
+        console.warn('Comment likes table test failed:', error)
+        if (error.code === '42P01') {
+          setDatabaseError(
+            'Comment likes table not found. Please run the database migration.'
+          )
+        } else {
+          setDatabaseError(`Database error: ${error.message}`)
+        }
+        setDatabaseAvailable(false)
+        return false
+      }
+
+      console.log('Database connection test successful')
+      setDatabaseError(null)
+      setDatabaseAvailable(true)
+      return true
+    } catch (error) {
+      console.error('Database connection test failed:', error)
+      setDatabaseError(
+        'Comment likes table not found. Please run the database migration.'
+      )
+      setDatabaseAvailable(false)
+      return false
+    } finally {
+      databaseTestedRef.current = true
+    }
+  }
 
   const loadComments = async () => {
     setLoading(true)
@@ -128,9 +187,67 @@ export default function CarComments({
           )
         })
 
+        // Fetch like counts and like status for all comments
+        if (user) {
+          await Promise.all(
+            topLevelComments.map(async comment => {
+              // Get like count for main comment
+              const likeCount = await getCommentLikeCountClient(comment.id)
+              const isLiked = await hasUserLikedCommentClient(
+                comment.id,
+                user.id
+              )
+
+              comment.like_count = likeCount
+              comment.is_liked_by_user = isLiked
+
+              // Get like counts and status for replies
+              if (comment.replies) {
+                await Promise.all(
+                  comment.replies.map(async reply => {
+                    const replyLikeCount = await getCommentLikeCountClient(
+                      reply.id
+                    )
+                    const replyIsLiked = await hasUserLikedCommentClient(
+                      reply.id,
+                      user.id
+                    )
+
+                    reply.like_count = replyLikeCount
+                    reply.is_liked_by_user = replyIsLiked
+                  })
+                )
+              }
+            })
+          )
+        } else {
+          // For non-authenticated users, just get like counts
+          await Promise.all(
+            topLevelComments.map(async comment => {
+              const likeCount = await getCommentLikeCountClient(comment.id)
+
+              comment.like_count = likeCount
+              comment.is_liked_by_user = false
+
+              if (comment.replies) {
+                await Promise.all(
+                  comment.replies.map(async reply => {
+                    const replyLikeCount = await getCommentLikeCountClient(
+                      reply.id
+                    )
+
+                    reply.like_count = replyLikeCount
+                    reply.is_liked_by_user = false
+                  })
+                )
+              }
+            })
+          )
+        }
+
         setComments(topLevelComments)
       } else {
-        setComments([])
+        setComments([]) // Set empty array on error
       }
     } catch (error) {
       toast.error('Failed to load comments')
@@ -311,6 +428,161 @@ export default function CarComments({
     }
   }
 
+  const handleLikeComment = async (commentId: string) => {
+    if (!user) return
+
+    setLikingComment(commentId)
+    try {
+      const success = await likeCommentClient(commentId, user.id)
+
+      if (success) {
+        console.log(
+          'Like successful, updating local state for comment:',
+          commentId
+        )
+
+        // Update local state immediately for better UX
+        setComments(prevComments => {
+          const newComments = prevComments.map(comment => {
+            // Check if this is the main comment being liked
+            if (comment.id === commentId) {
+              const newLikeCount = (comment.like_count || 0) + 1
+              console.log(
+                `Updating main comment ${commentId}: ${
+                  comment.like_count || 0
+                } -> ${newLikeCount}`
+              )
+              return {
+                ...comment,
+                like_count: newLikeCount,
+                is_liked_by_user: true,
+              }
+            }
+            // Check if any reply within this comment is being liked
+            if (comment.replies) {
+              const updatedReplies = comment.replies.map(reply => {
+                if (reply.id === commentId) {
+                  const newLikeCount = (reply.like_count || 0) + 1
+                  console.log(
+                    `Updating reply ${commentId}: ${
+                      reply.like_count || 0
+                    } -> ${newLikeCount}`
+                  )
+                  return {
+                    ...reply,
+                    like_count: newLikeCount,
+                    is_liked_by_user: true,
+                  }
+                }
+                return reply
+              })
+              return {
+                ...comment,
+                replies: updatedReplies,
+              }
+            }
+            return comment
+          })
+
+          console.log('New comments state:', newComments)
+          return newComments
+        })
+
+        toast.success('Comment liked!')
+      } else {
+        toast.error('Failed to like comment')
+      }
+    } catch (error) {
+      toast.error('Failed to like comment')
+    } finally {
+      setLikingComment(null)
+    }
+  }
+
+  const handleUnlikeComment = async (commentId: string) => {
+    if (!user) return
+
+    setLikingComment(commentId)
+    try {
+      const success = await unlikeCommentClient(commentId, user.id)
+
+      if (success) {
+        console.log(
+          'Unlike successful, updating local state for comment:',
+          commentId
+        )
+
+        // Update local state immediately for better UX
+        setComments(prevComments => {
+          const newComments = prevComments.map(comment => {
+            // Check if this is the main comment being unliked
+            if (comment.id === commentId) {
+              const newLikeCount = Math.max(0, (comment.like_count || 0) - 1)
+              console.log(
+                `Updating main comment ${commentId}: ${
+                  comment.like_count || 0
+                } -> ${newLikeCount}`
+              )
+              return {
+                ...comment,
+                like_count: newLikeCount,
+                is_liked_by_user: false,
+              }
+            }
+            // Check if any reply within this comment is being unliked
+            if (comment.replies) {
+              const updatedReplies = comment.replies.map(reply => {
+                if (reply.id === commentId) {
+                  const newLikeCount = Math.max(0, (reply.like_count || 0) - 1)
+                  console.log(
+                    `Updating reply ${commentId}: ${
+                      reply.like_count || 0
+                    } -> ${newLikeCount}`
+                  )
+                  return {
+                    ...reply,
+                    like_count: newLikeCount,
+                    is_liked_by_user: false,
+                  }
+                }
+                return reply
+              })
+              return {
+                ...comment,
+                replies: updatedReplies,
+              }
+            }
+            return comment
+          })
+
+          console.log('New comments state after unlike:', newComments)
+          return newComments
+        })
+
+        toast.success('Comment unliked')
+      } else {
+        toast.error('Failed to unlike comment')
+      }
+    } catch (error) {
+      toast.error('Failed to unlike comment')
+    } finally {
+      setLikingComment(null)
+    }
+  }
+
+  const handleLikeButtonClick = (
+    commentId: string,
+    isCurrentlyLiked: boolean
+  ) => {
+    if (!user) return
+
+    if (isCurrentlyLiked) {
+      handleUnlikeComment(commentId)
+    } else {
+      handleLikeComment(commentId)
+    }
+  }
+
   const toggleReplies = (commentId: string) => {
     setExpandedReplies(prev => {
       const newSet = new Set(prev)
@@ -347,6 +619,19 @@ export default function CarComments({
       }
     })
     return total
+  }
+
+  const getTotalLikeCount = () => {
+    let totalLikes = 0
+    comments.forEach(comment => {
+      totalLikes += comment.like_count || 0
+      if (comment.replies) {
+        comment.replies.forEach(reply => {
+          totalLikes += reply.like_count || 0
+        })
+      }
+    })
+    return totalLikes
   }
 
   const findMainComment = (replyId: string): CommentWithProfile | null => {
@@ -494,27 +779,77 @@ export default function CarComments({
 
             <p className='text-sm text-foreground mb-2'>{comment.content}</p>
 
-            {/* Reply button - Show for main comments and replies, but replies create mentions instead of nesting */}
-            {user && (
-              <button
-                onClick={() => {
-                  if (depth === 0) {
-                    // For main comments, show normal reply form
-                    setReplyingTo(replyingTo === comment.id ? null : comment.id)
-                  } else {
-                    // For replies, show reply form under this reply with mention pre-filled
-                    setReplyingTo(replyingTo === comment.id ? null : comment.id)
-                    setReplyContent(
-                      `@${comment.profiles?.username || 'Unknown'} `
-                    )
-                  }
-                }}
-                className='flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer'
-              >
-                <Reply className='w-3 h-3' />
-                Reply
-              </button>
-            )}
+            <div className='flex gap-4 items-center'>
+              {/* Like button */}
+              <div className='flex items-center gap-2'>
+                {user && (
+                  <button
+                    onClick={() =>
+                      handleLikeButtonClick(
+                        comment.id,
+                        comment.is_liked_by_user || false
+                      )
+                    }
+                    disabled={likingComment === comment.id}
+                    className='flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 cursor-pointer'
+                    title={
+                      comment.is_liked_by_user
+                        ? 'Unlike comment'
+                        : 'Like comment'
+                    }
+                  >
+                    {likingComment === comment.id ? (
+                      <div className='animate-spin rounded-full h-3 w-3 border-b-2 border-current'></div>
+                    ) : (
+                      <Heart
+                        className={`w-3 h-3 ${
+                          comment.is_liked_by_user
+                            ? 'fill-red-500 text-red-500'
+                            : ''
+                        }`}
+                      />
+                    )}
+                    <span
+                      className={comment.is_liked_by_user ? 'text-red-500' : ''}
+                    >
+                      {comment.like_count || 0}
+                    </span>
+                  </button>
+                )}
+                {!user && (
+                  <div className='flex items-center gap-1 text-xs text-muted-foreground'>
+                    <Heart className='w-3 h-3' />
+                    <span>{comment.like_count || 0}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Reply button - Show for main comments and replies, but replies create mentions instead of nesting */}
+              {user && (
+                <button
+                  onClick={() => {
+                    if (depth === 0) {
+                      // For main comments, show normal reply form
+                      setReplyingTo(
+                        replyingTo === comment.id ? null : comment.id
+                      )
+                    } else {
+                      // For replies, show reply form under this reply with mention pre-filled
+                      setReplyingTo(
+                        replyingTo === comment.id ? null : comment.id
+                      )
+                      setReplyContent(
+                        `@${comment.profiles?.username || 'Unknown'} `
+                      )
+                    }
+                  }}
+                  className='flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer'
+                >
+                  <Reply className='w-3 h-3' />
+                  Reply
+                </button>
+              )}
+            </div>
 
             {/* Reply form */}
             {replyingTo === comment.id && (
@@ -582,7 +917,30 @@ export default function CarComments({
         <h3 className='text-lg font-semibold'>
           Comments ({getTotalCommentCount()})
         </h3>
+        <span className='text-sm text-muted-foreground'>
+          • {getTotalLikeCount()} likes
+        </span>
       </div>
+
+      {/* Database Error Display */}
+      {databaseError && (
+        <div className='mb-4 p-3 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg'>
+          <div className='flex items-center gap-2'>
+            <div className='w-4 h-4 bg-yellow-500 rounded-full'></div>
+            <p className='text-sm text-yellow-800 dark:text-yellow-200'>
+              {databaseError}
+            </p>
+          </div>
+          <div className='mt-2 text-xs text-yellow-700 dark:text-yellow-300'>
+            To enable comment likes, run the SQL migration in your Supabase
+            dashboard:
+            <br />
+            <code className='bg-yellow-100 dark:bg-yellow-900/50 px-2 py-1 rounded mt-1 inline-block'>
+              migrations/create_comment_likes_table.sql
+            </code>
+          </div>
+        </div>
+      )}
 
       {/* Add Comment Form */}
       {user && canCreateTopLevelComment() && (

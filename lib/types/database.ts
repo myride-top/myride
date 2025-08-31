@@ -31,6 +31,11 @@ export interface Database {
         Insert: Omit<CarComment, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<CarComment, 'id' | 'created_at' | 'updated_at'>>
       }
+      comment_likes: {
+        Row: CommentLike
+        Insert: Omit<CommentLike, 'id' | 'created_at'>
+        Update: Partial<Omit<CommentLike, 'id' | 'created_at'>>
+      }
       waitlist: {
         Row: WaitlistEntry
         Insert: Omit<WaitlistEntry, 'id' | 'created_at'>
@@ -233,6 +238,13 @@ export interface CarComment {
   is_pinned: boolean
   created_at: string
   updated_at: string
+}
+
+export interface CommentLike {
+  id: string
+  user_id: string
+  comment_id: string
+  created_at: string
 }
 
 export interface SupportTransaction {

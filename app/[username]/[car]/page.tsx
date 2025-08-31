@@ -448,18 +448,18 @@ export default function CarDetailPage() {
 
       {/* Custom Header with Back Button and Actions - Matching PageHeaderWithBack Style */}
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center'>
-            {user && (
-              <div className='mr-4'>
-                <BackButton
-                  href='/dashboard'
-                  variant='ghost'
-                  size='sm'
-                  showText={false}
-                />
-              </div>
-            )}
+                  <div className='flex items-center justify-between'>
+            <div className='flex items-center'>
+              {user && (
+                <div className='mr-4'>
+                  <BackButton
+                    href='/dashboard'
+                    variant='ghost'
+                    size='sm'
+                    showText={false}
+                  />
+                </div>
+              )}
 
             <div className='flex-1'>
               <h1 className='text-3xl md:text-4xl font-bold text-foreground'>
@@ -490,10 +490,82 @@ export default function CarDetailPage() {
                   </div>
                 )}
               </div>
+              
+              {/* Mobile Action Buttons - Under profile name */}
+              <div className='flex items-center space-x-2 mt-4 lg:hidden'>
+                {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
+                {user && car && user.id !== car.user_id ? (
+                  <button
+                    onClick={handleLike}
+                    disabled={isLikeLoading}
+                    className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+                    title={isLiked ? 'Unlike car' : 'Like car'}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        isLiked ? 'fill-current text-red-500' : ''
+                      }`}
+                    />
+                    <span>
+                      {likeCount > 0
+                        ? `${likeCount} like${likeCount !== 1 ? 's' : ''}`
+                        : 'Like'}
+                    </span>
+                  </button>
+                ) : (
+                  likeCount > 0 && (
+                    <div className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground'>
+                      <Heart className='w-4 h-4' />
+                      <span>
+                        {likeCount} like{likeCount !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  )
+                )}
+
+                <ShareButton
+                  url={window.location.href}
+                  title={`${car.name} by @${profile?.username || params.username}`}
+                  text={`Check out this ${car.year} ${car.make} ${car.model}!`}
+                  variant='outline'
+                  onShare={platform => {
+                    // Track share analytics
+                    const platformMap = {
+                      copy_link: 'copy_link' as const,
+                      native_share: 'other' as const,
+                    }
+                    trackShare(platformMap[platform])
+                  }}
+                />
+
+                <button
+                  onClick={handleQRCode}
+                  disabled={isGeneratingQR}
+                  className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+                  title={`Generate QR Code for ${car.name}`}
+                >
+                  {isGeneratingQR ? (
+                    <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                  ) : (
+                    <QrCode className='w-4 h-4 mr-2' />
+                  )}
+                  {isGeneratingQR ? 'Generating...' : 'QR Code'}
+                </button>
+                {user && car && user.id === car.user_id && (
+                  <Link
+                    href={`/${profile?.username}/${car.url_slug}/edit`}
+                    className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+                  >
+                    <Edit className='w-4 h-4 mr-2' />
+                    Edit
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className='flex items-center space-x-4'>
+          {/* Desktop Action Buttons - Right side (unchanged) */}
+          <div className='hidden lg:flex items-center space-x-4'>
             {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
             {user && car && user.id !== car.user_id ? (
               <button
