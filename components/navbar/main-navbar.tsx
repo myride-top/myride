@@ -151,7 +151,10 @@ export default function MainNavbar({
                   <User className='w-4 h-4 text-primary-foreground' />
                 )}
               </div>
-              <span className='hidden md:block text-sm md:text-base font-medium font-atkinson'>
+              <span className='hidden md:flex text-sm md:text-base font-medium font-atkinson items-center gap-2'>
+                {profile?.is_premium && (
+                  <Crown className='w-4 h-4 text-yellow-500' />
+                )}
                 {profile?.username || user.email}
               </span>
               <ChevronDown className='w-4 h-4' />
@@ -161,8 +164,14 @@ export default function MainNavbar({
               <div className='absolute right-0 mt-2 w-56 bg-popover rounded-md shadow-lg ring-1 ring-border z-50'>
                 <div className='py-1'>
                   <div className='px-4 py-2 border-b border-border'>
-                    <p className='text-sm font-medium text-popover-foreground'>
+                    <p className='text-sm font-medium text-popover-foreground flex items-center gap-2'>
                       {profile?.full_name || profile?.username || user.email}
+                      {profile?.is_premium && (
+                        <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-500 to-amber-500 text-white'>
+                          <Crown className='w-3 h-3 mr-1' />
+                          PREMIUM
+                        </span>
+                      )}
                     </p>
                     <p className='text-xs text-muted-foreground'>
                       {user.email}
@@ -205,28 +214,20 @@ export default function MainNavbar({
                         <AlertCircle className='w-4 h-4 mr-3' />
                         Car Limit Reached
                       </button>
-                      <button
-                        onClick={() => {
-                          setIsDropdownOpen(false)
-                          router.push('/buy-car-slot')
-                        }}
-                        className='flex items-center w-full px-4 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950 cursor-pointer'
-                      >
-                        <Plus className='w-4 h-4 mr-3' />
-                        Buy More Slots
-                      </button>
                     </div>
                   )}
 
                   <div className='border-t border-border my-1'></div>
 
-                  <button
-                    onClick={() => handleOptionClick('premium')}
-                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
-                  >
-                    <Crown className='w-4 h-4 mr-3 text-yellow-500' />
-                    Buy Premium
-                  </button>
+                  {!profile?.is_premium && (
+                    <button
+                      onClick={() => handleOptionClick('premium')}
+                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                    >
+                      <Crown className='w-4 h-4 mr-3 text-yellow-500' />
+                      Buy Premium
+                    </button>
+                  )}
 
                   <button
                     onClick={() => handleOptionClick('support')}
