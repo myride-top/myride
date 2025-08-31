@@ -2,6 +2,7 @@
 
 import { QrCode, X, Download, Share2, User } from 'lucide-react'
 import { toast } from 'sonner'
+import { useEffect } from 'react'
 
 interface QRCodeModalProps {
   isOpen: boolean
@@ -18,6 +19,7 @@ interface QRCodeModalProps {
     username: string
   } | null
   currentUrl?: string
+  onShare?: () => void
 }
 
 export default function QRCodeModal({
@@ -27,7 +29,15 @@ export default function QRCodeModal({
   car,
   profile,
   currentUrl,
+  onShare,
 }: QRCodeModalProps) {
+  // Track share analytics when modal opens
+  useEffect(() => {
+    if (isOpen && onShare) {
+      onShare()
+    }
+  }, [isOpen, onShare])
+
   if (!isOpen) return null
 
   const handleDownload = () => {

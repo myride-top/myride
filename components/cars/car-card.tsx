@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import LikeButton from '@/components/common/like-button'
 import UserAvatar from '@/components/common/user-avatar'
 import QRCodeModal from '@/components/common/qr-code-modal'
+import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 
 interface CarCardProps {
   car: Car
@@ -36,20 +37,6 @@ export default function CarCard({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [showQRCode, setShowQRCode] = useState(false)
 
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-    const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
-
-    try {
-      await navigator.clipboard.writeText(shareUrl)
-      toast.success('Link copied to clipboard!')
-      onShare?.(car)
-    } catch (error) {
-      toast.error(`Failed to copy link (${error})`)
-    }
-  }
-
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
@@ -68,21 +55,22 @@ export default function CarCard({
     if (!qrCodeDataUrl) {
       try {
         const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
-        const dataUrl = await QRCode.toDataURL(shareUrl, {
+        const dataUrl = await generateQRCodeWithLogo(shareUrl, '/icon.jpg', {
           width: 200,
           margin: 1,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF',
-          },
+          logoSize: 50,
         })
         setQrCodeDataUrl(dataUrl)
         setShowQRCode(true)
+        // Track share analytics when QR code modal opens
+        onShare?.(car)
       } catch (error) {
         toast.error('Failed to generate QR code')
       }
     } else {
       setShowQRCode(true)
+      // Track share analytics when QR code modal opens
+      onShare?.(car)
     }
   }
 
@@ -121,19 +109,11 @@ export default function CarCard({
             )}
 
             <button
-              onClick={handleShare}
-              title='Share car'
+              onClick={handleQRCode}
+              title='Share car via QR Code'
               className='p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors cursor-pointer'
             >
               <Share2 className='w-4 h-4' />
-            </button>
-
-            <button
-              onClick={handleQRCode}
-              title='Generate QR Code'
-              className='p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors cursor-pointer'
-            >
-              <QrCode className='w-4 h-4' />
             </button>
           </div>
         )}

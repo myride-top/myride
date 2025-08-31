@@ -14,18 +14,15 @@ import {
   Plus,
   Info,
   Heart,
-  Crown,
   Eye,
   Share2,
   MessageCircle,
   AlertCircle,
 } from 'lucide-react'
-import { MainNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
 import { toast } from 'sonner'
-import { syncCarCommentCount } from '@/lib/database/cars-client'
 import StatsCard, { DashboardStat } from '@/components/dashboard/stats-card'
 import PremiumUpgradeBanner from '@/components/dashboard/premium-upgrade-banner'
 import Grid from '@/components/common/grid'
@@ -99,32 +96,6 @@ export default function DashboardPage() {
           recalculateStats(refreshedCars)
         }
       } catch (error) {}
-    }
-  }
-
-  // Handle sharing cars
-  const handleShare = async (car: Car) => {
-    const carUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: `${car.name} by ${profile?.username}`,
-          text: `Check out this amazing car: ${car.name}`,
-          url: carUrl,
-        })
-      } else {
-        await navigator.clipboard.writeText(carUrl)
-        toast.success('Car link copied to clipboard!')
-      }
-    } catch (error) {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(carUrl)
-        toast.success('Car link copied to clipboard!')
-      } catch (clipboardError) {
-        toast.error('Failed to copy link')
-      }
     }
   }
 
@@ -291,7 +262,6 @@ export default function DashboardPage() {
                   onEdit={car =>
                     router.push(`/${profile?.username}/${car.url_slug}/edit`)
                   }
-                  onShare={car => handleShare(car)}
                   onLikeChange={handleLikeChange}
                 />
               ))}
