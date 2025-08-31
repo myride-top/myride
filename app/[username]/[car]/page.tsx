@@ -25,6 +25,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  QrCode,
 } from 'lucide-react'
 import {
   likeCarClient,
@@ -38,6 +39,7 @@ import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import ShareButton from '@/components/common/share-button'
 import CarSpecifications from '@/components/cars/car-specifications'
+import QRCodeModal from '@/components/common/qr-code-modal'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
 import { hasUserSupportedCreator } from '@/lib/database/support-client'
 import { useRouter } from 'next/navigation'
@@ -62,6 +64,9 @@ export default function CarDetailPage() {
   const [likeCount, setLikeCount] = useState(0)
   const [isLikeLoading, setIsLikeLoading] = useState(false)
   const [hasSupported, setHasSupported] = useState(false)
+  const [showQRCode, setShowQRCode] = useState(false)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false)
 
   // Track car analytics (views, shares) - always call hook to maintain order
   const { trackShare } = useCarAnalytics(car?.id || '', car?.user_id || '')
@@ -291,6 +296,35 @@ export default function CarDetailPage() {
     }
   }
 
+  const handleQRCode = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    if (!qrCodeDataUrl) {
+      setIsGeneratingQR(true)
+      try {
+        // Dynamic import to avoid SSR issues
+        const QRCode = (await import('qrcode')).default
+        const dataUrl = await QRCode.toDataURL(window.location.href, {
+          width: 300,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF',
+          },
+        })
+        setQrCodeDataUrl(dataUrl)
+        setShowQRCode(true)
+      } catch (error) {
+        toast.error('Failed to generate QR code')
+      } finally {
+        setIsGeneratingQR(false)
+      }
+    } else {
+      setShowQRCode(true)
+    }
+  }
+
   if (loading) {
     return <LoadingSpinner fullScreen message='Loading car details...' />
   }
@@ -504,6 +538,20 @@ export default function CarDetailPage() {
                 trackShare(platformMap[platform])
               }}
             />
+
+            <button
+              onClick={handleQRCode}
+              disabled={isGeneratingQR}
+              className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+              title={`Generate QR Code for ${car.name}`}
+            >
+              {isGeneratingQR ? (
+                <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+              ) : (
+                <QrCode className='w-4 h-4 mr-2' />
+              )}
+              {isGeneratingQR ? 'Generating...' : 'QR Code'}
+            </button>
             {user && car && user.id === car.user_id && (
               <Link
                 href={`/${profile?.username}/${car.url_slug}/edit`}
@@ -720,6 +768,16 @@ export default function CarDetailPage() {
         photos={sortedPhotos.map(photo => getPhotoInfo(photo))}
         initialIndex={fullscreenPhotoIndex}
         carName={car.name}
+      />
+
+      {/* QR Code Modal */}
+      <QRCodeModal
+        isOpen={showQRCode}
+        onClose={() => setShowQRCode(false)}
+        qrCodeDataUrl={qrCodeDataUrl}
+        car={car}
+        profile={profile}
+        currentUrl={window.location.href}
       />
     </div>
   )

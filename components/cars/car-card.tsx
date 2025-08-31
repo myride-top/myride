@@ -1,12 +1,14 @@
 import { Car, Profile } from '@/lib/types/database'
-import { Share2, Image, Edit } from 'lucide-react'
+import { Share2, Image, Edit, QrCode } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
-
+import QRCode from 'qrcode'
+import { useRouter } from 'next/navigation'
 import LikeButton from '@/components/common/like-button'
 import UserAvatar from '@/components/common/user-avatar'
+import QRCodeModal from '@/components/common/qr-code-modal'
 
 interface CarCardProps {
   car: Car
@@ -29,7 +31,10 @@ export default function CarCard({
   showActions = true,
   isOwner = false,
 }: CarCardProps) {
+  const router = useRouter()
   const [likeCount, setLikeCount] = useState(car.like_count || 0)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
+  const [showQRCode, setShowQRCode] = useState(false)
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -56,11 +61,35 @@ export default function CarCard({
     onLikeChange?.(carId, newLikeCount)
   }
 
+  const handleQRCode = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    if (!qrCodeDataUrl) {
+      try {
+        const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
+        const dataUrl = await QRCode.toDataURL(shareUrl, {
+          width: 200,
+          margin: 1,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF',
+          },
+        })
+        setQrCodeDataUrl(dataUrl)
+        setShowQRCode(true)
+      } catch (error) {
+        toast.error('Failed to generate QR code')
+      }
+    } else {
+      setShowQRCode(true)
+    }
+  }
+
   return (
-    <Link
-      href={`/${profile?.username || 'user'}/${car.url_slug}`}
+    <div
       className={cn(
-        'bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer',
+        'bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group',
         className
       )}
     >
@@ -98,12 +127,26 @@ export default function CarCard({
             >
               <Share2 className='w-4 h-4' />
             </button>
+
+            <button
+              onClick={handleQRCode}
+              title='Generate QR Code'
+              className='p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors cursor-pointer'
+            >
+              <QrCode className='w-4 h-4' />
+            </button>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className='p-4'>
+      <div
+        className='p-4 cursor-pointer'
+        onClick={() => {
+          // Navigate to car detail page
+          router.push(`/${profile?.username || 'user'}/${car.url_slug}`)
+        }}
+      >
         {/* Car Info */}
         <div className='mb-3'>
           <h3 className='font-semibold text-foreground mb-1 line-clamp-1'>
@@ -140,12 +183,25 @@ export default function CarCard({
               size='sm'
             />
 
-            <button className='text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer'>
+            <Link
+              href={`/${profile?.username || 'user'}/${car.url_slug}`}
+              className='text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer'
+            >
               View Details →
-            </button>
+            </Link>
           </div>
         )}
       </div>
-    </Link>
+
+      {/* QR Code Modal */}
+      <QRCodeModal
+        isOpen={showQRCode}
+        onClose={() => setShowQRCode(false)}
+        qrCodeDataUrl={qrCodeDataUrl}
+        car={car}
+        profile={profile}
+        currentUrl={`${window.location.origin}/${profile?.username}/${car.url_slug}`}
+      />
+    </div>
   )
 }
