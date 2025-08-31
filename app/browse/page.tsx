@@ -59,7 +59,7 @@ export default function BrowsePage() {
   if (loading) {
     return (
       <div className='min-h-screen bg-background'>
-        {user ? <MainNavbar /> : <LandingNavbar />}
+        {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           <div className='px-4 py-6 sm:px-0'>
             <LoadingSpinner message='Loading cars...' />
@@ -71,7 +71,7 @@ export default function BrowsePage() {
 
   return (
     <div className='min-h-screen bg-background'>
-      {user ? <MainNavbar /> : <LandingNavbar />}
+      {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
 
       {/* Main Content */}
       <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>

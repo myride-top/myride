@@ -47,6 +47,14 @@ export default function MainNavbar({
           ])
           setProfile(userProfile)
           setCanCreateCar(canCreate)
+
+          // Debug logging
+          console.log('MainNavbar state:', {
+            showCreateButton,
+            user: !!user,
+            canCreateCar: canCreate,
+            userProfile,
+          })
         } catch (error) {
           console.error('Error loading profile:', error)
         }
@@ -54,7 +62,7 @@ export default function MainNavbar({
     }
 
     loadProfile()
-  }, [user])
+  }, [user, showCreateButton])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -109,16 +117,19 @@ export default function MainNavbar({
         (canCreateCar ? (
           <Link
             href='/create'
-            className='md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hidden'
+            className='hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
           >
             <Plus className='w-4 h-4 mr-2' />
             Add New Car
           </Link>
         ) : (
-          <div className='md:inline-flex hidden items-center px-4 py-2 border border-orange-200 dark:border-orange-800 text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 cursor-not-allowed'>
+          <Link
+            href='/buy-car-slot'
+            className='hidden sm:inline-flex items-center px-4 py-2 border border-orange-200 dark:border-orange-800 text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors cursor-pointer'
+          >
             <AlertCircle className='w-4 h-4 mr-2' />
             Car Limit Reached
-          </div>
+          </Link>
         ))}
 
       {user ? (
@@ -184,10 +195,16 @@ export default function MainNavbar({
                     </button>
                   ) : (
                     <div className='space-y-1'>
-                      <div className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950'>
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false)
+                          router.push('/buy-car-slot')
+                        }}
+                        className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 cursor-pointer'
+                      >
                         <AlertCircle className='w-4 h-4 mr-3' />
                         Car Limit Reached
-                      </div>
+                      </button>
                       <button
                         onClick={() => {
                           setIsDropdownOpen(false)

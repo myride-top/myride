@@ -15,7 +15,6 @@
 
 - premium
 
-  - entire informational page about benefits of premium
   - $10 lifetime
   - global analytics (car views, car shares, car likes)
     - charts
@@ -23,11 +22,7 @@
     - page /analytics with filters
   - no limit for adding new cars
   - ability to share entire profile (let call it "garage")
-  - Social proof - Show premium user badges
-  - detailed service section
-    - form of table with dates, mileage, price and categories
-    - could also serve as a service history book
-    - user will decide if it's public or private just for him
+  - Social proof - Show premium user badges on car detail page
 
 - export QR code with url to your car
 

@@ -479,7 +479,7 @@ export default function EditCarPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
-        <MainNavbar />
+        <MainNavbar showCreateButton={true} />
 
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>

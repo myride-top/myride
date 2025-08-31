@@ -333,7 +333,7 @@ export default function CarDetailPage() {
   if (error || !car) {
     return (
       <div className='min-h-screen bg-background'>
-        {user ? <MainNavbar /> : <LandingNavbar />}
+        {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
 
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
           <div className='flex items-center mb-6'>
@@ -445,7 +445,7 @@ export default function CarDetailPage() {
 
   return (
     <div className='min-h-screen bg-background'>
-      {user ? <MainNavbar /> : <LandingNavbar />}
+      {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
 
       <PageHeader
         title={car.name}

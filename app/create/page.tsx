@@ -292,7 +292,7 @@ export default function CreateCarPage() {
     return (
       <ProtectedRoute>
         <div className='min-h-screen bg-background'>
-          <MainNavbar />
+          <MainNavbar showCreateButton={true} />
           <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
             <div className='text-center'>
               <h1 className='text-3xl font-bold text-foreground mb-4'>
@@ -318,7 +318,7 @@ export default function CreateCarPage() {
   return (
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
-        <MainNavbar />
+        <MainNavbar showCreateButton={true} />
 
         {/* Page Header */}
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>

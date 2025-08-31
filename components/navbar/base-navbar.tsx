@@ -67,7 +67,7 @@ export default function BaseNavbar({
         return 'h-16'
       case 'solid':
       default:
-        return 'py-4'
+        return 'py-3'
     }
   }
 
@@ -113,7 +113,7 @@ export default function BaseNavbar({
           )}
 
           {/* Right side content (auth, theme toggle, etc.) */}
-          <div className='flex items-center space-x-4'>
+          <div className='flex items-center space-x-2 sm:space-x-8'>
             {/* Navigation items for right-aligned layout */}
             {navItems.length > 0 && layout === 'right-aligned' && (
               <div className='hidden md:flex items-center gap-8'>
