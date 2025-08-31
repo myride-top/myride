@@ -11,7 +11,7 @@ interface ShareButtonProps {
   size?: 'sm' | 'md' | 'lg'
   showIcon?: boolean
   children?: React.ReactNode
-  onShare?: () => void
+  onShare?: (platform: 'copy_link' | 'native_share') => void
 }
 
 export default function ShareButton({
@@ -44,7 +44,7 @@ export default function ShareButton({
       // Always copy to clipboard first
       await navigator.clipboard.writeText(url)
       toast.success('Link copied to clipboard!')
-      onShare?.()
+      onShare?.('copy_link')
 
       // Then try native sharing if available (mobile devices)
       if (navigator.share) {
@@ -54,6 +54,7 @@ export default function ShareButton({
             text: text || 'I found this amazing car on MyRide',
             url: url,
           })
+          onShare?.('native_share')
         } catch (shareError) {
           // Native sharing failed, but clipboard copy already succeeded
           console.log(
@@ -73,6 +74,7 @@ export default function ShareButton({
             text: text || 'I found this amazing car on MyRide',
             url: url,
           })
+          onShare?.('native_share')
         } catch (shareError) {
           console.error('Both clipboard and native sharing failed:', shareError)
           toast.error('Failed to share link')

@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
-import { Car, CarPhoto } from '@/lib/types/database'
+import { Car, CarPhoto, CarComment } from '@/lib/types/database'
 import { unitConversions } from '@/lib/utils'
 import { deleteAllCarPhotos } from '@/lib/storage/photos'
 
@@ -945,5 +945,231 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
   } catch (error) {
     console.error('Error fetching all cars:', error)
     return null
+  }
+}
+
+// Premium Analytics Functions
+
+export async function trackCarViewClient(
+  carId: string,
+  userId?: string,
+  metadata?: {
+    ipAddress?: string
+    userAgent?: string
+    referrer?: string
+  }
+): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('car_views').insert({
+      car_id: carId,
+      user_id: userId || null,
+      ip_address: metadata?.ipAddress || null,
+      user_agent: metadata?.userAgent || null,
+      referrer: metadata?.referrer || null,
+    })
+
+    if (error) {
+      console.error('Error tracking car view:', error)
+      return false
+    }
+
+    // Update the car's view count
+    await updateCarViewCount(carId)
+    return true
+  } catch (error) {
+    console.error('Error tracking car view:', error)
+    return false
+  }
+}
+
+export async function trackCarShareClient(
+  carId: string,
+  platform:
+    | 'twitter'
+    | 'facebook'
+    | 'instagram'
+    | 'whatsapp'
+    | 'telegram'
+    | 'copy_link'
+    | 'other',
+  userId?: string,
+  metadata?: {
+    shareUrl?: string
+    ipAddress?: string
+    userAgent?: string
+  }
+): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('car_shares').insert({
+      car_id: carId,
+      user_id: userId || null,
+      share_platform: platform,
+      share_url: metadata?.shareUrl || null,
+      ip_address: metadata?.ipAddress || null,
+      user_agent: metadata?.userAgent || null,
+    })
+
+    if (error) {
+      console.error('Error tracking car share:', error)
+      return false
+    }
+
+    // Update the car's share count
+    await updateCarShareCount(carId)
+    return true
+  } catch (error) {
+    console.error('Error tracking car share:', error)
+    return false
+  }
+}
+
+export async function addCarCommentClient(
+  carId: string,
+  userId: string,
+  content: string,
+  parentCommentId?: string
+): Promise<CarComment | null> {
+  try {
+    // First check if the user is the car owner
+    const { data: car, error: carError } = await supabase
+      .from('cars')
+      .select('user_id')
+      .eq('id', carId)
+      .single()
+
+    if (carError || !car) {
+      console.error('Error fetching car:', carError)
+      return null
+    }
+
+    // Prevent car owners from commenting on their own cars
+    if (car.user_id === userId) {
+      console.error('Car owners cannot comment on their own cars')
+      return null
+    }
+
+    const { data, error } = await supabase
+      .from('car_comments')
+      .insert({
+        car_id: carId,
+        user_id: userId,
+        content,
+        parent_comment_id: parentCommentId || null,
+        is_edited: false,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error adding car comment:', error)
+      return null
+    }
+
+    // Update the car's comment count
+    await updateCarCommentCount(carId)
+    return data
+  } catch (error) {
+    console.error('Error adding car comment:', error)
+    return null
+  }
+}
+
+export async function getCarCommentsClient(
+  carId: string,
+  limit: number = 50,
+  offset: number = 0
+): Promise<CarComment[] | null> {
+  try {
+    const { data, error } = await supabase
+      .from('car_comments')
+      .select(
+        `
+        *,
+        profiles:user_id (
+          id,
+          username,
+          full_name,
+          avatar_url
+        )
+      `
+      )
+      .eq('car_id', carId)
+      .is('parent_comment_id', null) // Only top-level comments
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (error) {
+      console.error('Error fetching car comments:', error)
+      return null
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error fetching car comments:', error)
+    return null
+  }
+}
+
+// Helper functions to update car counts
+async function updateCarViewCount(carId: string): Promise<void> {
+  try {
+    const { count, error } = await supabase
+      .from('car_views')
+      .select('*', { count: 'exact', head: true })
+      .eq('car_id', carId)
+
+    if (error) {
+      console.error('Error counting car views:', error)
+      return
+    }
+
+    await supabase
+      .from('cars')
+      .update({ view_count: count || 0 })
+      .eq('id', carId)
+  } catch (error) {
+    console.error('Error updating car view count:', error)
+  }
+}
+
+async function updateCarShareCount(carId: string): Promise<void> {
+  try {
+    const { count, error } = await supabase
+      .from('car_shares')
+      .select('*', { count: 'exact', head: true })
+      .eq('car_id', carId)
+
+    if (error) {
+      console.error('Error counting car shares:', error)
+      return
+    }
+
+    await supabase
+      .from('cars')
+      .update({ share_count: count || 0 })
+      .eq('id', carId)
+  } catch (error) {
+    console.error('Error updating car share count:', error)
+  }
+}
+
+async function updateCarCommentCount(carId: string): Promise<void> {
+  try {
+    const { count, error } = await supabase
+      .from('car_comments')
+      .select('*', { count: 'exact', head: true })
+      .eq('car_id', carId)
+
+    if (error) {
+      console.error('Error counting car comments:', error)
+      return
+    }
+
+    await supabase
+      .from('cars')
+      .update({ comment_count: count || 0 })
+      .eq('id', carId)
+  } catch (error) {
+    console.error('Error updating car comment count:', error)
   }
 }

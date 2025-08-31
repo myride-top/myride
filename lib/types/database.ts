@@ -16,6 +16,21 @@ export interface Database {
         Insert: Omit<CarLike, 'id' | 'created_at'>
         Update: Partial<Omit<CarLike, 'id' | 'created_at'>>
       }
+      car_views: {
+        Row: CarView
+        Insert: Omit<CarView, 'id' | 'created_at'>
+        Update: Partial<Omit<CarView, 'id' | 'created_at'>>
+      }
+      car_shares: {
+        Row: CarShare
+        Insert: Omit<CarShare, 'id' | 'created_at'>
+        Update: Partial<Omit<CarShare, 'id' | 'created_at'>>
+      }
+      car_comments: {
+        Row: CarComment
+        Insert: Omit<CarComment, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<CarComment, 'id' | 'created_at' | 'updated_at'>>
+      }
       waitlist: {
         Row: WaitlistEntry
         Insert: Omit<WaitlistEntry, 'id' | 'created_at'>
@@ -174,6 +189,49 @@ export interface Car {
   photos: CarPhoto[] | null
   main_photo_url: string | null
   like_count: number
+  view_count: number
+  share_count: number
+  comment_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface CarView {
+  id: string
+  car_id: string
+  user_id?: string // Optional - anonymous views are allowed
+  ip_address?: string // For tracking unique views
+  user_agent?: string // Browser/device info
+  referrer?: string // Where the view came from
+  created_at: string
+}
+
+export interface CarShare {
+  id: string
+  car_id: string
+  user_id?: string // Optional - anonymous shares are allowed
+  share_platform:
+    | 'twitter'
+    | 'facebook'
+    | 'instagram'
+    | 'whatsapp'
+    | 'telegram'
+    | 'copy_link'
+    | 'other'
+  share_url?: string // The URL that was shared
+  ip_address?: string // For tracking unique shares
+  user_agent?: string // Browser/device info
+  created_at: string
+}
+
+export interface CarComment {
+  id: string
+  car_id: string
+  user_id: string
+  parent_comment_id?: string // For nested comments/replies
+  content: string
+  is_edited: boolean
+  edited_at?: string
   created_at: string
   updated_at: string
 }

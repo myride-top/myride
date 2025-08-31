@@ -11,12 +11,12 @@ import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
 import {
   Plus,
-  CarIcon,
   Info,
   Heart,
-  Calendar,
-  Image,
   Crown,
+  Eye,
+  Share2,
+  MessageCircle,
 } from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
@@ -32,8 +32,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalLikes: 0,
-    totalPhotos: 0,
-    memberSince: '',
+    totalViews: 0,
+    totalShares: 0,
+    totalComments: 0,
   })
   const [carSlots, setCarSlots] = useState({
     currentCars: 0,
@@ -48,18 +49,24 @@ export default function DashboardPage() {
       (sum, car) => sum + (car.like_count || 0),
       0
     )
-    const totalPhotos = currentCars.reduce(
-      (sum, car) => sum + (car.photos?.length || 0),
+    const totalViews = currentCars.reduce(
+      (sum, car) => sum + (car.view_count || 0),
       0
     )
-    const memberSince = user?.created_at
-      ? new Date(user.created_at).toLocaleDateString()
-      : 'N/A'
+    const totalShares = currentCars.reduce(
+      (sum, car) => sum + (car.share_count || 0),
+      0
+    )
+    const totalComments = currentCars.reduce(
+      (sum, car) => sum + (car.comment_count || 0),
+      0
+    )
 
     setStats({
       totalLikes,
-      totalPhotos,
-      memberSince,
+      totalViews,
+      totalShares,
+      totalComments,
     })
   }
 
@@ -176,43 +183,8 @@ export default function DashboardPage() {
         {/* Main Content */}
         <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
           <div className='px-4 py-6 sm:px-0'>
-            {/* Stats Overview */}
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8'>
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-3 md:p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <CarIcon className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-3 md:ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
-                          Total Cars
-                        </dt>
-                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
-                          {carSlots.isPremium ? (
-                            <span className='flex items-center gap-2'>
-                              {cars.length}
-                              <span className='flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 font-medium'>
-                                <Crown className='w-3 h-3' />
-                                Unlimited Cars
-                              </span>
-                            </span>
-                          ) : (
-                            <span className='flex items-center gap-1'>
-                              {cars.length}
-                              <span className='text-xs text-muted-foreground font-normal'>
-                                / {carSlots.maxAllowedCars}
-                              </span>
-                            </span>
-                          )}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            {/* Stats Overview - 4 stats: Total Likes + 3 Premium Stats */}
+            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8'>
               <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
                 <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
@@ -233,44 +205,125 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+              {/* Premium Stats - Blurred for non-premium users */}
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border group relative'>
                 <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Image className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
+                      <Eye className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
                     </div>
                     <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
-                          Total Photos
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
+                          Total Views
+                          {!carSlots.isPremium && (
+                            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
+                              PREMIUM
+                            </span>
+                          )}
                         </dt>
-                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
-                          {stats.totalPhotos}
+                        <dd
+                          className={`text-base md:text-lg font-medium text-card-foreground ${
+                            !carSlots.isPremium ? 'blur-sm' : ''
+                          }`}
+                        >
+                          {stats.totalViews}
                         </dd>
                       </dl>
                     </div>
                   </div>
                 </div>
+                {/* Premium upgrade overlay */}
+                {!carSlots.isPremium && (
+                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
+                    <Link
+                      href='/premium'
+                      className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
+                    >
+                      Upgrade to Premium
+                    </Link>
+                  </div>
+                )}
               </div>
 
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border group relative'>
                 <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
-                      <Calendar className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
+                      <Share2 className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
                     </div>
                     <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
-                          Member Since
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
+                          Total Shares
+                          {!carSlots.isPremium && (
+                            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
+                              PREMIUM
+                            </span>
+                          )}
                         </dt>
-                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
-                          {stats.memberSince}
+                        <dd
+                          className={`text-base md:text-lg font-medium text-card-foreground ${
+                            !carSlots.isPremium ? 'blur-sm' : ''
+                          }`}
+                        >
+                          {stats.totalShares}
                         </dd>
                       </dl>
                     </div>
                   </div>
                 </div>
+                {/* Premium upgrade overlay */}
+                {!carSlots.isPremium && (
+                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
+                    <Link
+                      href='/premium'
+                      className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
+                    >
+                      Upgrade to Premium
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border group relative'>
+                <div className='p-3 md:p-5'>
+                  <div className='flex items-center'>
+                    <div className='flex-shrink-0'>
+                      <MessageCircle className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
+                    </div>
+                    <div className='ml-3 md:ml-5 w-0 flex-1'>
+                      <dl>
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
+                          Total Comments
+                          {!carSlots.isPremium && (
+                            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
+                              PREMIUM
+                            </span>
+                          )}
+                        </dt>
+                        <dd
+                          className={`text-base md:text-lg font-medium text-card-foreground ${
+                            !carSlots.isPremium ? 'blur-sm' : ''
+                          }`}
+                        >
+                          {stats.totalComments}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+                {/* Premium upgrade overlay */}
+                {!carSlots.isPremium && (
+                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
+                    <Link
+                      href='/premium'
+                      className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
+                    >
+                      Upgrade to Premium
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -318,7 +371,7 @@ export default function DashboardPage() {
               </h2>
               {cars.length === 0 ? (
                 <EmptyState
-                  icon={CarIcon}
+                  icon={Info}
                   title='No cars yet'
                   description='Get started by adding your first car.'
                   action={

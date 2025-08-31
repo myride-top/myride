@@ -41,6 +41,8 @@ import CarSpecifications from '@/components/cars/car-specifications'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
 import { hasUserSupportedCreator } from '@/lib/database/support-client'
 import { useRouter } from 'next/navigation'
+import { useCarAnalytics } from '@/lib/hooks/use-car-analytics'
+import CarComments from '@/components/cars/car-comments'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -59,6 +61,9 @@ export default function CarDetailPage() {
   const [likeCount, setLikeCount] = useState(0)
   const [isLikeLoading, setIsLikeLoading] = useState(false)
   const [hasSupported, setHasSupported] = useState(false)
+
+  // Track car analytics (views, shares) - always call hook to maintain order
+  const { trackShare } = useCarAnalytics(car?.id || '', car?.user_id || '')
 
   useEffect(() => {
     const loadCarData = async () => {
@@ -512,6 +517,14 @@ export default function CarDetailPage() {
               title={`${car.name} by @${profile?.username || params.username}`}
               text={`Check out this ${car.year} ${car.make} ${car.model}!`}
               variant='outline'
+              onShare={platform => {
+                // Track share analytics
+                const platformMap = {
+                  copy_link: 'copy_link' as const,
+                  native_share: 'other' as const,
+                }
+                trackShare(platformMap[platform])
+              }}
             />
             {user && car && user.id === car.user_id && (
               <Link
@@ -706,6 +719,11 @@ export default function CarDetailPage() {
             <div className='lg:col-span-1 order-last'>
               <CarSpecifications car={car} />
             </div>
+          </div>
+
+          {/* Comments Section */}
+          <div className='mt-8'>
+            <CarComments carId={car.id} carOwnerId={car.user_id} />
           </div>
         </div>
       </main>
