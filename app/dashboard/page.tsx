@@ -221,7 +221,13 @@ export default function DashboardPage() {
         />
 
         {/* Stats Overview */}
-        <Grid cols={4} gap='md' className='mb-6 md:mb-8'>
+        <Grid
+          mobileCols={2}
+          cols={4}
+          mobileGap='sm'
+          gap='md'
+          className='mb-6 md:mb-8'
+        >
           {dashboardStats.map((stat, index) => (
             <StatsCard key={stat.label} stat={stat} />
           ))}
