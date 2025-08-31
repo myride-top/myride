@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
             currency: 'usd',
             product_data: {
               name: 'Additional Car Slot',
-              description: 'Purchase an additional car slot for MyRide',
-              images: ['https://myride.top/icon.jpg'], // Add your product image
+              description: 'Add one more car to your MyRide profile',
+              images: ['https://myride.top/icon.jpg'],
             },
             unit_amount: 100, // $1.00 in cents
           },
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
         userId: userId,
         platform: 'myride',
       },
-      customer_email: customerEmail, // Pre-fill customer email if available
-      allow_promotion_codes: true, // Allow discount codes
+      customer_email: customerEmail,
+      allow_promotion_codes: true,
       billing_address_collection: 'required',
       shipping_address_collection: {
         allowed_countries: [], // No shipping needed for digital product

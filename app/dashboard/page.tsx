@@ -9,7 +9,15 @@ import { getUserCarSlots } from '@/lib/database/premium-client'
 import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
-import { Plus, CarIcon, Info, Heart, Calendar, Image } from 'lucide-react'
+import {
+  Plus,
+  CarIcon,
+  Info,
+  Heart,
+  Calendar,
+  Image,
+  Crown,
+} from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
@@ -182,7 +190,22 @@ export default function DashboardPage() {
                           Total Cars
                         </dt>
                         <dd className='text-base md:text-lg font-medium text-card-foreground'>
-                          {cars.length}
+                          {carSlots.isPremium ? (
+                            <span className='flex items-center gap-2'>
+                              {cars.length}
+                              <span className='flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 font-medium'>
+                                <Crown className='w-3 h-3' />
+                                Unlimited Cars
+                              </span>
+                            </span>
+                          ) : (
+                            <span className='flex items-center gap-1'>
+                              {cars.length}
+                              <span className='text-xs text-muted-foreground font-normal'>
+                                / {carSlots.maxAllowedCars}
+                              </span>
+                            </span>
+                          )}
                         </dd>
                       </dl>
                     </div>
@@ -251,6 +274,43 @@ export default function DashboardPage() {
               </div>
             </div>
 
+            {/* Buy More Slots Section for Non-Premium Users */}
+            {!carSlots.isPremium && cars.length >= carSlots.maxAllowedCars && (
+              <div className='bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <h3 className='text-lg font-semibold text-blue-800 dark:text-blue-200 mb-1'>
+                      Need More Car Slots?
+                    </h3>
+                    <p className='text-blue-700 dark:text-blue-300 text-sm'>
+                      Currently {cars.length}/{carSlots.maxAllowedCars} cars •{' '}
+                      {carSlots.maxAllowedCars - cars.length} slot
+                      {carSlots.maxAllowedCars - cars.length !== 1
+                        ? 's'
+                        : ''}{' '}
+                      remaining
+                    </p>
+                  </div>
+                  <div className='flex gap-2'>
+                    <Link
+                      href='/buy-car-slot'
+                      className='inline-flex items-center px-4 py-2 border border-blue-600 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/50 rounded-md text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors'
+                    >
+                      <Plus className='w-4 h-4 mr-2' />
+                      Buy More Slots
+                    </Link>
+                    <Link
+                      href='/premium'
+                      className='inline-flex items-center px-4 py-2 border border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/50 rounded-md text-sm font-medium hover:bg-amber-100 dark:hover:bg-amber-900/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors'
+                    >
+                      <Crown className='w-4 h-4 mr-2' />
+                      Go Premium
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Cars Grid */}
             <div>
               <h2 className='text-2xl font-bold text-foreground mb-6'>
@@ -275,20 +335,6 @@ export default function DashboardPage() {
                 !carSlots.isPremium &&
                 carSlots.currentCars >= carSlots.maxAllowedCars ? (
                 <div className='space-y-6'>
-                  <div className='bg-blue-50 dark:bg-blue-50/10 border border-blue-200 dark:border-blue-200/50 rounded-lg p-4'>
-                    <div className='flex items-center'>
-                      <div className='flex-shrink-0'>
-                        <Info className='h-5 w-5 text-blue-400' />
-                      </div>
-                      <div className='ml-3'>
-                        <p className='text-sm text-blue-700 dark:text-blue-300'>
-                          {carSlots.purchasedSlots > 0
-                            ? `You have reached your car limit (${carSlots.currentCars}/${carSlots.maxAllowedCars}). Purchase more car slots to add additional cars.`
-                            : 'You have reached the maximum limit of 1 car per user. Upgrade to premium or purchase additional car slots to add more cars.'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                     {cars.map(car => (
                       <CarCard

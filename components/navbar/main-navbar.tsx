@@ -89,8 +89,7 @@ export default function MainNavbar({
         router.push('/dashboard')
         break
       case 'premium':
-        // TODO: Implement premium purchase
-        console.log('Premium purchase not implemented yet')
+        router.push('/premium')
         break
       case 'support':
         router.push('/support')
@@ -184,9 +183,21 @@ export default function MainNavbar({
                       Add New Car
                     </button>
                   ) : (
-                    <div className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950'>
-                      <AlertCircle className='w-4 h-4 mr-3' />
-                      Car Limit Reached
+                    <div className='space-y-1'>
+                      <div className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950'>
+                        <AlertCircle className='w-4 h-4 mr-3' />
+                        Car Limit Reached
+                      </div>
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false)
+                          router.push('/buy-car-slot')
+                        }}
+                        className='flex items-center w-full px-4 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950 cursor-pointer'
+                      >
+                        <Plus className='w-4 h-4 mr-3' />
+                        Buy More Slots
+                      </button>
                     </div>
                   )}
 

@@ -267,18 +267,8 @@ export default function CreateCarPage() {
 
       if (newCar) {
         toast.success('Car created successfully!')
-        // Get user profile to redirect to the correct URL
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', user.id)
-          .single()
-
-        if (profile?.username) {
-          router.push(`/${profile.username}`)
-        } else {
-          router.push('/dashboard')
-        }
+        // Redirect to dashboard after successful car creation
+        router.push('/dashboard')
       } else {
         setError('Failed to create car')
       }
