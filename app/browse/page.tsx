@@ -16,6 +16,27 @@ export default function BrowsePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Handle like changes
+  const handleLikeChange = async (carId: string, newLikeCount: number) => {
+    // Update local state immediately for UI responsiveness
+    setCars(prevCars => {
+      const updatedCars = prevCars.map(car =>
+        car.id === carId ? { ...car, like_count: newLikeCount } : car
+      )
+      return updatedCars
+    })
+
+    // Refresh car data from database to ensure accuracy
+    try {
+      const refreshedCars = await getAllCarsClient()
+      if (refreshedCars) {
+        setCars(refreshedCars)
+      }
+    } catch (error) {
+      console.error('Error refreshing car data after like change:', error)
+    }
+  }
+
   useEffect(() => {
     const loadCars = async () => {
       try {
@@ -108,6 +129,7 @@ export default function BrowsePage() {
                       profile={profile}
                       isOwner={isOwner}
                       showActions={true}
+                      onLikeChange={handleLikeChange}
                     />
                   )
                 })}

@@ -12,18 +12,49 @@ export async function getCarsByUserClient(
   userId: string
 ): Promise<Car[] | null> {
   try {
-    const { data, error } = await supabase
+    // First get cars with basic info
+    const { data: cars, error: carsError } = await supabase
       .from('cars')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching cars:', error)
+    if (carsError) {
+      console.error('Error fetching cars:', carsError)
       return null
     }
 
-    return data
+    if (!cars || cars.length === 0) {
+      return []
+    }
+
+    // Get like counts for all cars
+    const carIds = cars.map(car => car.id)
+    const { data: likeCounts, error: likeError } = await supabase
+      .from('car_likes')
+      .select('car_id')
+      .in('car_id', carIds)
+
+    if (likeError) {
+      console.error('Error fetching like counts:', likeError)
+      // Fallback to cars table like_count if car_likes query fails
+      return cars
+    }
+
+    // Calculate like counts for each car
+    const likeCountMap = new Map<string, number>()
+    likeCounts?.forEach(like => {
+      const currentCount = likeCountMap.get(like.car_id) || 0
+      likeCountMap.set(like.car_id, currentCount + 1)
+    })
+
+    // Update cars with calculated like counts
+    const carsWithLikes = cars.map(car => ({
+      ...car,
+      like_count: likeCountMap.get(car.id) || 0,
+    }))
+
+    return carsWithLikes
   } catch (error) {
     console.error('Error fetching cars:', error)
     return null
@@ -364,7 +395,33 @@ export async function getCarByUrlSlugAndUsernameClient(
     }
 
     console.log('Car found by URL slug:', data)
-    return data
+
+    // Get the real-time like count from car_likes table
+    try {
+      const { count: likeCount, error: likeError } = await supabase
+        .from('car_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('car_id', data.id)
+
+      if (likeError) {
+        console.error('Error fetching like count:', likeError)
+        // Fallback to cars table like_count if car_likes query fails
+        return data
+      }
+
+      // Update car with real-time like count
+      const carWithLikeCount = {
+        ...data,
+        like_count: likeCount || 0,
+      }
+
+      console.log('Car found by URL slug with like count:', carWithLikeCount)
+      return carWithLikeCount
+    } catch (likeError) {
+      console.error('Error getting like count:', likeError)
+      // Fallback to cars table like_count
+      return data
+    }
   } catch (error) {
     console.error('Error fetching car by URL slug:', error)
     return null
@@ -389,8 +446,34 @@ export async function getCarByUrlSlugClient(
       return null
     }
 
-    console.log('Car found by URL slug:', data)
-    return data
+    // Get the real-time like count from car_likes table
+    try {
+      const { count: likeCount, error: likeError } = await supabase
+        .from('car_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('car_id', data.id)
+
+      if (likeError) {
+        console.error('Error fetching like count:', likeError)
+        // Fallback to cars table like_count if car_likes query fails
+        console.log('Car found by URL slug:', data)
+        return data
+      }
+
+      // Update car with real-time like count
+      const carWithLikeCount = {
+        ...data,
+        like_count: likeCount || 0,
+      }
+
+      console.log('Car found by URL slug with like count:', carWithLikeCount)
+      return carWithLikeCount
+    } catch (likeError) {
+      console.error('Error getting like count:', likeError)
+      // Fallback to cars table like_count
+      console.log('Car found by URL slug:', data)
+      return data
+    }
   } catch (error) {
     console.error('Error fetching car by URL slug:', error)
     return null
@@ -805,6 +888,25 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
       return []
     }
 
+    // Get like counts for all cars
+    const carIds = cars.map(car => car.id)
+    const { data: likeCounts, error: likeError } = await supabase
+      .from('car_likes')
+      .select('car_id')
+      .in('car_id', carIds)
+
+    if (likeError) {
+      console.error('Error fetching like counts:', likeError)
+      // Continue without like counts if the query fails
+    }
+
+    // Calculate like counts for each car
+    const likeCountMap = new Map<string, number>()
+    likeCounts?.forEach(like => {
+      const currentCount = likeCountMap.get(like.car_id) || 0
+      likeCountMap.set(like.car_id, currentCount + 1)
+    })
+
     // Get all unique user IDs from the cars
     const userIds = [...new Set(cars.map(car => car.user_id))]
 
@@ -816,8 +918,12 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
 
     if (profilesError) {
       console.error('Error fetching profiles:', profilesError)
-      // Return cars without profile data
-      return cars
+      // Return cars without profile data but with like counts
+      return cars.map(car => ({
+        ...car,
+        like_count: likeCountMap.get(car.id) || 0,
+        profiles: null,
+      }))
     }
 
     // Create a map of user_id to profile for quick lookup
@@ -828,13 +934,14 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
       })
     }
 
-    // Attach profile data to cars
-    const carsWithProfiles = cars.map(car => ({
+    // Attach profile data and like counts to cars
+    const carsWithProfilesAndLikes = cars.map(car => ({
       ...car,
+      like_count: likeCountMap.get(car.id) || 0,
       profiles: profileMap.get(car.user_id) || null,
     }))
 
-    return carsWithProfiles
+    return carsWithProfilesAndLikes
   } catch (error) {
     console.error('Error fetching all cars:', error)
     return null

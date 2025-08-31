@@ -56,19 +56,34 @@ export default function DashboardPage() {
   }
 
   // Handle like changes
-  const handleLikeChange = (carId: string, newLikeCount: number) => {
+  const handleLikeChange = async (carId: string, newLikeCount: number) => {
+    // Update local state immediately for UI responsiveness
     setCars(prevCars => {
       const updatedCars = prevCars.map(car =>
         car.id === carId ? { ...car, like_count: newLikeCount } : car
       )
       return updatedCars
     })
+
+    // Refresh car data from database to ensure accuracy
+    if (user) {
+      try {
+        const refreshedCars = await getCarsByUserClient(user.id)
+        if (refreshedCars) {
+          setCars(refreshedCars)
+          // Recalculate stats with fresh data
+          recalculateStats(refreshedCars)
+        }
+      } catch (error) {
+        console.error('Error refreshing car data after like change:', error)
+      }
+    }
   }
 
   // Handle sharing cars
   const handleShare = async (car: Car) => {
     const carUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
-    
+
     try {
       if (navigator.share) {
         // Use native sharing if available
@@ -256,7 +271,9 @@ export default function DashboardPage() {
                     </Link>
                   }
                 />
-              ) : cars.length === 1 && !carSlots.isPremium && carSlots.currentCars >= carSlots.maxAllowedCars ? (
+              ) : cars.length === 1 &&
+                !carSlots.isPremium &&
+                carSlots.currentCars >= carSlots.maxAllowedCars ? (
                 <div className='space-y-6'>
                   <div className='bg-blue-50 dark:bg-blue-50/10 border border-blue-200 dark:border-blue-200/50 rounded-lg p-4'>
                     <div className='flex items-center'>
@@ -265,10 +282,9 @@ export default function DashboardPage() {
                       </div>
                       <div className='ml-3'>
                         <p className='text-sm text-blue-700 dark:text-blue-300'>
-                          {carSlots.purchasedSlots > 0 
+                          {carSlots.purchasedSlots > 0
                             ? `You have reached your car limit (${carSlots.currentCars}/${carSlots.maxAllowedCars}). Purchase more car slots to add additional cars.`
-                            : 'You have reached the maximum limit of 1 car per user. Upgrade to premium or purchase additional car slots to add more cars.'
-                          }
+                            : 'You have reached the maximum limit of 1 car per user. Upgrade to premium or purchase additional car slots to add more cars.'}
                         </p>
                       </div>
                     </div>
@@ -285,9 +301,7 @@ export default function DashboardPage() {
                             `/${profile?.username}/${car.url_slug}/edit`
                           )
                         }
-                        onShare={car =>
-                          handleShare(car)
-                        }
+                        onShare={car => handleShare(car)}
                         onLikeChange={handleLikeChange}
                       />
                     ))}
@@ -306,9 +320,7 @@ export default function DashboardPage() {
                           `/${profile?.username}/${car.url_slug}/edit`
                         )
                       }
-                      onShare={car =>
-                        handleShare(car)
-                      }
+                      onShare={car => handleShare(car)}
                       onLikeChange={handleLikeChange}
                     />
                   ))}
