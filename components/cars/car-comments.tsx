@@ -621,19 +621,6 @@ export default function CarComments({
     return total
   }
 
-  const getTotalLikeCount = () => {
-    let totalLikes = 0
-    comments.forEach(comment => {
-      totalLikes += comment.like_count || 0
-      if (comment.replies) {
-        comment.replies.forEach(reply => {
-          totalLikes += reply.like_count || 0
-        })
-      }
-    })
-    return totalLikes
-  }
-
   const findMainComment = (replyId: string): CommentWithProfile | null => {
     for (const comment of comments) {
       if (comment.replies) {
@@ -917,9 +904,6 @@ export default function CarComments({
         <h3 className='text-lg font-semibold'>
           Comments ({getTotalCommentCount()})
         </h3>
-        <span className='text-sm text-muted-foreground'>
-          • {getTotalLikeCount()} likes
-        </span>
       </div>
 
       {/* Database Error Display */}
