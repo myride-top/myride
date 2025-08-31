@@ -102,26 +102,6 @@ export default function MainNavbar({
       logoHref={user ? '/dashboard' : '/'}
       layout='right-aligned'
     >
-      {showCreateButton &&
-        user &&
-        (canCreateCar ? (
-          <Link
-            href='/create'
-            className='hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
-          >
-            <Plus className='w-4 h-4 mr-2' />
-            Add New Car
-          </Link>
-        ) : (
-          <Link
-            href='/buy-car-slot'
-            className='hidden sm:inline-flex items-center px-4 py-2 border border-orange-200 dark:border-orange-800 text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors cursor-pointer'
-          >
-            <AlertCircle className='w-4 h-4 mr-2' />
-            Car Limit Reached
-          </Link>
-        ))}
-
       {user ? (
         <div className='flex items-center space-x-2'>
           <ThemeToggle />
