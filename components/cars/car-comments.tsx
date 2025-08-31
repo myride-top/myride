@@ -876,7 +876,37 @@ export default function CarComments({
       {/* Replies - Only show for main comments (depth 0) */}
       {comment.replies && comment.replies.length > 0 && depth === 0 && (
         <div className='mt-3'>
-          {comment.replies.map(reply => renderComment(reply, true, depth + 1))}
+          {/* Reply Toggle Button */}
+          <button
+            onClick={() => toggleReplies(comment.id)}
+            className='flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2 cursor-pointer'
+          >
+            <div
+              className={`w-4 h-4 transition-transform duration-200 ${
+                expandedReplies.has(comment.id) ? 'rotate-90' : ''
+              }`}
+            >
+              ▶
+            </div>
+            <span>
+              {expandedReplies.has(comment.id)
+                ? `Hide ${comment.replies.length} repl${
+                    comment.replies.length === 1 ? 'y' : 'ies'
+                  }`
+                : `Show ${comment.replies.length} repl${
+                    comment.replies.length === 1 ? 'y' : 'ies'
+                  }`}
+            </span>
+          </button>
+
+          {/* Replies - Only show when expanded */}
+          {expandedReplies.has(comment.id) && (
+            <div className='space-y-3'>
+              {comment.replies.map(reply =>
+                renderComment(reply, true, depth + 1)
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
