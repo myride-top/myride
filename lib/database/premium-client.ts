@@ -17,13 +17,11 @@ export async function activatePremiumUser(
     })
 
     if (error) {
-      console.error('Error activating premium user:', error)
       return false
     }
 
     return data || false
   } catch (error) {
-    console.error('Error activating premium user:', error)
     return false
   }
 }
@@ -36,13 +34,11 @@ export async function deactivatePremiumUser(userId: string): Promise<boolean> {
     })
 
     if (error) {
-      console.error('Error deactivating premium user:', error)
       return false
     }
 
     return data || false
   } catch (error) {
-    console.error('Error deactivating premium user:', error)
     return false
   }
 }
@@ -57,13 +53,11 @@ export async function isUserPremium(userId: string): Promise<boolean> {
       .single()
 
     if (error) {
-      console.error('Error checking premium status:', error)
       return false
     }
 
     return data?.is_premium || false
   } catch (error) {
-    console.error('Error checking premium status:', error)
     return false
   }
 }
@@ -85,7 +79,6 @@ export async function getPremiumPurchaseDate(
 
     return new Date(data.premium_purchased_at)
   } catch (error) {
-    console.error('Error fetching premium purchase date:', error)
     return null
   }
 }
@@ -107,7 +100,6 @@ export async function getStripeCustomerId(
 
     return data.stripe_customer_id
   } catch (error) {
-    console.error('Error fetching Stripe customer ID:', error)
     return null
   }
 }
@@ -123,7 +115,6 @@ export async function addCarSlot(userId: string): Promise<boolean> {
       .single()
 
     if (fetchError) {
-      console.error('Error fetching current car slots:', fetchError)
       return false
     }
 
@@ -141,16 +132,11 @@ export async function addCarSlot(userId: string): Promise<boolean> {
       .single()
 
     if (error) {
-      console.error('Error adding car slot:', error)
       return false
     }
 
-    console.log(
-      `Car slot added for user ${userId}. Total slots: ${data?.car_slots_purchased}`
-    )
     return true
   } catch (error) {
-    console.error('Error adding car slot:', error)
     return false
   }
 }
@@ -171,7 +157,6 @@ export async function getUserCarSlots(userId: string): Promise<{
       .single()
 
     if (profileError) {
-      console.error('Error fetching profile:', profileError)
       return {
         currentCars: 0,
         maxAllowedCars: 1,
@@ -190,7 +175,6 @@ export async function getUserCarSlots(userId: string): Promise<{
       .eq('user_id', userId)
 
     if (carError) {
-      console.error('Error counting cars:', carError)
       return {
         currentCars: 0,
         maxAllowedCars: isPremium ? 999 : 1 + purchasedSlots,
@@ -209,7 +193,6 @@ export async function getUserCarSlots(userId: string): Promise<{
       isPremium,
     }
   } catch (error) {
-    console.error('Error getting user car slots:', error)
     return {
       currentCars: 0,
       maxAllowedCars: 1,

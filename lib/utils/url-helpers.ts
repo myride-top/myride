@@ -11,14 +11,11 @@ export function carNameToUrl(carName: string): string {
  * Example: "mazda-mx-3" -> "Mazda MX-3"
  */
 export function urlToCarName(urlName: string): string {
-  console.log('urlToCarName input:', urlName)
-  
   // Handle edge cases
   if (!urlName || typeof urlName !== 'string') {
-    console.log('Invalid input, returning empty string')
     return ''
   }
-  
+
   // First, let's try to find the exact car name by doing a case-insensitive search
   // This is more reliable than trying to reconstruct the name
   return urlName

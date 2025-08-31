@@ -7,9 +7,10 @@ export async function uploadCarPhoto(
   const supabase = createClient()
 
   // Check if user is authenticated
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
-    console.error('User not authenticated')
     return null
   }
 
@@ -25,11 +26,8 @@ export async function uploadCarPhoto(
     })
 
   if (error) {
-    console.error('Error uploading photo:', error)
     return null
   }
-
-  console.log(data)
 
   // Get public URL
   const {
@@ -50,7 +48,6 @@ export async function deleteCarPhoto(photoUrl: string): Promise<boolean> {
   const { error } = await supabase.storage.from('car-photos').remove([fileName])
 
   if (error) {
-    console.error('Error deleting photo:', error)
     return false
   }
 
@@ -67,7 +64,6 @@ export async function deleteAllCarPhotos(carId: string): Promise<boolean> {
       .list(carId)
 
     if (listError) {
-      console.error('Error listing car photos:', listError)
       return false
     }
 
@@ -79,16 +75,12 @@ export async function deleteAllCarPhotos(carId: string): Promise<boolean> {
         .remove(fileNames)
 
       if (deleteError) {
-        console.error('Error deleting car photos:', deleteError)
         return false
       }
-
-      console.log(`Deleted ${fileNames.length} photos for car ${carId}`)
     }
 
     return true
   } catch (error) {
-    console.error('Error deleting all car photos:', error)
     return false
   }
 }
@@ -100,9 +92,10 @@ export async function uploadProfileAvatar(
   const supabase = createClient()
 
   // Check if user is authenticated
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
-    console.error('User not authenticated')
     return null
   }
 
@@ -117,10 +110,7 @@ export async function uploadProfileAvatar(
       upsert: true,
     })
 
-  console.log(data)
-
   if (error) {
-    console.error('Error uploading avatar:', error)
     return null
   }
 
@@ -141,7 +131,6 @@ export async function deleteProfileAvatar(userId: string): Promise<boolean> {
     .list(userId)
 
   if (listError) {
-    console.error('Error listing avatar files:', listError)
     return false
   }
 
@@ -151,7 +140,6 @@ export async function deleteProfileAvatar(userId: string): Promise<boolean> {
     const { error } = await supabase.storage.from('avatars').remove(fileNames)
 
     if (error) {
-      console.error('Error deleting avatar:', error)
       return false
     }
   }

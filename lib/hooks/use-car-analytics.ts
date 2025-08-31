@@ -30,13 +30,11 @@ export function useCarAnalytics(carId: string, carOwnerId: string) {
         // Get client-side metadata
         const metadata = {
           userAgent: navigator.userAgent,
-          referrer: document.referrer || null,
+          referrer: document.referrer || undefined,
         }
 
         await trackCarViewClient(memoizedCarId, memoizedUserId, metadata)
-      } catch (error) {
-        console.error('Error tracking car view:', error)
-      }
+      } catch (error) {}
     }
 
     trackView()
@@ -77,9 +75,7 @@ export function useCarAnalytics(carId: string, carOwnerId: string) {
           memoizedUserId,
           metadata
         )
-      } catch (error) {
-        console.error('Error tracking car share:', error)
-      }
+      } catch (error) {}
     },
     [memoizedCarId, memoizedUserId, memoizedCarOwnerId]
   )

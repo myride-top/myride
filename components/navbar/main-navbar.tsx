@@ -47,17 +47,7 @@ export default function MainNavbar({
           ])
           setProfile(userProfile)
           setCanCreateCar(canCreate)
-
-          // Debug logging
-          console.log('MainNavbar state:', {
-            showCreateButton,
-            user: !!user,
-            canCreateCar: canCreate,
-            userProfile,
-          })
-        } catch (error) {
-          console.error('Error loading profile:', error)
-        }
+        } catch (error) {}
       }
     }
 

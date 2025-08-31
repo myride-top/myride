@@ -104,7 +104,6 @@ export default function SupportCreator() {
 
       toast.success(`Thank you for your support! Redirecting to payment...`)
     } catch (error) {
-      console.error('Error creating payment:', error)
       toast.error('Failed to process payment. Please try again.')
     } finally {
       setIsLoading(false)

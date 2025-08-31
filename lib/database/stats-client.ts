@@ -20,7 +20,6 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       .select('*', { count: 'exact', head: true })
 
     if (carError) {
-      console.error('Error counting cars:', carError)
     }
 
     // Get total users (profiles)
@@ -29,7 +28,6 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       .select('*', { count: 'exact', head: true })
 
     if (userError) {
-      console.error('Error counting users:', userError)
     }
 
     // Get total likes
@@ -38,7 +36,6 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       .select('*', { count: 'exact', head: true })
 
     if (likeError) {
-      console.error('Error counting likes:', likeError)
     }
 
     // Calculate average rating (we'll use a placeholder for now since we don't have ratings table)
@@ -52,7 +49,6 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       averageRating,
     }
   } catch (error) {
-    console.error('Error fetching platform stats:', error)
     return {
       totalCars: 0,
       totalUsers: 0,
@@ -72,7 +68,6 @@ export async function getUserStats(userId: string) {
       .eq('user_id', userId)
 
     if (carError) {
-      console.error('Error counting user cars:', carError)
     }
 
     // Get total likes given by user
@@ -82,7 +77,6 @@ export async function getUserStats(userId: string) {
       .eq('user_id', userId)
 
     if (likeError) {
-      console.error('Error counting user likes:', likeError)
     }
 
     return {
@@ -90,7 +84,6 @@ export async function getUserStats(userId: string) {
       likesGiven: likesGiven || 0,
     }
   } catch (error) {
-    console.error('Error fetching user stats:', error)
     return {
       carCount: 0,
       likesGiven: 0,
@@ -111,7 +104,6 @@ export async function getRecentActivityStats() {
       .gte('created_at', thirtyDaysAgo.toISOString())
 
     if (carError) {
-      console.error('Error counting recent cars:', carError)
     }
 
     // Get likes given in the last 30 days
@@ -121,7 +113,6 @@ export async function getRecentActivityStats() {
       .gte('created_at', thirtyDaysAgo.toISOString())
 
     if (likeError) {
-      console.error('Error counting recent likes:', likeError)
     }
 
     return {
@@ -129,7 +120,6 @@ export async function getRecentActivityStats() {
       recentLikes: recentLikes || 0,
     }
   } catch (error) {
-    console.error('Error fetching recent activity stats:', error)
     return {
       recentCars: 0,
       recentLikes: 0,

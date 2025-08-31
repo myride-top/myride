@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
 import { useAuth } from './auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 
@@ -16,7 +22,8 @@ const UnitContext = createContext<UnitContextType | undefined>(undefined)
 
 export function UnitProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
-  const [unitPreference, setUnitPreferenceState] = useState<UnitPreference>('metric')
+  const [unitPreference, setUnitPreferenceState] =
+    useState<UnitPreference>('metric')
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -28,7 +35,6 @@ export function UnitProvider({ children }: { children: ReactNode }) {
             setUnitPreferenceState(profile.unit_preference)
           }
         } catch (error) {
-          console.error('Error loading unit preference:', error)
         } finally {
           setIsLoading(false)
         }
@@ -45,7 +51,9 @@ export function UnitProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <UnitContext.Provider value={{ unitPreference, setUnitPreference, isLoading }}>
+    <UnitContext.Provider
+      value={{ unitPreference, setUnitPreference, isLoading }}
+    >
       {children}
     </UnitContext.Provider>
   )

@@ -32,21 +32,16 @@ export default function BrowsePage() {
       if (refreshedCars) {
         setCars(refreshedCars)
       }
-    } catch (error) {
-      console.error('Error refreshing car data after like change:', error)
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {
     const loadCars = async () => {
       try {
-        console.log('Loading cars...')
         const allCars = await getAllCarsClient()
-        console.log('Cars loaded:', allCars?.length || 0)
         setCars(allCars || [])
         setError(null)
       } catch (error) {
-        console.error('Error loading cars:', error)
         setError('Failed to load cars. Please try again later.')
       } finally {
         setLoading(false)
@@ -118,8 +113,14 @@ export default function BrowsePage() {
                     unit_preference: 'metric',
                     created_at: '',
                     updated_at: '',
+                    is_premium: false,
+                    premium_purchased_at: null,
+                    car_slots_purchased: 0,
+                    stripe_customer_id: null,
+                    stripe_subscription_id: null,
+                    total_supported_amount: 0,
+                    is_supporter: false,
                   }
-
                   const isOwner = user?.id === car.user_id
 
                   return (

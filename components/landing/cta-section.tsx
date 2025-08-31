@@ -30,7 +30,6 @@ export default function CTASection({ initialUserCount }: CTASectionProps) {
           const stats = await getPlatformStats()
           setUserCount(stats.totalUsers)
         } catch (error) {
-          console.error('Error fetching user count:', error)
           setUserCount(5000) // Fallback to default value
         } finally {
           setLoading(false)
@@ -91,7 +90,6 @@ export default function CTASection({ initialUserCount }: CTASectionProps) {
           </Link>
           <button
             onClick={() => {
-              console.log('Explore Cars button clicked from CTA')
               window.location.href = '/browse'
             }}
             className='group relative z-10 inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary border-2 border-primary rounded-full transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-105 cursor-pointer'

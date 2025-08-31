@@ -53,7 +53,6 @@ export default function ProfilePage() {
             setAvatarUrl('')
           }
         } catch (error) {
-          console.error('Error loading profile:', error)
         } finally {
           setLoading(false)
         }
@@ -104,7 +103,6 @@ export default function ProfilePage() {
         setError(result.error || 'Failed to update profile')
       }
     } catch (error) {
-      console.error('Error updating profile:', error)
       setError('An unexpected error occurred')
     } finally {
       setSaving(false)

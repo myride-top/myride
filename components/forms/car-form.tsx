@@ -1555,14 +1555,11 @@ export default function CarForm({
 
   // Handle photo reordering locally
   const handlePhotoReorder = async (reorderedPhotos: CarPhoto[]) => {
-    console.log('Photo reorder triggered:', reorderedPhotos)
     // Call the reorder handler to update parent state
     if (onPhotoReorder) {
       try {
         await onPhotoReorder(reorderedPhotos)
-      } catch (error) {
-        console.error('Failed to reorder photos:', error)
-      }
+      } catch (error) {}
     }
   }
 

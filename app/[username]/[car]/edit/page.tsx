@@ -62,7 +62,6 @@ export default function EditCarPage() {
                 carData.url_slug
               )
             ) {
-              console.log('URL slug is UUID, fixing it...')
               const fixedCar = await fixCarUrlSlug(carData.id)
               if (fixedCar) {
                 // Redirect to the new URL
@@ -98,7 +97,6 @@ export default function EditCarPage() {
                   carData.photos = updatedCar.photos
                 }
               } catch (error) {
-                console.error('Error migrating photos:', error)
                 // Continue with local migration even if database update fails
               }
             }
@@ -108,7 +106,6 @@ export default function EditCarPage() {
             setError('Car not found')
           }
         } catch (error) {
-          console.error('Error loading car:', error)
           setError('Failed to load car')
         } finally {
           setLoading(false)
@@ -136,7 +133,6 @@ export default function EditCarPage() {
           setError('Failed to save photo to database')
         }
       } catch (error) {
-        console.error('Error saving photo to database:', error)
         setError('Failed to save photo to database')
       }
     }
@@ -159,7 +155,6 @@ export default function EditCarPage() {
           setError('Failed to save photos to database')
         }
       } catch (error) {
-        console.error('Error saving photos to database:', error)
         setError('Failed to save photos to database')
       }
     }
@@ -184,7 +179,6 @@ export default function EditCarPage() {
             toast.success('Photo category updated!')
           }
         } catch (error) {
-          console.error('Error updating photo category:', error)
           toast.error('Failed to update photo category')
         }
       }
@@ -229,7 +223,6 @@ export default function EditCarPage() {
               }
             }
           } catch (error) {
-            console.error('Error updating photo description:', error)
             toast.error('Failed to update photo description')
           }
 
@@ -252,7 +245,6 @@ export default function EditCarPage() {
         toast.error('Failed to set main photo')
       }
     } catch (error) {
-      console.error('Error setting main photo:', error)
       toast.error('Failed to set main photo')
     }
   }
@@ -277,7 +269,6 @@ export default function EditCarPage() {
         toast.error('Failed to remove photo from car')
       }
     } catch (error) {
-      console.error('Error deleting photo:', error)
       toast.error('Failed to delete photo')
     }
   }
@@ -298,7 +289,6 @@ export default function EditCarPage() {
         toast.error('Failed to update photo order')
       }
     } catch (error) {
-      console.error('Error updating photo order:', error)
       toast.error('Failed to update photo order')
     }
   }
@@ -411,7 +401,6 @@ export default function EditCarPage() {
         setError('Failed to update car')
       }
     } catch (error) {
-      console.error('Error updating car:', error)
       setError('An unexpected error occurred')
     } finally {
       setSaving(false)
@@ -437,7 +426,6 @@ export default function EditCarPage() {
       toast.success('Car deleted successfully!')
       router.push('/dashboard')
     } catch (error) {
-      console.error('Error deleting car:', error)
       setError('Failed to delete car')
     } finally {
       setDeleting(false)

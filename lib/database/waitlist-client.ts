@@ -25,7 +25,6 @@ export async function addToWaitlist(email: string): Promise<{
 
     return { success: true }
   } catch (error) {
-    console.error('Error adding to waitlist:', error)
     return { success: false, error: 'An unexpected error occurred' }
   }
 }
@@ -39,13 +38,11 @@ export async function getWaitlistCount(): Promise<number> {
       .select('*', { count: 'exact', head: true })
 
     if (error) {
-      console.error('Error getting waitlist count:', error)
       return 0
     }
 
     return count || 0
   } catch (error) {
-    console.error('Error getting waitlist count:', error)
     return 0
   }
 }
@@ -60,13 +57,11 @@ export async function getAllWaitlistEntries(): Promise<WaitlistEntry[]> {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Error getting waitlist entries:', error)
       return []
     }
 
     return data || []
   } catch (error) {
-    console.error('Error getting waitlist entries:', error)
     return []
   }
 }

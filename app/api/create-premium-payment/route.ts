@@ -9,11 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { userId, customerEmail } = await request.json()
 
-    console.log('Creating premium payment session:', {
-      userId,
-      customerEmail,
-    })
-
     // Validate required fields
     if (!userId) {
       return NextResponse.json(
@@ -59,18 +54,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('Premium payment session created successfully:', session.id)
     return NextResponse.json({
       sessionId: session.id,
       url: session.url,
     })
   } catch (error) {
-    console.error('Error creating premium payment session:', error)
-
     // Log more detailed error information
     if (error instanceof Error) {
-      console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
     }
 
     return NextResponse.json(

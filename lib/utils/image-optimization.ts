@@ -110,7 +110,6 @@ export async function compressToTargetSize(
       currentQuality = Math.max(minQuality, currentQuality - 0.15)
       attempt++
     } catch (error) {
-      console.error('Compression attempt failed:', error)
       break
     }
   }

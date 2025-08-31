@@ -57,13 +57,9 @@ export default function ShareButton({
           onShare?.('native_share')
         } catch (shareError) {
           // Native sharing failed, but clipboard copy already succeeded
-          console.log(
-            `Native sharing failed, but link copied to clipboard (${shareError})`
-          )
         }
       }
     } catch (clipboardError) {
-      console.error('Error copying to clipboard:', clipboardError)
       toast.error('Failed to copy link to clipboard')
 
       // Try native sharing as fallback
@@ -76,7 +72,6 @@ export default function ShareButton({
           })
           onShare?.('native_share')
         } catch (shareError) {
-          console.error('Both clipboard and native sharing failed:', shareError)
           toast.error('Failed to share link')
         }
       }

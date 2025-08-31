@@ -5,31 +5,53 @@ import { useAuth } from '@/lib/context/auth-context'
 import {
   addCarCommentClient,
   getCarCommentsClient,
+  deleteCarCommentClient,
+  deleteCarCommentAsOwnerClient,
+  pinCarCommentClient,
+  unpinCarCommentClient,
 } from '@/lib/database/cars-client'
 import { CarComment } from '@/lib/types/database'
-import { MessageCircle, Send, User } from 'lucide-react'
+import {
+  MessageCircle,
+  Send,
+  User,
+  Reply,
+  ChevronDown,
+  ChevronRight,
+  Trash2,
+  Pin,
+  PinOff,
+  MoreVertical,
+} from 'lucide-react'
 import { toast } from 'sonner'
+import { Profile } from '@/lib/types/database'
+
+interface CommentWithProfile extends CarComment {
+  profiles: Profile | null
+  replies?: CommentWithProfile[]
+}
 
 interface CarCommentsProps {
   carId: string
   carOwnerId: string
+  ownerProfile?: Profile | null
 }
 
-interface CommentWithProfile extends CarComment {
-  profiles: {
-    id: string
-    username: string
-    full_name: string | null
-    avatar_url: string | null
-  }
-}
-
-export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
+export default function CarComments({
+  carId,
+  carOwnerId,
+  ownerProfile,
+}: CarCommentsProps) {
   const { user } = useAuth()
   const [comments, setComments] = useState<CommentWithProfile[]>([])
   const [newComment, setNewComment] = useState('')
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [replyContent, setReplyContent] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set())
+  const [deletingComment, setDeletingComment] = useState<string | null>(null)
+  const [pinningComment, setPinningComment] = useState<string | null>(null)
 
   useEffect(() => {
     loadComments()
@@ -39,12 +61,83 @@ export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
     setLoading(true)
     try {
       const commentsData = await getCarCommentsClient(carId)
+
       if (commentsData) {
-        setComments(commentsData as CommentWithProfile[])
+        // Log each comment to see what we're getting
+        commentsData.forEach((comment, index) => {
+          const commentWithProfile = comment as CommentWithProfile
+        })
+
+        // Instead of filtering out comments with null profiles, we'll handle them gracefully
+        const validComments = (commentsData as CommentWithProfile[]).map(
+          comment => {
+            // If profile is null, create a fallback profile object
+            if (!comment.profiles) {
+              // If this is the car owner's comment, use ownerProfile data
+              if (comment.user_id === carOwnerId && ownerProfile) {
+                return {
+                  ...comment,
+                  profiles: {
+                    id: comment.user_id,
+                    username: ownerProfile.username,
+                    full_name: ownerProfile.full_name,
+                    avatar_url: ownerProfile.avatar_url,
+                  },
+                }
+              }
+              // For other users, use generic fallback
+              return {
+                ...comment,
+                profiles: {
+                  id: comment.user_id,
+                  username: 'Unknown User',
+                  full_name: null,
+                  avatar_url: null,
+                },
+              }
+            }
+            return comment
+          }
+        )
+
+        // Group comments by parent (top-level vs replies)
+        const topLevelComments = validComments.filter(
+          comment => !comment.parent_comment_id
+        ) as CommentWithProfile[]
+        const replies = validComments.filter(
+          comment => comment.parent_comment_id
+        ) as CommentWithProfile[]
+
+        // Attach replies to their parent comments
+        topLevelComments.forEach(comment => {
+          comment.replies = replies.filter(
+            reply => reply.parent_comment_id === comment.id
+          )
+
+          // Process nested replies (replies to replies)
+          comment.replies.forEach(reply => {
+            reply.replies = replies.filter(
+              nestedReply => nestedReply.parent_comment_id === reply.id
+            )
+          })
+        })
+
+        // Sort comments: pinned first, then by creation date
+        topLevelComments.sort((a, b) => {
+          if (a.is_pinned && !b.is_pinned) return -1
+          if (!a.is_pinned && b.is_pinned) return 1
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          )
+        })
+
+        setComments(topLevelComments)
+      } else {
+        setComments([])
       }
     } catch (error) {
-      console.error('Error loading comments:', error)
       toast.error('Failed to load comments')
+      setComments([]) // Set empty array on error
     } finally {
       setLoading(false)
     }
@@ -53,6 +146,19 @@ export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user || !newComment.trim()) return
+
+    // Check if user is car owner and already has a top-level comment
+    if (user.id === carOwnerId) {
+      const existingTopLevelComment = comments.find(
+        comment => comment.user_id === user.id
+      )
+      if (existingTopLevelComment) {
+        toast.error(
+          'Car owners can only create one top-level comment. You can reply to others instead.'
+        )
+        return
+      }
+    }
 
     setSubmitting(true)
     try {
@@ -69,12 +175,393 @@ export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
         toast.error('Failed to add comment')
       }
     } catch (error) {
-      console.error('Error adding comment:', error)
       toast.error('Failed to add comment')
     } finally {
       setSubmitting(false)
     }
   }
+
+  const handleSubmitReply = async (
+    e: React.FormEvent,
+    parentCommentId: string
+  ) => {
+    e.preventDefault()
+    if (!user || !replyContent.trim()) return
+
+    setSubmitting(true)
+    try {
+      // Check if we're replying to a reply (depth > 0)
+      const isReplyingToReply = comments.some(comment =>
+        comment.replies?.some(reply => reply.id === parentCommentId)
+      )
+
+      let actualParentId = parentCommentId
+      if (isReplyingToReply) {
+        // If replying to a reply, find the main comment to use as parent
+        const mainComment = findMainComment(parentCommentId)
+        if (mainComment) {
+          actualParentId = mainComment.id
+        }
+      }
+
+      const comment = await addCarCommentClient(
+        carId,
+        user.id,
+        replyContent.trim(),
+        actualParentId
+      )
+      if (comment) {
+        setReplyContent('')
+        setReplyingTo(null)
+
+        // Add a small delay to ensure database has processed the new reply
+        setTimeout(async () => {
+          await loadComments() // Refresh comments
+        }, 500)
+
+        toast.success('Reply added successfully!')
+      } else {
+        toast.error('Failed to add reply')
+      }
+    } catch (error) {
+      toast.error('Failed to add reply')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDeleteComment = async (
+    commentId: string,
+    commentUserId: string
+  ) => {
+    if (!user) return
+
+    setDeletingComment(commentId)
+    try {
+      let success = false
+
+      if (user.id === commentUserId) {
+        // User deleting their own comment
+        success = await deleteCarCommentClient(commentId, user.id)
+      } else if (user.id === carOwnerId) {
+        // Car owner deleting any comment
+        success = await deleteCarCommentAsOwnerClient(commentId, carId, user.id)
+      }
+
+      if (success) {
+        await loadComments() // Refresh comments
+        toast.success('Comment deleted successfully!')
+      } else {
+        toast.error('Failed to delete comment')
+      }
+    } catch (error) {
+      toast.error('Failed to delete comment')
+    } finally {
+      setDeletingComment(null)
+    }
+  }
+
+  const handlePinComment = async (commentId: string) => {
+    if (!user || user.id !== carOwnerId) return
+
+    setPinningComment(commentId)
+    try {
+      const success = await pinCarCommentClient(commentId, carId, user.id)
+
+      if (success) {
+        // Update local state immediately for better UX
+        setComments(prevComments =>
+          prevComments.map(comment => ({
+            ...comment,
+            is_pinned: comment.id === commentId,
+          }))
+        )
+
+        // Refresh from database to ensure consistency
+        setTimeout(async () => {
+          await loadComments()
+        }, 100)
+
+        toast.success('Comment pinned successfully!')
+      } else {
+        toast.error('Failed to pin comment')
+      }
+    } catch (error) {
+      toast.error('Failed to pin comment')
+    } finally {
+      setPinningComment(null)
+    }
+  }
+
+  const handleUnpinComment = async () => {
+    if (!user || user.id !== carOwnerId) return
+
+    setPinningComment('unpin')
+    try {
+      const success = await unpinCarCommentClient(carId, user.id)
+
+      if (success) {
+        // Refresh comments immediately to get the updated state
+        await loadComments()
+        toast.success('Comment unpinned successfully!')
+      } else {
+        toast.error('Failed to unpin comment')
+      }
+    } catch (error) {
+      toast.error('Failed to unpin comment')
+    } finally {
+      setPinningComment(null)
+    }
+  }
+
+  const toggleReplies = (commentId: string) => {
+    setExpandedReplies(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(commentId)) {
+        newSet.delete(commentId)
+      } else {
+        newSet.add(commentId)
+      }
+      return newSet
+    })
+  }
+
+  const canCreateTopLevelComment = () => {
+    if (!user) return false
+    if (user.id !== carOwnerId) return true
+    // Car owner can only create one top-level comment
+    return !comments.some(comment => comment.user_id === user.id)
+  }
+
+  const canDeleteComment = (commentUserId: string) => {
+    if (!user) return false
+    return user.id === commentUserId || user.id === carOwnerId
+  }
+
+  const canPinComment = () => {
+    return user?.id === carOwnerId
+  }
+
+  const getTotalCommentCount = () => {
+    let total = comments.length // Count main comments
+    comments.forEach(comment => {
+      if (comment.replies) {
+        total += comment.replies.length // Add replies count
+      }
+    })
+    return total
+  }
+
+  const findMainComment = (replyId: string): CommentWithProfile | null => {
+    for (const comment of comments) {
+      if (comment.replies) {
+        const found = comment.replies.find(reply => reply.id === replyId)
+        if (found) {
+          return comment // Return the main comment that contains this reply
+        }
+      }
+    }
+    return null
+  }
+
+  const renderComment = (
+    comment: CommentWithProfile,
+    isReply = false,
+    depth = 0
+  ) => (
+    <div
+      key={comment.id}
+      className={`${isReply ? 'ml-6' : ''} ${
+        depth > 0 ? 'border-l-2 border-muted pl-4' : ''
+      }`}
+    >
+      <div
+        className={`p-3 rounded-lg ${
+          comment.is_pinned
+            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-2 border-blue-200 dark:border-blue-800'
+            : 'bg-muted/30'
+        }`}
+      >
+        {/* Pinned Badge */}
+        {comment.is_pinned && (
+          <div className='flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400'>
+            <Pin className='w-4 h-4' />
+            <span className='text-xs font-medium'>PINNED COMMENT</span>
+          </div>
+        )}
+
+        <div className='flex gap-3'>
+          <div className='flex-shrink-0'>
+            {comment.profiles?.avatar_url ? (
+              <img
+                src={comment.profiles.avatar_url}
+                alt={comment.profiles?.username || 'User'}
+                className='w-8 h-8 rounded-full object-cover'
+              />
+            ) : (
+              <div className='w-8 h-8 bg-primary rounded-full flex items-center justify-center'>
+                <User className='w-4 h-4 text-primary-foreground' />
+              </div>
+            )}
+          </div>
+          <div className='flex-1 min-w-0'>
+            <div className='flex items-center justify-between mb-1'>
+              <div className='flex items-center gap-2'>
+                <span className='font-medium text-sm'>
+                  {comment.profiles?.full_name ||
+                    comment.profiles?.username ||
+                    'Unknown User'}
+                </span>
+                {comment.user_id === carOwnerId && (
+                  <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'>
+                    Owner
+                  </span>
+                )}
+                <span className='text-xs text-muted-foreground'>
+                  {new Date(comment.created_at).toLocaleDateString()}
+                </span>
+              </div>
+
+              {/* Owner Controls */}
+              <div className='flex items-center gap-1'>
+                {/* Pin Controls - Car owners can pin any comment */}
+                {(() => {
+                  const shouldShowPin = canPinComment() && !isReply
+
+                  if (shouldShowPin) {
+                    if (comment.is_pinned) {
+                      return (
+                        <button
+                          onClick={() => handleUnpinComment()}
+                          disabled={pinningComment === 'unpin'}
+                          className='p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors disabled:opacity-50 cursor-pointer'
+                          title='Unpin comment'
+                        >
+                          {pinningComment === 'unpin' ? (
+                            <div className='animate-spin rounded-full h-3 w-3 border-b-2 border-current'></div>
+                          ) : (
+                            <PinOff className='w-3 h-3' />
+                          )}
+                        </button>
+                      )
+                    } else {
+                      return (
+                        <button
+                          onClick={() => {
+                            handlePinComment(comment.id)
+                          }}
+                          disabled={pinningComment === comment.id}
+                          title='Pin comment'
+                          data-comment-id={comment.id}
+                          data-testid={`pin-button-${comment.id}`}
+                          className='p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors disabled:opacity-50 cursor-pointer'
+                        >
+                          {pinningComment === comment.id ? (
+                            <div className='animate-spin rounded-full h-3 w-3 border-b-2 border-current'></div>
+                          ) : (
+                            <Pin className='w-3 h-3' />
+                          )}
+                        </button>
+                      )
+                    }
+                  } else {
+                    return null
+                  }
+                })()}
+
+                {/* Delete Controls - Only for comments user can delete */}
+                {(() => {
+                  const canDelete = canDeleteComment(comment.user_id)
+
+                  return (
+                    canDelete && (
+                      <button
+                        onClick={() =>
+                          handleDeleteComment(comment.id, comment.user_id)
+                        }
+                        disabled={deletingComment === comment.id}
+                        title='Delete comment'
+                        className='p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors disabled:opacity-50 cursor-pointer'
+                      >
+                        {deletingComment === comment.id ? (
+                          <div className='animate-spin rounded-full h-3 w-3 border-b-2 border-current'></div>
+                        ) : (
+                          <Trash2 className='w-3 h-3' />
+                        )}
+                      </button>
+                    )
+                  )
+                })()}
+              </div>
+            </div>
+
+            <p className='text-sm text-foreground mb-2'>{comment.content}</p>
+
+            {/* Reply button - Show for main comments and replies, but replies create mentions instead of nesting */}
+            {user && (
+              <button
+                onClick={() => {
+                  if (depth === 0) {
+                    // For main comments, show normal reply form
+                    setReplyingTo(replyingTo === comment.id ? null : comment.id)
+                  } else {
+                    // For replies, show reply form under this reply with mention pre-filled
+                    setReplyingTo(replyingTo === comment.id ? null : comment.id)
+                    setReplyContent(
+                      `@${comment.profiles?.username || 'Unknown'} `
+                    )
+                  }
+                }}
+                className='flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer'
+              >
+                <Reply className='w-3 h-3' />
+                Reply
+              </button>
+            )}
+
+            {/* Reply form */}
+            {replyingTo === comment.id && (
+              <form
+                onSubmit={e => handleSubmitReply(e, comment.id)}
+                className='mt-3'
+              >
+                <div className='flex flex-col gap-2'>
+                  <textarea
+                    value={replyContent}
+                    onChange={e => setReplyContent(e.target.value)}
+                    placeholder='Write a reply...'
+                    className='flex-1 px-3 py-2 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm'
+                    rows={2}
+                    maxLength={500}
+                  />
+                  <div className='place-self-end'>
+                    <button
+                      type='submit'
+                      disabled={!replyContent.trim() || submitting}
+                      className='px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm cursor-pointer'
+                    >
+                      {submitting ? (
+                        <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto'></div>
+                      ) : (
+                        <Send className='w-4 h-4' />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Replies - Only show for main comments (depth 0) */}
+      {comment.replies && comment.replies.length > 0 && depth === 0 && (
+        <div className='mt-3'>
+          {comment.replies.map(reply => renderComment(reply, true, depth + 1))}
+        </div>
+      )}
+    </div>
+  )
 
   if (loading) {
     return (
@@ -95,37 +582,36 @@ export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
     <div className='bg-card rounded-lg border border-border p-6'>
       <div className='flex items-center gap-2 mb-4'>
         <MessageCircle className='w-5 h-5 text-muted-foreground' />
-        <h3 className='text-lg font-semibold'>Comments ({comments.length})</h3>
+        <h3 className='text-lg font-semibold'>
+          Comments ({getTotalCommentCount()})
+        </h3>
       </div>
 
       {/* Add Comment Form */}
-      {user ? (
-        user.id === carOwnerId ? (
-          <div className='mb-6 p-4 bg-muted/50 rounded-lg border border-border'>
-            <div className='flex items-center gap-2 text-muted-foreground'>
-              <MessageCircle className='w-4 h-4' />
-              <p className='text-sm'>
-                You cannot comment on your own car to maintain authentic engagement metrics.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmitComment} className='mb-6'>
-            <div className='flex gap-3'>
-              <div className='flex-1'>
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder='Add a comment...'
-                  className='w-full px-3 py-2 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary'
-                  rows={3}
-                  maxLength={500}
-                />
-              </div>
+      {user && canCreateTopLevelComment() && (
+        <form onSubmit={handleSubmitComment} className='mb-6'>
+          <div className='flex flex-col gap-2'>
+            <textarea
+              value={newComment}
+              onChange={e => setNewComment(e.target.value)}
+              placeholder={'Add a comment...'}
+              className='w-full px-3 py-2 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary'
+              rows={3}
+              maxLength={500}
+            />
+            <div className='flex justify-between gap-2'>
+              {user.id === carOwnerId ? (
+                <p className='text-xs text-muted-foreground text-right'>
+                  💡 This will be your only top-level comment. You can reply to
+                  others below.
+                </p>
+              ) : (
+                <div />
+              )}
               <button
                 type='submit'
                 disabled={!newComment.trim() || submitting}
-                className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                className='px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm cursor-pointer'
               >
                 {submitting ? (
                   <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto'></div>
@@ -134,14 +620,18 @@ export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
                 )}
               </button>
             </div>
-          </form>
-        )
-      ) : (
-        <div className='mb-6 p-4 bg-muted/50 rounded-lg border border-border'>
-          <div className='flex items-center gap-2 text-muted-foreground'>
+          </div>
+        </form>
+      )}
+
+      {/* Car Owner Info */}
+      {user && user.id === carOwnerId && !canCreateTopLevelComment() && (
+        <div className='mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg'>
+          <div className='flex items-center gap-2 text-blue-800 dark:text-blue-200'>
             <MessageCircle className='w-4 h-4' />
             <p className='text-sm'>
-              Please sign in to leave a comment.
+              You've already created your car description. You can reply to
+              other users' comments below!
             </p>
           </div>
         </div>
@@ -149,43 +639,15 @@ export default function CarComments({ carId, carOwnerId }: CarCommentsProps) {
 
       {/* Comments List */}
       {comments.length === 0 ? (
-        <div className='text-center py-8 text-muted-foreground'>
-          <MessageCircle className='w-12 h-12 mx-auto mb-3 opacity-50' />
-          <p>No comments yet. Be the first to comment!</p>
-        </div>
+        user?.id === carOwnerId ? null : (
+          <div className='text-center py-8 text-muted-foreground'>
+            <MessageCircle className='w-12 h-12 mx-auto mb-3 opacity-50' />
+            <p>No comments yet. Be the first to comment!</p>
+          </div>
+        )
       ) : (
         <div className='space-y-4'>
-          {comments.map(comment => (
-            <div
-              key={comment.id}
-              className='flex gap-3 p-3 bg-muted/30 rounded-lg'
-            >
-              <div className='flex-shrink-0'>
-                {comment.profiles.avatar_url ? (
-                  <img
-                    src={comment.profiles.avatar_url}
-                    alt={comment.profiles.username}
-                    className='w-8 h-8 rounded-full object-cover'
-                  />
-                ) : (
-                  <div className='w-8 h-8 bg-primary rounded-full flex items-center justify-center'>
-                    <User className='w-4 h-4 text-primary-foreground' />
-                  </div>
-                )}
-              </div>
-              <div className='flex-1 min-w-0'>
-                <div className='flex items-center gap-2 mb-1'>
-                  <span className='font-medium text-sm'>
-                    {comment.profiles.full_name || comment.profiles.username}
-                  </span>
-                  <span className='text-xs text-muted-foreground'>
-                    {new Date(comment.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className='text-sm text-foreground'>{comment.content}</p>
-              </div>
-            </div>
-          ))}
+          {comments.map(comment => renderComment(comment))}
         </div>
       )}
     </div>

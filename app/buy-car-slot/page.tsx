@@ -29,9 +29,7 @@ export default function BuyCarSlotPage() {
         try {
           const slots = await getUserCarSlots(user.id)
           setCarSlots(slots)
-        } catch (error) {
-          console.error('Error loading car slots:', error)
-        }
+        } catch (error) {}
       }
     }
     loadCarSlots()
@@ -68,7 +66,6 @@ export default function BuyCarSlotPage() {
         window.location.href = data.url
       }
     } catch (error) {
-      console.error('Error creating payment session:', error)
       toast.error('Failed to create payment session. Please try again.')
     } finally {
       setLoading(false)

@@ -118,7 +118,6 @@ export default function FeaturesSection() {
             </div>
             <button
               onClick={() => {
-                console.log('Start Showcasing button clicked from features')
                 window.location.href = '/register'
               }}
               className='px-6 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer hover:scale-105 active:scale-95'

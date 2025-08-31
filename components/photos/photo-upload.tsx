@@ -152,7 +152,6 @@ export default function PhotoUpload({
                 )} → ${formatFileSize(optimizedFile.size)}`
               )
             } catch (error) {
-              console.error('Image optimization failed:', error)
               setOptimizationProgress(prev => ({
                 ...prev,
                 [file.name]: {
@@ -208,7 +207,6 @@ export default function PhotoUpload({
 
           toast.success(`${file.name} uploaded successfully!`)
         } catch (error) {
-          console.error('Error uploading photo:', error)
           toast.error(`Failed to upload ${file.name}`)
         }
       }

@@ -45,7 +45,6 @@ export default function PremiumPage() {
         window.location.href = data.url
       }
     } catch (error) {
-      console.error('Error creating premium payment session:', error)
       toast.error('Failed to create payment session. Please try again.')
     } finally {
       setLoading(false)

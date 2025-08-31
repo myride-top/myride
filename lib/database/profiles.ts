@@ -36,7 +36,6 @@ export async function getProfileByUserId(
     .single()
 
   if (error) {
-    console.error('Error fetching profile:', error)
     return null
   }
 
@@ -77,7 +76,6 @@ export async function getProfileByUsername(
     .single()
 
   if (error) {
-    console.error('Error fetching profile by username:', error)
     return null
   }
 
@@ -118,7 +116,6 @@ export async function createProfile(
     .single()
 
   if (error) {
-    console.error('Error creating profile:', error)
     return null
   }
 
@@ -161,7 +158,6 @@ export async function updateProfile(
     .single()
 
   if (error) {
-    console.error('Error updating profile:', error)
     return null
   }
 

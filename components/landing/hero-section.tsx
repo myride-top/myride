@@ -66,7 +66,6 @@ export default function HeroSection() {
           </Link>
           <button
             onClick={() => {
-              console.log('Explore Cars button clicked')
               window.location.href = '/browse'
             }}
             className='group relative z-10 inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary border-2 border-primary rounded-full transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-105 cursor-pointer'

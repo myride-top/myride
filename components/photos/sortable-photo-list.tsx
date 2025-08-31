@@ -43,8 +43,6 @@ export default function SortablePhotoList({
   onPhotoCategoryChange,
   onPhotoDescriptionChange,
 }: SortablePhotoListProps) {
-  console.log('SortablePhotoList rendered with photos:', photos)
-  console.log('onReorder function:', onReorder)
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -54,13 +52,10 @@ export default function SortablePhotoList({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-    console.log('Drag end event:', { active: active.id, over: over?.id })
 
     if (over && active.id !== over.id) {
       const oldIndex = photos.findIndex(photo => photo.url === active.id)
       const newIndex = photos.findIndex(photo => photo.url === over.id)
-
-      console.log('Reordering photos:', { oldIndex, newIndex })
 
       if (oldIndex !== -1 && newIndex !== -1) {
         const reorderedPhotos = arrayMove(photos, oldIndex, newIndex)
@@ -71,7 +66,6 @@ export default function SortablePhotoList({
           order: idx,
         }))
 
-        console.log('Calling onReorder with:', updatedPhotos)
         onReorder(updatedPhotos)
       }
     }
@@ -81,8 +75,6 @@ export default function SortablePhotoList({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragStart={event => console.log('Drag start:', event)}
-      onDragOver={event => console.log('Drag over:', event)}
       onDragEnd={handleDragEnd}
     >
       <SortableContext

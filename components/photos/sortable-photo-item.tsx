@@ -31,8 +31,6 @@ export default function SortablePhotoItem({
   onCategoryChange,
   onDescriptionChange,
 }: SortablePhotoItemProps) {
-  console.log('SortablePhotoItem rendered for photo:', photo.url)
-
   const {
     attributes,
     listeners,
@@ -41,12 +39,6 @@ export default function SortablePhotoItem({
     transition,
     isDragging,
   } = useSortable({ id: photo.url })
-
-  console.log('SortablePhotoItem drag state:', {
-    isDragging,
-    transform,
-    listeners,
-  })
 
   const style = {
     transform: CSS.Transform.toString(transform),

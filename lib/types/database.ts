@@ -228,10 +228,9 @@ export interface CarComment {
   id: string
   car_id: string
   user_id: string
-  parent_comment_id?: string // For nested comments/replies
   content: string
-  is_edited: boolean
-  edited_at?: string
+  parent_comment_id: string | null
+  is_pinned: boolean
   created_at: string
   updated_at: string
 }

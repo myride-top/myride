@@ -35,7 +35,6 @@ export async function getCarsByUser(userId: string): Promise<Car[] | null> {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error fetching cars:', error)
     return null
   }
 
@@ -74,7 +73,6 @@ export async function getCarById(carId: string): Promise<Car | null> {
     .single()
 
   if (error) {
-    console.error('Error fetching car:', error)
     return null
   }
 
@@ -115,7 +113,6 @@ export async function createCar(
     .single()
 
   if (error) {
-    console.error('Error creating car:', error)
     return null
   }
 
@@ -158,7 +155,6 @@ export async function updateCar(
     .single()
 
   if (error) {
-    console.error('Error updating car:', error)
     return null
   }
 
@@ -194,22 +190,17 @@ export async function deleteCar(carId: string): Promise<boolean> {
     // First, delete all photos from storage
     const photosDeleted = await deleteAllCarPhotos(carId)
     if (!photosDeleted) {
-      console.warn(
-        `Failed to delete photos for car ${carId}, but continuing with car deletion`
-      )
     }
 
     // Then delete the car record
     const { error } = await supabase.from('cars').delete().eq('id', carId)
 
     if (error) {
-      console.error('Error deleting car:', error)
       return false
     }
 
     return true
   } catch (error) {
-    console.error('Error deleting car:', error)
     return false
   }
 }
@@ -251,7 +242,6 @@ export async function getCarByUrlSlugAndUsername(
       .single()
 
     if (profileError || !profileData) {
-      console.error('Error fetching profile:', profileError)
       return null
     }
 
@@ -263,24 +253,16 @@ export async function getCarByUrlSlugAndUsername(
       .single()
 
     if (error) {
-      console.error('Error fetching car by URL slug:', error)
       return null
     }
 
     // Verify that the car belongs to the profile we're looking up
     if (data.user_id !== profileData.id) {
-      console.error('Car found but belongs to different user:', {
-        carUserId: data.user_id,
-        profileUserId: profileData.id,
-        urlSlug,
-        username,
-      })
       return null
     }
 
     return data
   } catch (error) {
-    console.error('Error fetching car by URL slug:', error)
     return null
   }
 }

@@ -6,24 +6,13 @@ export async function getProfileByUserIdClient(
 ): Promise<Profile | null> {
   const supabase = createClient()
 
-  console.log('Fetching profile for user:', userId)
-
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
     .single()
 
-  console.log('Profile query result:', { data, error, userId })
-
   if (error) {
-    console.error('Error fetching profile:', error)
-    console.error('Error details:', {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    })
     return null
   }
 
@@ -42,7 +31,6 @@ export async function getProfileByUsernameClient(
     .single()
 
   if (error) {
-    console.error('Error fetching profile by username:', error)
     return null
   }
 
@@ -61,7 +49,6 @@ export async function createProfileClient(
     .single()
 
   if (error) {
-    console.error('Error creating profile:', error)
     return null
   }
 
@@ -74,8 +61,6 @@ export async function updateProfileClient(
 ): Promise<{ success: boolean; error?: string; data?: Profile }> {
   const supabase = createClient()
 
-  console.log('Updating profile for user:', userId, 'with updates:', updates)
-
   // First, check if profile exists
   const { data: existingProfile, error: fetchError } = await supabase
     .from('profiles')
@@ -83,7 +68,6 @@ export async function updateProfileClient(
     .eq('id', userId)
 
   if (fetchError) {
-    console.error('Error checking existing profile:', fetchError)
     return {
       success: false,
       error: 'Failed to check existing profile',
@@ -92,8 +76,6 @@ export async function updateProfileClient(
 
   // If no profile exists, create one
   if (!existingProfile || existingProfile.length === 0) {
-    console.log('No profile found, creating new profile for user:', userId)
-
     const newProfile = {
       id: userId,
       username: updates.username || `user_${userId.slice(0, 8)}`,
@@ -108,7 +90,6 @@ export async function updateProfileClient(
       .single()
 
     if (createError) {
-      console.error('Error creating profile:', createError)
       return {
         success: false,
         error: 'Failed to create profile',
@@ -126,17 +107,7 @@ export async function updateProfileClient(
     .select()
     .single()
 
-  console.log('Profile update result:', { data, error, userId })
-
   if (error) {
-    console.error('Error updating profile:', error)
-    console.error('Error details:', {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    })
-
     // Check for specific error types
     if (error.code === '23505') {
       return {

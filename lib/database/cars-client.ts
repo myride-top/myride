@@ -20,7 +20,6 @@ export async function getCarsByUserClient(
       .order('created_at', { ascending: false })
 
     if (carsError) {
-      console.error('Error fetching cars:', carsError)
       return null
     }
 
@@ -36,7 +35,6 @@ export async function getCarsByUserClient(
       .in('car_id', carIds)
 
     if (likeError) {
-      console.error('Error fetching like counts:', likeError)
       // Fallback to cars table like_count if car_likes query fails
       return cars
     }
@@ -56,7 +54,6 @@ export async function getCarsByUserClient(
 
     return carsWithLikes
   } catch (error) {
-    console.error('Error fetching cars:', error)
     return null
   }
 }
@@ -69,13 +66,11 @@ export async function getUserCarCountClient(userId: string): Promise<number> {
       .eq('user_id', userId)
 
     if (error) {
-      console.error('Error counting user cars:', error)
       return 0
     }
 
     return count || 0
   } catch (error) {
-    console.error('Error counting user cars:', error)
     return 0
   }
 }
@@ -92,7 +87,6 @@ export async function canUserCreateCarClient(userId: string): Promise<boolean> {
     let isPremium = false
     let carSlotsPurchased = 0
     if (profileError) {
-      console.error('Error fetching profile:', profileError)
       // If profile doesn't exist yet, treat as non-premium
       isPremium = false
       carSlotsPurchased = 0
@@ -113,7 +107,6 @@ export async function canUserCreateCarClient(userId: string): Promise<boolean> {
       .eq('user_id', userId)
 
     if (carError) {
-      console.error('Error counting cars:', carError)
       return false
     }
 
@@ -122,7 +115,6 @@ export async function canUserCreateCarClient(userId: string): Promise<boolean> {
 
     return currentCarCount < maxAllowedCars
   } catch (error) {
-    console.error('Error checking if user can create car:', error)
     return false
   }
 }
@@ -162,7 +154,6 @@ export async function canUserCreateCarSimpleClient(
       .eq('user_id', userId)
 
     if (error) {
-      console.error('Error counting cars:', error)
       return false
     }
 
@@ -171,7 +162,6 @@ export async function canUserCreateCarSimpleClient(
 
     return currentCarCount < maxAllowedCars
   } catch (error) {
-    console.error('Error checking if user can create car:', error)
     return false
   }
 }
@@ -185,13 +175,11 @@ export async function getCarByIdClient(carId: string): Promise<Car | null> {
       .single()
 
     if (error) {
-      console.error('Error fetching car:', error)
       return null
     }
 
     return data
   } catch (error) {
-    console.error('Error fetching car:', error)
     return null
   }
 }
@@ -201,11 +189,6 @@ export async function getCarByNameAndUsernameClient(
   username: string
 ): Promise<Car | null> {
   try {
-    console.log('getCarByNameAndUsernameClient called with:', {
-      carName,
-      username,
-    })
-
     // First get the profile to get the user_id
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
@@ -214,11 +197,8 @@ export async function getCarByNameAndUsernameClient(
       .single()
 
     if (profileError || !profileData) {
-      console.error('Error fetching profile:', profileError)
       return null
     }
-
-    console.log('Profile found:', profileData)
 
     // Try multiple search strategies to find the car
     let searchError = null
@@ -233,7 +213,6 @@ export async function getCarByNameAndUsernameClient(
         .single()
 
       if (!error && data) {
-        console.log('Exact match found:', data)
         return data
       }
       searchError = error
@@ -251,12 +230,9 @@ export async function getCarByNameAndUsernameClient(
         .single()
 
       if (!error && data) {
-        console.log('Case-insensitive exact match found:', data)
         return data
       }
-    } catch (e) {
-      console.error(e)
-    }
+    } catch (e) {}
 
     // Strategy 3: Try partial match (most flexible)
     try {
@@ -268,12 +244,9 @@ export async function getCarByNameAndUsernameClient(
         .single()
 
       if (!error && data) {
-        console.log('Partial match found:', data)
         return data
       }
-    } catch (e) {
-      console.error(e)
-    }
+    } catch (e) {}
 
     // Strategy 4: Try with spaces instead of dashes
     try {
@@ -286,12 +259,9 @@ export async function getCarByNameAndUsernameClient(
         .single()
 
       if (!error && data) {
-        console.log('Space-replaced match found:', data)
         return data
       }
-    } catch (e) {
-      console.error(e)
-    }
+    } catch (e) {}
 
     // Strategy 5: Try with dashes instead of spaces
     try {
@@ -304,18 +274,12 @@ export async function getCarByNameAndUsernameClient(
         .single()
 
       if (!error && data) {
-        console.log('Dash-replaced match found:', data)
         return data
       }
-    } catch (e) {
-      console.error(e)
-    }
+    } catch (e) {}
 
-    console.error('All search strategies failed. Original error:', searchError)
-    console.error('Query details:', { carName, userId: profileData.id })
     return null
   } catch (error) {
-    console.error('Error fetching car by name:', error)
     return null
   }
 }
@@ -325,11 +289,6 @@ export async function getCarByUrlSlugAndUsernameClient(
   username: string
 ): Promise<Car | null> {
   try {
-    console.log('getCarByUrlSlugAndUsernameClient called with:', {
-      urlSlug,
-      username,
-    })
-
     // First get the profile to get the user_id
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
@@ -338,11 +297,8 @@ export async function getCarByUrlSlugAndUsernameClient(
       .single()
 
     if (profileError || !profileData) {
-      console.error('Error fetching profile:', profileError)
       return null
     }
-
-    console.log('Profile found:', profileData)
 
     // Get the car by url_slug (cars should be publicly viewable by url_slug)
     const { data, error } = await supabase
@@ -352,20 +308,11 @@ export async function getCarByUrlSlugAndUsernameClient(
       .single()
 
     if (error) {
-      console.error('Error fetching car by URL slug:', error)
-      console.error('Query details:', { urlSlug })
       return null
     }
 
     // Verify that the car belongs to the profile we're looking up
     if (data.user_id !== profileData.id) {
-      console.error('Car found but belongs to different user:', {
-        carUserId: data.user_id,
-        profileUserId: profileData.id,
-        urlSlug,
-        username,
-      })
-
       // Instead of failing, let's try to find the correct profile for this car
       const { data: correctProfile, error: profileLookupError } = await supabase
         .from('profiles')
@@ -374,27 +321,16 @@ export async function getCarByUrlSlugAndUsernameClient(
         .single()
 
       if (profileLookupError || !correctProfile) {
-        console.error(
-          'Could not find profile for car owner:',
-          profileLookupError
-        )
         return null
       }
 
       // The car exists but belongs to a different username
       // We could either redirect to the correct URL or show an error
-      console.log('Car belongs to different username:', {
-        expectedUsername: username,
-        actualUsername: correctProfile.username,
-        urlSlug,
-      })
 
       // For now, return null to trigger the error page
       // In the future, we could redirect to the correct URL
       return null
     }
-
-    console.log('Car found by URL slug:', data)
 
     // Get the real-time like count from car_likes table
     try {
@@ -404,7 +340,6 @@ export async function getCarByUrlSlugAndUsernameClient(
         .eq('car_id', data.id)
 
       if (likeError) {
-        console.error('Error fetching like count:', likeError)
         // Fallback to cars table like_count if car_likes query fails
         return data
       }
@@ -415,15 +350,12 @@ export async function getCarByUrlSlugAndUsernameClient(
         like_count: likeCount || 0,
       }
 
-      console.log('Car found by URL slug with like count:', carWithLikeCount)
       return carWithLikeCount
     } catch (likeError) {
-      console.error('Error getting like count:', likeError)
       // Fallback to cars table like_count
       return data
     }
   } catch (error) {
-    console.error('Error fetching car by URL slug:', error)
     return null
   }
 }
@@ -433,8 +365,6 @@ export async function getCarByUrlSlugClient(
   urlSlug: string
 ): Promise<Car | null> {
   try {
-    console.log('getCarByUrlSlugClient called with:', { urlSlug })
-
     const { data, error } = await supabase
       .from('cars')
       .select('*')
@@ -442,7 +372,6 @@ export async function getCarByUrlSlugClient(
       .single()
 
     if (error) {
-      console.error('Error fetching car by URL slug:', error)
       return null
     }
 
@@ -454,9 +383,6 @@ export async function getCarByUrlSlugClient(
         .eq('car_id', data.id)
 
       if (likeError) {
-        console.error('Error fetching like count:', likeError)
-        // Fallback to cars table like_count if car_likes query fails
-        console.log('Car found by URL slug:', data)
         return data
       }
 
@@ -466,16 +392,11 @@ export async function getCarByUrlSlugClient(
         like_count: likeCount || 0,
       }
 
-      console.log('Car found by URL slug with like count:', carWithLikeCount)
       return carWithLikeCount
     } catch (likeError) {
-      console.error('Error getting like count:', likeError)
-      // Fallback to cars table like_count
-      console.log('Car found by URL slug:', data)
       return data
     }
   } catch (error) {
-    console.error('Error fetching car by URL slug:', error)
     return null
   }
 }
@@ -488,7 +409,6 @@ export async function createCarClient(
     // Check car limit before creating
     const canCreate = await canUserCreateCarClient(carData.user_id)
     if (!canCreate) {
-      console.error('User has reached car limit')
       return null
     }
 
@@ -538,13 +458,11 @@ export async function createCarClient(
       .single()
 
     if (error) {
-      console.error('Error creating car:', error)
       return null
     }
 
     return data
   } catch (error) {
-    console.error('Error creating car:', error)
     return null
   }
 }
@@ -554,7 +472,6 @@ export async function fixCarUrlSlug(carId: string): Promise<Car | null> {
     // Get the car first
     const car = await getCarByIdClient(carId)
     if (!car) {
-      console.error('Car not found for URL slug fix')
       return null
     }
 
@@ -564,8 +481,6 @@ export async function fixCarUrlSlug(carId: string): Promise<Car | null> {
         car.url_slug
       )
     ) {
-      console.log('Fixing URL slug for car:', car.id)
-
       // Generate a proper URL slug from the car name
       const baseSlug = car.name
         .toLowerCase()
@@ -586,17 +501,14 @@ export async function fixCarUrlSlug(carId: string): Promise<Car | null> {
         .single()
 
       if (error) {
-        console.error('Error updating URL slug:', error)
         return null
       }
 
-      console.log('URL slug fixed:', uniqueSlug)
       return data
     }
 
     return car
   } catch (error) {
-    console.error('Error fixing URL slug:', error)
     return null
   }
 }
@@ -672,13 +584,11 @@ export async function updateCarClient(
       .single()
 
     if (error) {
-      console.error('Error updating car:', error)
       return null
     }
 
     return data
   } catch (error) {
-    console.error('Error updating car:', error)
     return null
   }
 }
@@ -688,22 +598,17 @@ export async function deleteCarClient(carId: string): Promise<boolean> {
     // First, delete all photos from storage
     const photosDeleted = await deleteAllCarPhotos(carId)
     if (!photosDeleted) {
-      console.warn(
-        `Failed to delete photos for car ${carId}, but continuing with car deletion`
-      )
     }
 
     // Then delete the car record
     const { error } = await supabase.from('cars').delete().eq('id', carId)
 
     if (error) {
-      console.error('Error deleting car:', error)
       return false
     }
 
     return true
   } catch (error) {
-    console.error('Error deleting car:', error)
     return false
   }
 }
@@ -723,7 +628,6 @@ export async function addPhotoToCar(
 
     return await updateCarClient(carId, { photos: updatedPhotos })
   } catch (error) {
-    console.error('Error adding photo to car:', error)
     return null
   }
 }
@@ -742,7 +646,6 @@ export async function removePhotoFromCar(
 
     return await updateCarClient(carId, { photos: updatedPhotos })
   } catch (error) {
-    console.error('Error removing photo from car:', error)
     return null
   }
 }
@@ -767,7 +670,6 @@ export async function updatePhotoCategory(
 
     return await updateCarClient(carId, { photos: updatedPhotos })
   } catch (error) {
-    console.error('Error updating photo category:', error)
     return null
   }
 }
@@ -780,7 +682,6 @@ export async function setMainPhoto(
   try {
     return await updateCarClient(carId, { main_photo_url: photoUrl })
   } catch (error) {
-    console.error('Error setting main photo:', error)
     return null
   }
 }
@@ -796,12 +697,10 @@ export async function likeCarClient(
     .insert({ car_id: carId, user_id: userId })
 
   if (likeError) {
-    console.error('Error liking car:', likeError)
     throw new Error('Failed to like car')
   }
 
   // Note: We no longer update the cars.like_count field since we calculate it from car_likes table
-  console.log('Like added to car_likes table successfully')
 }
 
 export async function unlikeCarClient(
@@ -816,12 +715,10 @@ export async function unlikeCarClient(
     .eq('user_id', userId)
 
   if (unlikeError) {
-    console.error('Error unliking car:', unlikeError)
     throw new Error('Failed to unlike car')
   }
 
   // Note: We no longer update the cars.like_count field since we calculate it from car_likes table
-  console.log('Like removed from car_likes table successfully')
 }
 
 export async function hasUserLikedCarClient(
@@ -837,7 +734,6 @@ export async function hasUserLikedCarClient(
 
   if (error && error.code !== 'PGRST116') {
     // PGRST116 is "not found" error
-    console.error('Error checking if user liked car:', error)
     throw new Error('Failed to check like status')
   }
 
@@ -852,7 +748,6 @@ export async function getCarLikeCountClient(carId: string): Promise<number> {
     .eq('car_id', carId)
 
   if (error) {
-    console.error('Error getting car like count from car_likes:', error)
     // Fallback to cars table if car_likes query fails
     const { data: carData, error: carError } = await supabase
       .from('cars')
@@ -861,7 +756,6 @@ export async function getCarLikeCountClient(carId: string): Promise<number> {
       .single()
 
     if (carError) {
-      console.error('Error getting car like count from cars table:', carError)
       throw new Error('Failed to get like count')
     }
 
@@ -880,7 +774,6 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
       .order('created_at', { ascending: false })
 
     if (carsError) {
-      console.error('Error fetching cars:', carsError)
       return null
     }
 
@@ -896,7 +789,6 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
       .in('car_id', carIds)
 
     if (likeError) {
-      console.error('Error fetching like counts:', likeError)
       // Continue without like counts if the query fails
     }
 
@@ -917,7 +809,6 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
       .in('id', userIds)
 
     if (profilesError) {
-      console.error('Error fetching profiles:', profilesError)
       // Return cars without profile data but with like counts
       return cars.map(car => ({
         ...car,
@@ -943,7 +834,6 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
 
     return carsWithProfilesAndLikes
   } catch (error) {
-    console.error('Error fetching all cars:', error)
     return null
   }
 }
@@ -969,7 +859,6 @@ export async function trackCarViewClient(
     })
 
     if (error) {
-      console.error('Error tracking car view:', error)
       return false
     }
 
@@ -977,7 +866,6 @@ export async function trackCarViewClient(
     await updateCarViewCount(carId)
     return true
   } catch (error) {
-    console.error('Error tracking car view:', error)
     return false
   }
 }
@@ -1010,7 +898,6 @@ export async function trackCarShareClient(
     })
 
     if (error) {
-      console.error('Error tracking car share:', error)
       return false
     }
 
@@ -1018,7 +905,6 @@ export async function trackCarShareClient(
     await updateCarShareCount(carId)
     return true
   } catch (error) {
-    console.error('Error tracking car share:', error)
     return false
   }
 }
@@ -1030,22 +916,18 @@ export async function addCarCommentClient(
   parentCommentId?: string
 ): Promise<CarComment | null> {
   try {
-    // First check if the user is the car owner
-    const { data: car, error: carError } = await supabase
-      .from('cars')
-      .select('user_id')
-      .eq('id', carId)
-      .single()
+    // Check if this is a reply to an existing comment
+    if (parentCommentId) {
+      const { data: parentComment, error: parentError } = await supabase
+        .from('car_comments')
+        .select('id')
+        .eq('id', parentCommentId)
+        .eq('car_id', carId)
+        .single()
 
-    if (carError || !car) {
-      console.error('Error fetching car:', carError)
-      return null
-    }
-
-    // Prevent car owners from commenting on their own cars
-    if (car.user_id === userId) {
-      console.error('Car owners cannot comment on their own cars')
-      return null
+      if (parentError || !parentComment) {
+        return null
+      }
     }
 
     const { data, error } = await supabase
@@ -1061,7 +943,6 @@ export async function addCarCommentClient(
       .single()
 
     if (error) {
-      console.error('Error adding car comment:', error)
       return null
     }
 
@@ -1069,14 +950,13 @@ export async function addCarCommentClient(
     await updateCarCommentCount(carId)
     return data
   } catch (error) {
-    console.error('Error adding car comment:', error)
     return null
   }
 }
 
 export async function getCarCommentsClient(
   carId: string,
-  limit: number = 50,
+  limit: number = 100, // Increased limit to get all comments and replies
   offset: number = 0
 ): Promise<CarComment[] | null> {
   try {
@@ -1094,18 +974,18 @@ export async function getCarCommentsClient(
       `
       )
       .eq('car_id', carId)
-      .is('parent_comment_id', null) // Only top-level comments
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: true }) // Chronological order for better threading
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('Error fetching car comments:', error)
       return null
+    }
+
+    if (data && data.length > 0) {
     }
 
     return data
   } catch (error) {
-    console.error('Error fetching car comments:', error)
     return null
   }
 }
@@ -1119,7 +999,6 @@ async function updateCarViewCount(carId: string): Promise<void> {
       .eq('car_id', carId)
 
     if (error) {
-      console.error('Error counting car views:', error)
       return
     }
 
@@ -1127,9 +1006,7 @@ async function updateCarViewCount(carId: string): Promise<void> {
       .from('cars')
       .update({ view_count: count || 0 })
       .eq('id', carId)
-  } catch (error) {
-    console.error('Error updating car view count:', error)
-  }
+  } catch (error) {}
 }
 
 async function updateCarShareCount(carId: string): Promise<void> {
@@ -1140,7 +1017,6 @@ async function updateCarShareCount(carId: string): Promise<void> {
       .eq('car_id', carId)
 
     if (error) {
-      console.error('Error counting car shares:', error)
       return
     }
 
@@ -1148,28 +1024,194 @@ async function updateCarShareCount(carId: string): Promise<void> {
       .from('cars')
       .update({ share_count: count || 0 })
       .eq('id', carId)
-  } catch (error) {
-    console.error('Error updating car share count:', error)
-  }
+  } catch (error) {}
 }
 
 async function updateCarCommentCount(carId: string): Promise<void> {
   try {
+    // Get the total count of comments for this car
     const { count, error } = await supabase
       .from('car_comments')
       .select('*', { count: 'exact', head: true })
       .eq('car_id', carId)
 
     if (error) {
-      console.error('Error counting car comments:', error)
+      console.error('Error getting comment count:', error)
       return
     }
 
-    await supabase
+    // Update the car's comment count
+    const { error: updateError } = await supabase
       .from('cars')
       .update({ comment_count: count || 0 })
       .eq('id', carId)
+
+    if (updateError) {
+      console.error('Error updating car comment count:', updateError)
+      return
+    }
+
+    console.log(`Updated car ${carId} comment count to ${count || 0}`)
   } catch (error) {
-    console.error('Error updating car comment count:', error)
+    console.error('Error in updateCarCommentCount:', error)
+  }
+}
+
+export async function syncCarCommentCount(carId: string): Promise<boolean> {
+  try {
+    await updateCarCommentCount(carId)
+    return true
+  } catch (error) {
+    console.error('Error syncing car comment count:', error)
+    return false
+  }
+}
+
+export async function deleteCarCommentClient(
+  commentId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    // First get the car_id before deleting the comment
+    const { data: comment, error: fetchError } = await supabase
+      .from('car_comments')
+      .select('car_id')
+      .eq('id', commentId)
+      .single()
+
+    if (fetchError || !comment) {
+      return false
+    }
+
+    const { error } = await supabase
+      .from('car_comments')
+      .delete()
+      .eq('id', commentId)
+      .eq('user_id', userId)
+
+    if (error) {
+      return false
+    }
+
+    // Update the car's comment count
+    await updateCarCommentCount(comment.car_id)
+
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+export async function deleteCarCommentAsOwnerClient(
+  commentId: string,
+  carId: string,
+  ownerId: string
+): Promise<boolean> {
+  try {
+    // First verify the user owns the car
+    const { data: car, error: carError } = await supabase
+      .from('cars')
+      .select('id')
+      .eq('id', carId)
+      .eq('user_id', ownerId)
+      .single()
+
+    if (carError || !car) {
+      return false
+    }
+
+    // Delete the comment
+    const { error } = await supabase
+      .from('car_comments')
+      .delete()
+      .eq('id', commentId)
+
+    if (error) {
+      return false
+    }
+
+    // Update the car's comment count
+    await updateCarCommentCount(carId)
+
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+export async function pinCarCommentClient(
+  commentId: string,
+  carId: string,
+  ownerId: string
+): Promise<boolean> {
+  try {
+    // First verify the user owns the car
+    const { data: car, error: carError } = await supabase
+      .from('cars')
+      .select('id')
+      .eq('id', carId)
+      .eq('user_id', ownerId)
+      .single()
+
+    if (carError || !car) {
+      return false
+    }
+
+    // Unpin all other comments first
+    const { error: unpinError } = await supabase
+      .from('car_comments')
+      .update({ is_pinned: false })
+      .eq('car_id', carId)
+
+    if (unpinError) {
+      return false
+    }
+
+    // Pin the selected comment
+    const { error } = await supabase
+      .from('car_comments')
+      .update({ is_pinned: true })
+      .eq('id', commentId)
+
+    if (error) {
+      return false
+    }
+
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+export async function unpinCarCommentClient(
+  carId: string,
+  ownerId: string
+): Promise<boolean> {
+  try {
+    // First verify the user owns the car
+    const { data: car, error: carError } = await supabase
+      .from('cars')
+      .select('id')
+      .eq('id', carId)
+      .eq('user_id', ownerId)
+      .single()
+
+    if (carError || !car) {
+      return false
+    }
+
+    // Unpin all comments
+    const { error } = await supabase
+      .from('car_comments')
+      .update({ is_pinned: false })
+      .eq('car_id', carId)
+
+    if (error) {
+      return false
+    }
+
+    return true
+  } catch (error) {
+    return false
   }
 }

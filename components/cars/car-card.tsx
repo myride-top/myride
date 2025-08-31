@@ -44,9 +44,7 @@ export default function CarCard({
         try {
           const liked = await hasUserLikedCarClient(car.id, user.id)
           setIsLiked(liked)
-        } catch (error) {
-          console.error('Error checking like status:', error)
-        }
+        } catch (error) {}
       }
     }
 
@@ -99,7 +97,6 @@ export default function CarCard({
       }
     } catch (error) {
       toast.error('Failed to update like status')
-      console.error('Error updating like:', error)
     } finally {
       setIsLikeLoading(false)
     }

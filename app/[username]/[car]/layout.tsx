@@ -16,16 +16,22 @@ export async function generateMetadata({
   try {
     const { username, car: carSlug } = await params
 
-    const [car, profile] = await Promise.all([
-      getCarByUrlSlugAndUsername(carSlug, username),
-      getProfileByUsername(username),
-    ])
+    // First try to get the car
+    const car = await getCarByUrlSlugAndUsername(carSlug, username)
 
     if (!car) {
       return {
         title: 'Car Not Found',
         description: 'The requested car could not be found.',
       }
+    }
+
+    // Try to get the profile, but don't fail if it doesn't exist
+    let profile = null
+    try {
+      profile = await getProfileByUsername(username)
+    } catch (profileError) {
+      // Continue without profile data
     }
 
     // Get the main photo URL or first available photo
@@ -87,7 +93,6 @@ export async function generateMetadata({
 
     return metadata
   } catch (error) {
-    console.error('Error generating metadata:', error)
     return {
       title: 'Car Details - MyRide',
       description: 'View car details on MyRide',

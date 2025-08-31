@@ -41,7 +41,6 @@ export async function getPlatformStatsServer(): Promise<PlatformStats> {
       .select('*', { count: 'exact', head: true })
 
     if (carError) {
-      console.error('Error counting cars:', carError)
     }
 
     // Get total users (profiles)
@@ -50,7 +49,6 @@ export async function getPlatformStatsServer(): Promise<PlatformStats> {
       .select('*', { count: 'exact', head: true })
 
     if (userError) {
-      console.error('Error counting users:', userError)
     }
 
     // Get total likes
@@ -59,7 +57,6 @@ export async function getPlatformStatsServer(): Promise<PlatformStats> {
       .select('*', { count: 'exact', head: true })
 
     if (likeError) {
-      console.error('Error counting likes:', likeError)
     }
 
     // Calculate average rating (we'll use a placeholder for now since we don't have ratings table)
@@ -72,7 +69,6 @@ export async function getPlatformStatsServer(): Promise<PlatformStats> {
       averageRating,
     }
   } catch (error) {
-    console.error('Error fetching platform stats:', error)
     return {
       totalCars: 0,
       totalUsers: 0,

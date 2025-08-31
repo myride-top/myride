@@ -107,7 +107,6 @@ export default function StatsSection({ initialStats }: StatsSectionProps) {
           const stats = await getPlatformStats()
           setPlatformStats(stats)
         } catch (error) {
-          console.error('Error fetching platform stats:', error)
         } finally {
           setLoading(false)
         }

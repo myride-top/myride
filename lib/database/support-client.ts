@@ -23,7 +23,6 @@ export async function createSupportTransaction(
       .single()
 
     if (error) {
-      console.error('Error creating support transaction:', error)
       return null
     }
 
@@ -35,7 +34,6 @@ export async function createSupportTransaction(
 
     return data
   } catch (error) {
-    console.error('Error creating support transaction:', error)
     return null
   }
 }
@@ -51,13 +49,11 @@ export async function getTotalSupportAmount(
       .eq('status', 'completed')
 
     if (error) {
-      console.error('Error getting total support amount:', error)
       return 0
     }
 
     return data.reduce((total, transaction) => total + transaction.amount, 0)
   } catch (error) {
-    console.error('Error getting total support amount:', error)
     return 0
   }
 }
@@ -76,13 +72,11 @@ export async function hasUserSupportedCreator(
       .limit(1)
 
     if (error) {
-      console.error('Error checking if user supported creator:', error)
       return false
     }
 
     return data.length > 0
   } catch (error) {
-    console.error('Error checking if user supported creator:', error)
     return false
   }
 }
@@ -94,12 +88,11 @@ export async function getCreatorSupportStats(creatorId: string): Promise<{
   try {
     const { data, error } = await supabase
       .from('support_transactions')
-      .select('amount')
+      .select('amount, supporter_id')
       .eq('creator_id', creatorId)
       .eq('status', 'completed')
 
     if (error) {
-      console.error('Error getting creator support stats:', error)
       return { totalSupporters: 0, totalAmount: 0 }
     }
 
@@ -114,7 +107,6 @@ export async function getCreatorSupportStats(creatorId: string): Promise<{
       totalAmount,
     }
   } catch (error) {
-    console.error('Error getting creator support stats:', error)
     return { totalSupporters: 0, totalAmount: 0 }
   }
 }
@@ -136,11 +128,8 @@ async function updateSupporterProfile(
       .eq('id', supporterId)
 
     if (error) {
-      console.error('Error updating supporter profile:', error)
     }
-  } catch (error) {
-    console.error('Error updating supporter profile:', error)
-  }
+  } catch (error) {}
 }
 
 async function updateCreatorProfile(
@@ -155,7 +144,6 @@ async function updateCreatorProfile(
       .single()
 
     if (fetchError) {
-      console.error('Error fetching creator profile:', fetchError)
       return
     }
 
@@ -171,9 +159,6 @@ async function updateCreatorProfile(
       .eq('id', creatorId)
 
     if (updateError) {
-      console.error('Error updating creator profile:', updateError)
     }
-  } catch (error) {
-    console.error('Error updating creator profile:', error)
-  }
+  } catch (error) {}
 }

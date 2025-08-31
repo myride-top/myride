@@ -84,34 +84,12 @@ export default function CarDetailPage() {
         try {
           const realLikeCount = await getCarLikeCountClient(carData.id)
           setLikeCount(realLikeCount)
-          console.log('Real-time like count loaded:', realLikeCount)
         } catch (error) {
-          console.error('Error loading like count:', error)
           // Fallback to the like_count field from cars table
           setLikeCount(carData.like_count || 0)
         }
 
-        // Debug: Log the car data to see what we're working with
-        console.log('Car data loaded:', {
-          id: carData.id,
-          name: carData.name,
-          user_id: carData.user_id,
-          url_slug: carData.url_slug,
-        })
-
-        // Always get the car owner's profile by user_id to ensure we show the correct avatar
-        console.log('Car owner user_id:', carData.user_id)
-        console.log('Current logged-in user_id:', user?.id)
-        console.log('Are they the same?', carData.user_id === user?.id)
-        console.log('Car user_id type:', typeof carData.user_id)
-        console.log('Car user_id length:', carData.user_id?.length)
-        console.log('Car user_id trimmed:', carData.user_id?.trim())
-
         try {
-          // Since all the complex approaches are failing, let's create a simple working profile
-          // based on the car data and username we know exists
-          console.log('Creating profile from known data...')
-
           // Create a profile object with the data we know
           const ownerProfile = {
             id: carData.user_id,
@@ -130,26 +108,20 @@ export default function CarDetailPage() {
             is_supporter: false,
           }
 
-          console.log('Created profile object with avatar:', ownerProfile)
           setProfile(ownerProfile)
-          console.log('Profile set successfully with avatar URL')
         } catch (profileError) {
-          console.error('Error fetching car owner profile:', profileError)
           // Try username fallback on error
           try {
             const profileData = await getProfileByUsernameClient(
               params.username as string
             )
             if (profileData) {
-              console.log('Fallback profile found:', profileData)
               setProfile(profileData)
             }
           } catch (fallbackError) {
-            console.error('Fallback profile fetch also failed:', fallbackError)
           }
         }
       } catch (error) {
-        console.error('Error loading car data:', error)
         setError('Failed to load car data')
       } finally {
         setLoading(false)
@@ -161,11 +133,6 @@ export default function CarDetailPage() {
     }
   }, [params.car, params.username])
 
-  // Debug: Monitor profile state changes
-  useEffect(() => {
-    console.log('Profile state changed:', profile)
-  }, [profile])
-
   // Check if current user has liked this car
   useEffect(() => {
     const checkLikeStatus = async () => {
@@ -174,7 +141,6 @@ export default function CarDetailPage() {
           const liked = await hasUserLikedCarClient(car.id, user.id)
           setIsLiked(liked)
         } catch (error) {
-          console.error('Error checking like status:', error)
         }
       }
     }
@@ -190,7 +156,6 @@ export default function CarDetailPage() {
           const supported = await hasUserSupportedCreator(user.id, profile.id)
           setHasSupported(supported)
         } catch (error) {
-          console.error('Error checking support status:', error)
         }
       }
     }
@@ -313,9 +278,7 @@ export default function CarDetailPage() {
       try {
         const newLikeCount = await getCarLikeCountClient(car.id)
         setLikeCount(newLikeCount)
-        console.log('Like count updated from car_likes table:', newLikeCount)
       } catch (error) {
-        console.error('Error getting updated like count:', error)
         // Fallback to local state update
         if (isLiked) {
           setLikeCount(prev => Math.max(0, prev - 1))
@@ -325,7 +288,6 @@ export default function CarDetailPage() {
       }
     } catch (error) {
       toast.error('Failed to update like status')
-      console.error('Error updating like:', error)
     } finally {
       setIsLikeLoading(false)
     }
@@ -606,33 +568,27 @@ export default function CarDetailPage() {
                         onClick={() => openFullscreenPhoto(selectedPhoto)}
                       />
 
-                      {/* Navigation Controls - Only show when there are multiple photos */}
+                      {/* Navigation Arrows */}
                       {sortedPhotos.length > 1 && (
                         <>
-                          {/* Previous Button */}
                           <button
-                            onClick={e => {
-                              e.stopPropagation()
+                            onClick={() =>
                               setSelectedPhoto(prev =>
-                                prev === 0 ? sortedPhotos.length - 1 : prev - 1
+                                prev > 0 ? prev - 1 : sortedPhotos.length - 1
                               )
-                            }}
-                            className='absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer'
-                            aria-label='Previous photo'
+                            }
+                            className='absolute left-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors'
                           >
                             <ChevronLeft className='w-5 h-5' />
                           </button>
 
-                          {/* Next Button */}
                           <button
-                            onClick={e => {
-                              e.stopPropagation()
+                            onClick={() =>
                               setSelectedPhoto(prev =>
-                                prev === sortedPhotos.length - 1 ? 0 : prev + 1
+                                prev < sortedPhotos.length - 1 ? prev + 1 : 0
                               )
-                            }}
-                            className='absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm cursor-pointer'
-                            aria-label='Next photo'
+                            }
+                            className='absolute right-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors'
                           >
                             <ChevronRight className='w-5 h-5' />
                           </button>
@@ -713,6 +669,15 @@ export default function CarDetailPage() {
                   }
                 />
               )}
+
+              {/* Comments Section - Desktop: Under photos in left column */}
+              <div className='hidden lg:block mt-8'>
+                <CarComments
+                  carId={car.id}
+                  carOwnerId={car.user_id}
+                  ownerProfile={profile}
+                />
+              </div>
             </div>
 
             {/* Specifications Section */}
@@ -721,9 +686,13 @@ export default function CarDetailPage() {
             </div>
           </div>
 
-          {/* Comments Section */}
-          <div className='mt-8'>
-            <CarComments carId={car.id} carOwnerId={car.user_id} />
+          {/* Comments Section - Mobile: Full width below everything */}
+          <div className='lg:hidden mt-8'>
+            <CarComments
+              carId={car.id}
+              carOwnerId={car.user_id}
+              ownerProfile={profile}
+            />
           </div>
         </div>
       </main>

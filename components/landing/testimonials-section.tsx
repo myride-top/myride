@@ -147,7 +147,6 @@ export default function TestimonialsSection() {
             </div>
             <button
               onClick={() => {
-                console.log('Get Started Free button clicked from testimonials')
                 window.location.href = '/register'
               }}
               className='px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors whitespace-nowrap cursor-pointer hover:scale-105 active:scale-95'

@@ -38,7 +38,6 @@ export default function CreateCarPage() {
 
   // Photo handling functions
   const handlePhotoUploadComplete = async (photo: CarPhoto) => {
-    console.log('Photo uploaded:', photo)
     setPhotos(prev => [...prev, photo])
     if (!mainPhotoUrl) {
       setMainPhotoUrl(photo.url)
@@ -46,7 +45,6 @@ export default function CreateCarPage() {
   }
 
   const handleBatchUploadComplete = async (newPhotos: CarPhoto[]) => {
-    console.log('Batch photos uploaded:', newPhotos)
     setPhotos(prev => [...prev, ...newPhotos])
     if (!mainPhotoUrl && newPhotos.length > 0) {
       setMainPhotoUrl(newPhotos[0].url)
@@ -105,7 +103,6 @@ export default function CreateCarPage() {
           setCanCreate(canCreateCar)
           setCarSlots(slots)
         } catch (error) {
-          console.error('Error checking car limit:', error)
           setError('Failed to check car limit')
         } finally {
           setLoading(false)
@@ -261,6 +258,9 @@ export default function CreateCarPage() {
           photos: [],
           main_photo_url: null,
           like_count: 0,
+          view_count: 0,
+          share_count: 0,
+          comment_count: 0,
         },
         unitPreference
       )
@@ -273,7 +273,6 @@ export default function CreateCarPage() {
         setError('Failed to create car')
       }
     } catch (error) {
-      console.error('Error creating car:', error)
       setError('An unexpected error occurred')
     } finally {
       setCreating(false)

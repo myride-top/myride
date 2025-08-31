@@ -23,6 +23,7 @@ import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
 import { toast } from 'sonner'
+import { syncCarCommentCount } from '@/lib/database/cars-client'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -89,9 +90,7 @@ export default function DashboardPage() {
           // Recalculate stats with fresh data
           recalculateStats(refreshedCars)
         }
-      } catch (error) {
-        console.error('Error refreshing car data after like change:', error)
-      }
+      } catch (error) {}
     }
   }
 
@@ -123,17 +122,37 @@ export default function DashboardPage() {
     }
   }
 
+  const refreshCarData = async () => {
+    if (user) {
+      try {
+        const [userProfile, userCars, userCarSlots] = await Promise.all([
+          getProfileByUserIdClient(user.id),
+          getCarsByUserClient(user.id),
+          getUserCarSlots(user.id),
+        ])
+        setProfile(userProfile)
+        setCars(userCars || [])
+        setCarSlots(userCarSlots)
+
+        // Sync comment counts for all cars to ensure database is up to date
+        if (userCars) {
+          for (const car of userCars) {
+            await syncCarCommentCount(car.id)
+          }
+        }
+
+        // Calculate stats
+        recalculateStats(userCars || [])
+        toast.success('Car data and stats refreshed!')
+      } catch (error) {
+        toast.error('Failed to refresh car data')
+      }
+    }
+  }
+
   useEffect(() => {
     const loadUserData = async () => {
-      console.log('Loading user data for user:', user)
-
       if (user) {
-        console.log('User details:', {
-          id: user.id,
-          email: user.email,
-          created_at: user.created_at,
-        })
-
         try {
           const [userProfile, userCars, userCarSlots] = await Promise.all([
             getProfileByUserIdClient(user.id),
@@ -147,12 +166,10 @@ export default function DashboardPage() {
           // Calculate stats
           recalculateStats(userCars || [])
         } catch (error) {
-          console.error('Error loading user data:', error)
         } finally {
           setLoading(false)
         }
       } else {
-        console.log('No user found')
         setLoading(false)
       }
     }
@@ -217,7 +234,7 @@ export default function DashboardPage() {
                         <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
                           Total Views
                           {!carSlots.isPremium && (
-                            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
+                            <span className='ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
                               PREMIUM
                             </span>
                           )}
@@ -235,7 +252,7 @@ export default function DashboardPage() {
                 </div>
                 {/* Premium upgrade overlay */}
                 {!carSlots.isPremium && (
-                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
+                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs'>
                     <Link
                       href='/premium'
                       className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
@@ -257,7 +274,7 @@ export default function DashboardPage() {
                         <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
                           Total Shares
                           {!carSlots.isPremium && (
-                            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
+                            <span className='ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
                               PREMIUM
                             </span>
                           )}
@@ -275,7 +292,7 @@ export default function DashboardPage() {
                 </div>
                 {/* Premium upgrade overlay */}
                 {!carSlots.isPremium && (
-                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
+                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs'>
                     <Link
                       href='/premium'
                       className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
@@ -286,7 +303,7 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border group relative'>
+              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
                 <div className='p-3 md:p-5'>
                   <div className='flex items-center'>
                     <div className='flex-shrink-0'>
@@ -294,36 +311,16 @@ export default function DashboardPage() {
                     </div>
                     <div className='ml-3 md:ml-5 w-0 flex-1'>
                       <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
+                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
                           Total Comments
-                          {!carSlots.isPremium && (
-                            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
-                              PREMIUM
-                            </span>
-                          )}
                         </dt>
-                        <dd
-                          className={`text-base md:text-lg font-medium text-card-foreground ${
-                            !carSlots.isPremium ? 'blur-sm' : ''
-                          }`}
-                        >
+                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
                           {stats.totalComments}
                         </dd>
                       </dl>
                     </div>
                   </div>
                 </div>
-                {/* Premium upgrade overlay */}
-                {!carSlots.isPremium && (
-                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'>
-                    <Link
-                      href='/premium'
-                      className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
-                    >
-                      Upgrade to Premium
-                    </Link>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -366,9 +363,11 @@ export default function DashboardPage() {
 
             {/* Cars Grid */}
             <div>
-              <h2 className='text-2xl font-bold text-foreground mb-6'>
-                Your Cars
-              </h2>
+              <div className='flex items-center justify-between mb-6'>
+                <h2 className='text-2xl font-bold text-foreground'>
+                  Your Cars
+                </h2>
+              </div>
               {cars.length === 0 ? (
                 <EmptyState
                   icon={Info}

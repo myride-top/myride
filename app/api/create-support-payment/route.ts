@@ -9,12 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { amount, description, metadata } = await request.json()
 
-    console.log('Creating payment link with:', {
-      amount,
-      description,
-      metadata,
-    })
-
     // Validate amount
     if (!amount || amount < 100) {
       // Minimum $1.00 (100 cents)
@@ -55,15 +49,10 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('Payment link created successfully:', paymentLink.url)
     return NextResponse.json({ url: paymentLink.url })
   } catch (error) {
-    console.error('Error creating payment link:', error)
-
     // Log more detailed error information
     if (error instanceof Error) {
-      console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
     }
 
     return NextResponse.json(
