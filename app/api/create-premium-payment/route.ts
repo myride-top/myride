@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-})
+import { PaymentService } from '@/lib/services/payment-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,40 +13,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe Checkout Session for premium purchase
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'MyRide Premium',
-              description: 'Lifetime premium access to MyRide features',
-              images: ['https://myride.top/icon.jpg'], // Add your premium product image
-            },
-            unit_amount: 1000, // $10.00 in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${
+    const session = await PaymentService.createCheckoutSession({
+      userId,
+      customerEmail,
+      amount: 1000, // $10.00 in cents
+      name: 'MyRide Premium',
+      description: 'Lifetime premium access to MyRide features',
+      successUrl: `${
         process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
       }/premium/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${
+      cancelUrl: `${
         process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
       }/premium`,
       metadata: {
         type: 'premium',
-        userId: userId,
-        platform: 'myride',
-      },
-      customer_email: customerEmail, // Pre-fill customer email if available
-      allow_promotion_codes: true, // Allow discount codes
-      billing_address_collection: 'required',
-      shipping_address_collection: {
-        allowed_countries: [], // No shipping needed for digital product
       },
     })
 
@@ -59,10 +35,6 @@ export async function POST(request: NextRequest) {
       url: session.url,
     })
   } catch (error) {
-    // Log more detailed error information
-    if (error instanceof Error) {
-    }
-
     return NextResponse.json(
       {
         error: 'Failed to create premium payment session',

@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
 import { getUnitLabel } from '@/lib/utils'
-import PhotoCategoryMenu from '@/components/photos/photo-category-menu'
 import SortablePhotoList from '@/components/photos/sortable-photo-list'
 import PhotoUpload from '@/components/photos/photo-upload'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
@@ -78,7 +77,7 @@ function BasicInformationStep({
           <input
             type='text'
             name='name'
-            value={carData.name}
+            value={carData.name || ''}
             onChange={onInputChange}
             placeholder='e.g., My Dream Build'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -93,7 +92,7 @@ function BasicInformationStep({
           <input
             type='text'
             name='url_slug'
-            value={carData.url_slug}
+            value={carData.url_slug || ''}
             onChange={onInputChange}
             placeholder='e.g., my-dream-build'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -108,7 +107,7 @@ function BasicInformationStep({
           <input
             type='text'
             name='make'
-            value={carData.make}
+            value={carData.make || ''}
             onChange={onInputChange}
             placeholder='e.g., Mazda'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -123,7 +122,7 @@ function BasicInformationStep({
           <input
             type='text'
             name='model'
-            value={carData.model}
+            value={carData.model || ''}
             onChange={onInputChange}
             placeholder='e.g., RX-7'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -138,7 +137,7 @@ function BasicInformationStep({
           <input
             type='number'
             name='year'
-            value={carData.year}
+            value={carData.year || ''}
             onChange={onInputChange}
             min='1900'
             max={new Date().getFullYear() + 1}
@@ -153,7 +152,7 @@ function BasicInformationStep({
           </label>
           <textarea
             name='description'
-            value={carData.description}
+            value={carData.description || ''}
             onChange={onInputChange}
             rows={4}
             placeholder='Tell us about your car...'
@@ -183,11 +182,11 @@ function BuildStoryStep({
           </label>
           <textarea
             name='build_story'
-            value={carData.build_story}
+            value={carData.build_story || ''}
             onChange={onInputChange}
             rows={4}
             placeholder="What's the story behind it?"
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-3 py-2 border border-input rounded-md focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
 
@@ -198,7 +197,7 @@ function BuildStoryStep({
           <input
             type='date'
             name='build_start_date'
-            value={carData.build_start_date}
+            value={carData.build_start_date || ''}
             onChange={onInputChange}
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
@@ -211,7 +210,7 @@ function BuildStoryStep({
           <input
             type='number'
             name='total_build_cost'
-            value={carData.total_build_cost}
+            value={carData.total_build_cost || ''}
             onChange={onInputChange}
             placeholder='e.g., 25000'
             min='0'
@@ -251,7 +250,7 @@ function BuildStoryStep({
           <input
             type='text'
             name='inspiration'
-            value={carData.inspiration}
+            value={carData.inspiration || ''}
             onChange={onInputChange}
             placeholder='e.g., Aventador SVJ, 911 GT3 RS'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -285,7 +284,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='engine_displacement'
-            value={carData.engine_displacement}
+            value={carData.engine_displacement || ''}
             onChange={onInputChange}
             placeholder={unitPreference === 'metric' ? '2.0' : '2000'}
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -299,7 +298,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='engine_cylinders'
-            value={carData.engine_cylinders}
+            value={carData.engine_cylinders || ''}
             onChange={onInputChange}
             placeholder='4, 6, 8, etc.'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -313,7 +312,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='engine_code'
-            value={carData.engine_code}
+            value={carData.engine_code || ''}
             onChange={onInputChange}
             placeholder='e.g., K20A, 2JZ-GTE'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -327,7 +326,7 @@ function EnginePerformanceStep({
           <input
             type='number'
             name='horsepower'
-            value={carData.horsepower}
+            value={carData.horsepower || ''}
             onChange={onInputChange}
             placeholder='200'
             min='0'
@@ -342,7 +341,7 @@ function EnginePerformanceStep({
           <input
             type='number'
             name='torque'
-            value={carData.torque}
+            value={carData.torque || ''}
             onChange={onInputChange}
             placeholder='180'
             min='0'
@@ -357,7 +356,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='engine_type'
-            value={carData.engine_type}
+            value={carData.engine_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Inline-4, V6, Boxer'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -371,7 +370,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='fuel_type'
-            value={carData.fuel_type}
+            value={carData.fuel_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Gasoline, Diesel, Electric'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -385,7 +384,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='transmission'
-            value={carData.transmission}
+            value={carData.transmission || ''}
             onChange={onInputChange}
             placeholder='e.g., 6-speed Manual, 8-speed Auto'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -399,7 +398,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='drivetrain'
-            value={carData.drivetrain}
+            value={carData.drivetrain || ''}
             onChange={onInputChange}
             placeholder='e.g., FWD, RWD, AWD'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -413,7 +412,7 @@ function EnginePerformanceStep({
           <input
             type='number'
             name='zero_to_sixty'
-            value={carData.zero_to_sixty}
+            value={carData.zero_to_sixty || ''}
             onChange={onInputChange}
             placeholder='5.2'
             min='0'
@@ -429,7 +428,7 @@ function EnginePerformanceStep({
           <input
             type='number'
             name='top_speed'
-            value={carData.top_speed}
+            value={carData.top_speed || ''}
             onChange={onInputChange}
             placeholder='155'
             min='0'
@@ -444,7 +443,7 @@ function EnginePerformanceStep({
           <input
             type='number'
             name='quarter_mile'
-            value={carData.quarter_mile}
+            value={carData.quarter_mile || ''}
             onChange={onInputChange}
             placeholder='13.5'
             min='0'
@@ -460,7 +459,7 @@ function EnginePerformanceStep({
           <input
             type='number'
             name='weight'
-            value={carData.weight}
+            value={carData.weight || ''}
             onChange={onInputChange}
             placeholder='1200'
             min='0'
@@ -475,7 +474,7 @@ function EnginePerformanceStep({
           <input
             type='text'
             name='power_to_weight'
-            value={carData.power_to_weight}
+            value={carData.power_to_weight || ''}
             onChange={onInputChange}
             placeholder='e.g., 200 HP/ton'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -507,7 +506,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='wheel_size'
-            value={carData.wheel_size}
+            value={carData.wheel_size || ''}
             onChange={onInputChange}
             placeholder='e.g., 18x8.5'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -521,7 +520,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='wheel_brand'
-            value={carData.wheel_brand}
+            value={carData.wheel_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., BBS'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -535,7 +534,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='wheel_material'
-            value={carData.wheel_material}
+            value={carData.wheel_material || ''}
             onChange={onInputChange}
             placeholder='e.g., Forged Aluminum, Cast Steel'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -549,7 +548,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='wheel_offset'
-            value={carData.wheel_offset}
+            value={carData.wheel_offset || ''}
             onChange={onInputChange}
             placeholder='e.g., +35, -10'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -563,7 +562,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='front_tire_size'
-            value={carData.front_tire_size}
+            value={carData.front_tire_size || ''}
             onChange={onInputChange}
             placeholder='e.g., 225/40R18'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -577,7 +576,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='rear_tire_size'
-            value={carData.rear_tire_size}
+            value={carData.rear_tire_size || ''}
             onChange={onInputChange}
             placeholder='e.g., 255/40R18'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -591,7 +590,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='front_tire_brand'
-            value={carData.front_tire_brand}
+            value={carData.front_tire_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., Michelin, Pirelli'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -605,7 +604,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='front_tire_model'
-            value={carData.front_tire_model}
+            value={carData.front_tire_model || ''}
             onChange={onInputChange}
             placeholder='e.g., Pilot Sport 4S'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -619,7 +618,7 @@ function WheelsTiresStep({
           <input
             type='number'
             name='front_tire_pressure'
-            value={carData.front_tire_pressure}
+            value={carData.front_tire_pressure || ''}
             onChange={onInputChange}
             placeholder={unitPreference === 'metric' ? '220' : '32'}
             min='0'
@@ -634,7 +633,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='rear_tire_brand'
-            value={carData.rear_tire_brand}
+            value={carData.rear_tire_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., Michelin, Pirelli'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -648,7 +647,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='rear_tire_model'
-            value={carData.rear_tire_model}
+            value={carData.rear_tire_model || ''}
             onChange={onInputChange}
             placeholder='e.g., Pilot Sport 4S'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -662,7 +661,7 @@ function WheelsTiresStep({
           <input
             type='number'
             name='rear_tire_pressure'
-            value={carData.rear_tire_pressure}
+            value={carData.rear_tire_pressure || ''}
             onChange={onInputChange}
             placeholder={unitPreference === 'metric' ? '220' : '32'}
             min='0'
@@ -677,7 +676,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='front_brakes'
-            value={carData.front_brakes}
+            value={carData.front_brakes || ''}
             onChange={onInputChange}
             placeholder='e.g., Brembo 4-Piston'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -691,7 +690,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='rear_brakes'
-            value={carData.rear_brakes}
+            value={carData.rear_brakes || ''}
             onChange={onInputChange}
             placeholder='e.g., Brembo 2-Piston'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -705,7 +704,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='brake_rotors'
-            value={carData.brake_rotors}
+            value={carData.brake_rotors || ''}
             onChange={onInputChange}
             placeholder='e.g., Slotted, Drilled, Carbon Ceramic'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -719,7 +718,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='brake_caliper_brand'
-            value={carData.brake_caliper_brand}
+            value={carData.brake_caliper_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., Brembo, AP Racing'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -733,7 +732,7 @@ function WheelsTiresStep({
           <input
             type='text'
             name='brake_lines'
-            value={carData.brake_lines}
+            value={carData.brake_lines || ''}
             onChange={onInputChange}
             placeholder='e.g., Stainless Steel, Braided'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -767,7 +766,7 @@ function SuspensionChassisStep({
           <input
             type='text'
             name='front_suspension'
-            value={carData.front_suspension}
+            value={carData.front_suspension || ''}
             onChange={onInputChange}
             placeholder='e.g., MacPherson Strut'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -781,7 +780,7 @@ function SuspensionChassisStep({
           <input
             type='text'
             name='rear_suspension'
-            value={carData.rear_suspension}
+            value={carData.rear_suspension || ''}
             onChange={onInputChange}
             placeholder='e.g., Multi-Link'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -795,7 +794,7 @@ function SuspensionChassisStep({
           <input
             type='text'
             name='coilovers'
-            value={carData.coilovers}
+            value={carData.coilovers || ''}
             onChange={onInputChange}
             placeholder='e.g., KW Variant 3'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -809,7 +808,7 @@ function SuspensionChassisStep({
           <input
             type='text'
             name='sway_bars'
-            value={carData.sway_bars}
+            value={carData.sway_bars || ''}
             onChange={onInputChange}
             placeholder='e.g., H&R 24mm Front, 22mm Rear'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -823,7 +822,7 @@ function SuspensionChassisStep({
           <input
             type='text'
             name='suspension_type'
-            value={carData.suspension_type}
+            value={carData.suspension_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Independent, Solid Axle, Multi-Link'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -837,7 +836,7 @@ function SuspensionChassisStep({
           <input
             type='text'
             name='ride_height'
-            value={carData.ride_height}
+            value={carData.ride_height || ''}
             onChange={onInputChange}
             placeholder='e.g., Lowered 2 inches, Stock height'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -859,9 +858,7 @@ function ExteriorInteriorStep({
 }) {
   return (
     <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>
-        Exterior & Interior
-      </h3>
+      <h3 className='text-xl font-semibold text-foreground'>Exterior</h3>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <div>
@@ -871,7 +868,7 @@ function ExteriorInteriorStep({
           <input
             type='text'
             name='paint_color'
-            value={carData.paint_color}
+            value={carData.paint_color || ''}
             onChange={onInputChange}
             placeholder='e.g., Championship White'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -885,37 +882,9 @@ function ExteriorInteriorStep({
           <input
             type='text'
             name='body_kit'
-            value={carData.body_kit}
+            value={carData.body_kit || ''}
             onChange={onInputChange}
             placeholder='e.g., Rocket Bunny'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Interior Color
-          </label>
-          <input
-            type='text'
-            name='interior_color'
-            value={carData.interior_color}
-            onChange={onInputChange}
-            placeholder='e.g., Black'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Seats
-          </label>
-          <input
-            type='text'
-            name='seats'
-            value={carData.seats}
-            onChange={onInputChange}
-            placeholder='e.g., Recaro Sport Seats'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
@@ -927,7 +896,7 @@ function ExteriorInteriorStep({
           <input
             type='text'
             name='paint_type'
-            value={carData.paint_type}
+            value={carData.paint_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Metallic, Matte, Pearl'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -941,7 +910,7 @@ function ExteriorInteriorStep({
           <input
             type='text'
             name='wrap_color'
-            value={carData.wrap_color}
+            value={carData.wrap_color || ''}
             onChange={onInputChange}
             placeholder='e.g., Satin Black, Gloss Red'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -955,7 +924,7 @@ function ExteriorInteriorStep({
           <input
             type='text'
             name='carbon_fiber_parts'
-            value={carData.carbon_fiber_parts}
+            value={carData.carbon_fiber_parts || ''}
             onChange={onInputChange}
             placeholder='e.g., Hood, Trunk, Side Skirts'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -969,65 +938,9 @@ function ExteriorInteriorStep({
           <input
             type='text'
             name='lighting'
-            value={carData.lighting}
+            value={carData.lighting || ''}
             onChange={onInputChange}
             placeholder='e.g., LED Headlights, Underglow'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Interior Material
-          </label>
-          <input
-            type='text'
-            name='interior_material'
-            value={carData.interior_material}
-            onChange={onInputChange}
-            placeholder='e.g., Leather, Alcantara, Carbon Fiber'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Steering Wheel
-          </label>
-          <input
-            type='text'
-            name='steering_wheel'
-            value={carData.steering_wheel}
-            onChange={onInputChange}
-            placeholder='e.g., Momo, Sparco, Custom'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Shift Knob
-          </label>
-          <input
-            type='text'
-            name='shift_knob'
-            value={carData.shift_knob}
-            onChange={onInputChange}
-            placeholder='e.g., B&M, Hurst, Custom'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Gauges
-          </label>
-          <input
-            type='text'
-            name='gauges'
-            value={carData.gauges}
-            onChange={onInputChange}
-            placeholder='e.g., AEM, Defi, Stack'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
@@ -1057,7 +970,7 @@ function InteriorStep({
           <input
             type='text'
             name='interior_color'
-            value={carData.interior_color}
+            value={carData.interior_color || ''}
             onChange={onInputChange}
             placeholder='e.g., Black'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1071,7 +984,7 @@ function InteriorStep({
           <input
             type='text'
             name='interior_material'
-            value={carData.interior_material}
+            value={carData.interior_material || ''}
             onChange={onInputChange}
             placeholder='e.g., Leather, Alcantara, Carbon Fiber'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1085,7 +998,7 @@ function InteriorStep({
           <input
             type='text'
             name='seats'
-            value={carData.seats}
+            value={carData.seats || ''}
             onChange={onInputChange}
             placeholder='e.g., Recaro Sport Seats'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1099,7 +1012,7 @@ function InteriorStep({
           <input
             type='text'
             name='steering_wheel'
-            value={carData.steering_wheel}
+            value={carData.steering_wheel || ''}
             onChange={onInputChange}
             placeholder='e.g., Momo, Sparco, Custom'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1113,7 +1026,7 @@ function InteriorStep({
           <input
             type='text'
             name='shift_knob'
-            value={carData.shift_knob}
+            value={carData.shift_knob || ''}
             onChange={onInputChange}
             placeholder='e.g., B&M, Hurst, Custom'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1127,7 +1040,7 @@ function InteriorStep({
           <input
             type='text'
             name='gauges'
-            value={carData.gauges}
+            value={carData.gauges || ''}
             onChange={onInputChange}
             placeholder='e.g., AEM, Defi, Stack'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1159,7 +1072,7 @@ function AdditionalDetailsStep({
           <input
             type='text'
             name='vin'
-            value={carData.vin}
+            value={carData.vin || ''}
             onChange={onInputChange}
             placeholder='e.g., 1HGBH41JXMN109186'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1173,7 +1086,7 @@ function AdditionalDetailsStep({
           <input
             type='number'
             name='mileage'
-            value={carData.mileage}
+            value={carData.mileage || ''}
             onChange={onInputChange}
             placeholder='e.g., 50000'
             min='0'
@@ -1188,7 +1101,7 @@ function AdditionalDetailsStep({
           <input
             type='text'
             name='fuel_economy'
-            value={carData.fuel_economy}
+            value={carData.fuel_economy || ''}
             onChange={onInputChange}
             placeholder='e.g., 25 MPG City, 30 MPG Highway'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1197,14 +1110,14 @@ function AdditionalDetailsStep({
 
         <div>
           <label className='block text-sm font-medium text-foreground mb-2'>
-            Maintenance History
+            Dyno Results
           </label>
-          <textarea
-            name='maintenance_history'
-            value={carData.maintenance_history}
+          <input
+            type='text'
+            name='dyno_results'
+            value={carData.dyno_results || ''}
             onChange={onInputChange}
-            rows={3}
-            placeholder='e.g., Oil change every 3k miles, timing belt at 60k'
+            placeholder='e.g., 350 WHP, 320 WTQ'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
@@ -1230,34 +1143,6 @@ function AdditionalDetailsStep({
             }}
             rows={3}
             placeholder='e.g., Cold air intake, exhaust, tune'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Dyno Results
-          </label>
-          <input
-            type='text'
-            name='dyno_results'
-            value={carData.dyno_results}
-            onChange={onInputChange}
-            placeholder='e.g., 350 WHP, 320 WTQ'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
-            Build Thread URL
-          </label>
-          <input
-            type='url'
-            name='build_thread_url'
-            value={carData.build_thread_url}
-            onChange={onInputChange}
-            placeholder='e.g., https://forum.example.com/my-build'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
@@ -1287,7 +1172,7 @@ function PhotosSocialStep({
           <input
             type='text'
             name='instagram_handle'
-            value={carData.instagram_handle}
+            value={carData.instagram_handle || ''}
             onChange={onInputChange}
             placeholder='e.g., @mycarbuild'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1301,7 +1186,7 @@ function PhotosSocialStep({
           <input
             type='text'
             name='youtube_channel'
-            value={carData.youtube_channel}
+            value={carData.youtube_channel || ''}
             onChange={onInputChange}
             placeholder='e.g., https://youtube.com/mycarbuild'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1315,7 +1200,7 @@ function PhotosSocialStep({
           <input
             type='text'
             name='website_url'
-            value={carData.website_url}
+            value={carData.website_url || ''}
             onChange={onInputChange}
             placeholder='e.g., https://mycarbuild.com'
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
@@ -1442,6 +1327,24 @@ export default function CarForm({
     brake_lines: '',
     ...initialData,
   })
+
+  // Helper function to safely get form values (convert null to empty string)
+  const getFormValue = (fieldName: keyof typeof formData): string => {
+    const value = formData[fieldName]
+    if (value === null || value === undefined) return ''
+    if (typeof value === 'string') return value
+    if (Array.isArray(value)) return value.join(', ')
+    return String(value)
+  }
+
+  // Helper function to safely get form values for inputs (convert null to empty string)
+  const safeValue = (value: any): string => {
+    if (value === null || value === undefined) return ''
+    if (typeof value === 'string') return value
+    if (typeof value === 'number') return String(value)
+    if (Array.isArray(value)) return value.join(', ')
+    return String(value)
+  }
 
   // Check if a step has data
   const hasStepData = (stepId: number): boolean => {

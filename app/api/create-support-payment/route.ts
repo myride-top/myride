@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-})
+import { PaymentService } from '@/lib/services/payment-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,43 +14,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe Payment Link with simplified configuration
-    const paymentLink = await stripe.paymentLinks.create({
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Support MyRide',
-              description: description || 'Support for MyRide development',
-              images: ['https://myride.top/icon.jpg'],
-            },
-            unit_amount: amount,
-          },
-          quantity: 1,
-        },
-      ],
+    const paymentLink = await PaymentService.createPaymentLink({
+      amount,
+      name: 'Support MyRide',
+      description: description || 'Support for MyRide development',
+      redirectUrl: `${
+        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
+      }/support/thank-you`,
       metadata: {
         ...metadata,
         type: 'support',
-        platform: 'myride',
-      },
-      after_completion: {
-        type: 'redirect',
-        redirect: {
-          url: `${
-            process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
-          }/support/thank-you`,
-        },
       },
     })
 
     return NextResponse.json({ url: paymentLink.url })
   } catch (error) {
-    // Log more detailed error information
-    if (error instanceof Error) {
-    }
-
     return NextResponse.json(
       {
         error: 'Failed to create payment link',

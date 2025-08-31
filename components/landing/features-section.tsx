@@ -2,8 +2,13 @@
 
 import React from 'react'
 import { Camera, Settings, Share2, Smartphone, Globe, Zap } from 'lucide-react'
+import FeatureCard, { Feature } from '@/components/common/feature-card'
+import SectionHeader from '@/components/common/section-header'
+import CTASection from '@/components/common/cta-section'
+import Grid from '@/components/common/grid'
+import Section from '@/components/common/section'
 
-const features = [
+const features: Feature[] = [
   {
     icon: Camera,
     title: 'Stunning Photo Gallery',
@@ -56,77 +61,34 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section id='features' className='py-20 bg-background'>
-      <div className='max-w-7xl mx-auto px-4'>
-        <div className='text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700'>
-          <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-4'>
-            Everything You Need to Showcase Your Ride
-          </h2>
-          <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-            Powerful features designed specifically for car enthusiasts to
-            create the perfect showcase
-          </p>
-        </div>
+    <Section id="features">
+      <SectionHeader
+        title="Everything You Need to Showcase Your Ride"
+        description="Powerful features designed specifically for car enthusiasts to create the perfect showcase"
+      />
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {features.map((feature, index) => (
-            <div
-              key={feature.title}
-              className='group relative animate-in fade-in slide-in-from-bottom-4 duration-500 hover:-translate-y-1 hover:scale-[1.01] transition-transform'
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className='relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-300 h-full'>
-                {/* Background gradient on hover */}
-                <div
-                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
-                />
+      <Grid cols={3} gap="md">
+        {features.map((feature, index) => (
+          <FeatureCard
+            key={feature.title}
+            feature={feature}
+            showGradient={true}
+            index={index}
+          />
+        ))}
+      </Grid>
 
-                {/* Icon */}
-                <div
-                  className={`relative p-3 rounded-xl ${feature.bgColor} w-fit mb-4 group-hover:scale-110 transition-transform duration-300`}
-                >
-                  <feature.icon
-                    className={`h-8 w-8 bg-gradient-to-r ${feature.color} bg-clip-text text-transparent`}
-                  />
-                </div>
-
-                {/* Content */}
-                <div className='relative'>
-                  <h3 className='text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors'>
-                    {feature.title}
-                  </h3>
-                  <p className='text-muted-foreground leading-relaxed'>
-                    {feature.description}
-                  </p>
-                </div>
-
-                {/* Hover effect overlay */}
-                <div className='absolute inset-0 rounded-2xl border-2 border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Call to action */}
-        <div className='text-center mt-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500'>
-          <div className='inline-flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20'>
-            <div className='flex items-center gap-2'>
-              <div className='w-3 h-3 bg-primary rounded-full animate-pulse' />
-              <span className='text-sm font-medium text-primary'>
-                Ready to get started?
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                window.location.href = '/register'
-              }}
-              className='px-6 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer hover:scale-105 active:scale-95'
-            >
-              Start Showcasing
-            </button>
-          </div>
-        </div>
+      {/* Call to action */}
+      <div className='mt-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500'>
+        <CTASection
+          title="Ready to get started?"
+          variant="highlighted"
+          primaryButton={{
+            text: "Start Showcasing",
+            onClick: () => window.location.href = '/register'
+          }}
+        />
       </div>
-    </section>
+    </Section>
   )
 }

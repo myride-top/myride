@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { getCarsByUserClient } from '@/lib/database/cars-client'
 import { getUserCarSlots } from '@/lib/database/premium-client'
+import { canUserCreateCarSimpleClient } from '@/lib/database/cars-client'
 import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import ProtectedRoute from '@/components/auth/protected-route'
@@ -17,6 +18,7 @@ import {
   Eye,
   Share2,
   MessageCircle,
+  AlertCircle,
 } from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
@@ -24,6 +26,11 @@ import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
 import { toast } from 'sonner'
 import { syncCarCommentCount } from '@/lib/database/cars-client'
+import StatsCard, { DashboardStat } from '@/components/dashboard/stats-card'
+import PremiumUpgradeBanner from '@/components/dashboard/premium-upgrade-banner'
+import Grid from '@/components/common/grid'
+import PageLayout from '@/components/layout/page-layout'
+import PageHeader from '@/components/layout/page-header'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -43,6 +50,7 @@ export default function DashboardPage() {
     purchasedSlots: 0,
     isPremium: false,
   })
+  const [canCreateCar, setCanCreateCar] = useState(true)
 
   // Function to recalculate stats
   const recalculateStats = (currentCars: Car[]) => {
@@ -100,334 +108,191 @@ export default function DashboardPage() {
 
     try {
       if (navigator.share) {
-        // Use native sharing if available
         await navigator.share({
-          title: `${car.name} - ${car.make} ${car.model}`,
-          text: `Check out my ${car.make} ${car.model} on MyRide!`,
+          title: `${car.name} by ${profile?.username}`,
+          text: `Check out this amazing car: ${car.name}`,
           url: carUrl,
         })
       } else {
-        // Fallback to clipboard copy
         await navigator.clipboard.writeText(carUrl)
-        toast.success('Car URL copied to clipboard!')
+        toast.success('Car link copied to clipboard!')
       }
     } catch (error) {
-      // Fallback to clipboard copy if native sharing fails
+      // Fallback to clipboard
       try {
         await navigator.clipboard.writeText(carUrl)
-        toast.success('Car URL copied to clipboard!')
+        toast.success('Car link copied to clipboard!')
       } catch (clipboardError) {
-        toast.error('Failed to share car')
-      }
-    }
-  }
-
-  const refreshCarData = async () => {
-    if (user) {
-      try {
-        const [userProfile, userCars, userCarSlots] = await Promise.all([
-          getProfileByUserIdClient(user.id),
-          getCarsByUserClient(user.id),
-          getUserCarSlots(user.id),
-        ])
-        setProfile(userProfile)
-        setCars(userCars || [])
-        setCarSlots(userCarSlots)
-
-        // Sync comment counts for all cars to ensure database is up to date
-        if (userCars) {
-          for (const car of userCars) {
-            await syncCarCommentCount(car.id)
-          }
-        }
-
-        // Calculate stats
-        recalculateStats(userCars || [])
-        toast.success('Car data and stats refreshed!')
-      } catch (error) {
-        toast.error('Failed to refresh car data')
+        toast.error('Failed to copy link')
       }
     }
   }
 
   useEffect(() => {
-    const loadUserData = async () => {
-      if (user) {
-        try {
-          const [userProfile, userCars, userCarSlots] = await Promise.all([
+    const loadDashboardData = async () => {
+      if (!user) return
+
+      try {
+        setLoading(true)
+
+        // Load profile and cars in parallel
+        const [profileData, carsData, slotsData, canCreate] = await Promise.all(
+          [
             getProfileByUserIdClient(user.id),
             getCarsByUserClient(user.id),
             getUserCarSlots(user.id),
-          ])
-          setProfile(userProfile)
-          setCars(userCars || [])
-          setCarSlots(userCarSlots)
+            canUserCreateCarSimpleClient(user.id),
+          ]
+        )
 
-          // Calculate stats
-          recalculateStats(userCars || [])
-        } catch (error) {
-        } finally {
-          setLoading(false)
+        if (profileData) {
+          setProfile(profileData)
         }
-      } else {
+
+        if (carsData) {
+          setCars(carsData)
+          recalculateStats(carsData)
+        }
+
+        if (slotsData) {
+          setCarSlots(slotsData)
+        }
+
+        setCanCreateCar(canCreate)
+      } catch (error) {
+        console.error('Error loading dashboard data:', error)
+        toast.error('Failed to load dashboard data')
+      } finally {
         setLoading(false)
       }
     }
 
-    loadUserData()
+    loadDashboardData()
   }, [user])
-
-  // Recalculate stats when cars change
-  useEffect(() => {
-    if (cars.length > 0) {
-      recalculateStats(cars)
-    }
-  }, [cars])
 
   if (loading) {
     return (
       <ProtectedRoute>
-        <LoadingSpinner fullScreen message='Loading your dashboard...' />
+        <PageLayout user={user} showCreateButton={false}>
+          <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
+            <LoadingSpinner message='Loading dashboard...' />
+          </div>
+        </PageLayout>
       </ProtectedRoute>
     )
   }
 
+  // Prepare stats data
+  const dashboardStats: DashboardStat[] = [
+    {
+      icon: Heart,
+      label: 'Total Likes',
+      value: stats.totalLikes,
+      isPremium: true,
+    },
+    {
+      icon: Eye,
+      label: 'Total Views',
+      value: stats.totalViews,
+      isPremium: carSlots.isPremium,
+      premiumUpgradeHref: '/premium',
+    },
+    {
+      icon: Share2,
+      label: 'Total Shares',
+      value: stats.totalShares,
+      isPremium: carSlots.isPremium,
+      premiumUpgradeHref: '/premium',
+    },
+    {
+      icon: MessageCircle,
+      label: 'Total Comments',
+      value: stats.totalComments,
+      isPremium: true,
+    },
+  ]
+
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
+      <PageLayout user={user} showCreateButton={false}>
+        <PageHeader
+          title='Dashboard'
+          description='Manage your cars and track your performance'
+        />
 
-        {/* Main Content */}
-        <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
-          <div className='px-4 py-6 sm:px-0'>
-            {/* Stats Overview - 4 stats: Total Likes + 3 Premium Stats */}
-            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8'>
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-3 md:p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <Heart className='w-5 h-5 md:w-6 md:h-6 text-red-500' />
-                    </div>
-                    <div className='ml-3 md:ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
-                          Total Likes
-                        </dt>
-                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
-                          {stats.totalLikes}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Stats Overview */}
+        <Grid cols={4} gap='md' className='mb-6 md:mb-8'>
+          {dashboardStats.map((stat, index) => (
+            <StatsCard key={stat.label} stat={stat} />
+          ))}
+        </Grid>
 
-              {/* Premium Stats - Blurred for non-premium users */}
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border group relative'>
-                <div className='p-3 md:p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <Eye className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-3 md:ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
-                          Total Views
-                          {!carSlots.isPremium && (
-                            <span className='ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
-                              PREMIUM
-                            </span>
-                          )}
-                        </dt>
-                        <dd
-                          className={`text-base md:text-lg font-medium text-card-foreground ${
-                            !carSlots.isPremium ? 'blur-sm' : ''
-                          }`}
-                        >
-                          {stats.totalViews}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-                {/* Premium upgrade overlay */}
-                {!carSlots.isPremium && (
-                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs'>
-                    <Link
-                      href='/premium'
-                      className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
-                    >
-                      Upgrade to Premium
-                    </Link>
-                  </div>
-                )}
-              </div>
+        {/* Buy More Slots Section for Non-Premium Users */}
+        {!carSlots.isPremium && cars.length >= carSlots.maxAllowedCars && (
+          <PremiumUpgradeBanner
+            currentCars={cars.length}
+            maxAllowedCars={carSlots.maxAllowedCars}
+            className='mb-6'
+          />
+        )}
 
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border group relative'>
-                <div className='p-3 md:p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <Share2 className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-3 md:ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
-                          Total Shares
-                          {!carSlots.isPremium && (
-                            <span className='ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
-                              PREMIUM
-                            </span>
-                          )}
-                        </dt>
-                        <dd
-                          className={`text-base md:text-lg font-medium text-card-foreground ${
-                            !carSlots.isPremium ? 'blur-sm' : ''
-                          }`}
-                        >
-                          {stats.totalShares}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-                {/* Premium upgrade overlay */}
-                {!carSlots.isPremium && (
-                  <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs'>
-                    <Link
-                      href='/premium'
-                      className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
-                    >
-                      Upgrade to Premium
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              <div className='bg-card overflow-hidden shadow rounded-lg border border-border'>
-                <div className='p-3 md:p-5'>
-                  <div className='flex items-center'>
-                    <div className='flex-shrink-0'>
-                      <MessageCircle className='w-5 h-5 md:w-6 md:h-6 text-muted-foreground' />
-                    </div>
-                    <div className='ml-3 md:ml-5 w-0 flex-1'>
-                      <dl>
-                        <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate'>
-                          Total Comments
-                        </dt>
-                        <dd className='text-base md:text-lg font-medium text-card-foreground'>
-                          {stats.totalComments}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Buy More Slots Section for Non-Premium Users */}
-            {!carSlots.isPremium && cars.length >= carSlots.maxAllowedCars && (
-              <div className='bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6'>
-                <div className='flex items-center justify-between'>
-                  <div>
-                    <h3 className='text-lg font-semibold text-blue-800 dark:text-blue-200 mb-1'>
-                      Need More Car Slots?
-                    </h3>
-                    <p className='text-blue-700 dark:text-blue-300 text-sm'>
-                      Currently {cars.length}/{carSlots.maxAllowedCars} cars •{' '}
-                      {carSlots.maxAllowedCars - cars.length} slot
-                      {carSlots.maxAllowedCars - cars.length !== 1
-                        ? 's'
-                        : ''}{' '}
-                      remaining
-                    </p>
-                  </div>
-                  <div className='flex gap-2'>
-                    <Link
-                      href='/buy-car-slot'
-                      className='inline-flex items-center px-4 py-2 border border-blue-600 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/50 rounded-md text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors'
-                    >
-                      <Plus className='w-4 h-4 mr-2' />
-                      Buy More Slots
-                    </Link>
-                    <Link
-                      href='/premium'
-                      className='inline-flex items-center px-4 py-2 border border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/50 rounded-md text-sm font-medium hover:bg-amber-100 dark:hover:bg-amber-900/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors'
-                    >
-                      <Crown className='w-4 h-4 mr-2' />
-                      Go Premium
-                    </Link>
-                  </div>
-                </div>
-              </div>
+        {/* Cars Grid */}
+        <div>
+          <div className='flex items-center justify-between mb-6'>
+            <h2 className='text-2xl font-bold text-foreground'>Your Cars</h2>
+            {canCreateCar ? (
+              <Link
+                href='/create'
+                className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
+              >
+                <Plus className='w-5 h-5 mr-2' />
+                Add New Car
+              </Link>
+            ) : (
+              <Link
+                href='/buy-car-slot'
+                className='inline-flex items-center px-4 py-2 border border-orange-200 dark:border-orange-800 text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors cursor-pointer'
+              >
+                <AlertCircle className='w-4 h-4 mr-2' />
+                Car Limit Reached
+              </Link>
             )}
-
-            {/* Cars Grid */}
-            <div>
-              <div className='flex items-center justify-between mb-6'>
-                <h2 className='text-2xl font-bold text-foreground'>
-                  Your Cars
-                </h2>
-              </div>
-              {cars.length === 0 ? (
-                <EmptyState
-                  icon={Info}
-                  title='No cars yet'
-                  description='Get started by adding your first car.'
-                  action={
-                    <Link
-                      href='/create'
-                      className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
-                    >
-                      <Plus className='w-5 h-5 mr-2' />
-                      Add Your First Car
-                    </Link>
-                  }
-                />
-              ) : cars.length === 1 &&
-                !carSlots.isPremium &&
-                carSlots.currentCars >= carSlots.maxAllowedCars ? (
-                <div className='space-y-6'>
-                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                    {cars.map(car => (
-                      <CarCard
-                        key={car.id}
-                        car={car}
-                        profile={profile}
-                        isOwner={true}
-                        onEdit={car =>
-                          router.push(
-                            `/${profile?.username}/${car.url_slug}/edit`
-                          )
-                        }
-                        onShare={car => handleShare(car)}
-                        onLikeChange={handleLikeChange}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                  {cars.map(car => (
-                    <CarCard
-                      key={car.id}
-                      car={car}
-                      profile={profile}
-                      isOwner={true}
-                      onEdit={car =>
-                        router.push(
-                          `/${profile?.username}/${car.url_slug}/edit`
-                        )
-                      }
-                      onShare={car => handleShare(car)}
-                      onLikeChange={handleLikeChange}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
-        </main>
-      </div>
+
+          {cars.length === 0 ? (
+            <EmptyState
+              icon={Info}
+              title='No cars yet'
+              description='Get started by adding your first car.'
+              action={
+                <Link
+                  href='/create'
+                  className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
+                >
+                  <Plus className='w-5 h-5 mr-2' />
+                  Add Your First Car
+                </Link>
+              }
+            />
+          ) : (
+            <Grid cols={3} gap='md'>
+              {cars.map(car => (
+                <CarCard
+                  key={car.id}
+                  car={car}
+                  profile={profile}
+                  isOwner={true}
+                  onEdit={car =>
+                    router.push(`/${profile?.username}/${car.url_slug}/edit`)
+                  }
+                  onShare={car => handleShare(car)}
+                  onLikeChange={handleLikeChange}
+                />
+              ))}
+            </Grid>
+          )}
+        </div>
+      </PageLayout>
     </ProtectedRoute>
   )
 }

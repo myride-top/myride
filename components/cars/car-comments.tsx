@@ -16,12 +16,9 @@ import {
   Send,
   User,
   Reply,
-  ChevronDown,
-  ChevronRight,
   Trash2,
   Pin,
   PinOff,
-  MoreVertical,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Profile } from '@/lib/types/database'
@@ -622,19 +619,6 @@ export default function CarComments({
             </div>
           </div>
         </form>
-      )}
-
-      {/* Car Owner Info */}
-      {user && user.id === carOwnerId && !canCreateTopLevelComment() && (
-        <div className='mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg'>
-          <div className='flex items-center gap-2 text-blue-800 dark:text-blue-200'>
-            <MessageCircle className='w-4 h-4' />
-            <p className='text-sm'>
-              You've already created your car description. You can reply to
-              other users' comments below!
-            </p>
-          </div>
-        </div>
       )}
 
       {/* Comments List */}

@@ -1,9 +1,8 @@
 'use client'
 
 import React from 'react'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
 import BaseNavbar from './base-navbar'
+import BackButton from '@/components/common/back-button'
 
 export default function LegalNavbar() {
   return (
@@ -12,13 +11,9 @@ export default function LegalNavbar() {
       showLogo={true}
       logoHref='/'
     >
-      <Link
-        href='/'
-        className='flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors'
-      >
-        <ArrowLeft className='h-4 w-4' />
-        <span>Back to Home</span>
-      </Link>
+      <BackButton href="/" variant="ghost">
+        Back to Home
+      </BackButton>
     </BaseNavbar>
   )
 }

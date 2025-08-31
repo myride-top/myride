@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-})
+import { PaymentService } from '@/lib/services/payment-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,40 +13,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe Checkout Session for car slot purchase
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Additional Car Slot',
-              description: 'Add one more car to your MyRide profile',
-              images: ['https://myride.top/icon.jpg'],
-            },
-            unit_amount: 100, // $1.00 in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${
+    const session = await PaymentService.createCheckoutSession({
+      userId,
+      customerEmail,
+      amount: 100, // $1.00 in cents
+      name: 'Additional Car Slot',
+      description: 'Add one more car to your MyRide profile',
+      successUrl: `${
         process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
       }/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${
+      cancelUrl: `${
         process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
       }/dashboard`,
       metadata: {
         type: 'car_slot',
-        userId: userId,
-        platform: 'myride',
-      },
-      customer_email: customerEmail,
-      allow_promotion_codes: true,
-      billing_address_collection: 'required',
-      shipping_address_collection: {
-        allowed_countries: [], // No shipping needed for digital product
       },
     })
 
@@ -59,10 +35,6 @@ export async function POST(request: NextRequest) {
       url: session.url,
     })
   } catch (error) {
-    // Log more detailed error information
-    if (error instanceof Error) {
-    }
-
     return NextResponse.json(
       {
         error: 'Failed to create car slot payment session',

@@ -16,12 +16,24 @@ import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { deleteCarPhoto } from '@/lib/storage/photos'
-import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
+import { Loader2, AlertTriangle } from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
 import { unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import CarForm from '@/components/forms/car-form'
+import PageHeaderWithBack from '@/components/layout/page-header-with-back'
+import ErrorAlert from '@/components/common/error-alert'
+import Container from '@/components/common/container'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 export default function EditCarPage() {
   const { user } = useAuth()
@@ -35,6 +47,7 @@ export default function EditCarPage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   // Debounced photo description change
   const descriptionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -98,6 +111,10 @@ export default function EditCarPage() {
                 }
               } catch (error) {
                 // Continue with local migration even if database update fails
+                console.warn(
+                  'Failed to save migrated photos to database:',
+                  error
+                )
               }
             }
 
@@ -106,7 +123,8 @@ export default function EditCarPage() {
             setError('Car not found')
           }
         } catch (error) {
-          setError('Failed to load car')
+          console.error('Error loading car:', error)
+          setError('Failed to load car data')
         } finally {
           setLoading(false)
         }
@@ -116,47 +134,116 @@ export default function EditCarPage() {
     loadCar()
   }, [carId, user, params.username, router])
 
-  const handlePhotoUploadComplete = async (photo: CarPhoto) => {
-    if (car) {
-      const updatedPhotos = [...(car.photos || []), photo]
+  const handleSubmit = async (formData: any) => {
+    if (!car || !user) return
 
-      // Immediately save to database to ensure persistence
-      try {
-        const updatedCar = await updateCarClient(car.id, {
-          photos: updatedPhotos,
-        })
+    setSaving(true)
+    setError(null)
 
-        if (updatedCar) {
-          setCar(updatedCar)
-          toast.success('Photo uploaded and saved!')
-        } else {
-          setError('Failed to save photo to database')
-        }
-      } catch (error) {
-        setError('Failed to save photo to database')
+    try {
+      // Convert form data to match database schema
+      const updateData = {
+        ...formData,
+        year: parseInt(formData.year),
+        engine_displacement: formData.engine_displacement
+          ? parseFloat(formData.engine_displacement)
+          : null,
+        engine_cylinders: formData.engine_cylinders
+          ? parseInt(formData.engine_cylinders)
+          : null,
+        horsepower: formData.horsepower ? parseInt(formData.horsepower) : null,
+        torque: formData.torque ? parseFloat(formData.torque) : null,
+        zero_to_sixty: formData.zero_to_sixty
+          ? parseFloat(formData.zero_to_sixty)
+          : null,
+        top_speed: formData.top_speed ? parseFloat(formData.top_speed) : null,
+        quarter_mile: formData.quarter_mile
+          ? parseFloat(formData.quarter_mile)
+          : null,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
+        power_to_weight: formData.power_to_weight
+          ? parseFloat(formData.power_to_weight)
+          : null,
       }
+
+      const updatedCar = await updateCarClient(car.id, updateData)
+
+      if (updatedCar) {
+        setCar(updatedCar)
+        toast.success('Car updated successfully!')
+        router.push(`/${params.username}/${updatedCar.url_slug}`)
+      } else {
+        setError('Failed to update car')
+      }
+    } catch (error) {
+      console.error('Error updating car:', error)
+      setError('Failed to update car. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
-  const handleBatchUploadComplete = async (photos: CarPhoto[]) => {
-    if (car) {
-      const updatedPhotos = [...(car.photos || []), ...photos]
+  const handleDelete = async () => {
+    if (!car) return
 
-      // Save all photos to the database at once
-      try {
-        const updatedCar = await updateCarClient(car.id, {
-          photos: updatedPhotos,
-        })
+    setDeleting(true)
+    setError(null)
 
-        if (updatedCar) {
-          setCar(updatedCar)
-          toast.success(`${photos.length} photo(s) saved successfully!`)
-        } else {
-          setError('Failed to save photos to database')
+    try {
+      // Delete all photos from storage first
+      if (car.photos && car.photos.length > 0) {
+        for (const photo of car.photos) {
+          try {
+            await deleteCarPhoto(photo.url)
+          } catch (error) {
+            console.warn('Failed to delete photo from storage:', error)
+          }
         }
-      } catch (error) {
-        setError('Failed to save photos to database')
       }
+
+      // Delete the car from database
+      const success = await deleteCarClient(car.id)
+
+      if (success) {
+        toast.success('Car deleted successfully!')
+        router.push('/dashboard')
+      } else {
+        setError('Failed to delete car')
+      }
+    } catch (error) {
+      console.error('Error deleting car:', error)
+      setError('Failed to delete car. Please try again.')
+    } finally {
+      setDeleting(false)
+      setShowDeleteDialog(false)
+    }
+  }
+
+  const handlePhotoUploadComplete = async (photo: CarPhoto) => {
+    if (!car) return
+
+    const updatedPhotos = [...(car.photos || []), photo]
+    setCar({ ...car, photos: updatedPhotos })
+
+    try {
+      await updateCarClient(car.id, { photos: updatedPhotos })
+    } catch (error) {
+      console.error('Error saving photo:', error)
+      toast.error('Failed to save photo')
+    }
+  }
+
+  const handleBatchUploadComplete = async (newPhotos: CarPhoto[]) => {
+    if (!car) return
+
+    const updatedPhotos = [...(car.photos || []), ...newPhotos]
+    setCar({ ...car, photos: updatedPhotos })
+
+    try {
+      await updateCarClient(car.id, { photos: updatedPhotos })
+    } catch (error) {
+      console.error('Error saving photos:', error)
+      toast.error('Failed to save photos')
     }
   }
 
@@ -164,72 +251,20 @@ export default function EditCarPage() {
     photoIndex: number,
     newCategory: PhotoCategory
   ) => {
-    if (car && car.photos) {
-      const updatedPhotos = [...car.photos]
-      if (typeof updatedPhotos[photoIndex] === 'object') {
-        ;(updatedPhotos[photoIndex] as CarPhoto).category = newCategory
+    if (!car) return
 
-        try {
-          const updatedCar = await updateCarClient(car.id, {
-            photos: updatedPhotos,
-          })
-
-          if (updatedCar) {
-            setCar(updatedCar)
-            toast.success('Photo category updated!')
-          }
-        } catch (error) {
-          toast.error('Failed to update photo category')
-        }
-      }
+    const updatedPhotos = [...(car.photos || [])]
+    updatedPhotos[photoIndex] = {
+      ...updatedPhotos[photoIndex],
+      category: newCategory,
     }
-  }
+    setCar({ ...car, photos: updatedPhotos })
 
-  const handlePhotoDescriptionChange = async (
-    photoIndex: number,
-    newDescription: string
-  ) => {
-    if (car && car.photos) {
-      // Store the pending change
-      pendingDescriptionChanges.current.set(photoIndex, newDescription)
-
-      // Update local state immediately for responsive UI
-      const updatedPhotos = [...car.photos]
-      if (typeof updatedPhotos[photoIndex] === 'object') {
-        ;(updatedPhotos[photoIndex] as CarPhoto).description = newDescription
-        setCar({ ...car, photos: updatedPhotos })
-      }
-
-      // Clear existing timeout
-      if (descriptionTimeoutRef.current) {
-        clearTimeout(descriptionTimeoutRef.current)
-      }
-
-      // Set new timeout to save after 1 second of no typing
-      descriptionTimeoutRef.current = setTimeout(async () => {
-        const pendingDescription =
-          pendingDescriptionChanges.current.get(photoIndex)
-        if (pendingDescription !== undefined && car && car.photos) {
-          try {
-            const updatedCar = await updateCarClient(car.id, {
-              photos: updatedPhotos,
-            })
-
-            if (updatedCar) {
-              setCar(updatedCar)
-              // Only show success toast if there was an actual change
-              if (pendingDescription !== car.photos[photoIndex]?.description) {
-                toast.success('Photo description updated!')
-              }
-            }
-          } catch (error) {
-            toast.error('Failed to update photo description')
-          }
-
-          // Clear the pending change
-          pendingDescriptionChanges.current.delete(photoIndex)
-        }
-      }, 1000)
+    try {
+      await updateCarClient(car.id, { photos: updatedPhotos })
+    } catch (error) {
+      console.error('Error updating photo category:', error)
+      toast.error('Failed to update photo category')
     }
   }
 
@@ -240,11 +275,10 @@ export default function EditCarPage() {
       const updatedCar = await setMainPhoto(car.id, photoUrl)
       if (updatedCar) {
         setCar(updatedCar)
-        toast.success('Main photo set successfully!')
-      } else {
-        toast.error('Failed to set main photo')
+        toast.success('Main photo updated!')
       }
     } catch (error) {
+      console.error('Error setting main photo:', error)
       toast.error('Failed to set main photo')
     }
   }
@@ -253,189 +287,99 @@ export default function EditCarPage() {
     if (!car) return
 
     try {
-      // First, delete the photo from storage
-      const storageDeleted = await deleteCarPhoto(photoUrl)
-      if (!storageDeleted) {
-        toast.error('Failed to delete photo from storage')
-        return
-      }
+      // Remove photo from storage
+      await deleteCarPhoto(photoUrl)
 
-      // Then, remove the photo from the car's photos array
+      // Remove photo from car
       const updatedCar = await removePhotoFromCar(car.id, photoUrl)
       if (updatedCar) {
         setCar(updatedCar)
-        toast.success('Photo deleted successfully!')
-      } else {
-        toast.error('Failed to remove photo from car')
+        toast.success('Photo deleted!')
       }
     } catch (error) {
+      console.error('Error deleting photo:', error)
       toast.error('Failed to delete photo')
     }
+  }
+
+  const handlePhotoDescriptionChange = async (
+    photoIndex: number,
+    newDescription: string
+  ) => {
+    if (!car) return
+
+    // Clear existing timeout
+    if (descriptionTimeoutRef.current) {
+      clearTimeout(descriptionTimeoutRef.current)
+    }
+
+    // Store the pending change
+    pendingDescriptionChanges.current.set(photoIndex, newDescription)
+
+    // Update local state immediately
+    const updatedPhotos = [...(car.photos || [])]
+    updatedPhotos[photoIndex] = {
+      ...updatedPhotos[photoIndex],
+      description: newDescription,
+    }
+    setCar({ ...car, photos: updatedPhotos })
+
+    // Debounce the database update
+    descriptionTimeoutRef.current = setTimeout(async () => {
+      try {
+        const pendingChanges = pendingDescriptionChanges.current
+        pendingDescriptionChanges.current.clear()
+
+        // Get the latest car data to ensure we don't overwrite other changes
+        const currentCar = await getCarByUrlSlugAndUsernameClient(
+          carId,
+          params.username as string
+        )
+
+        if (currentCar) {
+          const finalPhotos = currentCar.photos?.map((photo, index) => {
+            const pendingChange = pendingChanges.get(index)
+            return pendingChange !== undefined
+              ? { ...photo, description: pendingChange }
+              : photo
+          })
+
+          if (finalPhotos) {
+            await updateCarClient(car.id, { photos: finalPhotos })
+            setCar({ ...currentCar, photos: finalPhotos })
+          }
+        }
+      } catch (error) {
+        console.error('Error updating photo description:', error)
+        toast.error('Failed to update photo description')
+      }
+    }, 1000) // 1 second debounce
   }
 
   const handlePhotoReorder = async (reorderedPhotos: CarPhoto[]) => {
     if (!car) return
 
-    try {
-      // Update the car's photos with the new order
-      const updatedCar = await updateCarClient(car.id, {
-        photos: reorderedPhotos,
-      })
-
-      if (updatedCar) {
-        setCar(updatedCar)
-        toast.success('Photo order updated successfully!')
-      } else {
-        toast.error('Failed to update photo order')
-      }
-    } catch (error) {
-      toast.error('Failed to update photo order')
-    }
-  }
-
-  const handleSubmit = async (formData: any) => {
-    if (!car || !user) {
-      setError('Car or user not found')
-      return
-    }
-
-    setSaving(true)
-    setError(null)
+    setCar({ ...car, photos: reorderedPhotos })
 
     try {
-      const updatedCar = await updateCarClient(car.id, {
-        name: formData.name,
-        url_slug: formData.url_slug || '',
-        make: formData.make,
-        model: formData.model,
-        year: parseInt(formData.year),
-        description: formData.description || null,
-        build_story: formData.build_story || null,
-        build_start_date: formData.build_start_date || null,
-        total_build_cost: formData.total_build_cost
-          ? parseFloat(formData.total_build_cost)
-          : null,
-        build_goals:
-          formData.build_goals && formData.build_goals.length > 0
-            ? formData.build_goals
-            : null,
-        inspiration: formData.inspiration || null,
-        engine_displacement: formData.engine_displacement
-          ? parseFloat(formData.engine_displacement)
-          : null,
-        engine_cylinders: formData.engine_cylinders
-          ? parseInt(formData.engine_cylinders)
-          : null,
-        engine_code: formData.engine_code || null,
-        horsepower: formData.horsepower ? parseInt(formData.horsepower) : null,
-        torque: formData.torque ? parseFloat(formData.torque) : null,
-        engine_type: formData.engine_type || null,
-        fuel_type: formData.fuel_type || null,
-        transmission: formData.transmission || null,
-        drivetrain: formData.drivetrain || null,
-        zero_to_sixty: formData.zero_to_sixty
-          ? parseFloat(formData.zero_to_sixty)
-          : null,
-        top_speed: formData.top_speed ? parseFloat(formData.top_speed) : null,
-        quarter_mile: formData.quarter_mile
-          ? parseFloat(formData.quarter_mile)
-          : null,
-        weight: formData.weight ? parseFloat(formData.weight) : null,
-        power_to_weight: formData.power_to_weight || null,
-        front_brakes: formData.front_brakes || null,
-        rear_brakes: formData.rear_brakes || null,
-        brake_rotors: formData.brake_rotors || null,
-        brake_caliper_brand: formData.brake_caliper_brand || null,
-        brake_lines: formData.brake_lines || null,
-        wheel_size: formData.wheel_size || null,
-        wheel_material: formData.wheel_material || null,
-        wheel_brand: formData.wheel_brand || null,
-        wheel_offset: formData.wheel_offset || null,
-        front_tire_size: formData.front_tire_size || null,
-        front_tire_brand: formData.front_tire_brand || null,
-        front_tire_model: formData.front_tire_model || null,
-        front_tire_pressure: formData.front_tire_pressure
-          ? parseFloat(formData.front_tire_pressure)
-          : null,
-        rear_tire_size: formData.rear_tire_size || null,
-        rear_tire_brand: formData.rear_tire_brand || null,
-        rear_tire_model: formData.rear_tire_model || null,
-        rear_tire_pressure: formData.rear_tire_pressure
-          ? parseFloat(formData.rear_tire_pressure)
-          : null,
-        front_suspension: formData.front_suspension || null,
-        rear_suspension: formData.rear_suspension || null,
-        suspension_type: formData.suspension_type || null,
-        ride_height: formData.ride_height || null,
-        coilovers: formData.coilovers || null,
-        sway_bars: formData.sway_bars || null,
-        paint_color: formData.paint_color || null,
-        paint_type: formData.paint_type || null,
-        wrap_color: formData.wrap_color || null,
-        carbon_fiber_parts: formData.carbon_fiber_parts || null,
-        lighting: formData.lighting || null,
-        body_kit: formData.body_kit || null,
-        interior_color: formData.interior_color || null,
-        interior_material: formData.interior_material || null,
-        seats: formData.seats || null,
-        steering_wheel: formData.steering_wheel || null,
-        shift_knob: formData.shift_knob || null,
-        gauges: formData.gauges || null,
-        modifications: formData.modifications || null,
-        dyno_results: formData.dyno_results || null,
-        vin: formData.vin || null,
-        mileage: formData.mileage ? parseInt(formData.mileage) : null,
-        fuel_economy: formData.fuel_economy || null,
-        maintenance_history: formData.maintenance_history || null,
-        instagram_handle: formData.instagram_handle || null,
-        youtube_channel: formData.youtube_channel || null,
-        build_thread_url: formData.build_thread_url || null,
-        website_url: formData.website_url || null,
-      })
-
-      if (updatedCar) {
-        setCar(updatedCar)
-        toast.success('Car updated successfully!')
-        router.push(`/${params.username}/${updatedCar.url_slug}`)
-      } else {
-        setError('Failed to update car')
-      }
+      await updateCarClient(car.id, { photos: reorderedPhotos })
     } catch (error) {
-      setError('An unexpected error occurred')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!car || !user) return
-
-    if (
-      !confirm(
-        'Are you sure you want to delete this car? This action cannot be undone.'
-      )
-    ) {
-      return
+      console.error('Error reordering photos:', error)
+      toast.error('Failed to reorder photos')
     }
 
-    setDeleting(true)
-    setError(null)
-
-    try {
-      await deleteCarClient(car.id)
-      toast.success('Car deleted successfully!')
-      router.push('/dashboard')
-    } catch (error) {
-      setError('Failed to delete car')
-    } finally {
-      setDeleting(false)
-    }
+    return Promise.resolve()
   }
 
   if (loading || unitLoading) {
     return (
       <ProtectedRoute>
-        <LoadingSpinner fullScreen message='Loading your car...' />
+        <div className='min-h-screen bg-background'>
+          <MainNavbar showCreateButton={true} />
+          <div className='flex items-center justify-center min-h-screen'>
+            <LoadingSpinner message='Loading car...' />
+          </div>
+        </div>
       </ProtectedRoute>
     )
   }
@@ -443,21 +387,23 @@ export default function EditCarPage() {
   if (error && !car) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen flex items-center justify-center bg-background'>
-          <div className='text-center'>
-            <div className='text-destructive mb-4'>
-              <AlertTriangle className='w-16 h-16 mx-auto' />
-            </div>
-            <h2 className='text-xl font-semibold text-foreground mb-2'>
-              Error
-            </h2>
-            <p className='text-muted-foreground mb-4'>{error}</p>
-            <button
-              onClick={() => router.back()}
-              className='bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors cursor-pointer'
-            >
-              Go Back
-            </button>
+        <div className='min-h-screen bg-background'>
+          <MainNavbar showCreateButton={true} />
+          <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
+            <ErrorAlert message={error} className='text-center' />
+          </div>
+        </div>
+      </ProtectedRoute>
+    )
+  }
+
+  if (!car) {
+    return (
+      <ProtectedRoute>
+        <div className='min-h-screen bg-background'>
+          <MainNavbar showCreateButton={true} />
+          <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
+            <ErrorAlert message='Car not found' className='text-center' />
           </div>
         </div>
       </ProtectedRoute>
@@ -469,64 +415,107 @@ export default function EditCarPage() {
       <div className='min-h-screen bg-background'>
         <MainNavbar showCreateButton={true} />
 
-        {/* Page Header */}
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-          <div className='flex justify-between items-center'>
-            <div className='flex items-center'>
-              <button
-                onClick={() => router.back()}
-                className='mr-4 text-foreground hover:text-foreground/80 cursor-pointer'
-              >
-                <ArrowLeft className='w-6 h-6' />
-              </button>
-              <h1 className='text-3xl font-bold text-foreground'>Edit Car</h1>
-            </div>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className='bg-red-500 text-destructive-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50 cursor-pointer'
-            >
-              {deleting ? 'Deleting...' : 'Delete Car'}
-            </button>
-          </div>
-        </div>
+        <PageHeaderWithBack
+          title='Edit Your Car'
+          description="Update your car's information and photos"
+          backHref={`/${params.username}/${car.url_slug}`}
+        />
 
         {/* Main Content */}
-        <main className='max-w-4xl mx-auto py-6 sm:px-6 lg:px-8'>
-          <div className='px-4 py-6 sm:px-0'>
-            {/* Error Messages */}
-            {error && (
-              <div className='mb-6 rounded-md bg-destructive/10 p-4 border border-destructive/20'>
-                <div className='flex'>
-                  <div className='flex-shrink-0'>
-                    <AlertTriangle className='h-5 w-5 text-destructive' />
-                  </div>
-                  <div className='ml-3'>
-                    <p className='text-sm text-destructive'>{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Car Form */}
-            <CarForm
-              mode='edit'
-              initialData={car || {}}
-              onSubmit={handleSubmit}
-              onPhotoUploadComplete={handlePhotoUploadComplete}
-              onBatchUploadComplete={handleBatchUploadComplete}
-              onPhotoCategoryChange={handlePhotoCategoryChange}
-              onPhotoDescriptionChange={handlePhotoDescriptionChange}
-              onSetMainPhoto={handleSetMainPhoto}
-              onDeletePhoto={handleDeletePhoto}
-              onPhotoReorder={handlePhotoReorder}
-              unitPreference={unitPreference}
-              saving={saving}
-              existingPhotos={car?.photos || []}
-              mainPhotoUrl={car?.main_photo_url || undefined}
+        <Container maxWidth='4xl' className='py-6'>
+          {/* Error Messages */}
+          {error && (
+            <ErrorAlert
+              message={error}
+              className='mb-6'
+              onDismiss={() => setError(null)}
             />
+          )}
+
+          {/* Car Form */}
+          <CarForm
+            mode='edit'
+            initialData={car}
+            onSubmit={handleSubmit}
+            onPhotoUploadComplete={handlePhotoUploadComplete}
+            onBatchUploadComplete={handleBatchUploadComplete}
+            onPhotoCategoryChange={handlePhotoCategoryChange}
+            onSetMainPhoto={handleSetMainPhoto}
+            onDeletePhoto={handleDeletePhoto}
+            onPhotoDescriptionChange={handlePhotoDescriptionChange}
+            onPhotoReorder={handlePhotoReorder}
+            unitPreference={unitPreference}
+            saving={saving}
+            existingPhotos={car.photos || []}
+            mainPhotoUrl={car.main_photo_url || undefined}
+          />
+
+          {/* Delete Car Section */}
+          <div className='mt-12 pt-8 border-t border-border'>
+            <div className='bg-destructive/5 border border-destructive/20 rounded-lg p-6'>
+              <div className='flex items-center mb-4'>
+                <AlertTriangle className='w-5 h-5 text-destructive mr-2' />
+                <h3 className='text-lg font-semibold text-destructive'>
+                  Danger Zone
+                </h3>
+              </div>
+              <p className='text-muted-foreground mb-4'>
+                Once you delete a car, there is no going back. Please be
+                certain.
+              </p>
+              <Button
+                variant='destructive'
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete Car'
+                )}
+              </Button>
+            </div>
           </div>
-        </main>
+        </Container>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you absolutely sure?</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete your
+                car "{car.name}" and all of its photos.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant='outline'
+                onClick={() => setShowDeleteDialog(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant='destructive'
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete Car'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </ProtectedRoute>
   )

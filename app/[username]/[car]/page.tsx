@@ -33,7 +33,7 @@ import {
   getCarLikeCountClient,
 } from '@/lib/database/cars-client'
 import { MainNavbar, LandingNavbar } from '@/components/navbar'
-import PageHeader from '@/components/layout/page-header'
+
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import ShareButton from '@/components/common/share-button'
@@ -43,6 +43,7 @@ import { hasUserSupportedCreator } from '@/lib/database/support-client'
 import { useRouter } from 'next/navigation'
 import { useCarAnalytics } from '@/lib/hooks/use-car-analytics'
 import CarComments from '@/components/cars/car-comments'
+import BackButton from '@/components/common/back-button'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -118,8 +119,7 @@ export default function CarDetailPage() {
             if (profileData) {
               setProfile(profileData)
             }
-          } catch (fallbackError) {
-          }
+          } catch (fallbackError) {}
         }
       } catch (error) {
         setError('Failed to load car data')
@@ -140,8 +140,7 @@ export default function CarDetailPage() {
         try {
           const liked = await hasUserLikedCarClient(car.id, user.id)
           setIsLiked(liked)
-        } catch (error) {
-        }
+        } catch (error) {}
       }
     }
 
@@ -155,8 +154,7 @@ export default function CarDetailPage() {
         try {
           const supported = await hasUserSupportedCreator(user.id, profile.id)
           setHasSupported(supported)
-        } catch (error) {
-        }
+        } catch (error) {}
       }
     }
 
@@ -414,35 +412,53 @@ export default function CarDetailPage() {
     <div className='min-h-screen bg-background'>
       {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
 
-      <PageHeader
-        title={car.name}
-        subtitle={
-          <div className='flex items-center gap-0'>
-            <span>by</span>
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt={`${profile.username}'s avatar`}
-                className='w-5 h-5 rounded-full object-cover ml-2.5 mr-1'
-              />
-            ) : (
-              <div className='w-5 h-5 rounded-full bg-muted flex items-center justify-center ml-2.5 mr-1'>
-                <User className='w-3 h-3 text-muted-foreground' />
+      {/* Custom Header with Back Button and Actions - Matching PageHeaderWithBack Style */}
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center'>
+            {user && (
+              <div className='mr-4'>
+                <BackButton
+                  href='/dashboard'
+                  variant='ghost'
+                  size='sm'
+                  showText={false}
+                />
               </div>
             )}
-            <span>@{profile?.username || params.username || 'Unknown'}</span>
-            {user && profile && user.id !== profile.id && hasSupported && (
-              <div className='ml-2 flex items-center'>
-                <div className='bg-yellow-500 text-white px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1'>
-                  <Star className='w-3 h-3 fill-current' />
-                  <span>Supporter</span>
-                </div>
+
+            <div className='flex-1'>
+              <h1 className='text-3xl md:text-4xl font-bold text-foreground'>
+                {car.name}
+              </h1>
+              <div className='flex items-center gap-2 mt-2 text-lg text-muted-foreground'>
+                <span>by</span>
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={`${profile.username}'s avatar`}
+                    className='w-5 h-5 rounded-full object-cover'
+                  />
+                ) : (
+                  <div className='w-5 h-5 rounded-full bg-muted flex items-center justify-center'>
+                    <User className='w-3 h-3 text-muted-foreground' />
+                  </div>
+                )}
+                <span>
+                  @{profile?.username || params.username || 'Unknown'}
+                </span>
+                {user && profile && user.id !== profile.id && hasSupported && (
+                  <div className='ml-2 flex items-center'>
+                    <div className='bg-yellow-500 text-white px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1'>
+                      <Star className='w-3 h-3 fill-current' />
+                      <span>Supporter</span>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        }
-        backHref={user ? '/dashboard' : undefined}
-        actions={
+
           <div className='flex items-center space-x-4'>
             {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
             {user && car && user.id !== car.user_id ? (
@@ -498,8 +514,8 @@ export default function CarDetailPage() {
               </Link>
             )}
           </div>
-        }
-      />
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className='max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8'>
@@ -577,7 +593,7 @@ export default function CarDetailPage() {
                                 prev > 0 ? prev - 1 : sortedPhotos.length - 1
                               )
                             }
-                            className='absolute left-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors'
+                            className='absolute left-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors cursor-pointer'
                           >
                             <ChevronLeft className='w-5 h-5' />
                           </button>
@@ -588,7 +604,7 @@ export default function CarDetailPage() {
                                 prev < sortedPhotos.length - 1 ? prev + 1 : 0
                               )
                             }
-                            className='absolute right-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors'
+                            className='absolute right-3 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors cursor-pointer'
                           >
                             <ChevronRight className='w-5 h-5' />
                           </button>

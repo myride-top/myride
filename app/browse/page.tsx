@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { getAllCarsClient } from '@/lib/database/cars-client'
 import { Car, Profile } from '@/lib/types/database'
-import { MainNavbar, LandingNavbar } from '@/components/navbar'
-import LoadingSpinner from '@/components/common/loading-spinner'
+import PageLayout from '@/components/layout/page-layout'
+import PageHeader from '@/components/layout/page-header'
+import LoadingState from '@/components/common/loading-state'
+import ErrorState from '@/components/common/error-state'
 import EmptyState from '@/components/common/empty-state'
 import CarCard from '@/components/cars/car-card'
+import Grid from '@/components/common/grid'
 import { CarIcon } from 'lucide-react'
 
 export default function BrowsePage() {
@@ -35,110 +38,87 @@ export default function BrowsePage() {
     } catch (error) {}
   }
 
-  useEffect(() => {
-    const loadCars = async () => {
-      try {
-        const allCars = await getAllCarsClient()
-        setCars(allCars || [])
-        setError(null)
-      } catch (error) {
-        setError('Failed to load cars. Please try again later.')
-      } finally {
-        setLoading(false)
-      }
+  const loadCars = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const allCars = await getAllCarsClient()
+      setCars(allCars || [])
+    } catch (error) {
+      setError('Failed to load cars. Please try again later.')
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     loadCars()
   }, [])
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-background'>
-        {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
-        <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
-          <div className='px-4 py-6 sm:px-0'>
-            <LoadingSpinner message='Loading cars...' />
-          </div>
-        </main>
-      </div>
+      <PageLayout user={user} showCreateButton={true}>
+        <LoadingState message='Loading cars...' />
+      </PageLayout>
     )
   }
 
   return (
-    <div className='min-h-screen bg-background'>
-      {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
+    <PageLayout user={user} showCreateButton={true}>
+      <PageHeader
+        title='Browse Cars'
+        description='Discover amazing cars from the community'
+      />
 
-      {/* Main Content */}
-      <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24'>
-        <div className='px-4 py-6 sm:px-0'>
-          <div>
-            <h1 className='text-3xl font-bold text-foreground mb-2'>
-              Browse Cars
-            </h1>
-            <p className='text-muted-foreground mb-6'>
-              Discover amazing cars from the community
-            </p>
+      {error ? (
+        <ErrorState message={error} onRetry={loadCars} />
+      ) : cars.length === 0 ? (
+        <EmptyState
+          icon={CarIcon}
+          title='No cars found'
+          description='Be the first to add a car to the community!'
+        />
+      ) : (
+        <Grid cols={3} gap='md'>
+          {cars.map(car => {
+            // Extract profile from the joined data
+            const profile: Profile = {
+              id: car.user_id,
+              username:
+                (car as { profiles?: { username: string } }).profiles
+                  ?.username || 'unknown',
+              full_name:
+                (car as { profiles?: { full_name: string | null } }).profiles
+                  ?.full_name || null,
+              avatar_url:
+                (car as { profiles?: { avatar_url: string | null } }).profiles
+                  ?.avatar_url || null,
+              unit_preference: 'metric',
+              created_at: '',
+              updated_at: '',
+              is_premium: false,
+              premium_purchased_at: null,
+              car_slots_purchased: 0,
+              stripe_customer_id: null,
+              stripe_subscription_id: null,
+              total_supported_amount: 0,
+              is_supporter: false,
+            }
+            const isOwner = user?.id === car.user_id
 
-            {error ? (
-              <div className='text-center py-12'>
-                <p className='text-red-500 mb-4'>{error}</p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'
-                >
-                  Try Again
-                </button>
-              </div>
-            ) : cars.length === 0 ? (
-              <EmptyState
-                icon={CarIcon}
-                title='No cars found'
-                description='Be the first to add a car to the community!'
+            return (
+              <CarCard
+                key={car.id}
+                car={car}
+                profile={profile}
+                isOwner={isOwner}
+                showActions={true}
+                onLikeChange={handleLikeChange}
               />
-            ) : (
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {cars.map(car => {
-                  // Extract profile from the joined data
-                  const profile: Profile = {
-                    id: car.user_id,
-                    username:
-                      (car as { profiles?: { username: string } }).profiles
-                        ?.username || 'unknown',
-                    full_name:
-                      (car as { profiles?: { full_name: string | null } })
-                        .profiles?.full_name || null,
-                    avatar_url:
-                      (car as { profiles?: { avatar_url: string | null } })
-                        .profiles?.avatar_url || null,
-                    unit_preference: 'metric',
-                    created_at: '',
-                    updated_at: '',
-                    is_premium: false,
-                    premium_purchased_at: null,
-                    car_slots_purchased: 0,
-                    stripe_customer_id: null,
-                    stripe_subscription_id: null,
-                    total_supported_amount: 0,
-                    is_supporter: false,
-                  }
-                  const isOwner = user?.id === car.user_id
-
-                  return (
-                    <CarCard
-                      key={car.id}
-                      car={car}
-                      profile={profile}
-                      isOwner={isOwner}
-                      showActions={true}
-                      onLikeChange={handleLikeChange}
-                    />
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
+            )
+          })}
+        </Grid>
+      )}
+    </PageLayout>
   )
 }
