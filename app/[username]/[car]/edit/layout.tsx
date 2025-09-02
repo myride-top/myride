@@ -4,13 +4,11 @@ import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
 export async function generateMetadata({
   params,
 }: {
-  params: { username: string; car: string }
+  params: Promise<{ username: string; car: string }>
 }): Promise<Metadata> {
   try {
-    const car = await getCarByUrlSlugAndUsernameClient(
-      params.car,
-      params.username
-    )
+    const { username, car: carSlug } = await params
+    const car = await getCarByUrlSlugAndUsernameClient(carSlug, username)
     const carName = car?.name || 'Car'
 
     return {
