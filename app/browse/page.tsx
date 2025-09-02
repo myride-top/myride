@@ -57,14 +57,20 @@ export default function BrowsePage() {
 
   if (loading) {
     return (
-      <PageLayout user={user} showCreateButton={true}>
+      <PageLayout
+        user={user ? { ...user, email: user.email || '' } : undefined}
+        showCreateButton={true}
+      >
         <LoadingState message='Loading cars...' />
       </PageLayout>
     )
   }
 
   return (
-    <PageLayout user={user} showCreateButton={true}>
+    <PageLayout
+      user={user ? { ...user, email: user.email || '' } : undefined}
+      showCreateButton={true}
+    >
       <PageHeader
         title='Browse Cars'
         description='Discover amazing cars from the community'
