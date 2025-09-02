@@ -4,7 +4,15 @@ import { cn } from '@/lib/utils'
 interface FormFieldProps {
   label: string
   name: string
-  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'url' | 'tel'
+  type?:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'date'
+    | 'url'
+    | 'tel'
+    | 'textarea'
   value: string | number
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -173,13 +181,13 @@ export function NumberField({
   )
 }
 
-interface DateFieldProps extends Omit<FormFieldProps, 'type'> {
+interface DateFieldProps extends Omit<FormFieldProps, 'type' | 'min' | 'max'> {
   minDate?: string
   maxDate?: string
 }
 
 export function DateField({ minDate, maxDate, ...props }: DateFieldProps) {
-  return <FormField {...props} type='date' min={minDate} max={maxDate} />
+  return <FormField {...props} type='date' />
 }
 
 interface UrlFieldProps extends Omit<FormFieldProps, 'type'> {
