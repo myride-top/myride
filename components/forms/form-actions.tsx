@@ -73,7 +73,7 @@ export default function FormActions({
         key={label}
         type={type}
         variant={variant}
-        size={actionSize}
+        size={actionSize === 'md' ? 'default' : actionSize}
         onClick={onClick}
         disabled={isDisabled}
         className={cn(
