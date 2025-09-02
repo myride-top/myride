@@ -48,7 +48,7 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       totalLikes: likeCount || 0,
       averageRating,
     }
-  } catch (error) {
+  } catch {
     return {
       totalCars: 0,
       totalUsers: 0,
@@ -83,7 +83,7 @@ export async function getUserStats(userId: string) {
       carCount: carCount || 0,
       likesGiven: likesGiven || 0,
     }
-  } catch (error) {
+  } catch {
     return {
       carCount: 0,
       likesGiven: 0,
@@ -134,7 +134,7 @@ export async function logPaymentSuccess(
   type: string
 ): Promise<boolean> {
   try {
-    const { data, error } = await supabase.from('payment_logs').insert({
+    const { error } = await supabase.from('payment_logs').insert({
       user_id: userId,
       amount: amount,
       type: type,
@@ -161,7 +161,7 @@ export async function logPaymentFailure(
   errorMessage: string
 ): Promise<boolean> {
   try {
-    const { data, error } = await supabase.from('payment_logs').insert({
+    const { error } = await supabase.from('payment_logs').insert({
       user_id: userId,
       amount: amount,
       type: type,

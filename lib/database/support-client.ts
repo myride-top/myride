@@ -27,13 +27,13 @@ export async function createSupportTransaction(
     }
 
     // Update the supporter's profile to reflect they are now a supporter
-    await updateSupporterProfile(supporterId, amount)
+    await updateSupporterProfile(supporterId)
 
     // Update the creator's profile to reflect total support received
     await updateCreatorProfile(creatorId, amount)
 
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -53,7 +53,7 @@ export async function getTotalSupportAmount(
     }
 
     return data.reduce((total, transaction) => total + transaction.amount, 0)
-  } catch (error) {
+  } catch {
     return 0
   }
 }
@@ -76,7 +76,7 @@ export async function hasUserSupportedCreator(
     }
 
     return data.length > 0
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -111,10 +111,7 @@ export async function getCreatorSupportStats(creatorId: string): Promise<{
   }
 }
 
-async function updateSupporterProfile(
-  supporterId: string,
-  amount: number
-): Promise<void> {
+async function updateSupporterProfile(supporterId: string): Promise<void> {
   try {
     const currentTotal = await getTotalSupportAmount(supporterId)
 
@@ -170,7 +167,7 @@ export async function logSupportPayment(
   amount: number
 ): Promise<boolean> {
   try {
-    const { data, error } = await supabase.from('support_logs').insert({
+    const { error } = await supabase.from('support_logs').insert({
       user_id: userId,
       support_type: supportType,
       amount: amount,

@@ -92,8 +92,8 @@ export async function compressToTargetSize(
   targetSizeKB: number = 1500
 ): Promise<OptimizedImage> {
   let currentQuality = 0.9 // Start with higher quality
-  let minQuality = 0.3 // Allow lower quality as fallback
-  let maxAttempts = 8 // Fewer attempts needed
+  const minQuality = 0.3 // Allow lower quality as fallback
+  const maxAttempts = 8 // Fewer attempts needed
   let attempt = 0
 
   while (attempt < maxAttempts) {

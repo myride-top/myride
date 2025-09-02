@@ -203,7 +203,7 @@ export function SpecificationsTable({
       key: 'value',
       label: 'Value',
       width: '60%',
-      render: (value: unknown, item: { unit?: string }, index: number) => {
+      render: (value: unknown, item: { unit?: string }) => {
         if (value === null || value === undefined || value === '') {
           return <span className='text-muted-foreground'>—</span>
         }

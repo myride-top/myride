@@ -68,7 +68,7 @@ export async function getPlatformStatsServer(): Promise<PlatformStats> {
       totalLikes: likeCount || 0,
       averageRating,
     }
-  } catch (error) {
+  } catch {
     return {
       totalCars: 0,
       totalUsers: 0,

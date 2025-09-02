@@ -1550,16 +1550,6 @@ export default function CarForm({
     await onSubmit(formData)
   }
 
-  // Handle photo reordering locally
-  const handlePhotoReorder = async (reorderedPhotos: CarPhoto[]) => {
-    // Call the reorder handler to update parent state
-    if (onPhotoReorder) {
-      try {
-        await onPhotoReorder(reorderedPhotos)
-      } catch (error) {}
-    }
-  }
-
   return (
     <div className='space-y-8'>
       {/* Multi-Step Form */}

@@ -80,7 +80,7 @@ export async function deleteAllCarPhotos(carId: string): Promise<boolean> {
     }
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }

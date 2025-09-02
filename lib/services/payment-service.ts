@@ -12,7 +12,7 @@ export interface PaymentSessionOptions {
   description: string
   successUrl: string
   cancelUrl: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, string | number | boolean | null>
   mode?: 'payment' | 'subscription'
   allowPromotionCodes?: boolean
   billingAddressCollection?: 'auto' | 'required'
@@ -23,7 +23,7 @@ export interface PaymentLinkOptions {
   name: string
   description: string
   redirectUrl: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, string | number | boolean | null>
 }
 
 export class PaymentService {
@@ -63,7 +63,7 @@ export class PaymentService {
       cancel_url: cancelUrl,
       metadata: {
         ...metadata,
-        userId,
+        userId: userId || null,
         platform: 'myride',
       },
       customer_email: customerEmail,

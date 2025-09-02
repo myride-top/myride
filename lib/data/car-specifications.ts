@@ -1,4 +1,4 @@
-import { Car } from '@/lib/types/database'
+import { Car, CarPhoto } from '@/lib/types/database'
 
 export interface SpecificationItem {
   key: string
@@ -13,7 +13,7 @@ export interface SpecificationItem {
     | 'distance'
     | 'power'
     | 'volume'
-  format?: (value: any) => string | null
+  format?: (value: unknown) => string | null
   condition?: (car: Car) => boolean
   priority?: number // Higher priority items appear first
 }
@@ -27,21 +27,19 @@ export interface SpecificationSection {
 }
 
 // Utility functions for formatting values
-export const formatCurrency = (value: number | null): string | null => {
-  if (value === null || value === undefined) return null
+export const formatCurrency = (value: unknown): string | null => {
+  if (typeof value !== 'number' || value === null) return null
   return `$${value.toLocaleString()}`
 }
 
-export const formatSocialHandle = (value: string | null): string | null => {
-  if (!value) return null
+export const formatSocialHandle = (value: unknown): string | null => {
+  if (typeof value !== 'string' || !value) return null
   return value.startsWith('@') ? value : `@${value}`
 }
 
-export const formatModifications = (
-  modifications: string[] | null
-): string | null => {
-  if (!modifications || modifications.length === 0) return null
-  return modifications.join(', ')
+export const formatModifications = (value: unknown): string | null => {
+  if (!Array.isArray(value) || value.length === 0) return null
+  return value.join(', ')
 }
 
 export const formatBuildGoals = (goals: string[] | null): string[] => {

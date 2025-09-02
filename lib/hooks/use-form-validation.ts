@@ -5,7 +5,7 @@ export interface ValidationRule {
   minLength?: number
   maxLength?: number
   pattern?: RegExp
-  custom?: (value: any) => string | null
+  custom?: (value: string | number | boolean | null) => string | null
   min?: number
   max?: number
   email?: boolean
@@ -23,7 +23,9 @@ export interface ValidationErrors {
 
 export interface UseFormValidationOptions {
   schema: ValidationSchema
-  initialValues?: Record<string, any>
+  initialValues?: {
+    [K in keyof ValidationSchema]: string | number | boolean | null
+  }
   validateOnChange?: boolean
   validateOnBlur?: boolean
   validateOnSubmit?: boolean
@@ -43,7 +45,10 @@ export function useFormValidation({
 
   // Validation functions
   const validateField = useCallback(
-    (fieldName: string, value: any): string | null => {
+    (
+      fieldName: string,
+      value: string | number | boolean | null
+    ): string | null => {
       const rule = schema[fieldName]
       if (!rule) return null
 
@@ -147,7 +152,7 @@ export function useFormValidation({
 
   // Field change handler
   const handleChange = useCallback(
-    (fieldName: string, value: any) => {
+    (fieldName: string, value: string | number | boolean | null) => {
       setValues(prev => ({ ...prev, [fieldName]: value }))
 
       if (validateOnChange) {
@@ -179,7 +184,11 @@ export function useFormValidation({
 
   // Form submission handler
   const handleSubmit = useCallback(
-    (onSubmit: (values: Record<string, any>) => void) => {
+    (
+      onSubmit: (
+        values: Record<string, string | number | boolean | null>
+      ) => void
+    ) => {
       if (validateOnSubmit) {
         const newErrors = validateForm()
         setErrors(newErrors)
@@ -196,7 +205,7 @@ export function useFormValidation({
 
   // Reset form
   const reset = useCallback(
-    (newValues?: Record<string, any>) => {
+    (newValues?: Record<string, string | number | boolean | null>) => {
       const resetValues = newValues || initialValues
       setValues(resetValues)
       setErrors({})
