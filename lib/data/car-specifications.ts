@@ -1,4 +1,4 @@
-import { Car, CarPhoto } from '@/lib/types/database'
+import { Car } from '@/lib/types/database'
 
 export interface SpecificationItem {
   key: string
