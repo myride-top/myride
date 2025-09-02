@@ -33,7 +33,8 @@ export default function CTASection({
 }: CTASectionProps) {
   const variantClasses = {
     default: 'bg-card border border-border/50',
-    highlighted: 'bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20',
+    highlighted:
+      'bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20',
     minimal: 'bg-transparent border-none',
   }
 
@@ -43,13 +44,16 @@ export default function CTASection({
     lg: 'p-8',
   }
 
-  const renderButton = (button: typeof primaryButton | typeof secondaryButton, isPrimary: boolean) => {
+  const renderButton = (
+    button: typeof primaryButton | NonNullable<typeof secondaryButton>,
+    isPrimary: boolean
+  ) => {
     if (button.href) {
       return (
         <Button
           variant={button.variant || (isPrimary ? 'default' : 'outline')}
           size={size === 'lg' ? 'lg' : 'default'}
-          rounded="full"
+          rounded='full'
           className={cn(
             isPrimary && 'hover:scale-105 active:scale-95',
             'transition-all duration-200'
@@ -65,7 +69,7 @@ export default function CTASection({
       <Button
         variant={button.variant || (isPrimary ? 'default' : 'outline')}
         size={size === 'lg' ? 'lg' : 'default'}
-        rounded="full"
+        rounded='full'
         className={cn(
           isPrimary && 'hover:scale-105 active:scale-95',
           'transition-all duration-200'
@@ -87,27 +91,33 @@ export default function CTASection({
       )}
     >
       <div className='text-center'>
-        <h3 className={cn(
-          'font-semibold mb-2',
-          size === 'lg' ? 'text-xl' : size === 'md' ? 'text-lg' : 'text-base',
-          'text-foreground'
-        )}>
+        <h3
+          className={cn(
+            'font-semibold mb-2',
+            size === 'lg' ? 'text-xl' : size === 'md' ? 'text-lg' : 'text-base',
+            'text-foreground'
+          )}
+        >
           {title}
         </h3>
-        
+
         {description && (
-          <p className={cn(
-            'text-muted-foreground mb-4',
-            size === 'lg' ? 'text-base' : 'text-sm'
-          )}>
+          <p
+            className={cn(
+              'text-muted-foreground mb-4',
+              size === 'lg' ? 'text-base' : 'text-sm'
+            )}
+          >
             {description}
           </p>
         )}
-        
-        <div className={cn(
-          'flex flex-col sm:flex-row gap-3 justify-center',
-          size === 'lg' ? 'gap-4' : 'gap-3'
-        )}>
+
+        <div
+          className={cn(
+            'flex flex-col sm:flex-row gap-3 justify-center',
+            size === 'lg' ? 'gap-4' : 'gap-3'
+          )}
+        >
           {renderButton(primaryButton, true)}
           {secondaryButton && renderButton(secondaryButton, false)}
         </div>
