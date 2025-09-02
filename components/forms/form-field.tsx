@@ -181,9 +181,7 @@ export function NumberField({
   )
 }
 
-interface DateFieldProps extends Omit<FormFieldProps, 'type' | 'min' | 'max'> {}
-
-export function DateField({ ...props }: DateFieldProps) {
+export function DateField(props: Omit<FormFieldProps, 'type' | 'min' | 'max'>) {
   return <FormField {...props} type='date' />
 }
 
