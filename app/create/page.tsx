@@ -208,42 +208,72 @@ export default function CreateCarPage() {
           zero_to_sixty: formData.zero_to_sixty
             ? parseFloat(formData.zero_to_sixty)
             : null,
-          top_speed: formData.top_speed
-            ? parseFloat(formData.top_speed)
-            : null,
+          top_speed: formData.top_speed ? parseFloat(formData.top_speed) : null,
           quarter_mile: formData.quarter_mile
             ? parseFloat(formData.quarter_mile)
             : null,
           weight: formData.weight ? parseFloat(formData.weight) : null,
-          power_to_weight: formData.power_to_weight
-            ? parseFloat(formData.power_to_weight)
-            : null,
+          power_to_weight: formData.power_to_weight || null,
           front_brakes: formData.front_brakes || null,
           rear_brakes: formData.rear_brakes || null,
+          brake_rotors: null,
+          brake_caliper_brand: null,
+          brake_lines: null,
           wheel_size: formData.wheel_size || null,
           wheel_brand: formData.wheel_brand || null,
+          wheel_material: null,
+          wheel_offset: null,
           front_tire_size: formData.front_tire_size || null,
+          front_tire_brand: null,
+          front_tire_model: null,
+          front_tire_pressure: null,
           rear_tire_size: formData.rear_tire_size || null,
+          rear_tire_brand: null,
+          rear_tire_model: null,
+          rear_tire_pressure: null,
           front_suspension: formData.front_suspension || null,
           rear_suspension: formData.rear_suspension || null,
+          suspension_type: null,
+          ride_height: null,
           coilovers: formData.coilovers || null,
           sway_bars: formData.sway_bars || null,
           paint_color: formData.paint_color || null,
+          paint_type: null,
+          wrap_color: null,
+          carbon_fiber_parts: null,
+          lighting: null,
           body_kit: formData.body_kit || null,
           interior_color: formData.interior_color || null,
+          interior_material: null,
           seats: formData.seats || null,
+          steering_wheel: null,
+          shift_knob: null,
+          gauges: null,
+          modifications: null,
+          dyno_results: null,
+          vin: null,
+          mileage: null,
+          fuel_economy: null,
+          maintenance_history: null,
+          build_thread_url: null,
+          like_count: 0,
+          view_count: 0,
+          share_count: 0,
+          comment_count: 0,
           instagram_handle: formData.instagram_handle || null,
           youtube_channel: formData.youtube_channel || null,
           website_url: formData.website_url || null,
           photos: photos,
           main_photo_url: mainPhotoUrl,
         },
-        supabase
+        unitPreference
       )
 
       if (newCar) {
         toast.success('Car created successfully!')
-        router.push(`/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`)
+        router.push(
+          `/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`
+        )
       } else {
         setError('Failed to create car')
       }
@@ -292,17 +322,18 @@ export default function CreateCarPage() {
         <MainNavbar showCreateButton={true} />
 
         <PageHeaderWithBack
-          title="Create Your Car"
-          description="Add a new car to your collection"
+          backHref='/dashboard'
+          title='Create Your Car'
+          description='Add a new car to your collection'
         />
 
         {/* Main Content */}
-        <Container maxWidth="4xl" className="py-6">
+        <Container maxWidth='4xl' className='py-6'>
           {/* Error Messages */}
           {error && (
             <ErrorAlert
               message={error}
-              className="mb-6"
+              className='mb-6'
               onDismiss={() => setError(null)}
             />
           )}
