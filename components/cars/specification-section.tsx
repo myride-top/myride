@@ -8,14 +8,23 @@ interface SpecificationSectionProps {
     label: string
     value: string | number | null
     unit?: string
-    unitType?: 'torque' | 'speed' | 'weight' | 'pressure' | 'distance'
+    unitType?:
+      | 'torque'
+      | 'weight'
+      | 'speed'
+      | 'pressure'
+      | 'distance'
+      | 'power'
+      | 'volume'
   }>
+  variant?: 'default' | 'compact' | 'minimal'
   className?: string
 }
 
 export default function SpecificationSection({
   title,
   specifications,
+  variant = 'default',
   className,
 }: SpecificationSectionProps) {
   const { unitPreference } = useUnitPreference()
@@ -31,7 +40,21 @@ export default function SpecificationSection({
 
   const formatValue = (spec: (typeof validSpecs)[0]) => {
     if (spec.unitType && typeof spec.value === 'number') {
-      return convertToPreferredUnit(spec.value, spec.unitType, unitPreference)
+      // Only convert supported unit types
+      const supportedTypes = [
+        'torque',
+        'weight',
+        'speed',
+        'pressure',
+        'distance',
+      ] as const
+      if (supportedTypes.includes(spec.unitType as any)) {
+        return convertToPreferredUnit(
+          spec.value,
+          spec.unitType as any,
+          unitPreference
+        )
+      }
     }
 
     if (spec.unit && typeof spec.value === 'number') {
@@ -53,7 +76,7 @@ export default function SpecificationSection({
     }
 
     // Check if this is an Instagram handle
-    if (spec.key === 'instagram_handle' && spec.value) {
+    if (spec.key === 'instagram_handle' && typeof spec.value === 'string') {
       const handle = spec.value.replace('@', '')
       return (
         <a

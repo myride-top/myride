@@ -44,7 +44,7 @@ export async function generateMetadata({
         follow: false,
       },
     }
-  } catch (error) {
+  } catch {
     return {
       title: 'Editing Car | MyRide',
       description:

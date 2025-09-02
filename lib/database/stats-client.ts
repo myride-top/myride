@@ -119,10 +119,65 @@ export async function getRecentActivityStats() {
       recentCars: recentCars || 0,
       recentLikes: recentLikes || 0,
     }
-  } catch (error) {
+  } catch {
     return {
       recentCars: 0,
       recentLikes: 0,
     }
+  }
+}
+
+// Payment logging functions for analytics
+export async function logPaymentSuccess(
+  userId: string,
+  amount: number,
+  type: string
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.from('payment_logs').insert({
+      user_id: userId,
+      amount: amount,
+      type: type,
+      status: 'success',
+      created_at: new Date().toISOString(),
+    })
+
+    if (error) {
+      console.error('Error logging payment success:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error logging payment success:', error)
+    return false
+  }
+}
+
+export async function logPaymentFailure(
+  userId: string,
+  amount: number,
+  type: string,
+  errorMessage: string
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.from('payment_logs').insert({
+      user_id: userId,
+      amount: amount,
+      type: type,
+      status: 'failed',
+      error_message: errorMessage,
+      created_at: new Date().toISOString(),
+    })
+
+    if (error) {
+      console.error('Error logging payment failure:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error logging payment failure:', error)
+    return false
   }
 }

@@ -53,7 +53,7 @@ export async function getCarsByUserClient(
     }))
 
     return carsWithLikes
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -70,7 +70,7 @@ export async function getUserCarCountClient(userId: string): Promise<number> {
     }
 
     return count || 0
-  } catch (error) {
+  } catch {
     return 0
   }
 }
@@ -114,7 +114,7 @@ export async function canUserCreateCarClient(userId: string): Promise<boolean> {
     const maxAllowedCars = 1 + carSlotsPurchased // 1 free + purchased slots
 
     return currentCarCount < maxAllowedCars
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -161,7 +161,7 @@ export async function canUserCreateCarSimpleClient(
     const maxAllowedCars = 1 + carSlotsPurchased // 1 free + purchased slots
 
     return currentCarCount < maxAllowedCars
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -179,7 +179,7 @@ export async function getCarByIdClient(carId: string): Promise<Car | null> {
     }
 
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -232,7 +232,7 @@ export async function getCarByNameAndUsernameClient(
       if (!error && data) {
         return data
       }
-    } catch (e) {}
+    } catch {}
 
     // Strategy 3: Try partial match (most flexible)
     try {
@@ -246,7 +246,7 @@ export async function getCarByNameAndUsernameClient(
       if (!error && data) {
         return data
       }
-    } catch (e) {}
+    } catch {}
 
     // Strategy 4: Try with spaces instead of dashes
     try {
@@ -261,7 +261,7 @@ export async function getCarByNameAndUsernameClient(
       if (!error && data) {
         return data
       }
-    } catch (e) {}
+    } catch {}
 
     // Strategy 5: Try with dashes instead of spaces
     try {
@@ -276,7 +276,7 @@ export async function getCarByNameAndUsernameClient(
       if (!error && data) {
         return data
       }
-    } catch (e) {}
+    } catch {}
 
     return null
   } catch (error) {
@@ -351,11 +351,11 @@ export async function getCarByUrlSlugAndUsernameClient(
       }
 
       return carWithLikeCount
-    } catch (likeError) {
+    } catch {
       // Fallback to cars table like_count
       return data
     }
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -393,10 +393,10 @@ export async function getCarByUrlSlugClient(
       }
 
       return carWithLikeCount
-    } catch (likeError) {
+    } catch {
       return data
     }
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -462,7 +462,7 @@ export async function createCarClient(
     }
 
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -508,7 +508,7 @@ export async function fixCarUrlSlug(carId: string): Promise<Car | null> {
     }
 
     return car
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -588,7 +588,7 @@ export async function updateCarClient(
     }
 
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -608,7 +608,7 @@ export async function deleteCarClient(carId: string): Promise<boolean> {
     }
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -627,7 +627,7 @@ export async function addPhotoToCar(
     const updatedPhotos = [...currentPhotos, photo]
 
     return await updateCarClient(carId, { photos: updatedPhotos })
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -645,7 +645,7 @@ export async function removePhotoFromCar(
     const updatedPhotos = currentPhotos.filter(photo => photo.url !== photoUrl)
 
     return await updateCarClient(carId, { photos: updatedPhotos })
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -669,7 +669,7 @@ export async function updatePhotoCategory(
     )
 
     return await updateCarClient(carId, { photos: updatedPhotos })
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -681,7 +681,7 @@ export async function setMainPhoto(
 ): Promise<Car | null> {
   try {
     return await updateCarClient(carId, { main_photo_url: photoUrl })
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -833,7 +833,7 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
     }))
 
     return carsWithProfilesAndLikes
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -865,7 +865,7 @@ export async function trackCarViewClient(
     // Update the car's view count
     await updateCarViewCount(carId)
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -904,7 +904,7 @@ export async function trackCarShareClient(
     // Update the car's share count
     await updateCarShareCount(carId)
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -949,7 +949,7 @@ export async function addCarCommentClient(
     // Update the car's comment count
     await updateCarCommentCount(carId)
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -985,7 +985,7 @@ export async function getCarCommentsClient(
     }
 
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -1006,7 +1006,7 @@ async function updateCarViewCount(carId: string): Promise<void> {
       .from('cars')
       .update({ view_count: count || 0 })
       .eq('id', carId)
-  } catch (error) {}
+  } catch {}
 }
 
 async function updateCarShareCount(carId: string): Promise<void> {
@@ -1024,7 +1024,7 @@ async function updateCarShareCount(carId: string): Promise<void> {
       .from('cars')
       .update({ share_count: count || 0 })
       .eq('id', carId)
-  } catch (error) {}
+  } catch {}
 }
 
 async function updateCarCommentCount(carId: string): Promise<void> {
@@ -1097,7 +1097,7 @@ export async function deleteCarCommentClient(
     await updateCarCommentCount(comment.car_id)
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -1134,7 +1134,7 @@ export async function deleteCarCommentAsOwnerClient(
     await updateCarCommentCount(carId)
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -1178,7 +1178,7 @@ export async function pinCarCommentClient(
     }
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -1211,7 +1211,7 @@ export async function unpinCarCommentClient(
     }
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }

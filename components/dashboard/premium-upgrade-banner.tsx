@@ -17,7 +17,6 @@ export default function PremiumUpgradeBanner({
   variant = 'default',
 }: PremiumUpgradeBannerProps) {
   const remainingSlots = maxAllowedCars - currentCars
-  const isAtLimit = currentCars >= maxAllowedCars
 
   if (variant === 'compact') {
     return (

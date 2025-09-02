@@ -10,12 +10,7 @@ export async function generateQRCodeWithLogo(
     logoCornerRadius?: number
   } = {}
 ): Promise<string> {
-  const {
-    width = 300,
-    margin = 2,
-    logoSize = 60,
-    logoCornerRadius = 12,
-  } = options
+  const { width = 300, margin = 2, logoSize = 60 } = options
 
   try {
     // Generate base QR code

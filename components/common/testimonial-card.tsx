@@ -26,7 +26,8 @@ export default function TestimonialCard({
 
   const variantClasses = {
     default: 'bg-card border border-border/50 hover:border-primary/50',
-    featured: 'bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20',
+    featured:
+      'bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20',
     minimal: 'bg-transparent border-none',
   }
 
@@ -36,7 +37,9 @@ export default function TestimonialCard({
         key={i}
         className={cn(
           'w-4 h-4',
-          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+          i < rating
+            ? 'fill-yellow-400 text-yellow-400'
+            : 'text-muted-foreground'
         )}
       />
     ))
@@ -52,13 +55,11 @@ export default function TestimonialCard({
       )}
     >
       {/* Rating */}
-      <div className='flex items-center gap-1 mb-4'>
-        {renderStars(rating)}
-      </div>
+      <div className='flex items-center gap-1 mb-4'>{renderStars(rating)}</div>
 
       {/* Content */}
       <blockquote className='text-muted-foreground leading-relaxed mb-6 italic'>
-        "{content}"
+        &quot;{content}&quot;
       </blockquote>
 
       {/* Author */}
@@ -76,7 +77,7 @@ export default function TestimonialCard({
             </span>
           </div>
         )}
-        
+
         <div>
           <div className='font-semibold text-foreground'>{name}</div>
           <div className='text-sm text-muted-foreground'>

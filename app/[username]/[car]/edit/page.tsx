@@ -11,14 +11,12 @@ import {
   fixCarUrlSlug,
   removePhotoFromCar,
 } from '@/lib/database/cars-client'
-import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { deleteCarPhoto } from '@/lib/storage/photos'
 import { Loader2, AlertTriangle } from 'lucide-react'
 import { MainNavbar } from '@/components/navbar'
-import { unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import CarForm from '@/components/forms/car-form'
@@ -134,7 +132,50 @@ export default function EditCarPage() {
     loadCar()
   }, [carId, user, params.username, router])
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: {
+    name: string
+    url_slug?: string
+    make: string
+    model: string
+    year: string | number
+    description?: string | null
+    build_story?: string | null
+    build_start_date?: string | null
+    total_build_cost?: string | number | null
+    build_goals?: string[] | null
+    inspiration?: string | null
+    engine_displacement?: string | number | null
+    engine_cylinders?: string | number | null
+    engine_code?: string | null
+    horsepower?: string | number | null
+    torque?: string | number | null
+    engine_type?: string | null
+    fuel_type?: string | null
+    transmission?: string | null
+    drivetrain?: string | null
+    zero_to_sixty?: string | number | null
+    top_speed?: string | number | null
+    quarter_mile?: string | number | null
+    weight?: string | number | null
+    power_to_weight?: string | null
+    front_brakes?: string | null
+    rear_brakes?: string | null
+    wheel_size?: string | null
+    wheel_brand?: string | null
+    front_tire_size?: string | null
+    rear_tire_size?: string | null
+    front_suspension?: string | null
+    rear_suspension?: string | null
+    coilovers?: string | null
+    sway_bars?: string | null
+    paint_color?: string | null
+    body_kit?: string | null
+    interior_color?: string | null
+    seats?: string | null
+    instagram_handle?: string | null
+    youtube_channel?: string | null
+    website_url?: string | null
+  }) => {
     if (!car || !user) return
 
     setSaving(true)
@@ -144,26 +185,34 @@ export default function EditCarPage() {
       // Convert form data to match database schema
       const updateData = {
         ...formData,
-        year: parseInt(formData.year),
+        year:
+          typeof formData.year === 'string'
+            ? parseInt(formData.year)
+            : formData.year,
+        total_build_cost: formData.total_build_cost
+          ? parseFloat(String(formData.total_build_cost))
+          : null,
         engine_displacement: formData.engine_displacement
-          ? parseFloat(formData.engine_displacement)
+          ? parseFloat(String(formData.engine_displacement))
           : null,
         engine_cylinders: formData.engine_cylinders
-          ? parseInt(formData.engine_cylinders)
+          ? parseInt(String(formData.engine_cylinders))
           : null,
-        horsepower: formData.horsepower ? parseInt(formData.horsepower) : null,
-        torque: formData.torque ? parseFloat(formData.torque) : null,
+        horsepower: formData.horsepower
+          ? parseInt(String(formData.horsepower))
+          : null,
+        torque: formData.torque ? parseFloat(String(formData.torque)) : null,
         zero_to_sixty: formData.zero_to_sixty
-          ? parseFloat(formData.zero_to_sixty)
+          ? parseFloat(String(formData.zero_to_sixty))
           : null,
-        top_speed: formData.top_speed ? parseFloat(formData.top_speed) : null,
+        top_speed: formData.top_speed
+          ? parseFloat(String(formData.top_speed))
+          : null,
         quarter_mile: formData.quarter_mile
-          ? parseFloat(formData.quarter_mile)
+          ? parseFloat(String(formData.quarter_mile))
           : null,
-        weight: formData.weight ? parseFloat(formData.weight) : null,
-        power_to_weight: formData.power_to_weight
-          ? parseFloat(formData.power_to_weight)
-          : null,
+        weight: formData.weight ? parseFloat(String(formData.weight)) : null,
+        power_to_weight: formData.power_to_weight || null,
       }
 
       const updatedCar = await updateCarClient(car.id, updateData)
@@ -488,7 +537,7 @@ export default function EditCarPage() {
               <DialogTitle>Are you absolutely sure?</DialogTitle>
               <DialogDescription>
                 This action cannot be undone. This will permanently delete your
-                car "{car.name}" and all of its photos.
+                car &quot;{car.name}&quot; and all of its photos.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

@@ -31,13 +31,6 @@ export default function UserAvatar({
     xl: 'w-8 h-8',
   }
 
-  const textSizes = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-lg',
-    xl: 'text-xl',
-  }
-
   if (avatarUrl) {
     return (
       <img

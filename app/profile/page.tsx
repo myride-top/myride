@@ -52,7 +52,7 @@ export default function ProfilePage() {
             })
             setAvatarUrl('')
           }
-        } catch (error) {
+        } catch {
         } finally {
           setLoading(false)
         }
@@ -102,7 +102,7 @@ export default function ProfilePage() {
       } else {
         setError(result.error || 'Failed to update profile')
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setSaving(false)

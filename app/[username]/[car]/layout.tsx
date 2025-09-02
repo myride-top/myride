@@ -30,9 +30,7 @@ export async function generateMetadata({
     let profile = null
     try {
       profile = await getProfileByUsername(username)
-    } catch (profileError) {
-      // Continue without profile data
-    }
+    } catch {}
 
     // Get the main photo URL or first available photo
     let imageUrl = car.main_photo_url
@@ -92,7 +90,7 @@ export async function generateMetadata({
     }
 
     return metadata
-  } catch (error) {
+  } catch {
     return {
       title: 'Car Details - MyRide',
       description: 'View car details on MyRide',

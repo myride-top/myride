@@ -5,7 +5,14 @@ export interface SpecificationItem {
   label: string
   value: string | number | null
   unit?: string
-  unitType?: 'torque' | 'weight' | 'pressure' | 'speed' | 'distance' | 'power' | 'volume'
+  unitType?:
+    | 'torque'
+    | 'weight'
+    | 'pressure'
+    | 'speed'
+    | 'distance'
+    | 'power'
+    | 'volume'
   format?: (value: any) => string | null
   condition?: (car: Car) => boolean
   priority?: number // Higher priority items appear first
@@ -30,7 +37,9 @@ export const formatSocialHandle = (value: string | null): string | null => {
   return value.startsWith('@') ? value : `@${value}`
 }
 
-export const formatModifications = (modifications: string[] | null): string | null => {
+export const formatModifications = (
+  modifications: string[] | null
+): string | null => {
   if (!modifications || modifications.length === 0) return null
   return modifications.join(', ')
 }
@@ -48,7 +57,9 @@ export const createBasicInfoSpecs = (): SpecificationItem[] => [
   { key: 'description', label: 'Description', value: null, priority: 4 },
 ]
 
-export const createEngineSpecs = (unitPreference: 'metric' | 'imperial'): SpecificationItem[] => [
+export const createEngineSpecs = (
+  unitPreference: 'metric' | 'imperial'
+): SpecificationItem[] => [
   {
     key: 'engine_displacement',
     label: 'Engine Displacement',
@@ -72,10 +83,10 @@ export const createEngineSpecs = (unitPreference: 'metric' | 'imperial'): Specif
     unitType: 'power',
     priority: 4,
   },
-  { 
-    key: 'torque', 
-    label: 'Torque', 
-    value: null, 
+  {
+    key: 'torque',
+    label: 'Torque',
+    value: null,
     unitType: 'torque',
     priority: 5,
   },
@@ -106,10 +117,10 @@ export const createEngineSpecs = (unitPreference: 'metric' | 'imperial'): Specif
     unitType: 'distance',
     priority: 12,
   },
-  { 
-    key: 'weight', 
-    label: 'Weight', 
-    value: null, 
+  {
+    key: 'weight',
+    label: 'Weight',
+    value: null,
     unitType: 'weight',
     priority: 13,
   },
@@ -126,9 +137,24 @@ export const createWheelsAndTiresSpecs = (): SpecificationItem[] => [
   { key: 'wheel_brand', label: 'Wheel Brand', value: null, priority: 2 },
   { key: 'wheel_material', label: 'Wheel Material', value: null, priority: 3 },
   { key: 'wheel_offset', label: 'Wheel Offset', value: null, priority: 4 },
-  { key: 'front_tire_size', label: 'Front Tire Size', value: null, priority: 5 },
-  { key: 'front_tire_brand', label: 'Front Tire Brand', value: null, priority: 6 },
-  { key: 'front_tire_model', label: 'Front Tire Model', value: null, priority: 7 },
+  {
+    key: 'front_tire_size',
+    label: 'Front Tire Size',
+    value: null,
+    priority: 5,
+  },
+  {
+    key: 'front_tire_brand',
+    label: 'Front Tire Brand',
+    value: null,
+    priority: 6,
+  },
+  {
+    key: 'front_tire_model',
+    label: 'Front Tire Model',
+    value: null,
+    priority: 7,
+  },
   {
     key: 'front_tire_pressure',
     label: 'Front Tire Pressure',
@@ -137,8 +163,18 @@ export const createWheelsAndTiresSpecs = (): SpecificationItem[] => [
     priority: 8,
   },
   { key: 'rear_tire_size', label: 'Rear Tire Size', value: null, priority: 9 },
-  { key: 'rear_tire_brand', label: 'Rear Tire Brand', value: null, priority: 10 },
-  { key: 'rear_tire_model', label: 'Rear Tire Model', value: null, priority: 11 },
+  {
+    key: 'rear_tire_brand',
+    label: 'Rear Tire Brand',
+    value: null,
+    priority: 10,
+  },
+  {
+    key: 'rear_tire_model',
+    label: 'Rear Tire Model',
+    value: null,
+    priority: 11,
+  },
   {
     key: 'rear_tire_pressure',
     label: 'Rear Tire Pressure',
@@ -152,14 +188,34 @@ export const createBrakesSpecs = (): SpecificationItem[] => [
   { key: 'front_brakes', label: 'Front Brakes', value: null, priority: 1 },
   { key: 'rear_brakes', label: 'Rear Brakes', value: null, priority: 2 },
   { key: 'brake_rotors', label: 'Rotors', value: null, priority: 3 },
-  { key: 'brake_caliper_brand', label: 'Caliper Brand', value: null, priority: 4 },
+  {
+    key: 'brake_caliper_brand',
+    label: 'Caliper Brand',
+    value: null,
+    priority: 4,
+  },
   { key: 'brake_lines', label: 'Brake Lines', value: null, priority: 5 },
 ]
 
 export const createSuspensionSpecs = (): SpecificationItem[] => [
-  { key: 'front_suspension', label: 'Front Suspension', value: null, priority: 1 },
-  { key: 'rear_suspension', label: 'Rear Suspension', value: null, priority: 2 },
-  { key: 'suspension_type', label: 'Suspension Type', value: null, priority: 3 },
+  {
+    key: 'front_suspension',
+    label: 'Front Suspension',
+    value: null,
+    priority: 1,
+  },
+  {
+    key: 'rear_suspension',
+    label: 'Rear Suspension',
+    value: null,
+    priority: 2,
+  },
+  {
+    key: 'suspension_type',
+    label: 'Suspension Type',
+    value: null,
+    priority: 3,
+  },
   { key: 'ride_height', label: 'Ride Height', value: null, priority: 4 },
   { key: 'coilovers', label: 'Coilovers', value: null, priority: 5 },
   { key: 'sway_bars', label: 'Sway Bars', value: null, priority: 6 },
@@ -170,13 +226,23 @@ export const createExteriorSpecs = (): SpecificationItem[] => [
   { key: 'paint_color', label: 'Paint Color', value: null, priority: 2 },
   { key: 'paint_type', label: 'Paint Type', value: null, priority: 3 },
   { key: 'wrap_color', label: 'Wrap Color', value: null, priority: 4 },
-  { key: 'carbon_fiber_parts', label: 'Carbon Fiber Parts', value: null, priority: 5 },
+  {
+    key: 'carbon_fiber_parts',
+    label: 'Carbon Fiber Parts',
+    value: null,
+    priority: 5,
+  },
   { key: 'lighting', label: 'Lighting', value: null, priority: 6 },
 ]
 
 export const createInteriorSpecs = (): SpecificationItem[] => [
   { key: 'interior_color', label: 'Interior Color', value: null, priority: 1 },
-  { key: 'interior_material', label: 'Interior Material', value: null, priority: 2 },
+  {
+    key: 'interior_material',
+    label: 'Interior Material',
+    value: null,
+    priority: 2,
+  },
   { key: 'seats', label: 'Seats', value: null, priority: 3 },
   { key: 'steering_wheel', label: 'Steering Wheel', value: null, priority: 4 },
   { key: 'shift_knob', label: 'Shift Knob', value: null, priority: 5 },
@@ -193,7 +259,12 @@ export const createAdditionalDetailsSpecs = (): SpecificationItem[] => [
   },
   { key: 'fuel_economy', label: 'Fuel Economy', value: null, priority: 2 },
   { key: 'vin', label: 'VIN', value: null, priority: 3 },
-  { key: 'maintenance_history', label: 'Maintenance History', value: null, priority: 4 },
+  {
+    key: 'maintenance_history',
+    label: 'Maintenance History',
+    value: null,
+    priority: 4,
+  },
   {
     key: 'modifications',
     label: 'Modifications',
@@ -206,7 +277,12 @@ export const createAdditionalDetailsSpecs = (): SpecificationItem[] => [
 
 export const createBuildStorySpecs = (): SpecificationItem[] => [
   { key: 'build_story', label: 'Build Story', value: null, priority: 1 },
-  { key: 'build_start_date', label: 'Build Start Date', value: null, priority: 2 },
+  {
+    key: 'build_start_date',
+    label: 'Build Start Date',
+    value: null,
+    priority: 2,
+  },
   {
     key: 'total_build_cost',
     label: 'Total Build Cost',
@@ -218,35 +294,37 @@ export const createBuildStorySpecs = (): SpecificationItem[] => [
 ]
 
 export const createSocialLinksSpecs = (): SpecificationItem[] => [
-  { 
-    key: 'instagram_handle', 
-    label: 'Instagram', 
+  {
+    key: 'instagram_handle',
+    label: 'Instagram',
     value: null,
     format: formatSocialHandle,
     priority: 1,
   },
-  { 
-    key: 'youtube_channel', 
-    label: 'YouTube', 
+  {
+    key: 'youtube_channel',
+    label: 'YouTube',
     value: null,
     priority: 2,
   },
-  { 
-    key: 'build_thread_url', 
-    label: 'Build Thread', 
+  {
+    key: 'build_thread_url',
+    label: 'Build Thread',
     value: null,
     priority: 3,
   },
-  { 
-    key: 'website_url', 
-    label: 'Website', 
+  {
+    key: 'website_url',
+    label: 'Website',
     value: null,
     priority: 4,
   },
 ]
 
 // Create all specification sections
-export const createSpecificationSections = (unitPreference: 'metric' | 'imperial'): SpecificationSection[] => [
+export const createSpecificationSections = (
+  unitPreference: 'metric' | 'imperial'
+): SpecificationSection[] => [
   {
     id: 'basic',
     title: 'Basic Information',
@@ -314,19 +392,32 @@ export const populateSpecifications = (
   specifications: SpecificationItem[],
   car: Car
 ): SpecificationItem[] => {
-  return specifications.map(spec => {
-    let value = car[spec.key as keyof Car]
-    
-    // Apply custom formatting if specified
-    if (spec.format && value !== null && value !== undefined) {
-      value = spec.format(value)
-    }
-    
-    return {
-      ...spec,
-      value,
-    }
-  }).sort((a, b) => (b.priority || 0) - (a.priority || 0))
+  return specifications
+    .map(spec => {
+      let value = car[spec.key as keyof Car]
+
+      // Apply custom formatting if specified
+      if (spec.format && value !== null && value !== undefined) {
+        value = spec.format(value)
+      }
+
+      // Convert array values to strings for display
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          value = null
+        } else if (typeof value[0] === 'string') {
+          value = value.join(', ')
+        } else {
+          value = `${value.length} items`
+        }
+      }
+
+      return {
+        ...spec,
+        value: value as string | number | null,
+      }
+    })
+    .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 }
 
 // Check if a section should be displayed
@@ -337,7 +428,7 @@ export const shouldShowSection = (
   if (section.condition) {
     return section.condition(car)
   }
-  
+
   // Default: show if any specification has a value
   return section.specifications.some(spec => {
     const value = car[spec.key as keyof Car]

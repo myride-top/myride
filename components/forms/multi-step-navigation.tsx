@@ -51,12 +51,6 @@ export default function MultiStepNavigation({
   const currentStepData = steps[currentStep]
   const progress = ((currentStep + 1) / steps.length) * 100
 
-  const variantClasses = {
-    default: 'bg-card border border-border rounded-lg p-6',
-    compact: 'bg-transparent border-none p-4',
-    minimal: 'bg-transparent border-none p-2',
-  }
-
   const stepVariantClasses = {
     default: 'p-4 border rounded-lg',
     compact: 'p-2 border-b',

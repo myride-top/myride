@@ -6,7 +6,14 @@ import { unitConversions } from '@/lib/utils'
 interface UnitDisplayProps {
   value: number | null | undefined
   unit: string
-  unitType?: 'torque' | 'weight' | 'pressure' | 'speed' | 'distance' | 'power' | 'volume'
+  unitType?:
+    | 'torque'
+    | 'weight'
+    | 'pressure'
+    | 'speed'
+    | 'distance'
+    | 'power'
+    | 'volume'
   precision?: number
   showUnit?: boolean
   className?: string
@@ -44,45 +51,39 @@ export default function UnitDisplay({
     switch (unitType) {
       case 'torque':
         if (unit === 'lb-ft') {
-          displayValue = unitConversions.lbFtToNm(value)
+          displayValue = unitConversions.torque.imperialToMetric(value)
           displayUnit = 'N⋅m'
         }
         break
       case 'weight':
         if (unit === 'lbs') {
-          displayValue = unitConversions.lbsToKg(value)
+          displayValue = unitConversions.weight.imperialToMetric(value)
           displayUnit = 'kg'
         }
         break
       case 'pressure':
         if (unit === 'PSI') {
-          displayValue = unitConversions.psiToBar(value)
+          displayValue = unitConversions.pressure.imperialToMetric(value)
           displayUnit = 'bar'
         }
         break
       case 'speed':
         if (unit === 'mph') {
-          displayValue = unitConversions.mphToKph(value)
+          displayValue = unitConversions.speed.imperialToMetric(value)
           displayUnit = 'km/h'
         }
         break
       case 'distance':
         if (unit === 'miles') {
-          displayValue = unitConversions.milesToKm(value)
+          displayValue = unitConversions.distance.imperialToMetric(value)
           displayUnit = 'km'
         }
         break
       case 'power':
-        if (unit === 'HP') {
-          displayValue = unitConversions.hpToKw(value)
-          displayUnit = 'kW'
-        }
+        // Power conversion not supported yet - keep original value
         break
       case 'volume':
-        if (unit === 'L') {
-          displayValue = value // Already in liters
-          displayUnit = 'L'
-        }
+        // Volume conversion not supported yet - keep original value
         break
     }
   }
@@ -111,16 +112,15 @@ export default function UnitDisplay({
     <span className={cn(variantClasses[variant], className)}>
       {formattedValue}
       {showUnit && displayUnit && (
-        <span className={unitClasses[variant]}>
-          {displayUnit}
-        </span>
+        <span className={unitClasses[variant]}>{displayUnit}</span>
       )}
     </span>
   )
 }
 
 // Specialized unit display components
-interface TorqueDisplayProps extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
+interface TorqueDisplayProps
+  extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
   metricUnit?: string
@@ -137,12 +137,13 @@ export function TorqueDisplay({
       {...props}
       value={value}
       unit={imperialUnit}
-      unitType="torque"
+      unitType='torque'
     />
   )
 }
 
-interface WeightDisplayProps extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
+interface WeightDisplayProps
+  extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
   metricUnit?: string
@@ -159,12 +160,13 @@ export function WeightDisplay({
       {...props}
       value={value}
       unit={imperialUnit}
-      unitType="weight"
+      unitType='weight'
     />
   )
 }
 
-interface SpeedDisplayProps extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
+interface SpeedDisplayProps
+  extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
   metricUnit?: string
@@ -181,12 +183,13 @@ export function SpeedDisplay({
       {...props}
       value={value}
       unit={imperialUnit}
-      unitType="speed"
+      unitType='speed'
     />
   )
 }
 
-interface PressureDisplayProps extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
+interface PressureDisplayProps
+  extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
   metricUnit?: string
@@ -203,12 +206,13 @@ export function PressureDisplay({
       {...props}
       value={value}
       unit={imperialUnit}
-      unitType="pressure"
+      unitType='pressure'
     />
   )
 }
 
-interface PowerDisplayProps extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
+interface PowerDisplayProps
+  extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
   metricUnit?: string
@@ -225,7 +229,7 @@ export function PowerDisplay({
       {...props}
       value={value}
       unit={imperialUnit}
-      unitType="power"
+      unitType='power'
     />
   )
 }
@@ -235,7 +239,14 @@ interface RangeDisplayProps {
   minValue: number | null | undefined
   maxValue: number | null | undefined
   unit: string
-  unitType?: 'torque' | 'weight' | 'pressure' | 'speed' | 'distance' | 'power' | 'volume'
+  unitType?:
+    | 'torque'
+    | 'weight'
+    | 'pressure'
+    | 'speed'
+    | 'distance'
+    | 'power'
+    | 'volume'
   separator?: string
   precision?: number
   showUnit?: boolean
@@ -282,7 +293,7 @@ export function RangeDisplay({
         showUnit={false}
         variant={variant}
       />
-      <span className="text-muted-foreground mx-1">{separator}</span>
+      <span className='text-muted-foreground mx-1'>{separator}</span>
       <UnitDisplay
         value={maxValue}
         unit={unit}
@@ -344,10 +355,12 @@ export function PerformanceDisplay({
 
   return (
     <div className={className}>
-      <div className={cn(
-        'text-xs text-muted-foreground',
-        variant === 'minimal' ? 'text-xs' : 'text-sm'
-      )}>
+      <div
+        className={cn(
+          'text-xs text-muted-foreground',
+          variant === 'minimal' ? 'text-xs' : 'text-sm'
+        )}
+      >
         {config.label}
       </div>
       <UnitDisplay

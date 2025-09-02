@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 interface CarFormProps {
   mode: 'create' | 'edit'
   initialData?: Partial<Car>
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: CarFormData) => Promise<void>
   onPhotoUploadComplete?: (photo: CarPhoto) => Promise<void>
   onBatchUploadComplete?: (photos: CarPhoto[]) => Promise<void>
   onPhotoCategoryChange?: (
@@ -28,6 +28,84 @@ interface CarFormProps {
   saving?: boolean
   existingPhotos?: CarPhoto[]
   mainPhotoUrl?: string
+}
+
+// Define the form data type
+interface CarFormData {
+  name: string
+  url_slug: string
+  make: string
+  model: string
+  year: string | number
+  description: string | null
+  build_story: string | null
+  build_start_date: string | null
+  total_build_cost: string | number | null
+  build_goals: string[] | null
+  inspiration: string | null
+  engine_displacement: string | number | null
+  engine_cylinders: string | number | null
+  engine_code: string | null
+  horsepower: string | number | null
+  torque: string | number | null
+  engine_type: string | null
+  fuel_type: string | null
+  transmission: string | null
+  drivetrain: string | null
+  zero_to_sixty: string | number | null
+  top_speed: string | number | null
+  quarter_mile: string | number | null
+  weight: string | number | null
+  power_to_weight: string | null
+  front_brakes: string | null
+  rear_brakes: string | null
+  wheel_size: string | null
+  wheel_brand: string | null
+  wheel_material: string | null
+  wheel_offset: string | null
+  front_tire_size: string | null
+  rear_tire_size: string | null
+  front_tire_brand: string | null
+  front_tire_model: string | null
+  front_tire_pressure: string | number | null
+  rear_tire_brand: string | null
+  rear_tire_model: string | null
+  rear_tire_pressure: string | number | null
+  front_suspension: string | null
+  rear_suspension: string | null
+  coilovers: string | null
+  sway_bars: string | null
+  suspension_type: string | null
+  ride_height: string | null
+  paint_color: string | null
+  paint_type: string | null
+  wrap_color: string | null
+  carbon_fiber_parts: string | null
+  lighting: string | null
+  body_kit: string | null
+  interior_color: string | null
+  interior_material: string | null
+  seats: string | null
+  steering_wheel: string | null
+  shift_knob: string | null
+  gauges: string | null
+  modifications: string[] | null
+  dyno_results: string | null
+  vin: string | null
+  mileage: string | number | null
+  fuel_economy: string | null
+  maintenance_history: string | null
+  instagram_handle: string | null
+  youtube_channel: string | null
+  build_thread_url: string | null
+  website_url: string | null
+  brake_rotors: string | null
+  brake_caliper_brand: string | null
+  brake_lines: string | null
+  id?: string
+  user_id?: string
+  created_at?: string
+  updated_at?: string
 }
 
 const STEPS = [
@@ -60,8 +138,12 @@ function BasicInformationStep({
   carData,
   onInputChange,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
 }) {
   return (
     <div className='space-y-6'>
@@ -168,8 +250,12 @@ function BuildStoryStep({
   carData,
   onInputChange,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
 }) {
   return (
     <div className='space-y-6'>
@@ -266,8 +352,12 @@ function EnginePerformanceStep({
   onInputChange,
   unitPreference,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
@@ -1228,8 +1318,8 @@ function ReviewSubmitStep({
 
       <div className='bg-muted/50 p-6 rounded-lg'>
         <p className='text-muted-foreground text-center'>
-          Review your car details and click "
-          {mode === 'create' ? 'Create Car' : 'Save Changes'}" to{' '}
+          Review your car details and click &quot;
+          {mode === 'create' ? 'Create Car' : 'Save Changes'}&quot; to{' '}
           {mode === 'create' ? 'create' : 'update'} your car.
         </p>
       </div>

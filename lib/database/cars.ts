@@ -200,7 +200,7 @@ export async function deleteCar(carId: string): Promise<boolean> {
     }
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -262,7 +262,7 @@ export async function getCarByUrlSlugAndUsername(
     }
 
     return data
-  } catch (error) {
+  } catch {
     return null
   }
 }

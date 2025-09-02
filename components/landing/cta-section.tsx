@@ -29,8 +29,8 @@ export default function CTASection({ initialUserCount }: CTASectionProps) {
         try {
           const stats = await getPlatformStats()
           setUserCount(stats.totalUsers)
-        } catch (error) {
-          setUserCount(5000) // Fallback to default value
+        } catch {
+          setUserCount(5000)
         } finally {
           setLoading(false)
         }

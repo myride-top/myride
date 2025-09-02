@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
-  getCarByUrlSlugAndUsernameClient,
-  getCarByUrlSlugClient,
-} from '@/lib/database/cars-client'
+import { getCarByUrlSlugClient } from '@/lib/database/cars-client'
 import { getProfileByUsernameClient } from '@/lib/database/profiles-client'
 import {
   Car,
@@ -26,7 +23,6 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
-  QrCode,
 } from 'lucide-react'
 import {
   likeCarClient,
@@ -35,7 +31,6 @@ import {
   getCarLikeCountClient,
 } from '@/lib/database/cars-client'
 import { MainNavbar, LandingNavbar } from '@/components/navbar'
-
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarSpecifications from '@/components/cars/car-specifications'
@@ -115,7 +110,7 @@ export default function CarDetailPage() {
           }
 
           setProfile(ownerProfile)
-        } catch (profileError) {
+        } catch {
           // Try username fallback on error
           try {
             const profileData = await getProfileByUsernameClient(
@@ -124,9 +119,9 @@ export default function CarDetailPage() {
             if (profileData) {
               setProfile(profileData)
             }
-          } catch (fallbackError) {}
+          } catch {}
         }
-      } catch (error) {
+      } catch {
         setError('Failed to load car data')
       } finally {
         setLoading(false)
@@ -145,7 +140,7 @@ export default function CarDetailPage() {
         try {
           const liked = await hasUserLikedCarClient(car.id, user.id)
           setIsLiked(liked)
-        } catch (error) {}
+        } catch {}
       }
     }
 
@@ -159,7 +154,7 @@ export default function CarDetailPage() {
         try {
           const supported = await hasUserSupportedCreator(user.id, profile.id)
           setHasSupported(supported)
-        } catch (error) {}
+        } catch {}
       }
     }
 
@@ -281,7 +276,7 @@ export default function CarDetailPage() {
       try {
         const newLikeCount = await getCarLikeCountClient(car.id)
         setLikeCount(newLikeCount)
-      } catch (error) {
+      } catch {
         // Fallback to local state update
         if (isLiked) {
           setLikeCount(prev => Math.max(0, prev - 1))
@@ -289,7 +284,7 @@ export default function CarDetailPage() {
           setLikeCount(prev => prev + 1)
         }
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to update like status')
     } finally {
       setIsLikeLoading(false)
@@ -318,7 +313,7 @@ export default function CarDetailPage() {
         )
         setQrCodeDataUrl(dataUrl)
         setShowQRCode(true)
-      } catch (error) {
+      } catch {
         toast.error('Failed to generate QR code')
       } finally {
         setIsGeneratingQR(false)
@@ -435,7 +430,7 @@ export default function CarDetailPage() {
               <div className='mt-8 p-4 bg-muted/50 rounded-lg'>
                 <p className='text-sm text-muted-foreground'>
                   <strong>Tip:</strong> Make sure the URL is correct and the car
-                  hasn't been deleted by its owner.
+                  hasn&apos;t been deleted by its owner.
                 </p>
               </div>
             )}

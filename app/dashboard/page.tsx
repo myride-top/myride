@@ -95,7 +95,7 @@ export default function DashboardPage() {
           // Recalculate stats with fresh data
           recalculateStats(refreshedCars)
         }
-      } catch (error) {}
+      } catch {}
     }
   }
 
@@ -199,7 +199,7 @@ export default function DashboardPage() {
           gap='md'
           className='mb-6 md:mb-8'
         >
-          {dashboardStats.map((stat, index) => (
+          {dashboardStats.map(stat => (
             <StatsCard key={stat.label} stat={stat} />
           ))}
         </Grid>

@@ -34,7 +34,7 @@ export function UnitProvider({ children }: { children: ReactNode }) {
           if (profile?.unit_preference) {
             setUnitPreferenceState(profile.unit_preference)
           }
-        } catch (error) {
+        } catch {
         } finally {
           setIsLoading(false)
         }

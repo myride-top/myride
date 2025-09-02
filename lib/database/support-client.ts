@@ -106,7 +106,7 @@ export async function getCreatorSupportStats(creatorId: string): Promise<{
       totalSupporters: uniqueSupporters,
       totalAmount,
     }
-  } catch (error) {
+  } catch {
     return { totalSupporters: 0, totalAmount: 0 }
   }
 }
@@ -129,7 +129,7 @@ async function updateSupporterProfile(
 
     if (error) {
     }
-  } catch (error) {}
+  } catch {}
 }
 
 async function updateCreatorProfile(
@@ -160,5 +160,31 @@ async function updateCreatorProfile(
 
     if (updateError) {
     }
-  } catch (error) {}
+  } catch {}
+}
+
+// Support payment logging for analytics
+export async function logSupportPayment(
+  userId: string,
+  supportType: string,
+  amount: number
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.from('support_logs').insert({
+      user_id: userId,
+      support_type: supportType,
+      amount: amount,
+      created_at: new Date().toISOString(),
+    })
+
+    if (error) {
+      console.error('Error logging support payment:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error logging support payment:', error)
+    return false
+  }
 }

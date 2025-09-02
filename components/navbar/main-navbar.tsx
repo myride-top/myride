@@ -47,7 +47,7 @@ export default function MainNavbar({
           ])
           setProfile(userProfile)
           setCanCreateCar(canCreate)
-        } catch (error) {}
+        } catch {}
       }
     }
 

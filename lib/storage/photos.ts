@@ -18,7 +18,7 @@ export async function uploadCarPhoto(
   const fileExt = file.name.split('.').pop()
   const fileName = `${carId}/${Date.now()}.${fileExt}`
 
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('car-photos')
     .upload(fileName, file, {
       cacheControl: '3600',
@@ -103,7 +103,7 @@ export async function uploadProfileAvatar(
   const fileExt = file.name.split('.').pop()
   const fileName = `${userId}/avatar.${fileExt}`
 
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('avatars')
     .upload(fileName, file, {
       cacheControl: '3600',

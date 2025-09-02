@@ -12,7 +12,6 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 
 export default function BuyCarSlotPage() {
-  const router = useRouter()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [carSlots, setCarSlots] = useState({
@@ -29,7 +28,7 @@ export default function BuyCarSlotPage() {
         try {
           const slots = await getUserCarSlots(user.id)
           setCarSlots(slots)
-        } catch (error) {}
+        } catch {}
       }
     }
     loadCarSlots()
@@ -65,7 +64,7 @@ export default function BuyCarSlotPage() {
       if (data.url) {
         window.location.href = data.url
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to create payment session. Please try again.')
     } finally {
       setLoading(false)
@@ -84,7 +83,7 @@ export default function BuyCarSlotPage() {
                   <Check className='h-8 w-8 text-green-600 dark:text-green-400' />
                 </div>
                 <h1 className='text-3xl font-bold text-foreground mb-4'>
-                  You're Already Premium!
+                  You&apos;re Already Premium!
                 </h1>
                 <p className='text-lg text-muted-foreground mb-8 leading-relaxed'>
                   As a premium user, you can create unlimited cars at no

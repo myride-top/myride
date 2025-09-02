@@ -1,17 +1,17 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 
-export interface DataTableColumn<T = any> {
+export interface DataTableColumn<T = Record<string, unknown>> {
   key: string
   label: string
-  render?: (value: any, item: T, index: number) => React.ReactNode
+  render?: (value: unknown, item: T, index: number) => React.ReactNode
   align?: 'left' | 'center' | 'right'
   width?: string
   sortable?: boolean
   className?: string
 }
 
-export interface DataTableProps<T = any> {
+export interface DataTableProps<T = Record<string, unknown>> {
   data: T[]
   columns: DataTableColumn<T>[]
   className?: string
@@ -27,7 +27,7 @@ export interface DataTableProps<T = any> {
   bodyClassName?: string
 }
 
-export default function DataTable<T = any>({
+export default function DataTable<T = Record<string, unknown>>({
   data,
   columns,
   className = '',
@@ -48,28 +48,32 @@ export default function DataTable<T = any>({
       header: 'bg-muted/50',
       row: 'border-b border-border last:border-b-0',
       cell: 'px-4 py-3',
-      headerCell: 'px-4 py-3 font-medium text-left text-sm text-muted-foreground',
+      headerCell:
+        'px-4 py-3 font-medium text-left text-sm text-muted-foreground',
     },
     compact: {
       table: 'w-full',
       header: 'bg-muted/30',
       row: 'border-b border-border/50 last:border-b-0',
       cell: 'px-3 py-2',
-      headerCell: 'px-3 py-2 font-medium text-left text-xs text-muted-foreground',
+      headerCell:
+        'px-3 py-2 font-medium text-left text-xs text-muted-foreground',
     },
     minimal: {
       table: 'w-full',
       header: 'bg-transparent',
       row: 'border-b border-border/30 last:border-b-0',
       cell: 'px-2 py-1',
-      headerCell: 'px-2 py-1 font-medium text-left text-xs text-muted-foreground',
+      headerCell:
+        'px-2 py-1 font-medium text-left text-xs text-muted-foreground',
     },
     bordered: {
       table: 'w-full border border-border rounded-lg overflow-hidden',
       header: 'bg-muted/50 border-b border-border',
       row: 'border-b border-border last:border-b-0',
       cell: 'px-4 py-3 border-r border-border last:border-r-0',
-      headerCell: 'px-4 py-3 font-medium text-left text-sm text-muted-foreground border-r border-border last:border-r-0',
+      headerCell:
+        'px-4 py-3 font-medium text-left text-sm text-muted-foreground border-r border-border last:border-r-0',
     },
   }
 
@@ -78,7 +82,7 @@ export default function DataTable<T = any>({
   if (loading) {
     return (
       <div className={cn('flex items-center justify-center py-8', className)}>
-        <div className="text-muted-foreground">Loading...</div>
+        <div className='text-muted-foreground'>Loading...</div>
       </div>
     )
   }
@@ -86,7 +90,7 @@ export default function DataTable<T = any>({
   if (data.length === 0) {
     return (
       <div className={cn('text-center py-8', className)}>
-        <p className="text-muted-foreground">{emptyMessage}</p>
+        <p className='text-muted-foreground'>{emptyMessage}</p>
       </div>
     )
   }
@@ -109,7 +113,7 @@ export default function DataTable<T = any>({
 
     const value = item[column.key as keyof T]
     if (value === null || value === undefined) {
-      return <span className="text-muted-foreground">—</span>
+      return <span className='text-muted-foreground'>—</span>
     }
 
     return String(value)
@@ -121,7 +125,7 @@ export default function DataTable<T = any>({
         {showHeader && (
           <thead className={cn(currentVariant.header, headerClassName)}>
             <tr>
-              {columns.map((column) => (
+              {columns.map(column => (
                 <th
                   key={column.key}
                   className={cn(
@@ -149,7 +153,7 @@ export default function DataTable<T = any>({
                 rowClassName?.(item, index)
               )}
             >
-              {columns.map((column) => (
+              {columns.map(column => (
                 <td
                   key={column.key}
                   className={cn(
@@ -202,13 +206,13 @@ export function SpecificationsTable({
       width: '60%',
       render: (value: any, item: any) => {
         if (value === null || value === undefined || value === '') {
-          return <span className="text-muted-foreground">—</span>
+          return <span className='text-muted-foreground'>—</span>
         }
         return (
-          <span className="text-foreground">
+          <span className='text-foreground'>
             {value}
             {showUnits && item.unit && (
-              <span className="text-muted-foreground ml-1">{item.unit}</span>
+              <span className='text-muted-foreground ml-1'>{item.unit}</span>
             )}
           </span>
         )
@@ -257,35 +261,43 @@ export function KeyValueTable({
       key: 'key',
       label: keyLabel,
       width: '40%',
-      render: (value: string) => (
-        <span className="font-medium text-foreground">{value}</span>
+      render: (
+        value: unknown,
+        item: { key: string; value: unknown },
+        index: number
+      ) => (
+        <span className='font-medium text-foreground'>{value as string}</span>
       ),
     },
     {
       key: 'value',
       label: valueLabel,
       width: '60%',
-      render: (value: any) => {
+      render: (value: unknown) => {
         if (value === null || value === undefined || value === '') {
-          return <span className="text-muted-foreground">—</span>
+          return <span className='text-muted-foreground'>—</span>
         }
         if (typeof value === 'boolean') {
           return (
-            <span className={cn(
-              'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-              value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            )}>
+            <span
+              className={cn(
+                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                value
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              )}
+            >
               {value ? 'Yes' : 'No'}
             </span>
           )
         }
         if (Array.isArray(value)) {
           return (
-            <div className="flex flex-wrap gap-1">
+            <div className='flex flex-wrap gap-1'>
               {value.map((item, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground"
+                  className='inline-flex items-center px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground'
                 >
                   {item}
                 </span>
@@ -293,7 +305,7 @@ export function KeyValueTable({
             </div>
           )
         }
-        return <span className="text-foreground">{String(value)}</span>
+        return <span className='text-foreground'>{String(value)}</span>
       },
     },
   ]
@@ -339,17 +351,31 @@ export function StatsTable({
       key: 'value',
       label: 'Value',
       width: '50%',
-      render: (value: any, item: any) => (
-        <div className="flex items-center justify-between">
-          <span className="text-foreground font-medium">
-            {value}
-            {item.unit && <span className="text-muted-foreground ml-1">{item.unit}</span>}
+      render: (
+        value: unknown,
+        item: {
+          label: string
+          value: string | number
+          unit?: string
+          trend?: 'up' | 'down' | 'neutral'
+          change?: number
+        },
+        index: number
+      ) => (
+        <div className='flex items-center justify-between'>
+          <span className='text-foreground font-medium'>
+            {value as string | number}
+            {item.unit && (
+              <span className='text-muted-foreground ml-1'>{item.unit}</span>
+            )}
           </span>
           {item.trend && item.change && (
-            <span className={cn(
-              'inline-flex items-center text-xs',
-              item.trend === 'up' ? 'text-green-600' : 'text-red-600'
-            )}>
+            <span
+              className={cn(
+                'inline-flex items-center text-xs',
+                item.trend === 'up' ? 'text-green-600' : 'text-red-600'
+              )}
+            >
               {item.trend === 'up' ? '↗' : '↘'} {item.change}%
             </span>
           )}

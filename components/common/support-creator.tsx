@@ -103,7 +103,7 @@ export default function SupportCreator() {
       window.open(url, '_blank')
 
       toast.success(`Thank you for your support! Redirecting to payment...`)
-    } catch (error) {
+    } catch {
       toast.error('Failed to process payment. Please try again.')
     } finally {
       setIsLoading(false)

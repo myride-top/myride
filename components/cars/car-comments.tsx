@@ -27,7 +27,6 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Profile } from '@/lib/types/database'
-import { createClient } from '@/lib/supabase/client'
 
 interface CommentWithProfile extends CarComment {
   profiles: Profile | null
@@ -59,59 +58,10 @@ export default function CarComments({
   const [pinningComment, setPinningComment] = useState<string | null>(null)
   const [likingComment, setLikingComment] = useState<string | null>(null)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
-  const [databaseAvailable, setDatabaseAvailable] = useState(false)
-  const databaseTestedRef = useRef(false)
 
   useEffect(() => {
     loadComments()
   }, [carId])
-
-  useEffect(() => {
-    // Test database connection once when component mounts
-    testDatabaseConnection()
-  }, [])
-
-  const testDatabaseConnection = async () => {
-    if (databaseTestedRef.current) {
-      return databaseAvailable
-    }
-    try {
-      // Try to get a simple count from comment_likes table
-      // Use a more realistic approach - just check if the table is accessible
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('comment_likes')
-        .select('id')
-        .limit(1)
-
-      if (error) {
-        console.warn('Comment likes table test failed:', error)
-        if (error.code === '42P01') {
-          setDatabaseError(
-            'Comment likes table not found. Please run the database migration.'
-          )
-        } else {
-          setDatabaseError(`Database error: ${error.message}`)
-        }
-        setDatabaseAvailable(false)
-        return false
-      }
-
-      console.log('Database connection test successful')
-      setDatabaseError(null)
-      setDatabaseAvailable(true)
-      return true
-    } catch (error) {
-      console.error('Database connection test failed:', error)
-      setDatabaseError(
-        'Comment likes table not found. Please run the database migration.'
-      )
-      setDatabaseAvailable(false)
-      return false
-    } finally {
-      databaseTestedRef.current = true
-    }
-  }
 
   const loadComments = async () => {
     setLoading(true)
@@ -119,11 +69,6 @@ export default function CarComments({
       const commentsData = await getCarCommentsClient(carId)
 
       if (commentsData) {
-        // Log each comment to see what we're getting
-        commentsData.forEach((comment, index) => {
-          const commentWithProfile = comment as CommentWithProfile
-        })
-
         // Instead of filtering out comments with null profiles, we'll handle them gracefully
         const validComments = (commentsData as CommentWithProfile[]).map(
           comment => {
@@ -249,7 +194,7 @@ export default function CarComments({
       } else {
         setComments([]) // Set empty array on error
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load comments')
       setComments([]) // Set empty array on error
     } finally {
@@ -288,7 +233,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to add comment')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to add comment')
     } finally {
       setSubmitting(false)
@@ -337,7 +282,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to add reply')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to add reply')
     } finally {
       setSubmitting(false)
@@ -368,7 +313,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to delete comment')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete comment')
     } finally {
       setDeletingComment(null)
@@ -400,7 +345,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to pin comment')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to pin comment')
     } finally {
       setPinningComment(null)
@@ -421,7 +366,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to unpin comment')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to unpin comment')
     } finally {
       setPinningComment(null)
@@ -492,7 +437,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to like comment')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to like comment')
     } finally {
       setLikingComment(null)
@@ -563,7 +508,7 @@ export default function CarComments({
       } else {
         toast.error('Failed to unlike comment')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to unlike comment')
     } finally {
       setLikingComment(null)

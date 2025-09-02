@@ -44,7 +44,7 @@ export default function LikeButton({
         try {
           const liked = await hasUserLikedCarClient(carId, user.id)
           setIsLiked(liked)
-        } catch (error) {
+        } catch {
           // Silently fail - user can still interact
         }
       }
@@ -81,7 +81,7 @@ export default function LikeButton({
         toast.success('Car liked!')
         onLikeChange?.(carId, newCount)
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to update like status')
     } finally {
       setIsLoading(false)

@@ -55,11 +55,11 @@ export default function ShareButton({
             url: url,
           })
           onShare?.('native_share')
-        } catch (shareError) {
+        } catch {
           // Native sharing failed, but clipboard copy already succeeded
         }
       }
-    } catch (clipboardError) {
+    } catch {
       toast.error('Failed to copy link to clipboard')
 
       // Try native sharing as fallback
@@ -71,7 +71,7 @@ export default function ShareButton({
             url: url,
           })
           onShare?.('native_share')
-        } catch (shareError) {
+        } catch {
           toast.error('Failed to share link')
         }
       }

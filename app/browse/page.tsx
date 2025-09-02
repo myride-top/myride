@@ -35,7 +35,7 @@ export default function BrowsePage() {
       if (refreshedCars) {
         setCars(refreshedCars)
       }
-    } catch (error) {}
+    } catch {}
   }
 
   const loadCars = async () => {
@@ -44,7 +44,7 @@ export default function BrowsePage() {
       setError(null)
       const allCars = await getAllCarsClient()
       setCars(allCars || [])
-    } catch (error) {
+    } catch {
       setError('Failed to load cars. Please try again later.')
     } finally {
       setLoading(false)

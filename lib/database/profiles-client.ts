@@ -124,3 +124,33 @@ export async function updateProfileClient(
 
   return { success: true, data }
 }
+
+// Mark user as supporter
+export async function markUserAsSupporter(
+  userId: string,
+  supportType: string
+): Promise<boolean> {
+  try {
+    const supabase = createClient()
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        is_supporter: true,
+        supporter_type: supportType,
+        supporter_since: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId)
+
+    if (error) {
+      console.error('Error marking user as supporter:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error marking user as supporter:', error)
+    return false
+  }
+}

@@ -66,7 +66,7 @@ export default function AvatarUpload({
           toast.error('Failed to upload avatar')
           setPreviewUrl(currentAvatarUrl || null)
         }
-      } catch (error) {
+      } catch {
         toast.error('Failed to upload avatar')
         setPreviewUrl(currentAvatarUrl || null)
       } finally {
@@ -86,7 +86,7 @@ export default function AvatarUpload({
         fileInputRef.current.value = ''
       }
       toast.success('Avatar removed successfully!')
-    } catch (error) {
+    } catch {
       toast.error('Failed to remove avatar')
     } finally {
       setUploading(false)

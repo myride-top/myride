@@ -34,7 +34,7 @@ export function useCarAnalytics(carId: string, carOwnerId: string) {
         }
 
         await trackCarViewClient(memoizedCarId, memoizedUserId, metadata)
-      } catch (error) {}
+      } catch {}
     }
 
     trackView()
@@ -75,7 +75,7 @@ export function useCarAnalytics(carId: string, carOwnerId: string) {
           memoizedUserId,
           metadata
         )
-      } catch (error) {}
+      } catch {}
     },
     [memoizedCarId, memoizedUserId, memoizedCarOwnerId]
   )

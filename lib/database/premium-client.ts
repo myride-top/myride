@@ -21,7 +21,7 @@ export async function activatePremiumUser(
     }
 
     return data || false
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -38,7 +38,7 @@ export async function deactivatePremiumUser(userId: string): Promise<boolean> {
     }
 
     return data || false
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -57,7 +57,7 @@ export async function isUserPremium(userId: string): Promise<boolean> {
     }
 
     return data?.is_premium || false
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -78,7 +78,7 @@ export async function getPremiumPurchaseDate(
     }
 
     return new Date(data.premium_purchased_at)
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -99,7 +99,7 @@ export async function getStripeCustomerId(
     }
 
     return data.stripe_customer_id
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -136,7 +136,7 @@ export async function addCarSlot(userId: string): Promise<boolean> {
     }
 
     return true
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -192,7 +192,7 @@ export async function getUserCarSlots(userId: string): Promise<{
       purchasedSlots,
       isPremium,
     }
-  } catch (error) {
+  } catch {
     return {
       currentCars: 0,
       maxAllowedCars: 1,

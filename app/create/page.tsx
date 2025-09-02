@@ -122,44 +122,44 @@ export default function CreateCarPage() {
     url_slug?: string
     make: string
     model: string
-    year: string
-    description?: string
-    build_story?: string
-    build_start_date?: string
-    total_build_cost?: string
-    build_goals?: string[]
-    inspiration?: string
-    engine_displacement?: string
-    engine_cylinders?: string
-    engine_code?: string
-    horsepower?: string
-    torque?: string
-    engine_type?: string
-    fuel_type?: string
-    transmission?: string
-    drivetrain?: string
-    zero_to_sixty?: string
-    top_speed?: string
-    quarter_mile?: string
-    weight?: string
-    power_to_weight?: string
-    front_brakes?: string
-    rear_brakes?: string
-    wheel_size?: string
-    wheel_brand?: string
-    front_tire_size?: string
-    rear_tire_size?: string
-    front_suspension?: string
-    rear_suspension?: string
-    coilovers?: string
-    sway_bars?: string
-    paint_color?: string
-    body_kit?: string
-    interior_color?: string
-    seats?: string
-    instagram_handle?: string
-    youtube_channel?: string
-    website_url?: string
+    year: string | number
+    description?: string | null
+    build_story?: string | null
+    build_start_date?: string | null
+    total_build_cost?: string | number | null
+    build_goals?: string[] | null
+    inspiration?: string | null
+    engine_displacement?: string | number | null
+    engine_cylinders?: string | number | null
+    engine_code?: string | null
+    horsepower?: string | number | null
+    torque?: string | number | null
+    engine_type?: string | null
+    fuel_type?: string | null
+    transmission?: string | null
+    drivetrain?: string | null
+    zero_to_sixty?: string | number | null
+    top_speed?: string | number | null
+    quarter_mile?: string | number | null
+    weight?: string | number | null
+    power_to_weight?: string | null
+    front_brakes?: string | null
+    rear_brakes?: string | null
+    wheel_size?: string | null
+    wheel_brand?: string | null
+    front_tire_size?: string | null
+    rear_tire_size?: string | null
+    front_suspension?: string | null
+    rear_suspension?: string | null
+    coilovers?: string | null
+    sway_bars?: string | null
+    paint_color?: string | null
+    body_kit?: string | null
+    interior_color?: string | null
+    seats?: string | null
+    instagram_handle?: string | null
+    youtube_channel?: string | null
+    website_url?: string | null
   }) => {
     if (!user) {
       setError('User not found')
@@ -177,13 +177,16 @@ export default function CreateCarPage() {
           url_slug: formData.url_slug || '',
           make: formData.make,
           model: formData.model,
-          year: parseInt(formData.year),
+          year:
+            typeof formData.year === 'string'
+              ? parseInt(formData.year)
+              : formData.year,
           description: formData.description || null,
           build_story: formData.build_story || null,
           project_status: 'completed',
           build_start_date: formData.build_start_date || null,
           total_build_cost: formData.total_build_cost
-            ? parseFloat(formData.total_build_cost)
+            ? parseFloat(String(formData.total_build_cost))
             : null,
           build_goals:
             formData.build_goals && formData.build_goals.length > 0
@@ -191,28 +194,30 @@ export default function CreateCarPage() {
               : null,
           inspiration: formData.inspiration || null,
           engine_displacement: formData.engine_displacement
-            ? parseFloat(formData.engine_displacement)
+            ? parseFloat(String(formData.engine_displacement))
             : null,
           engine_cylinders: formData.engine_cylinders
-            ? parseInt(formData.engine_cylinders)
+            ? parseInt(String(formData.engine_cylinders))
             : null,
           engine_code: formData.engine_code || null,
           horsepower: formData.horsepower
-            ? parseInt(formData.horsepower)
+            ? parseInt(String(formData.horsepower))
             : null,
-          torque: formData.torque ? parseFloat(formData.torque) : null,
+          torque: formData.torque ? parseFloat(String(formData.torque)) : null,
           engine_type: formData.engine_type || null,
           fuel_type: formData.fuel_type || null,
           transmission: formData.transmission || null,
           drivetrain: formData.drivetrain || null,
           zero_to_sixty: formData.zero_to_sixty
-            ? parseFloat(formData.zero_to_sixty)
+            ? parseFloat(String(formData.zero_to_sixty))
             : null,
-          top_speed: formData.top_speed ? parseFloat(formData.top_speed) : null,
+          top_speed: formData.top_speed
+            ? parseFloat(String(formData.top_speed))
+            : null,
           quarter_mile: formData.quarter_mile
-            ? parseFloat(formData.quarter_mile)
+            ? parseFloat(String(formData.quarter_mile))
             : null,
-          weight: formData.weight ? parseFloat(formData.weight) : null,
+          weight: formData.weight ? parseFloat(String(formData.weight)) : null,
           power_to_weight: formData.power_to_weight || null,
           front_brakes: formData.front_brakes || null,
           rear_brakes: formData.rear_brakes || null,
@@ -277,7 +282,7 @@ export default function CreateCarPage() {
       } else {
         setError('Failed to create car')
       }
-    } catch (error) {
+    } catch {
       console.error('Error creating car:', error)
       setError('Failed to create car. Please try again.')
     } finally {

@@ -26,7 +26,6 @@ export async function optimizeImage(
     maxWidth = 1920,
     maxHeight = 1080,
     quality = 0.9, // Start with higher quality
-    maxSizeKB = 1500,
     format = 'jpeg',
   } = options
 
@@ -109,7 +108,7 @@ export async function compressToTargetSize(
       // Reduce quality more gradually for better results
       currentQuality = Math.max(minQuality, currentQuality - 0.15)
       attempt++
-    } catch (error) {
+    } catch {
       break
     }
   }

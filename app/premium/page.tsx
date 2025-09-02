@@ -6,12 +6,11 @@ import { useAuth } from '@/lib/context/auth-context'
 import { MainNavbar } from '@/components/navbar'
 import ProtectedRoute from '@/components/auth/protected-route'
 import LoadingSpinner from '@/components/common/loading-spinner'
-import { Crown, BarChart3, Share2, Car, Check, ArrowRight } from 'lucide-react'
+import { Crown, BarChart3, Share2, Car, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function PremiumPage() {
   const { user } = useAuth()
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const handlePurchasePremium = async () => {
@@ -44,7 +43,7 @@ export default function PremiumPage() {
       if (data.url) {
         window.location.href = data.url
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to create payment session. Please try again.')
     } finally {
       setLoading(false)
@@ -181,7 +180,7 @@ export default function PremiumPage() {
 
               <div className='bg-card border border-border rounded-lg p-6'>
                 <h3 className='font-medium text-foreground mb-2'>
-                  What happens if I'm not satisfied?
+                  What happens if I&apos;m not satisfied?
                 </h3>
                 <p className='text-sm text-muted-foreground'>
                   We offer a 30-day money-back guarantee.

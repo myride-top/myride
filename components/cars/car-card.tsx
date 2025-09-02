@@ -1,10 +1,9 @@
 import { Car, Profile } from '@/lib/types/database'
-import { Share2, Image, Edit, QrCode } from 'lucide-react'
+import { Share2, Image, Edit } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
-import QRCode from 'qrcode'
 import { useRouter } from 'next/navigation'
 import LikeButton from '@/components/common/like-button'
 import UserAvatar from '@/components/common/user-avatar'
@@ -64,7 +63,7 @@ export default function CarCard({
         setShowQRCode(true)
         // Track share analytics when QR code modal opens
         onShare?.(car)
-      } catch (error) {
+      } catch {
         toast.error('Failed to generate QR code')
       }
     } else {

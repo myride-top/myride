@@ -61,13 +61,15 @@ export default function UploadProgress({
   const getOptimizationIcon = (status: OptimizationStatus['status']) => {
     switch (status) {
       case 'pending':
-        return <div className="w-3 h-3 rounded-full border-2 border-muted-foreground" />
+        return (
+          <div className='w-3 h-3 rounded-full border-2 border-muted-foreground' />
+        )
       case 'optimizing':
-        return <Zap className="w-3 h-3 animate-pulse text-blue-600" />
+        return <Zap className='w-3 h-3 animate-pulse text-blue-600' />
       case 'optimized':
-        return <CheckCircle className="w-3 h-3 text-green-600" />
+        return <CheckCircle className='w-3 h-3 text-green-600' />
       case 'failed':
-        return <AlertCircle className="w-3 h-3 text-orange-600" />
+        return <AlertCircle className='w-3 h-3 text-orange-600' />
       default:
         return null
     }
@@ -92,61 +94,68 @@ export default function UploadProgress({
     <div className={cn('space-y-4', className)}>
       {/* Title */}
       {title && (
-        <h4 className={cn(
-          'font-medium text-foreground',
-          currentTextSize
-        )}>
+        <h4 className={cn('font-medium text-foreground', currentTextSize)}>
           {title}
         </h4>
       )}
 
       {/* Progress Items */}
       <div className={currentVariant}>
-        {items.map((item) => (
+        {items.map(item => (
           <div key={item.fileName} className={currentItemClasses}>
             {/* File Name and Progress */}
             {showFileNames && (
-              <div className={cn(
-                'flex justify-between',
-                currentTextSize,
-                'text-muted-foreground'
-              )}>
-                <span className="truncate flex-1 mr-2">{item.fileName}</span>
-                <span className="flex-shrink-0">{item.progress}%</span>
+              <div
+                className={cn(
+                  'flex justify-between',
+                  currentTextSize,
+                  'text-muted-foreground'
+                )}
+              >
+                <span className='truncate flex-1 mr-2'>{item.fileName}</span>
+                <span className='flex-shrink-0'>{item.progress}%</span>
               </div>
             )}
 
             {/* Optimization Status */}
             {showOptimizationStatus && item.optimization && (
-              <div className={cn(
-                'flex items-center gap-2',
-                currentTextSize,
-                getOptimizationColor(item.optimization.status)
-              )}>
+              <div
+                className={cn(
+                  'flex items-center gap-2',
+                  currentTextSize,
+                  getOptimizationColor(item.optimization.status)
+                )}
+              >
                 {getOptimizationIcon(item.optimization.status)}
-                <span className="truncate">
-                  {item.optimization.status === 'pending' && 'Pending optimization...'}
-                  {item.optimization.status === 'optimizing' && item.optimization.details}
-                  {item.optimization.status === 'optimized' && item.optimization.details}
-                  {item.optimization.status === 'failed' && (item.optimization.details || 'Optimization failed')}
+                <span className='truncate'>
+                  {item.optimization.status === 'pending' &&
+                    'Pending optimization...'}
+                  {item.optimization.status === 'optimizing' &&
+                    item.optimization.details}
+                  {item.optimization.status === 'optimized' &&
+                    item.optimization.details}
+                  {item.optimization.status === 'failed' &&
+                    (item.optimization.details || 'Optimization failed')}
                 </span>
               </div>
             )}
 
             {/* Error Message */}
             {item.error && (
-              <div className={cn(
-                'flex items-center gap-2 text-red-600',
-                currentTextSize
-              )}>
-                <AlertCircle className="w-3 h-3" />
+              <div
+                className={cn(
+                  'flex items-center gap-2 text-red-600',
+                  currentTextSize
+                )}
+              >
+                <AlertCircle className='w-3 h-3' />
                 <span>{item.error}</span>
               </div>
             )}
 
             {/* Progress Bar */}
             {showProgressBar && (
-              <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+              <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
                 <div
                   className={cn(
                     'h-2 rounded-full transition-all duration-300',
@@ -165,11 +174,13 @@ export default function UploadProgress({
 
 // Specialized progress components
 interface ImageUploadProgressProps extends Omit<UploadProgressProps, 'items'> {
-  items: Array<UploadProgressItem & {
-    originalSize?: number
-    optimizedSize?: number
-    compressionRatio?: number
-  }>
+  items: Array<
+    UploadProgressItem & {
+      originalSize?: number
+      optimizedSize?: number
+      compressionRatio?: number
+    }
+  >
   showCompressionInfo?: boolean
 }
 
@@ -182,8 +193,8 @@ export function ImageUploadProgress({
     ...item,
     optimization: item.optimization || {
       status: 'pending' as const,
-      details: 'Processing image...'
-    }
+      details: 'Processing image...',
+    },
   }))
 
   return (
@@ -211,22 +222,22 @@ export function LoadingProgressItem({
 }: LoadingProgressItemProps) {
   const statusConfig = {
     uploading: {
-      icon: <Loader2 className="w-4 h-4 animate-spin text-blue-600" />,
+      icon: <Loader2 className='w-4 h-4 animate-spin text-blue-600' />,
       color: 'text-blue-600',
       defaultMessage: 'Uploading...',
     },
     processing: {
-      icon: <Zap className="w-4 h-4 animate-pulse text-yellow-600" />,
+      icon: <Zap className='w-4 h-4 animate-pulse text-yellow-600' />,
       color: 'text-yellow-600',
       defaultMessage: 'Processing...',
     },
     complete: {
-      icon: <CheckCircle className="w-4 h-4 text-green-600" />,
+      icon: <CheckCircle className='w-4 h-4 text-green-600' />,
       color: 'text-green-600',
       defaultMessage: 'Complete',
     },
     error: {
-      icon: <AlertCircle className="w-4 h-4 text-red-600" />,
+      icon: <AlertCircle className='w-4 h-4 text-red-600' />,
       color: 'text-red-600',
       defaultMessage: 'Error occurred',
     },
@@ -235,10 +246,15 @@ export function LoadingProgressItem({
   const config = statusConfig[status]
 
   return (
-    <div className={cn('flex items-center gap-3 p-3 bg-muted/20 rounded-lg', className)}>
+    <div
+      className={cn(
+        'flex items-center gap-3 p-3 bg-muted/20 rounded-lg',
+        className
+      )}
+    >
       {config.icon}
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-foreground truncate">
+      <div className='flex-1 min-w-0'>
+        <div className='text-sm font-medium text-foreground truncate'>
           {fileName}
         </div>
         <div className={cn('text-xs', config.color)}>

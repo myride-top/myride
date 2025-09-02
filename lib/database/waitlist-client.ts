@@ -24,7 +24,7 @@ export async function addToWaitlist(email: string): Promise<{
     }
 
     return { success: true }
-  } catch (error) {
+  } catch {
     return { success: false, error: 'An unexpected error occurred' }
   }
 }
@@ -42,7 +42,7 @@ export async function getWaitlistCount(): Promise<number> {
     }
 
     return count || 0
-  } catch (error) {
+  } catch {
     return 0
   }
 }
@@ -61,7 +61,7 @@ export async function getAllWaitlistEntries(): Promise<WaitlistEntry[]> {
     }
 
     return data || []
-  } catch (error) {
+  } catch {
     return []
   }
 }
