@@ -2,7 +2,6 @@ import React from 'react'
 import { Crown, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { LinkButton } from '@/components/ui/link-button'
 
 interface CarLimitCheckerProps {
   currentCars: number
@@ -46,8 +45,7 @@ export default function CarLimitChecker({
           premium to create more cars.
         </p>
         <div className='flex gap-2 justify-center'>
-          <LinkButton
-            href='/support'
+          <Button
             variant='outline'
             size='sm'
             className='border-orange-600 text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-900/50 hover:bg-orange-100 dark:hover:bg-orange-900/70'
@@ -55,7 +53,7 @@ export default function CarLimitChecker({
           >
             <Crown className='w-3 h-3 mr-1' />
             Upgrade to Premium
-          </LinkButton>
+          </Button>
         </div>
       </div>
     )

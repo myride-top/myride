@@ -1,9 +1,21 @@
-import * as React from "react"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { Button, ButtonProps } from "./button"
+import * as React from 'react'
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
+import { Button, ButtonProps } from './button'
 
-export interface LinkButtonProps extends Omit<ButtonProps, 'asChild'> {
+export interface LinkButtonProps
+  extends Omit<
+    ButtonProps,
+    | 'asChild'
+    | 'onClick'
+    | 'type'
+    | 'form'
+    | 'formAction'
+    | 'formEncType'
+    | 'formMethod'
+    | 'formNoValidate'
+    | 'formTarget'
+  > {
   href: string
   external?: boolean
   children: React.ReactNode
@@ -11,25 +23,27 @@ export interface LinkButtonProps extends Omit<ButtonProps, 'asChild'> {
 }
 
 const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
-  ({ 
-    href, 
-    external = false, 
-    children, 
-    className,
-    variant = 'default',
-    size = 'default',
-    rounded,
-    ...props 
-  }, ref) => {
+  (
+    {
+      href,
+      external = false,
+      children,
+      className,
+      variant = 'default',
+      size = 'default',
+      rounded,
+      ...props
+    },
+    ref
+  ) => {
     if (external) {
       return (
         <a
           ref={ref}
           href={href}
-          target="_blank"
-          rel="noopener noreferrer"
+          target='_blank'
+          rel='noopener noreferrer'
           className={cn(className)}
-          {...props}
         >
           <Button
             variant={variant}
@@ -46,7 +60,6 @@ const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
 
     return (
       <Button
-        ref={ref}
         variant={variant}
         size={size}
         rounded={rounded}
@@ -54,13 +67,13 @@ const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         className={className}
         {...props}
       >
-        <Link href={href}>
+        <Link href={href} ref={ref}>
           {children}
         </Link>
       </Button>
     )
   }
 )
-LinkButton.displayName = "LinkButton"
+LinkButton.displayName = 'LinkButton'
 
 export { LinkButton }
