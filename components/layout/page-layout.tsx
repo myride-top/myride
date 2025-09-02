@@ -4,7 +4,12 @@ import { MainNavbar, LandingNavbar } from '@/components/navbar'
 
 interface PageLayoutProps {
   children: React.ReactNode
-  user?: any
+  user?: {
+    id: string
+    name?: string
+    email: string
+    image?: string
+  }
   showCreateButton?: boolean
   className?: string
   mainClassName?: string
@@ -27,7 +32,12 @@ export default function PageLayout({
         <LandingNavbar />
       )}
 
-      <main className={cn('max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24', mainClassName)}>
+      <main
+        className={cn(
+          'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-24',
+          mainClassName
+        )}
+      >
         <div className={cn('px-4 py-6 sm:px-0', containerClassName)}>
           {children}
         </div>

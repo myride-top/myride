@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import {
   addCarCommentClient,
@@ -193,10 +193,12 @@ export default function CarComments({
         setComments(topLevelComments)
       } else {
         setComments([]) // Set empty array on error
+        setDatabaseError('error')
       }
     } catch {
       toast.error('Failed to load comments')
       setComments([]) // Set empty array on error
+      setDatabaseError('error')
     } finally {
       setLoading(false)
     }

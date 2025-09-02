@@ -122,7 +122,7 @@ export async function addCarSlot(userId: string): Promise<boolean> {
     const newSlots = currentSlots + 1
 
     // Update with new value
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('profiles')
       .update({
         car_slots_purchased: newSlots,

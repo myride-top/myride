@@ -181,12 +181,10 @@ interface ImageUploadProgressProps extends Omit<UploadProgressProps, 'items'> {
       compressionRatio?: number
     }
   >
-  showCompressionInfo?: boolean
 }
 
 export function ImageUploadProgress({
   items,
-  showCompressionInfo = true,
   ...props
 }: ImageUploadProgressProps) {
   const enhancedItems = items.map(item => ({

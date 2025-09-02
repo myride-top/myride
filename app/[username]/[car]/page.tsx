@@ -85,7 +85,7 @@ export default function CarDetailPage() {
         try {
           const realLikeCount = await getCarLikeCountClient(carData.id)
           setLikeCount(realLikeCount)
-        } catch (error) {
+        } catch {
           // Fallback to the like_count field from cars table
           setLikeCount(carData.like_count || 0)
         }

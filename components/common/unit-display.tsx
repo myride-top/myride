@@ -123,13 +123,11 @@ interface TorqueDisplayProps
   extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
-  metricUnit?: string
 }
 
 export function TorqueDisplay({
   value,
   imperialUnit = 'lb-ft',
-  metricUnit = 'N⋅m',
   ...props
 }: TorqueDisplayProps) {
   return (
@@ -146,13 +144,11 @@ interface WeightDisplayProps
   extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
-  metricUnit?: string
 }
 
 export function WeightDisplay({
   value,
   imperialUnit = 'lbs',
-  metricUnit = 'kg',
   ...props
 }: WeightDisplayProps) {
   return (
@@ -169,13 +165,11 @@ interface SpeedDisplayProps
   extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
-  metricUnit?: string
 }
 
 export function SpeedDisplay({
   value,
   imperialUnit = 'mph',
-  metricUnit = 'km/h',
   ...props
 }: SpeedDisplayProps) {
   return (
@@ -192,13 +186,11 @@ interface PressureDisplayProps
   extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
-  metricUnit?: string
 }
 
 export function PressureDisplay({
   value,
   imperialUnit = 'PSI',
-  metricUnit = 'bar',
   ...props
 }: PressureDisplayProps) {
   return (
@@ -215,13 +207,11 @@ interface PowerDisplayProps
   extends Omit<UnitDisplayProps, 'unit' | 'unitType'> {
   value: number | null | undefined
   imperialUnit?: string
-  metricUnit?: string
 }
 
 export function PowerDisplay({
   value,
   imperialUnit = 'HP',
-  metricUnit = 'kW',
   ...props
 }: PowerDisplayProps) {
   return (

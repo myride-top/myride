@@ -33,7 +33,6 @@ export default function DataTable<T = Record<string, unknown>>({
   className = '',
   variant = 'default',
   showHeader = true,
-  showBorders = true,
   hoverEffect = true,
   emptyMessage = 'No data available',
   loading = false,
@@ -204,13 +203,13 @@ export function SpecificationsTable({
       key: 'value',
       label: 'Value',
       width: '60%',
-      render: (value: any, item: any) => {
+      render: (value: unknown, item: { unit?: string }, index: number) => {
         if (value === null || value === undefined || value === '') {
           return <span className='text-muted-foreground'>—</span>
         }
         return (
           <span className='text-foreground'>
-            {value}
+            {value as string | number}
             {showUnits && item.unit && (
               <span className='text-muted-foreground ml-1'>{item.unit}</span>
             )}
@@ -235,7 +234,7 @@ export function SpecificationsTable({
 
 // Key-value pairs table
 interface KeyValueTableProps {
-  data: Record<string, any>
+  data: Record<string, string | number | boolean | null>
   className?: string
   variant?: 'default' | 'compact' | 'minimal'
   keyLabel?: string
@@ -261,11 +260,7 @@ export function KeyValueTable({
       key: 'key',
       label: keyLabel,
       width: '40%',
-      render: (
-        value: unknown,
-        item: { key: string; value: unknown },
-        index: number
-      ) => (
+      render: (value: unknown) => (
         <span className='font-medium text-foreground'>{value as string}</span>
       ),
     },
@@ -359,8 +354,7 @@ export function StatsTable({
           unit?: string
           trend?: 'up' | 'down' | 'neutral'
           change?: number
-        },
-        index: number
+        }
       ) => (
         <div className='flex items-center justify-between'>
           <span className='text-foreground font-medium'>

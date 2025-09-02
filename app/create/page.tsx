@@ -14,7 +14,6 @@ import { useUnitPreference } from '@/lib/context/unit-context'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import CarForm from '@/components/forms/car-form'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import PageHeaderWithBack from '@/components/layout/page-header-with-back'
 import CarLimitChecker from '@/components/create/car-limit-checker'
@@ -25,7 +24,6 @@ export default function CreateCarPage() {
   const { user } = useAuth()
   const { unitPreference, isLoading: unitLoading } = useUnitPreference()
   const router = useRouter()
-  const supabase = createClient()
 
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -106,7 +104,7 @@ export default function CreateCarPage() {
 
           setCanCreate(canCreateCar)
           setCarSlots(slots)
-        } catch (error) {
+        } catch {
           setError('Failed to check car limit')
         } finally {
           setLoading(false)

@@ -200,9 +200,6 @@ export async function getCarByNameAndUsernameClient(
       return null
     }
 
-    // Try multiple search strategies to find the car
-    let searchError = null
-
     // Strategy 1: Try exact match first
     try {
       const { data, error } = await supabase
@@ -215,10 +212,7 @@ export async function getCarByNameAndUsernameClient(
       if (!error && data) {
         return data
       }
-      searchError = error
-    } catch (e) {
-      searchError = e
-    }
+    } catch {}
 
     // Strategy 2: Try case-insensitive exact match
     try {
@@ -279,7 +273,7 @@ export async function getCarByNameAndUsernameClient(
     } catch {}
 
     return null
-  } catch (error) {
+  } catch {
     return null
   }
 }

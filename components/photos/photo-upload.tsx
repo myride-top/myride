@@ -6,7 +6,6 @@ import { CarPhoto } from '@/lib/types/database'
 import { toast } from 'sonner'
 import { Upload, Loader2, Zap, CheckCircle } from 'lucide-react'
 import {
-  optimizeImage,
   compressToTargetSize,
   needsOptimization,
   formatFileSize,
@@ -34,16 +33,6 @@ export default function PhotoUpload({
       details?: string
     }
   }>({})
-  const [photos, setPhotos] = useState<CarPhoto[]>([])
-  const [mainPhotoUrl, setMainPhotoUrl] = useState<string | null>(null)
-  const [showLimitDialog, setShowLimitDialog] = useState(false)
-  const [checkingLimit, setCheckingLimit] = useState(true)
-  const [carSlots, setCarSlots] = useState({
-    currentCars: 0,
-    maxAllowedCars: 1,
-    purchasedSlots: 0,
-    isPremium: false,
-  })
   const [photoDescriptions, setPhotoDescriptions] = useState<{
     [key: string]: string
   }>({})
@@ -151,7 +140,7 @@ export default function PhotoUpload({
                   file.size
                 )} → ${formatFileSize(optimizedFile.size)}`
               )
-            } catch (error) {
+            } catch {
               setOptimizationProgress(prev => ({
                 ...prev,
                 [file.name]: {
@@ -206,7 +195,7 @@ export default function PhotoUpload({
           setUploadProgress(prev => ({ ...prev, [file.name]: 100 }))
 
           toast.success(`${file.name} uploaded successfully!`)
-        } catch (error) {
+        } catch {
           toast.error(`Failed to upload ${file.name}`)
         }
       }
@@ -247,42 +236,6 @@ export default function PhotoUpload({
     },
     [handleFiles]
   )
-
-  const handlePhotoUpload = (photo: CarPhoto) => {
-    // Add description if user provided one
-    const photoWithDescription = {
-      ...photo,
-      description: photoDescriptions[photo.url] || '',
-    }
-
-    // Call parent callback
-    onUploadComplete(photoWithDescription)
-
-    // Clear the description for this photo
-    setPhotoDescriptions(prev => {
-      const newState = { ...prev }
-      delete newState[photo.url]
-      return newState
-    })
-  }
-
-  const handleBatchUploadComplete = (photos: CarPhoto[]) => {
-    // Add descriptions to all photos
-    const photosWithDescriptions = photos.map(photo => ({
-      ...photo,
-      description: photoDescriptions[photo.url] || '',
-    }))
-
-    // Call parent callback
-    onBatchUploadComplete(photosWithDescriptions)
-
-    // Clear descriptions for these photos
-    setPhotoDescriptions(prev => {
-      const newState = { ...prev }
-      photos.forEach(photo => delete newState[photo.url])
-      return newState
-    })
-  }
 
   const handlePhotoDescriptionChange = (
     photoUrl: string,

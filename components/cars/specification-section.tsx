@@ -24,7 +24,6 @@ interface SpecificationSectionProps {
 export default function SpecificationSection({
   title,
   specifications,
-  variant = 'default',
   className,
 }: SpecificationSectionProps) {
   const { unitPreference } = useUnitPreference()
@@ -48,10 +47,14 @@ export default function SpecificationSection({
         'pressure',
         'distance',
       ] as const
-      if (supportedTypes.includes(spec.unitType as any)) {
+      if (
+        supportedTypes.includes(
+          spec.unitType as (typeof supportedTypes)[number]
+        )
+      ) {
         return convertToPreferredUnit(
           spec.value,
-          spec.unitType as any,
+          spec.unitType as (typeof supportedTypes)[number],
           unitPreference
         )
       }

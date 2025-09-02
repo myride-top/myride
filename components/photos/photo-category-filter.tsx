@@ -5,7 +5,7 @@ import { PHOTO_CATEGORIES, PhotoCategory } from '@/lib/types/database'
 interface PhotoCategoryFilterProps {
   selectedCategory: string
   onCategoryChange: (category: string) => void
-  photos: any[]
+  photos: Array<{ category: PhotoCategory } | string>
   totalCount: number
   className?: string
   variant?: 'default' | 'compact'
@@ -28,9 +28,8 @@ export default function PhotoCategoryFilter({
     }).length
   }
 
-  const buttonClasses = variant === 'compact' 
-    ? 'px-2 py-1 text-xs' 
-    : 'px-3 py-2 text-sm'
+  const buttonClasses =
+    variant === 'compact' ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-sm'
 
   return (
     <div className={cn('mb-4 sm:mb-6', className)}>
@@ -47,11 +46,11 @@ export default function PhotoCategoryFilter({
         >
           All ({totalCount})
         </button>
-        
+
         {PHOTO_CATEGORIES.map(category => {
           const count = getCategoryCount(category)
           if (count === 0) return null
-          
+
           return (
             <button
               key={category}

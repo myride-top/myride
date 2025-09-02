@@ -320,7 +320,7 @@ function BuildStoryStep({
               // Create a custom event object to pass the array value
               const customEvent = {
                 target: { name: 'build_goals', value: goals },
-              } as any
+              }
               onInputChange(customEvent)
             }}
             rows={3}
@@ -580,8 +580,12 @@ function WheelsTiresStep({
   onInputChange,
   unitPreference,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
@@ -836,10 +840,13 @@ function WheelsTiresStep({
 function SuspensionChassisStep({
   carData,
   onInputChange,
-  unitPreference,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
@@ -940,10 +947,13 @@ function SuspensionChassisStep({
 function ExteriorInteriorStep({
   carData,
   onInputChange,
-  unitPreference,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
@@ -1043,8 +1053,12 @@ function InteriorStep({
   carData,
   onInputChange,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
 }) {
   return (
     <div className='space-y-6'>
@@ -1145,8 +1159,12 @@ function AdditionalDetailsStep({
   carData,
   onInputChange,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
 }) {
   return (
     <div className='space-y-6'>
@@ -1228,7 +1246,7 @@ function AdditionalDetailsStep({
                 .filter(m => m)
               const customEvent = {
                 target: { name: 'modifications', value: mods },
-              } as any
+              }
               onInputChange(customEvent)
             }}
             rows={3}
@@ -1244,10 +1262,13 @@ function AdditionalDetailsStep({
 function PhotosSocialStep({
   carData,
   onInputChange,
-  unitPreference,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
@@ -1302,13 +1323,14 @@ function PhotosSocialStep({
 }
 
 function ReviewSubmitStep({
-  carData,
-  onInputChange,
-  unitPreference,
   mode,
 }: {
-  carData: any
-  onInputChange: any
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | { target: { name: string; value: string | string[] } }
+  ) => void
   unitPreference: 'metric' | 'imperial'
   mode: 'create' | 'edit'
 }) {
@@ -1418,24 +1440,6 @@ export default function CarForm({
     ...initialData,
   })
 
-  // Helper function to safely get form values (convert null to empty string)
-  const getFormValue = (fieldName: keyof typeof formData): string => {
-    const value = formData[fieldName]
-    if (value === null || value === undefined) return ''
-    if (typeof value === 'string') return value
-    if (Array.isArray(value)) return value.join(', ')
-    return String(value)
-  }
-
-  // Helper function to safely get form values for inputs (convert null to empty string)
-  const safeValue = (value: any): string => {
-    if (value === null || value === undefined) return ''
-    if (typeof value === 'string') return value
-    if (typeof value === 'number') return String(value)
-    if (Array.isArray(value)) return value.join(', ')
-    return String(value)
-  }
-
   // Check if a step has data
   const hasStepData = (stepId: number): boolean => {
     switch (stepId) {
@@ -1517,7 +1521,7 @@ export default function CarForm({
       | React.ChangeEvent<
           HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
         >
-      | any
+      | { target: { name: string; value: string | string[] } }
   ) => {
     const { name, value } = e.target
 
@@ -1525,13 +1529,13 @@ export default function CarForm({
       // Handle build_goals as a comma-separated array
       setFormData(prev => ({
         ...prev,
-        [name]: value,
+        [name]: Array.isArray(value) ? value : [value],
       }))
     } else if (name === 'modifications') {
       // Handle modifications as a comma-separated array
       setFormData(prev => ({
         ...prev,
-        [name]: value,
+        [name]: Array.isArray(value) ? value : [value],
       }))
     } else {
       setFormData(prev => ({
