@@ -20,7 +20,14 @@ export default function SectionHeader({
   centered = true,
   size = 'md',
 }: SectionHeaderProps) {
-  const sizeClasses = {
+  const sizeClasses: Record<
+    'sm' | 'md' | 'lg',
+    {
+      title: string
+      description: string
+      spacing: string
+    }
+  > = {
     sm: {
       title: 'text-2xl md:text-3xl',
       description: 'text-base',

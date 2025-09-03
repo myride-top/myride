@@ -20,8 +20,8 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
   return response
 }
 
-export function createSecureResponse(
-  data: any,
+export function createSecureResponse<T>(
+  data: T,
   status: number = 200
 ): NextResponse {
   const response = NextResponse.json(data, { status })

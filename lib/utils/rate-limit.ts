@@ -7,7 +7,8 @@ interface RateLimitOptions {
 }
 
 class RateLimiter {
-  private requests: Map<string, { count: number; resetTime: number }> = new Map()
+  private requests: Map<string, { count: number; resetTime: number }> =
+    new Map()
   private windowMs: number
   private maxRequests: number
   private keyGenerator: (request: NextRequest) => string
@@ -21,14 +22,17 @@ class RateLimiter {
   private defaultKeyGenerator(request: NextRequest): string {
     // Use IP address as default key
     const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown'
+    const ip = forwarded ? forwarded.split(',')[0] : 'unknown'
     return ip
   }
 
-  isAllowed(request: NextRequest): { allowed: boolean; remaining: number; resetTime: number } {
+  isAllowed(request: NextRequest): {
+    allowed: boolean
+    remaining: number
+    resetTime: number
+  } {
     const key = this.keyGenerator(request)
     const now = Date.now()
-    const windowStart = now - this.windowMs
 
     // Clean up expired entries
     for (const [k, v] of this.requests.entries()) {

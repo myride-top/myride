@@ -59,10 +59,6 @@ export default function CarComments({
   const [likingComment, setLikingComment] = useState<string | null>(null)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadComments()
-  }, [carId])
-
   const loadComments = async () => {
     setLoading(true)
     try {
@@ -203,6 +199,10 @@ export default function CarComments({
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadComments()
+  }, [carId, loadComments])
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()

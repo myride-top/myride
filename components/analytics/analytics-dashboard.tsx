@@ -114,7 +114,7 @@ export default function AnalyticsDashboard({
   // Initial data fetch
   useEffect(() => {
     fetchAnalyticsData()
-  }, [])
+  }, [fetchAnalyticsData])
 
   // Generate chart data from car performance
   const generateChartData = () => {

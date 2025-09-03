@@ -85,7 +85,7 @@ export default function CarCard({
         {car.main_photo_url ? (
           <img
             src={car.main_photo_url}
-            alt={car.name}
+            alt={car.name || 'car photo'}
             className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
           />
         ) : (
