@@ -202,7 +202,7 @@ export default function CarComments({
 
   useEffect(() => {
     loadComments()
-  }, [carId, loadComments])
+  }, [carId])
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
