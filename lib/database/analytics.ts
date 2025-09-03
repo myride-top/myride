@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { Car } from '@/lib/types/database'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface AnalyticsData {
   views: number
@@ -229,7 +229,7 @@ export async function getCarPerformance(
 }
 
 async function getStatsForPeriod(
-  supabase: any,
+  supabase: SupabaseClient,
   carIds: string[],
   startDate: Date,
   endDate: Date
@@ -243,7 +243,7 @@ async function getStatsForPeriod(
   })
 
   // Get views
-  const { count: views, error: viewsError } = await supabase
+  const { count: views } = await supabase
     .from('car_views')
     .select('*', { count: 'exact', head: true })
     .in('car_id', carIds)
@@ -251,7 +251,7 @@ async function getStatsForPeriod(
     .lte('created_at', endISO)
 
   // Get likes
-  const { count: likes, error: likesError } = await supabase
+  const { count: likes } = await supabase
     .from('car_likes')
     .select('*', { count: 'exact', head: true })
     .in('car_id', carIds)
@@ -259,7 +259,7 @@ async function getStatsForPeriod(
     .lte('created_at', endISO)
 
   // Get shares
-  const { count: shares, error: sharesError } = await supabase
+  const { count: shares } = await supabase
     .from('car_shares')
     .select('*', { count: 'exact', head: true })
     .in('car_id', carIds)
@@ -267,7 +267,7 @@ async function getStatsForPeriod(
     .lte('created_at', endISO)
 
   // Get comments
-  const { count: comments, error: commentsError } = await supabase
+  const { count: comments } = await supabase
     .from('car_comments')
     .select('*', { count: 'exact', head: true })
     .in('car_id', carIds)
