@@ -112,13 +112,7 @@ export default function StatsCard({
 
   // Regular stat card
   const regularStat = stat as Stat
-  const {
-    icon,
-    value,
-    label,
-    description,
-    color = 'text-primary',
-  } = regularStat
+  const { icon, value, label, description } = regularStat
 
   const variantClasses = {
     default: 'hover:border-primary/50',

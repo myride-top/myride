@@ -8,7 +8,9 @@ interface CTAButtonProps {
   gradient?: boolean
   className?: string
   children: React.ReactNode
-  [key: string]: any // Allow other props to pass through
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
 }
 
 export default function CTAButton(props: CTAButtonProps) {
