@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { PaymentService } from '@/lib/services/payment-service'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
