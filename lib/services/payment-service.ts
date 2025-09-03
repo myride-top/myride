@@ -28,6 +28,16 @@ export interface PaymentLinkOptions {
 
 export class PaymentService {
   static async createCheckoutSession(options: PaymentSessionOptions) {
+    // Validate required fields
+    if (!options.amount || options.amount <= 0) {
+      throw new Error('Invalid amount')
+    }
+    if (!options.name || options.name.trim().length === 0) {
+      throw new Error('Product name is required')
+    }
+    if (!options.successUrl || !options.cancelUrl) {
+      throw new Error('Success and cancel URLs are required')
+    }
     const {
       userId,
       customerEmail,
@@ -78,6 +88,17 @@ export class PaymentService {
   }
 
   static async createPaymentLink(options: PaymentLinkOptions) {
+    // Validate required fields
+    if (!options.amount || options.amount <= 0) {
+      throw new Error('Invalid amount')
+    }
+    if (!options.name || options.name.trim().length === 0) {
+      throw new Error('Product name is required')
+    }
+    if (!options.redirectUrl) {
+      throw new Error('Redirect URL is required')
+    }
+
     const { amount, name, description, redirectUrl, metadata = {} } = options
 
     const paymentLink = await stripe.paymentLinks.create({

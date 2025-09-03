@@ -1,15 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentService } from '@/lib/services/payment-service'
+import { paymentRateLimit, createRateLimitResponse } from '@/lib/utils/rate-limit'
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = paymentRateLimit.isAllowed(request)
+  if (!rateLimitResult.allowed) {
+    return createRateLimitResponse(rateLimitResult.remaining, rateLimitResult.resetTime)
+  }
+
   try {
     const { amount, description, metadata } = await request.json()
 
     // Validate amount
-    if (!amount || amount < 100) {
-      // Minimum $1.00 (100 cents)
+    if (!amount || typeof amount !== 'number' || amount < 100 || amount > 100000) {
+      // Minimum $1.00 (100 cents), Maximum $1000.00 (100000 cents)
       return NextResponse.json(
-        { error: 'Invalid amount. Minimum is $1.00' },
+        { error: 'Invalid amount. Must be between $1.00 and $1000.00' },
+        { status: 400 }
+      )
+    }
+
+    // Validate description length
+    if (description && description.length > 500) {
+      return NextResponse.json(
+        { error: 'Description too long. Maximum 500 characters.' },
         { status: 400 }
       )
     }

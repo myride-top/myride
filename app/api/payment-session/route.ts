@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PaymentService } from '@/lib/services/payment-service'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { paymentRateLimit, createRateLimitResponse } from '@/lib/utils/rate-limit'
+import Stripe from 'stripe'
+import {
+  generalRateLimit,
+  createRateLimitResponse,
+} from '@/lib/utils/rate-limit'
 
-export async function POST(request: NextRequest) {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-08-27.basil',
+})
+
+export async function GET(request: NextRequest) {
   // Apply rate limiting
-  const rateLimitResult = paymentRateLimit.isAllowed(request)
+  const rateLimitResult = generalRateLimit.isAllowed(request)
   if (!rateLimitResult.allowed) {
-    return createRateLimitResponse(rateLimitResult.remaining, rateLimitResult.resetTime)
+    return createRateLimitResponse(
+      rateLimitResult.remaining,
+      rateLimitResult.resetTime
+    )
   }
 
   try {
@@ -44,41 +54,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { customerEmail } = await request.json()
+    // Get session ID from query params
+    const { searchParams } = new URL(request.url)
+    const sessionId = searchParams.get('session_id')
 
-    // Validate input
-    if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+    if (!sessionId) {
       return NextResponse.json(
-        { error: 'Invalid email format' },
+        { error: 'Session ID is required' },
         { status: 400 }
       )
     }
 
-    const session = await PaymentService.createCheckoutSession({
-      userId: user.id,
-      customerEmail,
-      amount: 1000, // $10.00 in cents
-      name: 'MyRide Premium',
-      description: 'Lifetime premium access to MyRide features',
-      successUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
-      }/premium/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
-      }/premium`,
-      metadata: {
-        type: 'premium',
-      },
-    })
+    // Retrieve the session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    // Verify the session belongs to the authenticated user
+    if (session.metadata?.userId !== user.id) {
+      return NextResponse.json(
+        { error: 'Session not found or access denied' },
+        { status: 404 }
+      )
+    }
 
     return NextResponse.json({
-      sessionId: session.id,
-      url: session.url,
+      session: {
+        id: session.id,
+        status: session.payment_status,
+        amount_total: session.amount_total,
+        currency: session.currency,
+        metadata: session.metadata,
+        created: session.created,
+      },
     })
   } catch (error) {
+    console.error('Error retrieving payment session:', error)
     return NextResponse.json(
       {
-        error: 'Failed to create premium payment session',
+        error: 'Failed to retrieve payment session',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }

@@ -2,8 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PaymentService } from '@/lib/services/payment-service'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import {
+  paymentRateLimit,
+  createRateLimitResponse,
+} from '@/lib/utils/rate-limit'
+import { createSecureResponse } from '@/lib/utils/security-headers'
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const rateLimitResult = paymentRateLimit.isAllowed(request)
+  if (!rateLimitResult.allowed) {
+    return createRateLimitResponse(
+      rateLimitResult.remaining,
+      rateLimitResult.resetTime
+    )
+  }
+
   try {
     // Authenticate user
     const cookieStore = await cookies()
@@ -34,17 +48,14 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return createSecureResponse({ error: 'Unauthorized' }, 401)
     }
 
     const { customerEmail } = await request.json()
 
     // Validate input
     if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
+      return createSecureResponse({ error: 'Invalid email format' }, 400)
     }
 
     const session = await PaymentService.createCheckoutSession({
@@ -64,17 +75,17 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
+    return createSecureResponse({
       sessionId: session.id,
       url: session.url,
     })
   } catch (error) {
-    return NextResponse.json(
+    return createSecureResponse(
       {
         error: 'Failed to create car slot payment session',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      500
     )
   }
 }

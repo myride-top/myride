@@ -181,3 +181,32 @@ export async function logPaymentFailure(
     return false
   }
 }
+
+export async function logRefund(
+  userId: string,
+  originalAmount: number,
+  refundAmount: number,
+  type: string,
+  reason: string
+): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('refund_logs').insert({
+      user_id: userId,
+      original_amount: originalAmount,
+      refund_amount: refundAmount,
+      type: type,
+      reason: reason,
+      created_at: new Date().toISOString(),
+    })
+
+    if (error) {
+      console.error('Error logging refund:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error logging refund:', error)
+    return false
+  }
+}

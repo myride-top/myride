@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import {
+  webhookRateLimit,
+  createRateLimitResponse,
+} from '@/lib/utils/rate-limit'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-08-27.basil',
@@ -8,14 +12,27 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting for webhooks
+  const rateLimitResult = webhookRateLimit.isAllowed(request)
+  if (!rateLimitResult.allowed) {
+    return createRateLimitResponse(
+      rateLimitResult.remaining,
+      rateLimitResult.resetTime
+    )
+  }
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')
+
+  if (!sig) {
+    return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
+  }
 
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(body, sig!, endpointSecret)
-  } catch {
+    event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
@@ -40,12 +57,18 @@ export async function POST(request: NextRequest) {
         )
         break
 
+      case 'charge.dispute.created':
+        await handleChargeDisputeCreated(event.data.object as Stripe.Dispute)
+        break
+
       default:
+        console.log(`Unhandled event type: ${event.type}`)
         break
     }
 
     return NextResponse.json({ received: true })
-  } catch {
+  } catch (error) {
+    console.error('Webhook processing failed:', error)
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -226,6 +249,27 @@ async function handleCarSlotPurchase(session: Stripe.Checkout.Session) {
       } else {
         console.error('Failed to add car slot for user:', userId)
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error processing car slot purchase:', error)
+    }
+  }
+}
+
+// Handle charge disputes
+async function handleChargeDisputeCreated(dispute: Stripe.Dispute) {
+  try {
+    // Log dispute for analytics and monitoring
+    console.log('Charge dispute created:', {
+      disputeId: dispute.id,
+      chargeId: dispute.charge,
+      amount: dispute.amount,
+      reason: dispute.reason,
+      status: dispute.status,
+    })
+
+    // You might want to send notifications to admin team
+    // or automatically handle certain types of disputes
+  } catch (error) {
+    console.error('Error processing charge dispute:', error)
   }
 }
