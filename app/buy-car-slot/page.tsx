@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/common/loading-spinner'
 import { CarIcon, Plus, Check, ArrowLeft, Crown } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import MinimalFooter from '@/components/common/minimal-footer'
 
 export default function BuyCarSlotPage() {
   const { user } = useAuth()
@@ -289,6 +290,7 @@ export default function BuyCarSlotPage() {
           </div>
         </div>
       </div>
+      <MinimalFooter />
     </ProtectedRoute>
   )
 }

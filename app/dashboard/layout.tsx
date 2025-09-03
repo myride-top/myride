@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import MinimalFooter from '@/components/common/minimal-footer'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -40,5 +41,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <div className='min-h-screen flex flex-col'>
+      <main className='flex-1'>{children}</main>
+      <MinimalFooter />
+    </div>
+  )
 }

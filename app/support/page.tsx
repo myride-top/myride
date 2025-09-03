@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { Heart, Users, Code, Server, Zap } from 'lucide-react'
 import SupportCreator from '@/components/common/support-creator'
 import MainNavbar from '@/components/navbar/main-navbar'
+import MinimalFooter from '@/components/common/minimal-footer'
 
 export const metadata: Metadata = {
   title: 'Support Creator',
@@ -180,6 +181,8 @@ export default function SupportPage() {
           </p>
         </div>
       </div>
+
+      <MinimalFooter />
     </div>
   )
 }

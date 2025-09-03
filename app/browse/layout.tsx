@@ -1,3 +1,4 @@
+import MinimalFooter from '@/components/common/minimal-footer'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -40,5 +41,10 @@ export default function BrowseLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <>
+      {children}
+      <MinimalFooter />
+    </>
+  )
 }

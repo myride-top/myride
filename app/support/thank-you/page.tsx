@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Heart, CheckCircle, ArrowLeft, Home, Car } from 'lucide-react'
+import MinimalFooter from '@/components/common/minimal-footer'
 
 export const metadata: Metadata = {
   title: 'Thank You for Your Support',
@@ -119,6 +120,8 @@ export default function ThankYouPage() {
           </p>
         </div>
       </div>
+
+      <MinimalFooter />
     </div>
   )
 }

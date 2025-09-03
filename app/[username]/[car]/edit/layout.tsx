@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
+import MinimalFooter from '@/components/common/minimal-footer'
 
 export async function generateMetadata({
   params,
@@ -85,5 +86,10 @@ export default function EditCarLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <>
+      {children}
+      <MinimalFooter />
+    </>
+  )
 }
