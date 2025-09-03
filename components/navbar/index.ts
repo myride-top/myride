@@ -1,5 +1,0 @@
-export { default as BaseNavbar } from './base-navbar'
-export { default as LandingNavbar } from './landing-navbar'
-export { default as MainNavbar } from './main-navbar'
-export { default as LegalNavbar } from './legal-navbar'
-export type { NavItem, BaseNavbarProps } from './base-navbar'

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { getUserCarSlots } from '@/lib/database/premium-client'
-import { MainNavbar } from '@/components/navbar'
+import MainNavbar from '@/components/navbar/main-navbar'
 import ProtectedRoute from '@/components/auth/protected-route'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import { CarIcon, Plus, Check, ArrowLeft, Crown } from 'lucide-react'

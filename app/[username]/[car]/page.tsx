@@ -30,7 +30,8 @@ import {
   hasUserLikedCarClient,
   getCarLikeCountClient,
 } from '@/lib/database/cars-client'
-import { MainNavbar, LandingNavbar } from '@/components/navbar'
+import MainNavbar from '@/components/navbar/main-navbar'
+import LandingNavbar from '@/components/navbar/landing-navbar'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import EmptyState from '@/components/common/empty-state'
 import CarSpecifications from '@/components/cars/car-specifications'

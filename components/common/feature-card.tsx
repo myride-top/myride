@@ -1,6 +1,8 @@
 import React from 'react'
 import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import IconWrapper from './icon-wrapper'
+import Card from './card'
 
 export interface Feature {
   icon: LucideIcon
@@ -26,7 +28,7 @@ export default function FeatureCard({
   index = 0,
 }: FeatureCardProps) {
   const {
-    icon: Icon,
+    icon,
     title,
     description,
     color = 'from-primary to-secondary',
@@ -42,12 +44,12 @@ export default function FeatureCard({
       )}
       style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div
-        className={cn(
-          'relative p-6 rounded-2xl border border-border/50 transition-all duration-300 h-full',
-          showHoverEffect && 'hover:border-primary/50',
-          'bg-card'
-        )}
+      <Card
+        variant={showGradient ? 'gradient' : 'default'}
+        padding="lg"
+        rounded="2xl"
+        hover={showHoverEffect}
+        className="h-full relative"
       >
         {/* Background gradient on hover */}
         {showGradient && (
@@ -61,20 +63,15 @@ export default function FeatureCard({
         )}
 
         {/* Icon */}
-        <div
-          className={cn(
-            'relative p-3 rounded-xl w-fit mb-4 transition-transform duration-300',
-            bgColor,
-            showHoverEffect && 'group-hover:scale-110'
-          )}
-        >
-          <Icon
-            className={cn(
-              'h-8 w-8',
-              showGradient
-                ? `bg-gradient-to-r ${color} bg-clip-text text-transparent`
-                : 'text-primary'
-            )}
+        <div className="relative mb-4">
+          <IconWrapper
+            icon={icon}
+            size="md"
+            variant={showGradient ? 'gradient' : 'custom'}
+            bgColor={bgColor}
+            color={showGradient ? undefined : 'text-primary'}
+            showHoverEffect={showHoverEffect}
+            rounded="xl"
           />
         </div>
 
@@ -96,7 +93,7 @@ export default function FeatureCard({
         {showHoverEffect && (
           <div className='absolute inset-0 rounded-2xl border-2 border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
         )}
-      </div>
+      </Card>
     </div>
   )
 }

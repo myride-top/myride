@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Heart, Users, Code, Server, Zap } from 'lucide-react'
 import SupportCreator from '@/components/common/support-creator'
-import { MainNavbar } from '@/components/navbar'
+import MainNavbar from '@/components/navbar/main-navbar'
 
 export const metadata: Metadata = {
   title: 'Support Creator',

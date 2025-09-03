@@ -9,7 +9,7 @@ import {
 } from '@/lib/database/cars-client'
 import { getUserCarSlots } from '@/lib/database/premium-client'
 import ProtectedRoute from '@/components/auth/protected-route'
-import { MainNavbar } from '@/components/navbar'
+import MainNavbar from '@/components/navbar/main-navbar'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import LoadingSpinner from '@/components/common/loading-spinner'
 import CarForm from '@/components/forms/car-form'

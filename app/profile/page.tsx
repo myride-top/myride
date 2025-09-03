@@ -12,7 +12,7 @@ import { Profile } from '@/lib/types/database'
 import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
-import { MainNavbar } from '@/components/navbar'
+import MainNavbar from '@/components/navbar/main-navbar'
 import AvatarUpload from '@/components/common/avatar-upload'
 
 export default function ProfilePage() {

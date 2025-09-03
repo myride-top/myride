@@ -1,6 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { MainNavbar, LandingNavbar } from '@/components/navbar'
+import MainNavbar from '../navbar/main-navbar'
+import LandingNavbar from '../navbar/landing-navbar'
 
 interface PageLayoutProps {
   children: React.ReactNode
