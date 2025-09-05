@@ -86,7 +86,7 @@ export interface WaitlistEntry {
 
 export interface CarPhoto {
   url: string
-  category: string
+  category: PhotoCategory
   description?: string
   order: number
 }

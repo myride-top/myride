@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
 import { getUnitLabel } from '@/lib/utils'
-import SortablePhotoList from '@/components/photos/sortable-photo-list'
+import SortablePhotoGallery from '@/components/photos/sortable-photo-gallery'
 import PhotoUpload from '@/components/photos/photo-upload'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 
@@ -14,7 +14,7 @@ interface CarFormProps {
   onPhotoUploadComplete?: (photo: CarPhoto) => Promise<void>
   onBatchUploadComplete?: (photos: CarPhoto[]) => Promise<void>
   onPhotoCategoryChange?: (
-    photoIndex: number,
+    photoUrl: string,
     newCategory: PhotoCategory
   ) => Promise<void>
   onSetMainPhoto?: (photoUrl: string) => Promise<void>
@@ -1768,15 +1768,31 @@ export default function CarForm({
               <h4 className='text-md font-medium text-foreground mb-4'>
                 Manage Photos ({existingPhotos.length})
               </h4>
-              <SortablePhotoList
+              <SortablePhotoGallery
                 key={existingPhotos.map(p => p.url).join(',')}
                 photos={existingPhotos}
                 onReorder={onPhotoReorder || (() => Promise.resolve())}
-                onDeletePhoto={onDeletePhoto}
-                onSetMainPhoto={onSetMainPhoto}
+                onDelete={onDeletePhoto || (() => Promise.resolve())}
+                onSetMain={onSetMainPhoto || (() => Promise.resolve())}
                 mainPhotoUrl={mainPhotoUrl}
-                onPhotoCategoryChange={onPhotoCategoryChange}
-                onPhotoDescriptionChange={onPhotoDescriptionChange}
+                onUpdateCategory={
+                  onPhotoCategoryChange || (() => Promise.resolve())
+                }
+                onUpdateDescription={
+                  onPhotoDescriptionChange
+                    ? async (photoUrl: string, description: string) => {
+                        const photoIndex = existingPhotos.findIndex(
+                          p => p.url === photoUrl
+                        )
+                        if (photoIndex !== -1) {
+                          await onPhotoDescriptionChange(
+                            photoIndex,
+                            description
+                          )
+                        }
+                      }
+                    : () => Promise.resolve()
+                }
               />
             </div>
           )}

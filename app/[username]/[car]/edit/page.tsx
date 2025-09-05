@@ -9,11 +9,10 @@ import {
   deleteCarClient,
   setMainPhoto,
   fixCarUrlSlug,
-  removePhotoFromCar,
 } from '@/lib/database/cars-client'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
-import ProtectedRoute from '@/components/auth/protected-route'
 import { toast } from 'sonner'
+import ProtectedRoute from '@/components/auth/protected-route'
 import { deleteCarPhoto } from '@/lib/storage/photos'
 import { Loader2, AlertTriangle } from 'lucide-react'
 import MainNavbar from '@/components/navbar/main-navbar'
@@ -46,10 +45,6 @@ export default function EditCarPage() {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-
-  // Debounced photo description change
-  const descriptionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const pendingDescriptionChanges = useRef<Map<number, string>>(new Map())
 
   useEffect(() => {
     const loadCar = async () => {
@@ -116,6 +111,7 @@ export default function EditCarPage() {
               }
             }
 
+            // Don't modify the original car data - handle deduplication in UI only
             setCar(carData)
           } else {
             setError('Car not found')
@@ -213,7 +209,12 @@ export default function EditCarPage() {
           : null,
         weight: formData.weight ? parseFloat(String(formData.weight)) : null,
         power_to_weight: formData.power_to_weight || null,
+        // Preserve the current photos to prevent them from being overwritten
+        photos: car.photos,
       }
+
+      console.log('Form submission - preserving photos:', car.photos)
+      console.log('Update data being sent:', updateData)
 
       const updatedCar = await updateCarClient(car.id, updateData)
 
@@ -266,158 +267,6 @@ export default function EditCarPage() {
       setDeleting(false)
       setShowDeleteDialog(false)
     }
-  }
-
-  const handlePhotoUploadComplete = async (photo: CarPhoto) => {
-    if (!car) return
-
-    const updatedPhotos = [...(car.photos || []), photo]
-    setCar({ ...car, photos: updatedPhotos })
-
-    try {
-      await updateCarClient(car.id, { photos: updatedPhotos })
-    } catch (error) {
-      console.error('Error saving photo:', error)
-      toast.error('Failed to save photo')
-    }
-  }
-
-  const handleBatchUploadComplete = async (newPhotos: CarPhoto[]) => {
-    if (!car) return
-
-    const updatedPhotos = [...(car.photos || []), ...newPhotos]
-    setCar({ ...car, photos: updatedPhotos })
-
-    try {
-      await updateCarClient(car.id, { photos: updatedPhotos })
-    } catch (error) {
-      console.error('Error saving photos:', error)
-      toast.error('Failed to save photos')
-    }
-  }
-
-  const handlePhotoCategoryChange = async (
-    photoIndex: number,
-    newCategory: PhotoCategory
-  ) => {
-    if (!car) return
-
-    const updatedPhotos = [...(car.photos || [])]
-    updatedPhotos[photoIndex] = {
-      ...updatedPhotos[photoIndex],
-      category: newCategory,
-    }
-    setCar({ ...car, photos: updatedPhotos })
-
-    try {
-      await updateCarClient(car.id, { photos: updatedPhotos })
-    } catch (error) {
-      console.error('Error updating photo category:', error)
-      toast.error('Failed to update photo category')
-    }
-  }
-
-  const handleSetMainPhoto = async (photoUrl: string) => {
-    if (!car) return
-
-    try {
-      const updatedCar = await setMainPhoto(car.id, photoUrl)
-      if (updatedCar) {
-        setCar(updatedCar)
-        toast.success('Main photo updated!')
-      }
-    } catch (error) {
-      console.error('Error setting main photo:', error)
-      toast.error('Failed to set main photo')
-    }
-  }
-
-  const handleDeletePhoto = async (photoUrl: string) => {
-    if (!car) return
-
-    try {
-      // Remove photo from storage
-      await deleteCarPhoto(photoUrl)
-
-      // Remove photo from car
-      const updatedCar = await removePhotoFromCar(car.id, photoUrl)
-      if (updatedCar) {
-        setCar(updatedCar)
-        toast.success('Photo deleted!')
-      }
-    } catch (error) {
-      console.error('Error deleting photo:', error)
-      toast.error('Failed to delete photo')
-    }
-  }
-
-  const handlePhotoDescriptionChange = async (
-    photoIndex: number,
-    newDescription: string
-  ) => {
-    if (!car) return
-
-    // Clear existing timeout
-    if (descriptionTimeoutRef.current) {
-      clearTimeout(descriptionTimeoutRef.current)
-    }
-
-    // Store the pending change
-    pendingDescriptionChanges.current.set(photoIndex, newDescription)
-
-    // Update local state immediately
-    const updatedPhotos = [...(car.photos || [])]
-    updatedPhotos[photoIndex] = {
-      ...updatedPhotos[photoIndex],
-      description: newDescription,
-    }
-    setCar({ ...car, photos: updatedPhotos })
-
-    // Debounce the database update
-    descriptionTimeoutRef.current = setTimeout(async () => {
-      try {
-        const pendingChanges = pendingDescriptionChanges.current
-        pendingDescriptionChanges.current.clear()
-
-        // Get the latest car data to ensure we don't overwrite other changes
-        const currentCar = await getCarByUrlSlugAndUsernameClient(
-          carId,
-          params.username as string
-        )
-
-        if (currentCar) {
-          const finalPhotos = currentCar.photos?.map((photo, index) => {
-            const pendingChange = pendingChanges.get(index)
-            return pendingChange !== undefined
-              ? { ...photo, description: pendingChange }
-              : photo
-          })
-
-          if (finalPhotos) {
-            await updateCarClient(car.id, { photos: finalPhotos })
-            setCar({ ...currentCar, photos: finalPhotos })
-          }
-        }
-      } catch (error) {
-        console.error('Error updating photo description:', error)
-        toast.error('Failed to update photo description')
-      }
-    }, 1000) // 1 second debounce
-  }
-
-  const handlePhotoReorder = async (reorderedPhotos: CarPhoto[]) => {
-    if (!car) return
-
-    setCar({ ...car, photos: reorderedPhotos })
-
-    try {
-      await updateCarClient(car.id, { photos: reorderedPhotos })
-    } catch (error) {
-      console.error('Error reordering photos:', error)
-      toast.error('Failed to reorder photos')
-    }
-
-    return Promise.resolve()
   }
 
   if (loading || unitLoading) {
@@ -486,17 +335,103 @@ export default function EditCarPage() {
             mode='edit'
             initialData={car}
             onSubmit={handleSubmit}
-            onPhotoUploadComplete={handlePhotoUploadComplete}
-            onBatchUploadComplete={handleBatchUploadComplete}
-            onPhotoCategoryChange={handlePhotoCategoryChange}
-            onSetMainPhoto={handleSetMainPhoto}
-            onDeletePhoto={handleDeletePhoto}
-            onPhotoDescriptionChange={handlePhotoDescriptionChange}
-            onPhotoReorder={handlePhotoReorder}
             unitPreference={unitPreference}
             saving={saving}
             existingPhotos={car.photos || []}
-            mainPhotoUrl={car.main_photo_url || undefined}
+            onPhotoUploadComplete={async (photo: CarPhoto) => {
+              // Add photo to car's photos array, avoiding duplicates
+              const existingUrls = new Set((car.photos || []).map(p => p.url))
+              if (!existingUrls.has(photo.url)) {
+                const updatedCar = {
+                  ...car,
+                  photos: [...(car.photos || []), photo],
+                }
+                setCar(updatedCar)
+              }
+            }}
+            onBatchUploadComplete={async (photos: CarPhoto[]) => {
+              // Add photos to car's photos array, avoiding duplicates
+              const existingUrls = new Set((car.photos || []).map(p => p.url))
+              const newPhotos = photos.filter(
+                photo => !existingUrls.has(photo.url)
+              )
+              if (newPhotos.length > 0) {
+                const updatedCar = {
+                  ...car,
+                  photos: [...(car.photos || []), ...newPhotos],
+                }
+                setCar(updatedCar)
+              }
+            }}
+            onPhotoCategoryChange={async (
+              photoUrl: string,
+              category: PhotoCategory
+            ) => {
+              // Update photo category using direct database function
+              const { updatePhotoCategoryDirect } = await import(
+                '@/lib/database/photos-client'
+              )
+              const result = await updatePhotoCategoryDirect(
+                car.id,
+                photoUrl,
+                category
+              )
+              if (result) {
+                setCar(result)
+                toast.success('Photo category updated!')
+              }
+            }}
+            onPhotoDescriptionChange={async (
+              photoIndex: number,
+              description: string
+            ) => {
+              // Update photo description using direct database function
+              const photo = car.photos?.[photoIndex]
+              if (photo) {
+                const { updatePhotoDescriptionDirect } = await import(
+                  '@/lib/database/photos-client'
+                )
+                const result = await updatePhotoDescriptionDirect(
+                  car.id,
+                  photo.url,
+                  description
+                )
+                if (result) {
+                  setCar(result)
+                  toast.success('Photo description updated!')
+                }
+              }
+            }}
+            onSetMainPhoto={async (photoUrl: string) => {
+              // Set main photo
+              const updatedCar = await setMainPhoto(car.id, photoUrl)
+              if (updatedCar) {
+                setCar(updatedCar)
+                toast.success('Main photo updated!')
+              }
+            }}
+            onDeletePhoto={async (photoUrl: string) => {
+              // Delete photo using direct database function
+              const { deletePhotoDirect } = await import(
+                '@/lib/database/photos-client'
+              )
+              const result = await deletePhotoDirect(car.id, photoUrl)
+              if (result) {
+                setCar(result)
+                toast.success('Photo deleted!')
+              }
+            }}
+            onPhotoReorder={async (photos: CarPhoto[]) => {
+              // Reorder photos using direct database function
+              const { reorderPhotosDirect } = await import(
+                '@/lib/database/photos-client'
+              )
+              const result = await reorderPhotosDirect(car.id, photos)
+              if (result) {
+                setCar(result)
+                toast.success('Photo order updated!')
+              }
+            }}
           />
 
           {/* Delete Car Section */}

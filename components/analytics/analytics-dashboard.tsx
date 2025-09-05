@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Card, {
   CardContent,
   CardDescription,
@@ -81,35 +81,41 @@ export default function AnalyticsDashboard({
   const [carPerformance, setCarPerformance] = useState<CarPerformance[]>([])
   const [timeRange, setTimeRange] = useState('6m')
   const [selectedCar, setSelectedCar] = useState<string>('all')
+  const [viewMode, setViewMode] = useState<'global' | 'individual'>('global')
 
   // Fetch analytics data
-  const fetchAnalyticsData = async (range?: string) => {
-    try {
-      setIsLoading(true)
-      setError(null)
+  const fetchAnalyticsData = useCallback(
+    async (range?: string) => {
+      try {
+        setIsLoading(true)
+        setError(null)
 
-      const timeRangeToUse = range || timeRange
-      console.log('Fetching analytics data for timeRange:', timeRangeToUse)
-      const response = await fetch(`/api/analytics?timeRange=${timeRangeToUse}`)
+        const timeRangeToUse = range || timeRange
+        console.log('Fetching analytics data for timeRange:', timeRangeToUse)
+        const response = await fetch(
+          `/api/analytics?timeRange=${timeRangeToUse}`
+        )
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch analytics data')
+        if (!response.ok) {
+          throw new Error('Failed to fetch analytics data')
+        }
+
+        const result = await response.json()
+        console.log('Analytics data received:', result)
+        setData(result.data)
+        setCarPerformance(result.carPerformance)
+        if (range) {
+          setTimeRange(range)
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+        console.error('Error fetching analytics:', err)
+      } finally {
+        setIsLoading(false)
       }
-
-      const result = await response.json()
-      console.log('Analytics data received:', result)
-      setData(result.data)
-      setCarPerformance(result.carPerformance)
-      if (range) {
-        setTimeRange(range)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-      console.error('Error fetching analytics:', err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    },
+    [timeRange]
+  )
 
   // Initial data fetch
   useEffect(() => {
@@ -271,7 +277,9 @@ export default function AnalyticsDashboard({
             Analytics Dashboard
           </h1>
           <p className='text-muted-foreground'>
-            Track your car performance and engagement metrics
+            {viewMode === 'global'
+              ? 'Track your overall car performance and engagement metrics'
+              : 'Track individual car performance and engagement metrics'}
           </p>
         </div>
         <div className='flex items-center gap-2'>
@@ -284,6 +292,26 @@ export default function AnalyticsDashboard({
             Export
           </Button>
         </div>
+      </div>
+
+      {/* View Mode Selector */}
+      <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-2'>
+          <Filter className='h-4 w-4 text-muted-foreground' />
+          <span className='text-sm font-medium'>View:</span>
+        </div>
+        <Select
+          value={viewMode}
+          onValueChange={(value: 'global' | 'individual') => setViewMode(value)}
+        >
+          <SelectTrigger className='w-40'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='global'>Global Analytics</SelectItem>
+            <SelectItem value='individual'>Individual Cars</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Time Range Selector */}
@@ -305,6 +333,29 @@ export default function AnalyticsDashboard({
           </SelectContent>
         </Select>
       </div>
+
+      {/* Car Filter - Only show in individual mode */}
+      {viewMode === 'individual' && (
+        <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-2'>
+            <Filter className='h-4 w-4 text-muted-foreground' />
+            <span className='text-sm font-medium'>Filter by Car:</span>
+          </div>
+          <Select value={selectedCar} onValueChange={setSelectedCar}>
+            <SelectTrigger className='w-48'>
+              <SelectValue placeholder='All Cars' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All Cars</SelectItem>
+              {carPerformance.map(car => (
+                <SelectItem key={car.id} value={car.id}>
+                  {car.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Key Metrics */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
@@ -367,7 +418,9 @@ export default function AnalyticsDashboard({
       <Tabs defaultValue='overview' className='space-y-4'>
         <TabsList>
           <TabsTrigger value='overview'>Overview</TabsTrigger>
-          <TabsTrigger value='performance'>Car Performance</TabsTrigger>
+          {viewMode === 'individual' && (
+            <TabsTrigger value='performance'>Car Performance</TabsTrigger>
+          )}
           <TabsTrigger value='trends'>Trends</TabsTrigger>
         </TabsList>
 
@@ -378,7 +431,9 @@ export default function AnalyticsDashboard({
               <CardHeader>
                 <CardTitle>Engagement Distribution</CardTitle>
                 <CardDescription>
-                  How your audience interacts with your cars
+                  {viewMode === 'global'
+                    ? 'How your audience interacts with all your cars'
+                    : 'How your audience interacts with your cars'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -485,27 +540,59 @@ export default function AnalyticsDashboard({
               </CardContent>
             </Card>
           </div>
+
+          {/* Global Analytics - Top Performing Cars */}
+          {viewMode === 'global' && carPerformance.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Top Performing Cars</CardTitle>
+                <CardDescription>
+                  Your best performing cars by engagement
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className='space-y-4'>
+                  {carPerformance.slice(0, 5).map((car, index) => (
+                    <div
+                      key={car.id}
+                      className='flex items-center justify-between p-4 border rounded-lg'
+                    >
+                      <div className='flex items-center gap-3'>
+                        <div className='flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full text-sm font-semibold'>
+                          {index + 1}
+                        </div>
+                        {car.image && (
+                          <img
+                            src={car.image}
+                            alt={car.name}
+                            className='w-12 h-12 rounded object-cover'
+                          />
+                        )}
+                        <div>
+                          <p className='font-medium'>{car.name}</p>
+                          <p className='text-sm text-muted-foreground'>
+                            {car.views.toLocaleString()} views
+                          </p>
+                        </div>
+                      </div>
+                      <div className='text-right'>
+                        <Badge variant='secondary' className='mb-1'>
+                          {car.engagement.toFixed(1)}% engagement
+                        </Badge>
+                        <div className='text-sm text-muted-foreground'>
+                          {car.likes} likes • {car.shares} shares •{' '}
+                          {car.comments} comments
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value='performance' className='space-y-4'>
-          {/* Car Filter */}
-          <div className='flex items-center gap-4'>
-            <span className='text-sm font-medium'>Filter by Car:</span>
-            <Select value={selectedCar} onValueChange={setSelectedCar}>
-              <SelectTrigger className='w-48'>
-                <SelectValue placeholder='All Cars' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='all'>All Cars</SelectItem>
-                {carPerformance.map(car => (
-                  <SelectItem key={car.id} value={car.id}>
-                    {car.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Car Performance Table */}
           <Card>
             <CardHeader>
@@ -583,7 +670,11 @@ export default function AnalyticsDashboard({
             <Card>
               <CardHeader>
                 <CardTitle>Views Trend</CardTitle>
-                <CardDescription>Views over time</CardDescription>
+                <CardDescription>
+                  {viewMode === 'global'
+                    ? 'Total views across all cars'
+                    : 'Views over time'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width='100%' height={300}>
@@ -608,7 +699,11 @@ export default function AnalyticsDashboard({
             <Card>
               <CardHeader>
                 <CardTitle>Engagement Trend</CardTitle>
-                <CardDescription>Engagement rates over time</CardDescription>
+                <CardDescription>
+                  {viewMode === 'global'
+                    ? 'Engagement rates across all cars'
+                    : 'Engagement rates over time'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width='100%' height={300}>
@@ -628,6 +723,38 @@ export default function AnalyticsDashboard({
               </CardContent>
             </Card>
           </div>
+
+          {/* Global Analytics - Engagement Comparison */}
+          {viewMode === 'global' && carPerformance.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Engagement Comparison</CardTitle>
+                <CardDescription>
+                  Compare engagement across all your cars
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width='100%' height={400}>
+                  <BarChart data={carPerformance.slice(0, 10)}>
+                    <CartesianGrid strokeDasharray='3 3' />
+                    <XAxis
+                      dataKey='name'
+                      angle={-45}
+                      textAnchor='end'
+                      height={100}
+                    />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey='views' fill='#3b82f6' name='Views' />
+                    <Bar dataKey='likes' fill='#ef4444' name='Likes' />
+                    <Bar dataKey='shares' fill='#10b981' name='Shares' />
+                    <Bar dataKey='comments' fill='#f59e0b' name='Comments' />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

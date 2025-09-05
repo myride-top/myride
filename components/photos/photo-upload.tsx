@@ -204,6 +204,8 @@ export default function PhotoUpload({
       setUploadProgress({})
       setOptimizationProgress({})
 
+      // Photos will be added via the useEffect after descriptions are handled
+
       // Reset file input
       const fileInput = document.getElementById(
         'file-input'
@@ -212,7 +214,7 @@ export default function PhotoUpload({
         fileInput.value = ''
       }
     },
-    [carId]
+    [carId, onBatchUploadComplete]
   )
 
   const handleDrop = useCallback(

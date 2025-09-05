@@ -570,17 +570,23 @@ export async function updateCarClient(
           : undefined,
     }
 
+    console.log('Updating car with data:', { carId, carData: convertedCarData })
+    console.log('Photos data being sent:', JSON.stringify(convertedCarData.photos, null, 2))
+
     const { data, error } = await supabase
       .from('cars')
       .update(convertedCarData)
       .eq('id', carId)
-      .select()
+      .select('*')
       .single()
 
     if (error) {
+      console.error('Database update error:', error)
       return null
     }
 
+    console.log('Database update successful:', data)
+    console.log('Photos data returned:', data?.photos)
     return data
   } catch {
     return null
