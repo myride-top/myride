@@ -93,7 +93,7 @@ export default function ProfilePage() {
         username: formData.username,
         full_name: formData.full_name,
         unit_preference: formData.unit_preference,
-        avatar_url: avatarUrl,
+        // avatar_url is already updated when avatar changes, no need to update again
       })
 
       if (result.success && result.data) {
@@ -119,8 +119,26 @@ export default function ProfilePage() {
     }))
   }
 
-  const handleAvatarUpdate = (newAvatarUrl: string) => {
+  const handleAvatarUpdate = async (newAvatarUrl: string) => {
     setAvatarUrl(newAvatarUrl)
+
+    // Immediately update the database when avatar changes
+    if (user) {
+      try {
+        const result = await updateProfileClient(user.id, {
+          avatar_url: newAvatarUrl,
+        })
+
+        if (result.success && result.data) {
+          setProfile(result.data)
+        } else {
+          toast.error(result.error || 'Failed to update avatar')
+        }
+      } catch (error) {
+        toast.error('Failed to update avatar')
+        console.error('Avatar update error:', error)
+      }
+    }
   }
 
   if (loading) {

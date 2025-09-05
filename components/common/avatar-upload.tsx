@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { uploadProfileAvatar, deleteProfileAvatar } from '@/lib/storage/photos'
 import { toast } from 'sonner'
 import { Camera, X, Loader2, User } from 'lucide-react'
@@ -23,6 +23,11 @@ export default function AvatarUpload({
     currentAvatarUrl || null
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Update preview when currentAvatarUrl changes
+  useEffect(() => {
+    setPreviewUrl(currentAvatarUrl || null)
+  }, [currentAvatarUrl])
 
   const sizeClasses = {
     sm: 'w-16 h-16',
@@ -57,6 +62,16 @@ export default function AvatarUpload({
       // Upload to storage
       setUploading(true)
       try {
+        // Delete old avatar if it exists (don't fail if this doesn't work)
+        if (currentAvatarUrl) {
+          try {
+            await deleteProfileAvatar(userId)
+          } catch {
+            // Continue with upload even if deletion fails
+            console.warn('Failed to delete old avatar, continuing with upload')
+          }
+        }
+
         const avatarUrl = await uploadProfileAvatar(file, userId)
         if (avatarUrl) {
           setPreviewUrl(avatarUrl)
@@ -79,13 +94,17 @@ export default function AvatarUpload({
   const handleRemoveAvatar = async () => {
     setUploading(true)
     try {
-      await deleteProfileAvatar(userId)
-      setPreviewUrl(null)
-      onAvatarUpdate('')
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+      const success = await deleteProfileAvatar(userId)
+      if (success) {
+        setPreviewUrl(null)
+        onAvatarUpdate('')
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
+        toast.success('Avatar removed successfully!')
+      } else {
+        toast.error('Failed to remove avatar')
       }
-      toast.success('Avatar removed successfully!')
     } catch {
       toast.error('Failed to remove avatar')
     } finally {
