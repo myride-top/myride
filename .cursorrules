@@ -1,0 +1,148 @@
+# MyRide Project Rules for Cursor
+
+## Documentation
+
+- Always reference `docs.md` for understanding the codebase architecture, patterns, and conventions
+- Follow the established patterns documented in `docs.md` when making changes
+- Maintain consistency with the design system and component patterns outlined in the documentation
+
+## Code Style & Patterns
+
+- Use TypeScript strict mode with proper typing
+- Follow the established component patterns with consistent prop interfaces
+- Use the `cn()` utility for conditional classes (188+ instances in codebase)
+- Implement proper error handling with toast notifications
+- Use optimistic updates for better UX
+
+## Architecture Guidelines
+
+- Follow Next.js 15 App Router patterns
+- Use Supabase for database operations with type-safe functions
+- Implement proper authentication with middleware
+- Use rate limiting and security headers for API routes
+- Follow the established file upload and storage patterns
+
+## Component Guidelines
+
+- Use compound components for complex UI patterns
+- Implement proper loading states and error boundaries
+- Follow the established layout patterns (PageLayout, MinimalFooter, etc.)
+- Use the design system colors and typography consistently
+
+## Database & API Patterns
+
+- Use client-side functions in `lib/database/*-client.ts`
+- Use server-side functions in `lib/database/*.ts`
+- Follow the established API route structure (rate limiting, auth, validation, response)
+- Implement proper error handling with consistent return types
+
+## Security & Performance
+
+- Always validate input on API routes
+- Use rate limiting to prevent abuse
+- Implement proper image optimization
+- Use lazy loading for photos and components
+- Follow the established security patterns
+
+## Payment Integration
+
+- Use the PaymentService class for Stripe operations
+- Follow the established webhook handling patterns
+- Implement proper refund functionality
+- Use security headers for payment endpoints
+
+## File Management
+
+- Use Supabase Storage for file management
+- Implement proper image optimization and compression
+- Use drag & drop interfaces with progress tracking
+- Implement automatic cleanup of old files
+
+## Key Features to Maintain
+
+- Multi-step car creation form (8 steps)
+- Comprehensive car specifications (100+ fields)
+- Photo management with categories and ordering
+- Analytics dashboard with time-based filtering
+- Premium features with Stripe integration
+- User profile management with avatar upload
+
+## Development Workflow
+
+- Use Bun as package manager
+- Follow the established naming conventions
+- Use feature-based component organization
+- Implement proper TypeScript interfaces
+- Use the established error handling patterns
+
+## Performance Considerations
+
+- Use server-side rendering for SEO
+- Implement client-side hydration for interactivity
+- Use optimistic updates for immediate feedback
+- Implement proper caching strategies
+- Use dynamic imports for heavy components
+
+## Accessibility & SEO
+
+- Use semantic HTML structure
+- Implement ARIA labels for interactive elements
+- Use proper metadata for all pages
+- Implement structured data with JSON-LD
+- Follow accessibility best practices
+
+## Testing & Quality
+
+- Use ESLint with Next.js config
+- Follow TypeScript strict mode
+- Implement proper error boundaries
+- Use consistent code formatting
+- Follow the established testing patterns
+
+## Deployment
+
+- Use Turbopack for faster development
+- Follow Next.js production optimizations
+- Use proper environment variable configuration
+- Implement proper build and deployment processes
+
+## Documentation Updates
+
+- Keep `docs.md` updated when making architectural changes
+- Document new patterns and conventions
+- Update the codebase report when adding new features
+- Maintain consistency with the established documentation structure
+
+## Code Review Guidelines
+
+- Check against the patterns documented in `docs.md`
+- Ensure consistency with the established design system
+- Verify proper error handling and validation
+- Check for proper TypeScript usage
+- Ensure accessibility and SEO compliance
+- Verify security best practices are followed
+- Check performance optimizations are in place
+
+## Key Files to Reference
+
+- `docs.md` - Comprehensive codebase documentation
+- `lib/types/database.ts` - Database type definitions
+- `components/ui/button.tsx` - UI component patterns
+- `lib/services/payment-service.ts` - Payment integration patterns
+- `lib/database/` - Database operation patterns
+- `app/api/` - API route patterns
+- `components/forms/car-form.tsx` - Complex form patterns
+- `lib/storage/photos.ts` - File upload patterns
+- `middleware.ts` - Authentication and routing patterns
+
+## Important Notes
+
+- This is a production-ready application with enterprise-level security
+- The codebase follows modern React patterns with comprehensive TypeScript usage
+- All patterns and conventions are documented in `docs.md`
+- Always maintain consistency with the established architecture
+- Follow the established error handling and validation patterns
+- Use the established design system and component patterns
+- Implement proper security measures for all user-facing features
+- Follow the established performance optimization patterns
+- Maintain proper accessibility and SEO standards
