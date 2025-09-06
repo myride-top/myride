@@ -23,8 +23,8 @@ export default function CookieConsent() {
     }
   }, [isLoaded, consentStatus])
 
-  // Don't show cookie consent on coming-soon page
-  if (pathname === '/coming-soon') {
+  // Don't show cookie consent on coming-soon page or car detail pages
+  if (pathname === '/coming-soon' || pathname.match(/^\/[^\/]+\/[^\/]+$/)) {
     return null
   }
 
