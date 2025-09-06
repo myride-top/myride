@@ -1,7 +1,7 @@
 'use client'
 
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
-import { DndContext, closestCenter } from '@dnd-kit/core'
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
 import {
   arrayMove,
   SortableContext,
@@ -43,7 +43,7 @@ export default function SortablePhotoGallery({
     )
   }
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     console.log('Drag end event:', { active: active?.id, over: over?.id })

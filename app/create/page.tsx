@@ -54,12 +54,12 @@ export default function CreateCarPage() {
   }
 
   const handlePhotoCategoryChange = async (
-    photoIndex: number,
+    photoUrl: string,
     newCategory: PhotoCategory
   ) => {
     setPhotos(prev =>
-      prev.map((photo, index) =>
-        index === photoIndex ? { ...photo, category: newCategory } : photo
+      prev.map(photo =>
+        photo.url === photoUrl ? { ...photo, category: newCategory } : photo
       )
     )
   }

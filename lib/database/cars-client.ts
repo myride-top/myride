@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
-import { Car, CarPhoto, CarComment } from '@/lib/types/database'
+import { Car, CarPhoto, CarComment, PhotoCategory } from '@/lib/types/database'
 import { unitConversions } from '@/lib/utils'
 import { deleteAllCarPhotos } from '@/lib/storage/photos'
 
@@ -571,7 +571,10 @@ export async function updateCarClient(
     }
 
     console.log('Updating car with data:', { carId, carData: convertedCarData })
-    console.log('Photos data being sent:', JSON.stringify(convertedCarData.photos, null, 2))
+    console.log(
+      'Photos data being sent:',
+      JSON.stringify(convertedCarData.photos, null, 2)
+    )
 
     const { data, error } = await supabase
       .from('cars')
@@ -654,7 +657,7 @@ export async function removePhotoFromCar(
 export async function updatePhotoCategory(
   carId: string,
   photoUrl: string,
-  category: string,
+  category: PhotoCategory,
   description?: string
 ): Promise<Car | null> {
   try {

@@ -106,7 +106,7 @@ export default function BrowsePage() {
 
   // Filter and sort cars
   const filteredAndSortedCars = useMemo(() => {
-    let filtered = cars.filter(car => {
+    const filtered = cars.filter(car => {
       // Search filter
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase()
