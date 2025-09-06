@@ -24,6 +24,7 @@ export interface PaymentLinkOptions {
   description: string
   redirectUrl: string
   metadata?: Record<string, string | number | boolean | null>
+  userId?: string
 }
 
 export class PaymentService {
@@ -99,7 +100,14 @@ export class PaymentService {
       throw new Error('Redirect URL is required')
     }
 
-    const { amount, name, description, redirectUrl, metadata = {} } = options
+    const {
+      amount,
+      name,
+      description,
+      redirectUrl,
+      metadata = {},
+      userId,
+    } = options
 
     const paymentLink = await stripe.paymentLinks.create({
       line_items: [
@@ -120,6 +128,7 @@ export class PaymentService {
         ...metadata,
         type: 'support',
         platform: 'myride',
+        userId: userId || null,
       },
       after_completion: {
         type: 'redirect',

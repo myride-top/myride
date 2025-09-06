@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/context/auth-context'
 
 interface SupportOption {
   id: string
@@ -57,6 +58,7 @@ const supportOptions: SupportOption[] = [
 ]
 
 export default function SupportCreator() {
+  const { user } = useAuth()
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [customAmount, setCustomAmount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -86,6 +88,7 @@ export default function SupportCreator() {
         body: JSON.stringify({
           amount: Math.round(amount * 100), // Convert to cents
           description: `Support MyRide - ${option.name}`,
+          userId: user?.id,
           metadata: {
             supportType: option.id,
             amount: amount.toString(),

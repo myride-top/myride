@@ -93,8 +93,11 @@ async function handleCheckoutSessionCompleted(
       // Handle car slot purchase
       await handleCarSlotPurchase(session)
     } else {
+      console.log('Unknown payment type:', type)
     }
-  } catch {}
+  } catch (error) {
+    console.error('Error handling checkout session completed:', error)
+  }
 }
 
 // Handle successful payment intents
@@ -161,30 +164,55 @@ async function handleSupportPayment(session: Stripe.Checkout.Session) {
   const { supportType, amount, userId } = session.metadata || {}
 
   try {
-    // Log support payment for analytics
-    if (userId && supportType && amount) {
-      const { logSupportPayment } = await import(
-        '@/lib/database/support-client'
-      )
-      await logSupportPayment(userId, supportType, parseFloat(amount))
+    console.log('Processing support payment:', {
+      supportType,
+      amount,
+      userId,
+      sessionId: session.id,
+    })
+
+    if (!userId) {
+      console.error('No userId found in support payment metadata')
+      return
     }
+
+    const paymentAmount = session.amount_total || parseFloat(amount || '0')
+    const supportTypeValue = supportType || 'general'
+
+    // Create support transaction record
+    const { createSupportTransaction } = await import(
+      '@/lib/database/support-client'
+    )
+
+    // For support payments, we'll use a default creator ID or the platform ID
+    // You may want to modify this based on your business logic
+    const platformCreatorId = 'platform' // or get from session metadata
+
+    const transaction = await createSupportTransaction(
+      userId,
+      platformCreatorId,
+      paymentAmount / 100, // Convert from cents to dollars
+      session.payment_intent as string
+    )
+
+    if (!transaction) {
+      console.error('Failed to create support transaction')
+      return
+    }
+
+    console.log('Support transaction created:', transaction.id)
+
+    // Log support payment for analytics
+    const { logSupportPayment } = await import('@/lib/database/support-client')
+    await logSupportPayment(userId, supportTypeValue, paymentAmount / 100)
 
     // Send thank you email
     if (session.customer_email) {
       const { sendSupportThankYouEmail } = await import('@/lib/services/email')
-      await sendSupportThankYouEmail(
-        session.customer_email,
-        supportType || 'general'
-      )
+      await sendSupportThankYouEmail(session.customer_email, supportTypeValue)
     }
 
-    // Update user profile if needed (e.g., mark as supporter)
-    if (userId) {
-      const { markUserAsSupporter } = await import(
-        '@/lib/database/profiles-client'
-      )
-      await markUserAsSupporter(userId, supportType || 'general')
-    }
+    console.log('Support payment processed successfully for user:', userId)
   } catch (error) {
     console.error('Error processing support payment:', error)
   }
