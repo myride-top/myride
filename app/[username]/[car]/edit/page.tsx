@@ -342,11 +342,26 @@ export default function EditCarPage() {
               // Add photo to car's photos array, avoiding duplicates
               const existingUrls = new Set((car.photos || []).map(p => p.url))
               if (!existingUrls.has(photo.url)) {
+                const updatedPhotos = [...(car.photos || []), photo]
                 const updatedCar = {
                   ...car,
-                  photos: [...(car.photos || []), photo],
+                  photos: updatedPhotos,
                 }
                 setCar(updatedCar)
+
+                // Save to database
+                try {
+                  const savedCar = await updateCarClient(car.id, {
+                    photos: updatedPhotos,
+                  })
+                  if (savedCar) {
+                    setCar(savedCar)
+                    toast.success('Photo added successfully!')
+                  }
+                } catch (error) {
+                  console.error('Error saving photo:', error)
+                  toast.error('Failed to save photo')
+                }
               }
             }}
             onBatchUploadComplete={async (photos: CarPhoto[]) => {
@@ -356,11 +371,28 @@ export default function EditCarPage() {
                 photo => !existingUrls.has(photo.url)
               )
               if (newPhotos.length > 0) {
+                const updatedPhotos = [...(car.photos || []), ...newPhotos]
                 const updatedCar = {
                   ...car,
-                  photos: [...(car.photos || []), ...newPhotos],
+                  photos: updatedPhotos,
                 }
                 setCar(updatedCar)
+
+                // Save to database
+                try {
+                  const savedCar = await updateCarClient(car.id, {
+                    photos: updatedPhotos,
+                  })
+                  if (savedCar) {
+                    setCar(savedCar)
+                    toast.success(
+                      `${newPhotos.length} photos added successfully!`
+                    )
+                  }
+                } catch (error) {
+                  console.error('Error saving photos:', error)
+                  toast.error('Failed to save photos')
+                }
               }
             }}
             onPhotoCategoryChange={async (
