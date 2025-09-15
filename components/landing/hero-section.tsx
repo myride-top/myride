@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { ChevronDown, Car, Users, Zap, Shield } from 'lucide-react'
+import { Car, Users, Zap, Shield } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import FeatureCard, { Feature } from '@/components/common/feature-card'
 import Container from '@/components/common/container'
