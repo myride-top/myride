@@ -61,13 +61,13 @@ const features: Feature[] = [
 
 export default function FeaturesSection() {
   return (
-    <Section id="features">
+    <Section id='features'>
       <SectionHeader
-        title="Everything You Need to Showcase Your Ride"
-        description="Powerful features designed specifically for car enthusiasts to create the perfect showcase"
+        title='Everything You Need to Showcase Your Ride'
+        description='Powerful features designed specifically for car enthusiasts to create the perfect showcase'
       />
 
-      <Grid cols={3} gap="md">
+      <Grid cols={3} gap='md'>
         {features.map((feature, index) => (
           <FeatureCard
             key={feature.title}
@@ -77,18 +77,6 @@ export default function FeaturesSection() {
           />
         ))}
       </Grid>
-
-      {/* Call to action */}
-      <div className='mt-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500'>
-        <CTASection
-          title="Ready to get started?"
-          variant="highlighted"
-          primaryButton={{
-            text: "Start Showcasing",
-            onClick: () => window.location.href = '/register'
-          }}
-        />
-      </div>
     </Section>
   )
 }

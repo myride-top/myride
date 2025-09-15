@@ -36,11 +36,6 @@ export interface Database {
         Insert: Omit<CommentLike, 'id' | 'created_at'>
         Update: Partial<Omit<CommentLike, 'id' | 'created_at'>>
       }
-      waitlist: {
-        Row: WaitlistEntry
-        Insert: Omit<WaitlistEntry, 'id' | 'created_at'>
-        Update: Partial<Omit<WaitlistEntry, 'id' | 'created_at'>>
-      }
     }
     Views: {
       [_ in never]: never
@@ -75,12 +70,6 @@ export interface CarLike {
   id: string
   user_id: string
   car_id: string
-  created_at: string
-}
-
-export interface WaitlistEntry {
-  id: string
-  email: string
   created_at: string
 }
 

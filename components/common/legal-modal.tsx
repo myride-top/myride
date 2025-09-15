@@ -12,7 +12,7 @@ export function LegalModal() {
     <>
       {/* Legal Links */}
       <div className='text-xs text-muted-foreground mt-3 text-center'>
-        By joining, you agree to receive launch notifications. <br /> View our{' '}
+        View our{' '}
         <button
           onClick={() => {
             setActiveTab('privacy')
@@ -81,32 +81,6 @@ export function LegalModal() {
 
                   <section>
                     <h4 className='font-semibold text-foreground mb-2'>
-                      Waitlist Communications
-                    </h4>
-                    <p className='mb-3'>
-                      When you join our waitlist, we collect your email address
-                      to:
-                    </p>
-                    <ul className='list-disc list-inside pl-6 space-y-1 mb-3'>
-                      <li>Notify you when our platform launches</li>
-                      <li>Send you early access invitations if applicable</li>
-                      <li>Provide updates about our launch progress</li>
-                    </ul>
-                    <p>
-                      You can unsubscribe from waitlist communications at any
-                      time by contacting us directly at{' '}
-                      <a
-                        href='mailto:support@myride.top'
-                        className='text-primary hover:underline'
-                      >
-                        support@myride.top
-                      </a>
-                      .
-                    </p>
-                  </section>
-
-                  <section>
-                    <h4 className='font-semibold text-foreground mb-2'>
                       Data Protection
                     </h4>
                     <p>
@@ -138,33 +112,6 @@ export function LegalModal() {
                   <h3 className='text-lg font-semibold text-foreground mb-4'>
                     Terms of Service
                   </h3>
-
-                  <section>
-                    <h4 className='font-semibold text-foreground mb-2'>
-                      Waitlist Service
-                    </h4>
-                    <p className='mb-3'>
-                      By joining our waitlist, you agree to:
-                    </p>
-                    <ul className='list-disc list-inside pl-6 space-y-1 mb-3'>
-                      <li>
-                        Receive email notifications about our platform launch
-                      </li>
-                      <li>Receive early access invitations if applicable</li>
-                      <li>Receive updates about our launch progress</li>
-                    </ul>
-                    <p>
-                      You can unsubscribe from these communications at any time
-                      by contacting us at{' '}
-                      <a
-                        href='mailto:support@myride.top'
-                        className='text-primary hover:underline'
-                      >
-                        support@myride.top
-                      </a>
-                      .
-                    </p>
-                  </section>
 
                   <section>
                     <h4 className='font-semibold text-foreground mb-2'>

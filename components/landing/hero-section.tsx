@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { ChevronDown, Car, Users, Zap, Shield } from 'lucide-react'
-import CTAButton from '@/components/common/cta-button'
+import { useRouter } from 'next/navigation'
 import FeatureCard, { Feature } from '@/components/common/feature-card'
 import Container from '@/components/common/container'
 import Grid from '@/components/common/grid'
@@ -32,8 +32,18 @@ const features: Feature[] = [
 ]
 
 export default function HeroSection() {
+  const router = useRouter()
+
+  const handleGetStarted = () => {
+    router.push('/register')
+  }
+
+  const handleExploreCars = () => {
+    router.push('/browse')
+  }
+
   return (
-    <section className='relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 pt-28 lg:pt-0'>
+    <section className='relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 pt-28'>
       {/* Simplified background elements */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
         <div className='absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl' />
@@ -41,13 +51,6 @@ export default function HeroSection() {
       </div>
 
       <Container className='text-center'>
-        {/* Main heading */}
-        <div className='animate-in fade-in slide-in-from-bottom-4 duration-700'>
-          <h1 className='text-6xl md:text-8xl font-bold bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent mb-6 py-2'>
-            MyRide
-          </h1>
-        </div>
-
         {/* Subtitle */}
         <p className='text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100'>
           Showcase your car to friends and audience with our super fast and
@@ -55,23 +58,69 @@ export default function HeroSection() {
           your automotive passion.
         </p>
 
-        {/* CTA Buttons */}
-        <div className='flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200'>
-          <CTAButton href="/register">
-            Get Started Free
-          </CTAButton>
-          <CTAButton 
-            href="/browse" 
-            gradient={false}
-            className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='border-2 border-primary rounded-xl p-1'>
+            <img
+              src='/hero-1.webp'
+              alt='Platform Showcase'
+              className='rounded-xl'
+            />
+          </div>
+
+          <div className='border-2 border-primary rounded-xl p-1'>
+            <img
+              src='/hero-2.webp'
+              alt='Platform Showcase'
+              className='rounded-xl'
+            />
+          </div>
+        </div>
+
+        {/* CTA Buttons - Updated Design */}
+        <div className='flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 mt-10'>
+          <button
+            onClick={handleGetStarted}
+            className='group px-8 py-4 bg-gradient-to-r from-primary to-primary/50 text-primary-foreground font-bold rounded-full hover:from-primary/90 hover:to-primary/40 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer'
           >
+            Get Started Free
+            <svg
+              className='w-5 h-5 group-hover:translate-x-1 transition-transform'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M13 7l5 5m0 0l-5 5m5-5H6'
+              />
+            </svg>
+          </button>
+          <button
+            onClick={handleExploreCars}
+            className='px-8 py-4 border-2 border-primary/30 text-primary font-bold rounded-full hover:bg-primary/10 transition-all duration-300 backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer'
+          >
+            <svg
+              className='w-5 h-5'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+              />
+            </svg>
             Explore Cars
-          </CTAButton>
+          </button>
         </div>
 
         {/* Features Grid */}
         <div className='max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300'>
-          <Grid cols={4} gap="md">
+          <Grid cols={4} gap='md'>
             {features.map((feature, index) => (
               <FeatureCard
                 key={feature.title}
@@ -81,14 +130,6 @@ export default function HeroSection() {
               />
             ))}
           </Grid>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className='absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-in fade-in duration-1000 delay-600'>
-          <div className='flex flex-col items-center text-muted-foreground'>
-            <span className='text-sm mb-2'>Scroll to explore</span>
-            <ChevronDown className='h-6 w-6 animate-bounce' />
-          </div>
         </div>
       </Container>
     </section>

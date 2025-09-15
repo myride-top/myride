@@ -51,7 +51,7 @@ export default function IconWrapper({
     default: 'bg-primary/10 text-primary',
     primary: 'bg-primary/10 text-primary',
     secondary: 'bg-secondary/10 text-secondary',
-    gradient: 'bg-gradient-to-br from-primary/10 to-secondary/10 text-primary',
+    gradient: 'bg-gradient-to-br from-primary/20 to-secondary/20 text-primary',
     muted: 'bg-muted text-muted-foreground',
     custom: '',
   }
@@ -76,7 +76,7 @@ export default function IconWrapper({
       <IconComponent
         className={cn(
           iconSizeClasses[size],
-          variant === 'gradient' && 'bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'
+          variant === 'gradient' ? 'text-primary' : ''
         )}
       />
     </div>
