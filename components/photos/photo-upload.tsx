@@ -239,16 +239,6 @@ export default function PhotoUpload({
     [handleFiles]
   )
 
-  const handlePhotoDescriptionChange = (
-    photoUrl: string,
-    description: string
-  ) => {
-    setPhotoDescriptions(prev => ({
-      ...prev,
-      [photoUrl]: description,
-    }))
-  }
-
   return (
     <div className='space-y-4'>
       {/* Photo Upload with Descriptions */}
