@@ -294,41 +294,18 @@ export default function PhotoUpload({
           </div>
         </div>
 
-        {/* Photo Descriptions Input - Auto-add photos immediately */}
+        {/* Photo Descriptions Input */}
         {Object.keys(photoDescriptions).length > 0 && (
           <div className='space-y-3'>
-            <h4 className='text-sm font-medium text-card-foreground'>
-              Photo Descriptions (Optional)
-            </h4>
-            {Object.entries(photoDescriptions).map(
-              ([photoUrl, description]) => (
-                <div key={photoUrl} className='flex items-center gap-3'>
-                  <img
-                    src={photoUrl}
-                    alt='Photo preview'
-                    className='w-16 h-16 object-cover rounded-md'
-                  />
-                  <div className='flex-1'>
-                    <input
-                      type='text'
-                      placeholder='Describe this photo (optional)'
-                      value={description}
-                      onChange={e =>
-                        handlePhotoDescriptionChange(photoUrl, e.target.value)
-                      }
-                      className='w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-                    />
-                  </div>
-                </div>
-              )
-            )}
-
-            {/* Auto-add photos after a short delay */}
-            <div className='text-center pt-2'>
-              <div className='text-sm text-muted-foreground'>
-                Photos will be added to your car automatically...
+            {Object.entries(photoDescriptions).map(([photoUrl]) => (
+              <div key={photoUrl} className='flex items-center gap-3'>
+                <img
+                  src={photoUrl}
+                  alt='Photo preview'
+                  className='w-16 h-16 object-cover rounded-md'
+                />
               </div>
-            </div>
+            ))}
           </div>
         )}
 
