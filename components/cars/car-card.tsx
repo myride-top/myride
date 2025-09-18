@@ -82,17 +82,29 @@ export default function CarCard({
     >
       {/* Photo */}
       <div className='relative aspect-[4/3] bg-muted overflow-hidden'>
-        {car.main_photo_url ? (
-          <img
-            src={car.main_photo_url}
-            alt={car.name || 'car photo'}
-            className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-          />
-        ) : (
-          <div className='w-full h-full flex items-center justify-center'>
-            <Image className='w-12 h-12 text-muted-foreground' />
-          </div>
-        )}
+        {(() => {
+          // Get the photo URL to display
+          const photoUrl =
+            car.main_photo_url ||
+            (car.photos && car.photos.length > 0 && car.photos[0]?.url) ||
+            (car.photos &&
+            car.photos.length > 0 &&
+            typeof car.photos[0] === 'string'
+              ? car.photos[0]
+              : null)
+
+          return photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={car.name || 'car photo'}
+              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+            />
+          ) : (
+            <div className='w-full h-full flex items-center justify-center'>
+              <Image className='w-12 h-12 text-muted-foreground' />
+            </div>
+          )
+        })()}
 
         {/* Actions Overlay */}
         {showActions && (
