@@ -1,4 +1,4 @@
-import { convertToPreferredUnit, unitConversions } from '@/lib/utils'
+import { unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
 interface SpecificationSectionProps {
@@ -42,8 +42,8 @@ export const SpecificationSection = ({
     // Just format with the correct unit label
     if (spec.unitType && typeof spec.value === 'number') {
       const value = spec.value
-      const preference = unitLoading ? 'metric' : (unitPreference || 'metric')
-      
+      const preference = unitLoading ? 'metric' : unitPreference || 'metric'
+
       // Format with correct unit label based on preference
       switch (spec.unitType) {
         case 'torque':

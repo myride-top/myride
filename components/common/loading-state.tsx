@@ -17,7 +17,7 @@ export const LoadingState = ({
       message={message}
       className={className}
       size={size}
-      variant={variant as any}
+      variant={variant}
     />
   )
 }

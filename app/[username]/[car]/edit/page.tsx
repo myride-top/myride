@@ -161,6 +161,8 @@ export default function EditCarPage() {
     wheel_brand?: string | null
     front_tire_size?: string | null
     rear_tire_size?: string | null
+    front_tire_pressure?: string | number | null
+    rear_tire_pressure?: string | number | null
     front_suspension?: string | null
     rear_suspension?: string | null
     coilovers?: string | null
@@ -172,6 +174,7 @@ export default function EditCarPage() {
     instagram_handle?: string | null
     youtube_channel?: string | null
     website_url?: string | null
+    mileage?: string | number | null
   }) => {
     if (!car || !user) return
 
@@ -229,17 +232,17 @@ export default function EditCarPage() {
         n => unitConversions.weight.imperialToMetric(n)
       )
       const frontTirePressureData = saveWithConversion(
-        (formData as any).front_tire_pressure,
+        formData.front_tire_pressure,
         n => unitConversions.pressure.metricToImperial(n),
         n => unitConversions.pressure.imperialToMetric(n)
       )
       const rearTirePressureData = saveWithConversion(
-        (formData as any).rear_tire_pressure,
+        formData.rear_tire_pressure,
         n => unitConversions.pressure.metricToImperial(n),
         n => unitConversions.pressure.imperialToMetric(n)
       )
       const mileageData = saveWithConversion(
-        (formData as any).mileage,
+        formData.mileage,
         n => unitConversions.distance.metricToImperial(n),
         n => unitConversions.distance.imperialToMetric(n)
       )

@@ -1,15 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { PaymentService } from '@/lib/services/payment-service'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { paymentRateLimit, createRateLimitResponse } from '@/lib/utils/rate-limit'
+import {
+  paymentRateLimit,
+  createRateLimitResponse,
+} from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
 
 export async function POST(request: NextRequest) {
   // Apply rate limiting
   const rateLimitResult = paymentRateLimit.isAllowed(request)
   if (!rateLimitResult.allowed) {
-    return createRateLimitResponse(rateLimitResult.remaining, rateLimitResult.resetTime)
+    return createRateLimitResponse(
+      rateLimitResult.remaining,
+      rateLimitResult.resetTime
+    )
   }
 
   try {

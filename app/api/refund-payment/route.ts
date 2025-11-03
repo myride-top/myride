@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Stripe from 'stripe'
@@ -68,10 +68,7 @@ export async function POST(request: NextRequest) {
     // Validate reason
     const validReasons = ['duplicate', 'fraudulent', 'requested_by_customer']
     if (reason && !validReasons.includes(reason)) {
-      return createSecureResponse(
-        { error: 'Invalid refund reason' },
-        400
-      )
+      return createSecureResponse({ error: 'Invalid refund reason' }, 400)
     }
 
     // Retrieve the payment intent to verify ownership

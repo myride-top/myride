@@ -72,8 +72,8 @@ export const ShareButton = ({
       onClick={handleShare}
       className={cn('cursor-pointer drop-shadow', className)}
       title='Share this car'
-      variant={variant === 'default' ? 'default' : (variant as any)}
-      size={size === 'md' ? 'default' : (size as any)}
+      variant={variant === 'default' ? 'default' : variant}
+      size={size === 'md' ? 'default' : size}
     >
       {showIcon && <Share2 className={cn('w-4 h-4 mr-2')} />}
       {children || 'Share'}

@@ -134,7 +134,7 @@ export default function CarDetailPage() {
               is_supporter: false,
             })
           }
-        } catch (profileError) {
+        } catch {
           // If profile fetch fails, create a fallback
           setProfile({
             id: carData.user_id,

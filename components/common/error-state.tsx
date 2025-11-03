@@ -19,7 +19,7 @@ export const ErrorState = ({
       message={message}
       onRetry={onRetry}
       className={className}
-      variant={variant as any}
+      variant={variant}
     />
   )
 }

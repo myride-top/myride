@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Stripe from 'stripe'
@@ -60,10 +60,7 @@ export async function GET(request: NextRequest) {
     const sessionId = searchParams.get('session_id')
 
     if (!sessionId) {
-      return createSecureResponse(
-        { error: 'Session ID is required' },
-        400
-      )
+      return createSecureResponse({ error: 'Session ID is required' }, 400)
     }
 
     // Retrieve the session from Stripe
