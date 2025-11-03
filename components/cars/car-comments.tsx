@@ -41,11 +41,11 @@ interface CarCommentsProps {
   ownerProfile?: Profile | null
 }
 
-export default function CarComments({
+export const CarComments = ({
   carId,
   carOwnerId,
   ownerProfile,
-}: CarCommentsProps) {
+}: CarCommentsProps) => {
   const { user } = useAuth()
   const [comments, setComments] = useState<CommentWithProfile[]>([])
   const [newComment, setNewComment] = useState('')

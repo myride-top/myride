@@ -9,11 +9,11 @@ import {
   updateProfileClient,
 } from '@/lib/database/profiles-client'
 import { Profile } from '@/lib/types/database'
-import ProtectedRoute from '@/components/auth/protected-route'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
-import MainNavbar from '@/components/navbar/main-navbar'
-import AvatarUpload from '@/components/common/avatar-upload'
+import { MainNavbar } from '@/components/navbar/main-navbar'
+import { AvatarUpload } from '@/components/common/avatar-upload'
 
 export default function ProfilePage() {
   const { user } = useAuth()

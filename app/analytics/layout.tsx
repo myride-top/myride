@@ -1,6 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
-import MinimalFooter from '@/components/common/minimal-footer'
+import { MinimalFooter } from '@/components/common/minimal-footer'
 
 export const metadata: Metadata = {
   title: 'Analytics',

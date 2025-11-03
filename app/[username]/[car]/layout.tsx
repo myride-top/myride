@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { getCarByUrlSlugAndUsername } from '@/lib/database/cars'
 import { getProfileByUsername } from '@/lib/database/profiles'
-import MinimalFooter from '@/components/common/minimal-footer'
+import { MinimalFooter } from '@/components/common/minimal-footer'
 
 interface CarLayoutProps {
   children: React.ReactNode

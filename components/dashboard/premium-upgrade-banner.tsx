@@ -10,12 +10,12 @@ interface PremiumUpgradeBannerProps {
   variant?: 'default' | 'compact'
 }
 
-export default function PremiumUpgradeBanner({
+export const PremiumUpgradeBanner = ({
   currentCars,
   maxAllowedCars,
   className = '',
   variant = 'default',
-}: PremiumUpgradeBannerProps) {
+}: PremiumUpgradeBannerProps) => {
   const remainingSlots = maxAllowedCars - currentCars
 
   if (variant === 'compact') {

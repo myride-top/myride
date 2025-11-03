@@ -6,6 +6,7 @@ import {
   generalRateLimit,
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
+import { createSecureResponse } from '@/lib/utils/security-headers'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-08-27.basil',
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return createSecureResponse({ error: 'Unauthorized' }, 401)
     }
 
     // Get session ID from query params
@@ -59,9 +60,9 @@ export async function GET(request: NextRequest) {
     const sessionId = searchParams.get('session_id')
 
     if (!sessionId) {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Session ID is required' },
-        { status: 400 }
+        400
       )
     }
 
@@ -70,13 +71,13 @@ export async function GET(request: NextRequest) {
 
     // Verify the session belongs to the authenticated user
     if (session.metadata?.userId !== user.id) {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Session not found or access denied' },
-        { status: 404 }
+        404
       )
     }
 
-    return NextResponse.json({
+    return createSecureResponse({
       session: {
         id: session.id,
         status: session.payment_status,
@@ -88,12 +89,12 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error retrieving payment session:', error)
-    return NextResponse.json(
+    return createSecureResponse(
       {
         error: 'Failed to retrieve payment session',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      500
     )
   }
 }

@@ -29,7 +29,7 @@ interface MultiStepNavigationProps {
   loading?: boolean
 }
 
-export default function MultiStepNavigation({
+export const MultiStepNavigation = ({
   steps,
   currentStep,
   onStepChange,
@@ -45,7 +45,7 @@ export default function MultiStepNavigation({
   previousButtonText = 'Previous',
   completeButtonText = 'Complete',
   loading = false,
-}: MultiStepNavigationProps) {
+}: MultiStepNavigationProps) => {
   const isFirstStep = currentStep === 0
   const isLastStep = currentStep === steps.length - 1
   const currentStepData = steps[currentStep]

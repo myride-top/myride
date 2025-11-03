@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/context/auth-context'
@@ -21,7 +21,7 @@ interface LikeButtonProps {
   disabled?: boolean
 }
 
-export default function LikeButton({
+export const LikeButton = ({
   carId,
   initialLikeCount,
   isOwner,
@@ -31,7 +31,7 @@ export default function LikeButton({
   size = 'md',
   showCount = true,
   disabled = false,
-}: LikeButtonProps) {
+}: LikeButtonProps) => {
   const { user } = useAuth()
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(initialLikeCount)

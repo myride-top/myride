@@ -1,15 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
-import LoadingSpinner from '@/components/common/loading-spinner'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 
 interface AuthWrapperProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export default function AuthWrapper({ children }: AuthWrapperProps) {
+export const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const router = useRouter()
   const { user, loading } = useAuth()
 

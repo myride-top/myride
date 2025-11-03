@@ -1,5 +1,5 @@
 import { Car } from '@/lib/types/database'
-import SpecificationSection from './specification-section'
+import { SpecificationSection } from './specification-section'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
 interface CarSpecificationsProps {
@@ -15,10 +15,10 @@ type SpecificationItem = {
   unitType?: 'torque' | 'weight' | 'pressure' | 'speed' | 'distance'
 }
 
-export default function CarSpecifications({
+export const CarSpecifications = ({
   car,
   className,
-}: CarSpecificationsProps) {
+}: CarSpecificationsProps) => {
   const { unitPreference } = useUnitPreference()
 
   const basicInfo: SpecificationItem[] = [
@@ -215,9 +215,10 @@ export default function CarSpecifications({
     {
       key: 'modifications',
       label: 'Modifications',
-      value: car.modifications && car.modifications.length > 0 
-        ? car.modifications.join(', ')
-        : null,
+      value:
+        car.modifications && car.modifications.length > 0
+          ? car.modifications.join(', ')
+          : null,
     },
     {
       key: 'dyno_results',
@@ -244,25 +245,27 @@ export default function CarSpecifications({
   ]
 
   const socialLinks: SpecificationItem[] = [
-    { 
-      key: 'instagram_handle', 
-      label: 'Instagram', 
-      value: car.instagram_handle ? `@${car.instagram_handle.replace('@', '')}` : null 
+    {
+      key: 'instagram_handle',
+      label: 'Instagram',
+      value: car.instagram_handle
+        ? `@${car.instagram_handle.replace('@', '')}`
+        : null,
     },
-    { 
-      key: 'youtube_channel', 
-      label: 'YouTube', 
-      value: car.youtube_channel 
+    {
+      key: 'youtube_channel',
+      label: 'YouTube',
+      value: car.youtube_channel,
     },
-    { 
-      key: 'build_thread_url', 
-      label: 'Build Thread', 
-      value: car.build_thread_url 
+    {
+      key: 'build_thread_url',
+      label: 'Build Thread',
+      value: car.build_thread_url,
     },
-    { 
-      key: 'website_url', 
-      label: 'Website', 
-      value: car.website_url 
+    {
+      key: 'website_url',
+      label: 'Website',
+      value: car.website_url,
     },
   ]
 
@@ -314,7 +317,10 @@ export default function CarSpecifications({
         {/* Brake System - Only show if there's content */}
         {brakes.some(spec => spec.value) && (
           <div className='p-6'>
-            <SpecificationSection title='Brake System' specifications={brakes} />
+            <SpecificationSection
+              title='Brake System'
+              specifications={brakes}
+            />
           </div>
         )}
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { LucideIcon, AlertCircle, RefreshCw, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -17,7 +16,7 @@ export interface StatusMessageProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export default function StatusMessage({
+export const StatusMessage = ({
   type,
   title,
   message,
@@ -27,7 +26,7 @@ export default function StatusMessage({
   className = '',
   variant = 'default',
   size = 'md',
-}: StatusMessageProps) {
+}: StatusMessageProps) => {
   const defaultIcons = {
     error: AlertCircle,
     loading: Loader2,
@@ -84,35 +83,39 @@ export default function StatusMessage({
       <div className='flex justify-center mb-4'>
         <Icon className={cn(iconClasses[size], iconColorClasses[type])} />
       </div>
-      
-      <h3 className={cn(
-        'font-semibold mb-2',
-        size === 'lg' ? 'text-xl' : size === 'md' ? 'text-lg' : 'text-base',
-        'text-foreground'
-      )}>
+
+      <h3
+        className={cn(
+          'font-semibold mb-2',
+          size === 'lg' ? 'text-xl' : size === 'md' ? 'text-lg' : 'text-base',
+          'text-foreground'
+        )}
+      >
         {displayTitle}
       </h3>
-      
-      <p className={cn(
-        'text-muted-foreground mb-6 max-w-md mx-auto',
-        size === 'lg' ? 'text-base' : 'text-sm'
-      )}>
+
+      <p
+        className={cn(
+          'text-muted-foreground mb-6 max-w-md mx-auto',
+          size === 'lg' ? 'text-base' : 'text-sm'
+        )}
+      >
         {message}
       </p>
-      
+
       {/* Action buttons */}
       <div className='flex flex-col sm:flex-row gap-3 justify-center'>
         {type === 'error' && onRetry && (
           <Button
             onClick={handleRetry}
-            variant="outline"
-            className="inline-flex items-center gap-2"
+            variant='outline'
+            className='inline-flex items-center gap-2'
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className='h-4 w-4' />
             Try Again
           </Button>
         )}
-        
+
         {action && action}
       </div>
     </>
@@ -121,7 +124,7 @@ export default function StatusMessage({
   if (variant === 'fullscreen') {
     return (
       <div className={cn(variantClasses.fullscreen, className)}>
-        <div className="text-center max-w-md mx-auto px-4">
+        <div className='text-center max-w-md mx-auto px-4'>
           {renderContent()}
         </div>
       </div>
@@ -129,11 +132,13 @@ export default function StatusMessage({
   }
 
   return (
-    <div className={cn(
-      variantClasses[variant],
-      variant !== 'card' && sizeClasses[size],
-      className
-    )}>
+    <div
+      className={cn(
+        variantClasses[variant],
+        variant !== 'card' && sizeClasses[size],
+        className
+      )}
+    >
       {renderContent()}
     </div>
   )
@@ -141,13 +146,13 @@ export default function StatusMessage({
 
 // Convenience components for backward compatibility
 export function ErrorState(props: Omit<StatusMessageProps, 'type'>) {
-  return <StatusMessage {...props} type="error" />
+  return <StatusMessage {...props} type='error' />
 }
 
 export function LoadingState(props: Omit<StatusMessageProps, 'type'>) {
-  return <StatusMessage {...props} type="loading" />
+  return <StatusMessage {...props} type='loading' />
 }
 
 export function EmptyState(props: Omit<StatusMessageProps, 'type'>) {
-  return <StatusMessage {...props} type="empty" />
+  return <StatusMessage {...props} type='empty' />
 }

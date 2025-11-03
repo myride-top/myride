@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
 export interface DataTableColumn<T = Record<string, unknown>> {
@@ -27,7 +26,7 @@ export interface DataTableProps<T = Record<string, unknown>> {
   bodyClassName?: string
 }
 
-export default function DataTable<T = Record<string, unknown>>({
+export const DataTable = <T = Record<string, unknown>,>({
   data,
   columns,
   className = '',
@@ -40,7 +39,7 @@ export default function DataTable<T = Record<string, unknown>>({
   rowClassName,
   headerClassName = '',
   bodyClassName = '',
-}: DataTableProps<T>) {
+}: DataTableProps<T>) => {
   const variantClasses = {
     default: {
       table: 'w-full',

@@ -1,11 +1,16 @@
-import React from 'react'
 import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface IconWrapperProps {
   icon: LucideIcon
   size?: 'sm' | 'md' | 'lg' | 'xl'
-  variant?: 'default' | 'primary' | 'secondary' | 'gradient' | 'muted' | 'custom'
+  variant?:
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'gradient'
+    | 'muted'
+    | 'custom'
   color?: string
   bgColor?: string
   className?: string
@@ -13,7 +18,7 @@ interface IconWrapperProps {
   rounded?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
 }
 
-export default function IconWrapper({
+export const IconWrapper = ({
   icon: Icon,
   size = 'md',
   variant = 'default',
@@ -22,7 +27,7 @@ export default function IconWrapper({
   className = '',
   showHoverEffect = false,
   rounded = 'lg',
-}: IconWrapperProps) {
+}: IconWrapperProps) => {
   const IconComponent = Icon
 
   const sizeClasses = {
@@ -56,7 +61,9 @@ export default function IconWrapper({
     custom: '',
   }
 
-  const hoverClasses = showHoverEffect ? 'group-hover:scale-110 transition-transform duration-300' : ''
+  const hoverClasses = showHoverEffect
+    ? 'group-hover:scale-110 transition-transform duration-300'
+    : ''
 
   return (
     <div

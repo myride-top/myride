@@ -2,11 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import {
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react'
+import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -18,13 +14,13 @@ interface FullscreenPhotoViewerProps {
   carName: string
 }
 
-export function FullscreenPhotoViewer({
+export const FullscreenPhotoViewer = ({
   isOpen,
   onClose,
   photos,
   initialIndex,
   carName,
-}: FullscreenPhotoViewerProps) {
+}: FullscreenPhotoViewerProps) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isLoading, setIsLoading] = useState(true)
   const imageRef = useRef<HTMLImageElement>(null)

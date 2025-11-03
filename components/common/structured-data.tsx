@@ -6,7 +6,7 @@ interface StructuredDataProps {
   data: Record<string, string | number | boolean | object | null>
 }
 
-export default function StructuredData({ data }: StructuredDataProps) {
+export const StructuredData = ({ data }: StructuredDataProps) => {
   useEffect(() => {
     // Remove any existing structured data
     const existingScripts = document.querySelectorAll(

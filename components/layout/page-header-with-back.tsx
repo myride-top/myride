@@ -1,6 +1,5 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
-import BackButton from '@/components/common/back-button'
+import { BackButton } from '@/components/common/back-button'
 
 interface PageHeaderWithBackProps {
   title: string
@@ -14,7 +13,7 @@ interface PageHeaderWithBackProps {
   showBackButton?: boolean
 }
 
-export default function PageHeaderWithBack({
+export const PageHeaderWithBack = ({
   title,
   description,
   onBack,
@@ -24,7 +23,7 @@ export default function PageHeaderWithBack({
   descriptionClassName = '',
   size = 'md',
   showBackButton = true,
-}: PageHeaderWithBackProps) {
+}: PageHeaderWithBackProps) => {
   const sizeClasses = {
     sm: {
       title: 'text-2xl md:text-3xl',

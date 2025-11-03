@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { getCarByUrlSlugClient } from '@/lib/database/cars-client'
-import { getProfileByUsernameClient } from '@/lib/database/profiles-client'
+import {
+  getProfileByUsernameClient,
+  getProfileByUserIdClient,
+} from '@/lib/database/profiles-client'
 import {
   Car,
   Profile,
@@ -19,8 +22,6 @@ import {
   Heart,
   Share,
   Share2,
-  Star,
-  User,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -30,18 +31,18 @@ import {
   hasUserLikedCarClient,
   getCarLikeCountClient,
 } from '@/lib/database/cars-client'
-import MainNavbar from '@/components/navbar/main-navbar'
-import LandingNavbar from '@/components/navbar/landing-navbar'
-import LoadingSpinner from '@/components/common/loading-spinner'
-import EmptyState from '@/components/common/empty-state'
-import CarSpecifications from '@/components/cars/car-specifications'
-import QRCodeModal from '@/components/common/qr-code-modal'
+import { MainNavbar } from '@/components/navbar/main-navbar'
+import { LandingNavbar } from '@/components/navbar/landing-navbar'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
+import { EmptyState } from '@/components/common/empty-state'
+import { CarSpecifications } from '@/components/cars/car-specifications'
+import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
-import { hasUserSupportedCreator } from '@/lib/database/support-client'
+import { UserAvatar } from '@/components/common/user-avatar'
 import { useRouter } from 'next/navigation'
 import { useCarAnalytics } from '@/lib/hooks/use-car-analytics'
-import CarComments from '@/components/cars/car-comments'
-import BackButton from '@/components/common/back-button'
+import { CarComments } from '@/components/cars/car-comments'
+import { BackButton } from '@/components/common/back-button'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -59,7 +60,6 @@ export default function CarDetailPage() {
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
   const [isLikeLoading, setIsLikeLoading] = useState(false)
-  const [hasSupported, setHasSupported] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [isGeneratingQR, setIsGeneratingQR] = useState(false)
@@ -92,36 +92,35 @@ export default function CarDetailPage() {
         }
 
         try {
-          // Create a profile object with the data we know
-          const ownerProfile = {
-            id: carData.user_id,
-            username: params.username as string,
-            full_name: null,
-            avatar_url: `https://unylbdonuwmnurhvckzr.supabase.co/storage/v1/object/public/avatars/${carData.user_id}/avatar.jpeg`, // Use the correct avatar URL format: /avatars/{user_id}/avatar.jpeg
-            unit_preference: 'metric' as const,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            is_premium: false,
-            premium_purchased_at: null,
-            car_slots_purchased: 0,
-            stripe_customer_id: null,
-            stripe_subscription_id: null,
-            total_supported_amount: 0,
-            is_supporter: false,
-          }
-
-          setProfile(ownerProfile)
-        } catch {
-          // Try username fallback on error
-          try {
-            const profileData = await getProfileByUsernameClient(
+          const byId = await getProfileByUserIdClient(carData.user_id)
+          if (byId) {
+            setProfile(byId)
+          } else {
+            const byUsername = await getProfileByUsernameClient(
               params.username as string
             )
-            if (profileData) {
-              setProfile(profileData)
+            if (byUsername) {
+              setProfile(byUsername)
+            } else {
+              setProfile({
+                id: carData.user_id,
+                username: params.username as string,
+                full_name: null,
+                avatar_url: null,
+                unit_preference: 'metric' as const,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                is_premium: false,
+                premium_purchased_at: null,
+                car_slots_purchased: 0,
+                stripe_customer_id: null,
+                stripe_subscription_id: null,
+                total_supported_amount: 0,
+                is_supporter: false,
+              })
             }
-          } catch {}
-        }
+          }
+        } catch {}
       } catch {
         setError('Failed to load car data')
       } finally {
@@ -147,20 +146,6 @@ export default function CarDetailPage() {
 
     checkLikeStatus()
   }, [user, car])
-
-  // Check if current user has supported the creator
-  useEffect(() => {
-    const checkSupportStatus = async () => {
-      if (user && profile && user.id !== profile.id) {
-        try {
-          const supported = await hasUserSupportedCreator(user.id, profile.id)
-          setHasSupported(supported)
-        } catch {}
-      }
-    }
-
-    checkSupportStatus()
-  }, [user, profile])
 
   // Helper function to get photo URL and category
   const getPhotoInfo = (photo: string | CarPhoto) => {
@@ -466,28 +451,14 @@ export default function CarDetailPage() {
               </h1>
               <div className='flex items-center gap-2 mt-2 text-lg text-muted-foreground'>
                 <span>by</span>
-                {profile?.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt={`${profile.username}'s avatar`}
-                    className='w-5 h-5 rounded-full object-cover'
-                  />
-                ) : (
-                  <div className='w-5 h-5 rounded-full bg-muted flex items-center justify-center'>
-                    <User className='w-3 h-3 text-muted-foreground' />
-                  </div>
-                )}
+                <UserAvatar
+                  avatarUrl={profile?.avatar_url || undefined}
+                  username={profile?.username || (params.username as string)}
+                  size='sm'
+                />
                 <span>
                   @{profile?.username || params.username || 'Unknown'}
                 </span>
-                {user && profile && user.id !== profile.id && hasSupported && (
-                  <div className='ml-2 flex items-center'>
-                    <div className='bg-yellow-500 text-white px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1'>
-                      <Star className='w-3 h-3 fill-current' />
-                      <span>Supporter</span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Mobile Action Buttons - Under profile name */}

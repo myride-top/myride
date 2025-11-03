@@ -17,11 +17,11 @@ interface PhotoUploadProps {
   onBatchUploadComplete: (photos: CarPhoto[]) => void
 }
 
-export default function PhotoUpload({
+export const PhotoUpload = ({
   carId,
   onUploadComplete,
   onBatchUploadComplete,
-}: PhotoUploadProps) {
+}: PhotoUploadProps) => {
   const [isDragOver, setIsDragOver] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<{

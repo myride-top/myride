@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
 import { getUnitLabel } from '@/lib/utils'
-import SortablePhotoGallery from '@/components/photos/sortable-photo-gallery'
-import PhotoUpload from '@/components/photos/photo-upload'
+import { SortablePhotoGallery } from '@/components/photos/sortable-photo-gallery'
+import { PhotoUpload } from '@/components/photos/photo-upload'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 
 interface CarFormProps {
@@ -1349,7 +1349,7 @@ function ReviewSubmitStep({
   )
 }
 
-export default function CarForm({
+export const CarForm = ({
   mode,
   initialData = {},
   onSubmit,
@@ -1364,7 +1364,7 @@ export default function CarForm({
   saving = false,
   existingPhotos = [],
   mainPhotoUrl,
-}: CarFormProps) {
+}: CarFormProps) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     name: '',

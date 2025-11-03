@@ -8,23 +8,16 @@ interface FormSectionProps {
   showBorder?: boolean
 }
 
-export default function FormSection({
+export const FormSection = ({
   title,
   children,
   className,
   titleClassName,
   showBorder = true,
-}: FormSectionProps) {
+}: FormSectionProps) => {
   return (
-    <div className={cn(
-      'space-y-6',
-      showBorder && 'border-t pt-6',
-      className
-    )}>
-      <h4 className={cn(
-        'text-lg font-medium text-foreground',
-        titleClassName
-      )}>
+    <div className={cn('space-y-6', showBorder && 'border-t pt-6', className)}>
+      <h4 className={cn('text-lg font-medium text-foreground', titleClassName)}>
         {title}
       </h4>
       {children}

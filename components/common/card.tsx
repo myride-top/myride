@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
 interface CardProps {
@@ -11,7 +10,7 @@ interface CardProps {
   interactive?: boolean
 }
 
-export default function Card({
+export const Card = ({
   children,
   className = '',
   variant = 'default',
@@ -19,12 +18,13 @@ export default function Card({
   rounded = 'lg',
   hover = false,
   interactive = false,
-}: CardProps) {
+}: CardProps) => {
   const variantClasses = {
     default: 'bg-card border border-border/50',
     outlined: 'bg-transparent border border-border',
     elevated: 'bg-card shadow-lg border-0',
-    gradient: 'bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20',
+    gradient:
+      'bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20',
     muted: 'bg-muted/50 border border-muted',
   }
 
@@ -46,8 +46,12 @@ export default function Card({
     full: 'rounded-full',
   }
 
-  const hoverClasses = hover ? 'hover:shadow-lg hover:border-primary/50 transition-all duration-200' : ''
-  const interactiveClasses = interactive ? 'cursor-pointer active:scale-[0.98] transition-transform duration-150' : ''
+  const hoverClasses = hover
+    ? 'hover:shadow-lg hover:border-primary/50 transition-all duration-200'
+    : ''
+  const interactiveClasses = interactive
+    ? 'cursor-pointer active:scale-[0.98] transition-transform duration-150'
+    : ''
 
   return (
     <div
@@ -89,7 +93,12 @@ export function CardTitle({
   className?: string
 }) {
   return (
-    <h3 className={cn('text-lg font-semibold leading-none tracking-tight text-foreground', className)}>
+    <h3
+      className={cn(
+        'text-lg font-semibold leading-none tracking-tight text-foreground',
+        className
+      )}
+    >
       {children}
     </h3>
   )
@@ -103,9 +112,7 @@ export function CardDescription({
   className?: string
 }) {
   return (
-    <p className={cn('text-sm text-muted-foreground', className)}>
-      {children}
-    </p>
+    <p className={cn('text-sm text-muted-foreground', className)}>{children}</p>
   )
 }
 
@@ -116,11 +123,7 @@ export function CardContent({
   children: React.ReactNode
   className?: string
 }) {
-  return (
-    <div className={cn('pt-0', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('pt-0', className)}>{children}</div>
 }
 
 export function CardFooter({
@@ -131,8 +134,6 @@ export function CardFooter({
   className?: string
 }) {
   return (
-    <div className={cn('flex items-center pt-4', className)}>
-      {children}
-    </div>
+    <div className={cn('flex items-center pt-4', className)}>{children}</div>
   )
 }

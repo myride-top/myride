@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
@@ -22,7 +21,7 @@ interface CTASectionProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export default function CTASection({
+export const CTASection = ({
   title,
   description,
   primaryButton,
@@ -30,7 +29,7 @@ export default function CTASection({
   className = '',
   variant = 'default',
   size = 'md',
-}: CTASectionProps) {
+}: CTASectionProps) => {
   const variantClasses = {
     default: 'bg-card border border-border/50',
     highlighted:

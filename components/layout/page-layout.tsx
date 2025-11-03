@@ -1,7 +1,6 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
-import MainNavbar from '../navbar/main-navbar'
-import LandingNavbar from '../navbar/landing-navbar'
+import { MainNavbar } from '../navbar/main-navbar'
+import { LandingNavbar } from '../navbar/landing-navbar'
 
 interface PageLayoutProps {
   children: React.ReactNode
@@ -17,14 +16,14 @@ interface PageLayoutProps {
   containerClassName?: string
 }
 
-export default function PageLayout({
+export const PageLayout = ({
   children,
   user,
   showCreateButton = false,
   className = '',
   mainClassName = '',
   containerClassName = '',
-}: PageLayoutProps) {
+}: PageLayoutProps) => {
   return (
     <div className={cn('min-h-screen bg-background', className)}>
       {user ? (

@@ -6,6 +6,7 @@ import {
   paymentRateLimit,
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
+import { createSecureResponse } from '@/lib/utils/security-headers'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-08-27.basil',
@@ -51,25 +52,25 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return createSecureResponse({ error: 'Unauthorized' }, 401)
     }
 
     const { paymentIntentId, reason, amount } = await request.json()
 
     // Validate required fields
     if (!paymentIntentId) {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Payment Intent ID is required' },
-        { status: 400 }
+        400
       )
     }
 
     // Validate reason
     const validReasons = ['duplicate', 'fraudulent', 'requested_by_customer']
     if (reason && !validReasons.includes(reason)) {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Invalid refund reason' },
-        { status: 400 }
+        400
       )
     }
 
@@ -77,17 +78,17 @@ export async function POST(request: NextRequest) {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
 
     if (paymentIntent.metadata?.userId !== user.id) {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Payment not found or access denied' },
-        { status: 404 }
+        404
       )
     }
 
     // Check if payment is already refunded
     if (paymentIntent.status !== 'succeeded') {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Payment must be successful to be refunded' },
-        { status: 400 }
+        400
       )
     }
 
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       console.error('Error logging refund:', error)
     }
 
-    return NextResponse.json({
+    return createSecureResponse({
       refund: {
         id: refund.id,
         amount: refund.amount,
@@ -129,12 +130,12 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error processing refund:', error)
-    return NextResponse.json(
+    return createSecureResponse(
       {
         error: 'Failed to process refund',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      500
     )
   }
 }

@@ -9,7 +9,7 @@ import { getUserCarSlots } from '@/lib/database/premium-client'
 import { canUserCreateCarSimpleClient } from '@/lib/database/cars-client'
 import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
-import ProtectedRoute from '@/components/auth/protected-route'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import {
   Plus,
   Info,
@@ -19,16 +19,16 @@ import {
   MessageCircle,
   AlertCircle,
 } from 'lucide-react'
-import LoadingSpinner from '@/components/common/loading-spinner'
-import EmptyState from '@/components/common/empty-state'
-import CarCard from '@/components/cars/car-card'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
+import { EmptyState } from '@/components/common/empty-state'
+import { CarCard } from '@/components/cars/car-card'
 import { toast } from 'sonner'
-import StatsCard from '@/components/common/stats-card'
+import { StatsCard } from '@/components/common/stats-card'
 import { DashboardStat } from '@/components/common/stats-card'
-import PremiumUpgradeBanner from '@/components/dashboard/premium-upgrade-banner'
-import Grid from '@/components/common/grid'
-import PageLayout from '@/components/layout/page-layout'
-import PageHeader from '@/components/layout/page-header'
+import { PremiumUpgradeBanner } from '@/components/dashboard/premium-upgrade-banner'
+import { Grid } from '@/components/common/grid'
+import { PageLayout } from '@/components/layout/page-layout'
+import { PageHeader } from '@/components/layout/page-header'
 
 export default function DashboardPage() {
   const router = useRouter()

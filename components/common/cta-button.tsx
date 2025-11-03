@@ -1,4 +1,3 @@
-import React from 'react'
 import { CTAButton as UnifiedCTAButton } from './button'
 
 interface CTAButtonProps {
@@ -13,6 +12,6 @@ interface CTAButtonProps {
   type?: 'button' | 'submit' | 'reset'
 }
 
-export default function CTAButton(props: CTAButtonProps) {
+export const CTAButton = (props: CTAButtonProps) => {
   return <UnifiedCTAButton {...props} />
 }

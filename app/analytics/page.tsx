@@ -1,8 +1,7 @@
 'use client'
 
-import React from 'react'
-import AnalyticsDashboard from '@/components/analytics/analytics-dashboard'
-import MainNavbar from '@/components/navbar/main-navbar'
+import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard'
+import { MainNavbar } from '@/components/navbar/main-navbar'
 
 export default function AnalyticsPage() {
   return (

@@ -1,11 +1,10 @@
 'use client'
 
-import React from 'react'
 import { Camera, Settings, Share2, Smartphone, Globe, Zap } from 'lucide-react'
-import FeatureCard, { Feature } from '@/components/common/feature-card'
-import SectionHeader from '@/components/common/section-header'
-import Grid from '@/components/common/grid'
-import Section from '@/components/common/section'
+import { FeatureCard, Feature } from '@/components/common/feature-card'
+import { SectionHeader } from '@/components/common/section-header'
+import { Grid } from '@/components/common/grid'
+import { Section } from '@/components/common/section'
 
 const features: Feature[] = [
   {
@@ -58,7 +57,7 @@ const features: Feature[] = [
   },
 ]
 
-export default function FeaturesSection() {
+export const FeaturesSection = () => {
   return (
     <Section id='features'>
       <SectionHeader

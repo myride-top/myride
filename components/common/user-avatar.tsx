@@ -1,4 +1,3 @@
-import React from 'react'
 import { User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -10,13 +9,13 @@ interface UserAvatarProps {
   showFallback?: boolean
 }
 
-export default function UserAvatar({
+export const UserAvatar = ({
   avatarUrl,
   username,
   size = 'md',
   className = '',
   showFallback = true,
-}: UserAvatarProps) {
+}: UserAvatarProps) => {
   const sizeClasses = {
     sm: 'w-6 h-6',
     md: 'w-8 h-8',

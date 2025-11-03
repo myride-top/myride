@@ -157,7 +157,6 @@ export async function updateProfileClient(
 
 1. **Premium Access** - $10 lifetime premium
 2. **Car Slots** - $1 per additional car slot
-3. **Support Payments** - Variable amount donations
 
 ### **Security Features**
 
@@ -381,7 +380,7 @@ try {
 - **Secondary**: Supporting colors
 - **Destructive**: Error states
 - **Muted**: Subtle text and backgrounds
-- **Support**: Gradient for support features
+
 
 ### **Typography**
 

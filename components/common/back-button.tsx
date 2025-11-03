@@ -1,4 +1,3 @@
-import React from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,7 @@ interface BackButtonProps {
   children?: React.ReactNode
 }
 
-export default function BackButton({
+export const BackButton = ({
   href,
   onClick,
   className = '',
@@ -21,7 +20,7 @@ export default function BackButton({
   size = 'default',
   showText = true,
   children,
-}: BackButtonProps) {
+}: BackButtonProps) => {
   const buttonContent = (
     <div className='inline-flex items-center gap-2'>
       <ArrowLeft className='h-4 w-4' />

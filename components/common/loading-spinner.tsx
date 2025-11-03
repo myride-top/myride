@@ -7,12 +7,12 @@ interface LoadingSpinnerProps {
   fullScreen?: boolean
 }
 
-export default function LoadingSpinner({
+export const LoadingSpinner = ({
   size = 'lg',
   message = 'Loading...',
   className,
   fullScreen = false,
-}: LoadingSpinnerProps) {
+}: LoadingSpinnerProps) => {
   const sizeClasses = {
     sm: 'h-8 w-8',
     md: 'h-16 w-16',
@@ -29,7 +29,12 @@ export default function LoadingSpinner({
         )}
       />
       {message && (
-        <p className={cn('mt-4 text-muted-foreground', size === 'sm' && 'text-sm')}>
+        <p
+          className={cn(
+            'mt-4 text-muted-foreground',
+            size === 'sm' && 'text-sm'
+          )}
+        >
           {message}
         </p>
       )}

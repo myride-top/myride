@@ -1,5 +1,4 @@
-import React from 'react'
-import SocialMediaIcon, { SocialPlatform } from './social-media-icon'
+import SocialMediaIcon, { SocialPlatform } from '../icons/social-media-icon'
 
 export interface SocialLink {
   platform: SocialPlatform
@@ -15,13 +14,13 @@ interface SocialLinksProps {
   showLabels?: boolean
 }
 
-export default function SocialLinks({
+export const SocialLinks = ({
   links,
   className = '',
   iconClassName = '',
   size = 24,
   showLabels = false,
-}: SocialLinksProps) {
+}: SocialLinksProps) => {
   return (
     <div className={`flex justify-center space-x-6 ${className}`}>
       {links.map(link => (

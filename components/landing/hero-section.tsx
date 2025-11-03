@@ -1,37 +1,9 @@
 'use client'
 
-import React from 'react'
-import { Car, Users, Zap, Shield } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import FeatureCard, { Feature } from '@/components/common/feature-card'
-import Container from '@/components/common/container'
-import Grid from '@/components/common/grid'
+import { Container } from '@/components/common/container'
 
-const features: Feature[] = [
-  {
-    icon: Car,
-    title: 'Showcase Your Ride',
-    description:
-      'Display your car with stunning photos and detailed specifications',
-  },
-  {
-    icon: Users,
-    title: 'Connect with Enthusiasts',
-    description: 'Share your passion with a community of car lovers',
-  },
-  {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Super fast and responsive platform for the best experience',
-  },
-  {
-    icon: Shield,
-    title: 'Secure & Private',
-    description: 'Your data is safe with enterprise-grade security',
-  },
-]
-
-export default function HeroSection() {
+export const HeroSection = () => {
   const router = useRouter()
 
   const handleGetStarted = () => {
@@ -52,14 +24,14 @@ export default function HeroSection() {
 
       <Container className='text-center'>
         {/* Subtitle */}
-        <p className='text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100'>
+        <p className='text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100'>
           Showcase your car to friends and audience with our super fast and
           easy-to-use platform. Connect with fellow car enthusiasts and share
           your automotive passion.
         </p>
 
-        <div className='grid grid-cols-2 gap-4'>
-          <div className='border-2 border-primary rounded-xl p-1'>
+        <div className='grid md:grid-cols-2 gap-4'>
+          <div className='border border-primary/50 rounded-xl p-1'>
             <img
               src='/hero-1.webp'
               alt='Platform Showcase'
@@ -67,7 +39,7 @@ export default function HeroSection() {
             />
           </div>
 
-          <div className='border-2 border-primary rounded-xl p-1'>
+          <div className='border border-primary/50 rounded-xl p-1'>
             <img
               src='/hero-2.webp'
               alt='Platform Showcase'
@@ -116,20 +88,6 @@ export default function HeroSection() {
             </svg>
             Explore Cars
           </button>
-        </div>
-
-        {/* Features Grid */}
-        <div className='max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300'>
-          <Grid cols={4} gap='md'>
-            {features.map((feature, index) => (
-              <FeatureCard
-                key={feature.title}
-                feature={feature}
-                className='animate-in fade-in slide-in-from-bottom-4'
-                index={index}
-              />
-            ))}
-          </Grid>
         </div>
       </Container>
     </section>

@@ -3,34 +3,7 @@
 import React from 'react'
 import { Github, Instagram, Mail } from 'lucide-react'
 import Link from 'next/link'
-import SupportButton from '@/components/common/support-button'
-
-// Custom TikTok icon component
-const TikTokIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox='0 0 24 24'
-    fill='currentColor'
-    xmlns='http://www.w3.org/2000/svg'
-  >
-    <path d='M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z' />
-  </svg>
-)
-
-const footerLinks = {
-  '': [{ name: '', href: '' }],
-  product: [{ name: 'Features', href: '#features' }],
-  community: [
-    { name: 'Community', href: '#community' },
-    { name: 'Reviews', href: '#reviews' },
-  ],
-  legal: [
-    { name: 'Terms', href: '/legal/terms' },
-    { name: 'Privacy', href: '/legal/privacy' },
-    { name: 'Cookies', href: '/legal/cookies' },
-    { name: 'Licenses', href: '/legal/licenses' },
-  ],
-}
+import { TikTokIcon } from '../icons/social-media-icon'
 
 const socialLinks = [
   { name: 'TikTok', icon: TikTokIcon, href: 'https://tiktok.com/@baudys.me' },
@@ -43,7 +16,7 @@ const socialLinks = [
   { name: 'Email', icon: Mail, href: 'mailto:support@myride.top' },
 ]
 
-export default function Footer() {
+export const Footer = () => {
   return (
     <footer className='bg-card border-t border-border/50'>
       <div className='max-w-7xl mx-auto px-4 py-16'>
@@ -57,11 +30,7 @@ export default function Footer() {
               The ultimate platform for car enthusiasts to showcase their rides
               and connect with fellow automotive lovers worldwide.
             </p>
-            <div className='mb-6'>
-              <SupportButton variant='outline' size='sm'>
-                Support MyRide
-              </SupportButton>
-            </div>
+
             <div className='flex items-center gap-4'>
               {socialLinks.map(social => (
                 <a
@@ -76,31 +45,9 @@ export default function Footer() {
               ))}
             </div>
           </div>
-
-          {/* Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category} className='ml-auto'>
-              <h3 className='text-sm font-semibold text-foreground uppercase tracking-wider mb-4'>
-                {category}
-              </h3>
-              <ul className='space-y-3'>
-                {links.map(link => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className='text-muted-foreground hover:text-primary transition-colors duration-300'
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
         </div>
 
-        {/* Bottom section */}
-        <div className='border-t border-border/50 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4'>
+        <div className='mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4'>
           <p className='text-sm text-muted-foreground'>
             &copy; {new Date().getFullYear()} Daniel Anthony Baudyš. All rights
             reserved.

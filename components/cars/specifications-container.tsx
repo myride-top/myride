@@ -1,7 +1,7 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 import { SpecificationSection as SpecSection } from '@/lib/data/car-specifications'
-import SpecificationSection from './specification-section'
+import { SpecificationSection } from './specification-section'
+import { useState } from 'react'
 
 interface SpecificationsContainerProps {
   sections: SpecSection[]
@@ -15,7 +15,7 @@ interface SpecificationsContainerProps {
   emptyMessage?: string
 }
 
-export default function SpecificationsContainer({
+export const SpecificationsContainer = ({
   sections,
   className = '',
   variant = 'default',
@@ -25,7 +25,7 @@ export default function SpecificationsContainer({
   title = 'Specifications',
   titleClassName = '',
   emptyMessage = 'No specifications available',
-}: SpecificationsContainerProps) {
+}: SpecificationsContainerProps) => {
   const variantClasses = {
     default: {
       container: 'bg-card shadow rounded-lg',
@@ -226,7 +226,7 @@ export function TabbedSpecifications({
   className = '',
   ...props
 }: TabbedSpecificationsProps) {
-  const [activeTab, setActiveTab] = React.useState(
+  const [activeTab, setActiveTab] = useState(
     defaultTab || sections[0]?.id || ''
   )
   const visibleSections = sections.filter(section =>

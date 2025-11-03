@@ -12,7 +12,7 @@ interface FormStepProps {
   showDivider?: boolean
 }
 
-export default function FormStep({
+export const FormStep = ({
   title,
   description,
   children,
@@ -21,7 +21,7 @@ export default function FormStep({
   descriptionClassName = '',
   size = 'md',
   showDivider = false,
-}: FormStepProps) {
+}: FormStepProps) => {
   const sizeClasses = {
     sm: {
       title: 'text-lg',

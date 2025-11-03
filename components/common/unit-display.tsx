@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { unitConversions } from '@/lib/utils'
@@ -22,7 +21,7 @@ interface UnitDisplayProps {
   formatValue?: (value: number, unit: string) => string
 }
 
-export default function UnitDisplay({
+export const UnitDisplay = ({
   value,
   unit,
   unitType,
@@ -32,7 +31,7 @@ export default function UnitDisplay({
   variant = 'default',
   emptyValue = '—',
   formatValue,
-}: UnitDisplayProps) {
+}: UnitDisplayProps) => {
   const { unitPreference } = useUnitPreference()
 
   if (value === null || value === undefined || isNaN(value)) {
@@ -47,43 +46,55 @@ export default function UnitDisplay({
   let displayValue = value
   let displayUnit = unit
 
-  if (unitType && unitPreference === 'metric') {
-    switch (unitType) {
-      case 'torque':
-        if (unit === 'lb-ft') {
-          displayValue = unitConversions.torque.imperialToMetric(value)
-          displayUnit = 'N⋅m'
+  if (unitType) {
+    // Database stores METRIC. Convert to imperial if needed.
+    switch (unitPreference) {
+      case 'imperial':
+        switch (unitType) {
+          case 'torque':
+            displayValue = unitConversions.torque.metricToImperial(value)
+            displayUnit = 'lb-ft'
+            break
+          case 'weight':
+            displayValue = unitConversions.weight.metricToImperial(value)
+            displayUnit = 'lbs'
+            break
+          case 'pressure':
+            displayValue = unitConversions.pressure.metricToImperial(value)
+            displayUnit = 'PSI'
+            break
+          case 'speed':
+            displayValue = unitConversions.speed.metricToImperial(value)
+            displayUnit = 'mph'
+            break
+          case 'distance':
+            displayValue = unitConversions.distance.metricToImperial(value)
+            displayUnit = 'miles'
+            break
         }
         break
-      case 'weight':
-        if (unit === 'lbs') {
-          displayValue = unitConversions.weight.imperialToMetric(value)
-          displayUnit = 'kg'
+      case 'metric':
+      default:
+        // Keep metric as-is; pick metric unit if none provided
+        if (!unit) {
+          switch (unitType) {
+            case 'torque':
+              displayUnit = 'N⋅m'
+              break
+            case 'weight':
+              displayUnit = 'kg'
+              break
+            case 'pressure':
+              displayUnit = 'bar'
+              break
+            case 'speed':
+              displayUnit = 'km/h'
+              break
+            case 'distance':
+              displayUnit = 'km'
+              break
+          }
         }
-        break
-      case 'pressure':
-        if (unit === 'PSI') {
-          displayValue = unitConversions.pressure.imperialToMetric(value)
-          displayUnit = 'bar'
-        }
-        break
-      case 'speed':
-        if (unit === 'mph') {
-          displayValue = unitConversions.speed.imperialToMetric(value)
-          displayUnit = 'km/h'
-        }
-        break
-      case 'distance':
-        if (unit === 'miles') {
-          displayValue = unitConversions.distance.imperialToMetric(value)
-          displayUnit = 'km'
-        }
-        break
-      case 'power':
-        // Power conversion not supported yet - keep original value
-        break
-      case 'volume':
-        // Volume conversion not supported yet - keep original value
         break
     }
   }
@@ -127,7 +138,7 @@ interface TorqueDisplayProps
 
 export function TorqueDisplay({
   value,
-  imperialUnit = 'lb-ft',
+  imperialUnit = 'Nm',
   ...props
 }: TorqueDisplayProps) {
   return (
@@ -148,7 +159,7 @@ interface WeightDisplayProps
 
 export function WeightDisplay({
   value,
-  imperialUnit = 'lbs',
+  imperialUnit = 'kg',
   ...props
 }: WeightDisplayProps) {
   return (
@@ -169,7 +180,7 @@ interface SpeedDisplayProps
 
 export function SpeedDisplay({
   value,
-  imperialUnit = 'mph',
+  imperialUnit = 'km/h',
   ...props
 }: SpeedDisplayProps) {
   return (
@@ -190,7 +201,7 @@ interface PressureDisplayProps
 
 export function PressureDisplay({
   value,
-  imperialUnit = 'PSI',
+  imperialUnit = 'bar',
   ...props
 }: PressureDisplayProps) {
   return (

@@ -1,9 +1,8 @@
-import React from 'react'
 import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import IconWrapper from './icon-wrapper'
-import Card from './card'
+import { IconWrapper } from './icon-wrapper'
+import { Card } from './card'
 
 export interface Stat {
   icon: LucideIcon
@@ -31,14 +30,14 @@ interface StatsCardProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export default function StatsCard({
+export const StatsCard = ({
   stat,
   className = '',
   showIcon = true,
   showDescription = true,
   variant = 'default',
   size = 'md',
-}: StatsCardProps) {
+}: StatsCardProps) => {
   // Check if it's a dashboard stat
   const isDashboardStat = 'isPremium' in stat
 

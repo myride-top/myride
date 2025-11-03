@@ -1,6 +1,7 @@
 import { Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface ShareButtonProps {
   url: string
@@ -14,7 +15,7 @@ interface ShareButtonProps {
   onShare?: (platform: 'copy_link' | 'native_share') => void
 }
 
-export default function ShareButton({
+export const ShareButton = ({
   url,
   title,
   text,
@@ -24,19 +25,7 @@ export default function ShareButton({
   showIcon = true,
   children,
   onShare,
-}: ShareButtonProps) {
-  const sizeClasses = {
-    sm: 'px-2 py-1 text-xs',
-    md: 'px-3 py-2 text-sm',
-    lg: 'px-4 py-2 text-base',
-  }
-
-  const variantClasses = {
-    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    outline: 'border border-border text-foreground bg-card hover:bg-accent',
-    ghost: 'text-foreground hover:bg-accent',
-  }
-
+}: ShareButtonProps) => {
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation()
 
@@ -79,18 +68,15 @@ export default function ShareButton({
   }
 
   return (
-    <button
+    <Button
       onClick={handleShare}
-      className={cn(
-        'inline-flex items-center font-medium rounded-md focus:outline-none focus:ring-2 ring-offset-2 ring-ring transition-colors cursor-pointer drop-shadow',
-        sizeClasses[size],
-        variantClasses[variant],
-        className
-      )}
+      className={cn('cursor-pointer drop-shadow', className)}
       title='Share this car'
+      variant={variant === 'default' ? 'default' : (variant as any)}
+      size={size === 'md' ? 'default' : (size as any)}
     >
       {showIcon && <Share2 className={cn('w-4 h-4 mr-2')} />}
       {children || 'Share'}
-    </button>
+    </Button>
   )
 }

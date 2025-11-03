@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { canUserCreateCarSimpleClient } from '@/lib/database/cars-client'
@@ -13,13 +13,14 @@ import {
   LogOut,
   Plus,
   Crown,
-  Heart,
   Settings,
   ChevronDown,
   AlertCircle,
   LayoutDashboard,
 } from 'lucide-react'
-import BaseNavbar, { NavItem } from './base-navbar'
+import { BaseNavbar } from './base-navbar'
+
+import type { NavItem } from '@/lib/types/navbar'
 
 const navItems: NavItem[] = [{ name: 'Browse Cars', href: '/browse' }]
 
@@ -27,9 +28,7 @@ interface MainNavbarProps {
   showCreateButton?: boolean
 }
 
-export default function MainNavbar({
-  showCreateButton = false,
-}: MainNavbarProps) {
+export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
   const { user, signOut } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -88,9 +87,6 @@ export default function MainNavbar({
         break
       case 'premium':
         router.push('/premium')
-        break
-      case 'support':
-        router.push('/support')
         break
     }
   }
@@ -198,14 +194,6 @@ export default function MainNavbar({
                       Buy Premium
                     </button>
                   )}
-
-                  <button
-                    onClick={() => handleOptionClick('support')}
-                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
-                  >
-                    <Heart className='w-4 h-4 mr-3 text-red-500' />
-                    Support Creator
-                  </button>
 
                   <div className='border-t border-border my-1'></div>
 

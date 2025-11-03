@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { getUserCarSlots } from '@/lib/database/premium-client'
-import MainNavbar from '@/components/navbar/main-navbar'
-import ProtectedRoute from '@/components/auth/protected-route'
-import LoadingSpinner from '@/components/common/loading-spinner'
+import { MainNavbar } from '@/components/navbar/main-navbar'
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { CarIcon, Plus, Check, ArrowLeft, Crown } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import MinimalFooter from '@/components/common/minimal-footer'
+import { MinimalFooter } from '@/components/common/minimal-footer'
 
 export default function BuyCarSlotPage() {
   const { user } = useAuth()

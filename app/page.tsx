@@ -3,11 +3,11 @@
 import { useAuth } from '@/lib/context/auth-context'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import LoadingSpinner from '@/components/common/loading-spinner'
-import LandingNavbar from '@/components/navbar/landing-navbar'
-import HeroSection from '@/components/landing/hero-section'
-import FeaturesSection from '@/components/landing/features-section'
-import Footer from '@/components/landing/footer'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
+import { LandingNavbar } from '@/components/navbar/landing-navbar'
+import { HeroSection } from '@/components/landing/hero-section'
+import { FeaturesSection } from '@/components/landing/features-section'
+import { Footer } from '@/components/landing/footer'
 
 export default function HomePage() {
   const { user, loading } = useAuth()

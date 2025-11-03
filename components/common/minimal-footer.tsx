@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export default function MinimalFooter() {
+export const MinimalFooter = () => {
   return (
     <footer className='border-t border-border/50 bg-background/50 mt-auto'>
       <div className='max-w-7xl mx-auto px-4 py-6'>

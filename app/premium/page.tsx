@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
-import MainNavbar from '@/components/navbar/main-navbar'
-import ProtectedRoute from '@/components/auth/protected-route'
-import LoadingSpinner from '@/components/common/loading-spinner'
+import { MainNavbar } from '@/components/navbar/main-navbar'
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { Crown, BarChart3, Share2, Car, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 

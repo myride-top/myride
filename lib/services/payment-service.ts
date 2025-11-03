@@ -18,14 +18,7 @@ export interface PaymentSessionOptions {
   billingAddressCollection?: 'auto' | 'required'
 }
 
-export interface PaymentLinkOptions {
-  amount: number
-  name: string
-  description: string
-  redirectUrl: string
-  metadata?: Record<string, string | number | boolean | null>
-  userId?: string
-}
+// Support payment links removed
 
 export class PaymentService {
   static async createCheckoutSession(options: PaymentSessionOptions) {
@@ -88,56 +81,5 @@ export class PaymentService {
     return session
   }
 
-  static async createPaymentLink(options: PaymentLinkOptions) {
-    // Validate required fields
-    if (!options.amount || options.amount <= 0) {
-      throw new Error('Invalid amount')
-    }
-    if (!options.name || options.name.trim().length === 0) {
-      throw new Error('Product name is required')
-    }
-    if (!options.redirectUrl) {
-      throw new Error('Redirect URL is required')
-    }
-
-    const {
-      amount,
-      name,
-      description,
-      redirectUrl,
-      metadata = {},
-      userId,
-    } = options
-
-    const paymentLink = await stripe.paymentLinks.create({
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name,
-              description,
-              images: ['https://myride.top/icon.jpg'],
-            },
-            unit_amount: amount,
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        ...metadata,
-        type: 'support',
-        platform: 'myride',
-        userId: userId || null,
-      },
-      after_completion: {
-        type: 'redirect',
-        redirect: {
-          url: redirectUrl,
-        },
-      },
-    })
-
-    return paymentLink
-  }
+  // createPaymentLink removed
 }

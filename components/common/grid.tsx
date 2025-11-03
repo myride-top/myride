@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
 interface GridProps {
@@ -11,7 +10,7 @@ interface GridProps {
   mobileGap?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
-export default function Grid({
+export const Grid = ({
   children,
   className = '',
   cols = 3,
@@ -19,7 +18,7 @@ export default function Grid({
   responsive = true,
   mobileCols,
   mobileGap,
-}: GridProps) {
+}: GridProps) => {
   const gapClasses = {
     sm: 'gap-3',
     md: 'gap-6',

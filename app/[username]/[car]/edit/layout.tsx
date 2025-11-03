@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
-import MinimalFooter from '@/components/common/minimal-footer'
+import { MinimalFooter } from '@/components/common/minimal-footer'
 
 export async function generateMetadata({
   params,

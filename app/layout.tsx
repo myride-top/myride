@@ -3,9 +3,10 @@ import { Commissioner, Atkinson_Hyperlegible } from 'next/font/google'
 import { AuthProvider } from '@/lib/context/auth-context'
 import { UnitProvider } from '@/lib/context/unit-context'
 import { ThemeProvider } from '@/components/theme/theme-provider'
-import { Toaster } from 'sonner'
-import CookieConsent from '@/components/common/cookie-consent'
-import StructuredData, {
+import { Toaster } from '@/components/ui/sonner'
+import { CookieConsent } from '@/components/common/cookie-consent'
+import {
+  StructuredData,
   websiteSchema,
   organizationSchema,
 } from '@/components/common/structured-data'

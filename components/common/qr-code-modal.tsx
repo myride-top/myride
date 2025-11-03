@@ -22,7 +22,7 @@ interface QRCodeModalProps {
   onShare?: () => void
 }
 
-export default function QRCodeModal({
+export const QRCodeModal = ({
   isOpen,
   onClose,
   qrCodeDataUrl,
@@ -30,7 +30,7 @@ export default function QRCodeModal({
   profile,
   currentUrl,
   onShare,
-}: QRCodeModalProps) {
+}: QRCodeModalProps) => {
   // Track share analytics when modal opens
   useEffect(() => {
     if (isOpen && onShare) {

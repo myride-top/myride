@@ -1,21 +1,30 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
 interface ContainerProps {
   children: React.ReactNode
   className?: string
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl'
+  maxWidth?:
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl'
+    | '2xl'
+    | '3xl'
+    | '4xl'
+    | '5xl'
+    | '6xl'
+    | '7xl'
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
   centered?: boolean
 }
 
-export default function Container({
+export const Container = ({
   children,
   className = '',
   maxWidth = '7xl',
   padding = 'md',
   centered = true,
-}: ContainerProps) {
+}: ContainerProps) => {
   const maxWidthClasses = {
     sm: 'max-w-sm',
     md: 'max-w-md',

@@ -12,12 +12,12 @@ interface AvatarUploadProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export default function AvatarUpload({
+export const AvatarUpload = ({
   currentAvatarUrl,
   userId,
   onAvatarUpdate,
   size = 'md',
-}: AvatarUploadProps) {
+}: AvatarUploadProps) => {
   const [uploading, setUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     currentAvatarUrl || null

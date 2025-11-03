@@ -1,4 +1,4 @@
-import MinimalFooter from '@/components/common/minimal-footer'
+import { MinimalFooter } from '@/components/common/minimal-footer'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

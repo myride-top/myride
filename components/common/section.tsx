@@ -1,6 +1,5 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
-import Container from './container'
+import { Container } from './container'
 
 interface SectionProps {
   children: React.ReactNode
@@ -11,14 +10,14 @@ interface SectionProps {
   id?: string
 }
 
-export default function Section({
+export const Section = ({
   children,
   className = '',
   containerClassName = '',
   background = 'default',
   padding = 'lg',
   id,
-}: SectionProps) {
+}: SectionProps) => {
   const backgroundClasses = {
     default: 'bg-background',
     muted: 'bg-muted/30',
@@ -42,9 +41,7 @@ export default function Section({
         className
       )}
     >
-      <Container className={containerClassName}>
-        {children}
-      </Container>
+      <Container className={containerClassName}>{children}</Container>
     </section>
   )
 }

@@ -12,14 +12,14 @@ interface CarLimitCheckerProps {
   variant?: 'default' | 'compact'
 }
 
-export default function CarLimitChecker({
+export const CarLimitChecker = ({
   currentCars,
   maxAllowedCars,
   isPremium,
   onUpgradeClick,
   className = '',
   variant = 'default',
-}: CarLimitCheckerProps) {
+}: CarLimitCheckerProps) => {
   const canCreate = isPremium || currentCars < maxAllowedCars
 
   if (canCreate) {

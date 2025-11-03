@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
 interface SectionHeaderProps {
@@ -11,7 +10,7 @@ interface SectionHeaderProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export default function SectionHeader({
+export const SectionHeader = ({
   title,
   description,
   className = '',
@@ -19,7 +18,7 @@ export default function SectionHeader({
   descriptionClassName = '',
   centered = true,
   size = 'md',
-}: SectionHeaderProps) {
+}: SectionHeaderProps) => {
   const sizeClasses: Record<
     'sm' | 'md' | 'lg',
     {

@@ -1,14 +1,9 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
-
-export interface NavItem {
-  name: string
-  href: string
-  external?: boolean
-}
+import type { NavItem } from '@/lib/types/navbar'
 
 export interface BaseNavbarProps {
   variant?: 'solid' | 'transparent' | 'minimal'
@@ -21,7 +16,7 @@ export interface BaseNavbarProps {
   layout?: 'centered' | 'left-aligned' | 'right-aligned'
 }
 
-export default function BaseNavbar({
+export const BaseNavbar = ({
   variant = 'solid',
   navItems = [],
   showLogo = true,
@@ -30,7 +25,7 @@ export default function BaseNavbar({
   className = '',
   renderNavItem,
   layout = 'centered',
-}: BaseNavbarProps) {
+}: BaseNavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
@@ -94,9 +89,7 @@ export default function BaseNavbar({
             <div className='hidden md:flex items-center gap-8'>
               {navItems.map(item =>
                 renderNavItem ? (
-                  <React.Fragment key={item.name}>
-                    {renderNavItem(item)}
-                  </React.Fragment>
+                  <Fragment key={item.name}>{renderNavItem(item)}</Fragment>
                 ) : (
                   <Link
                     key={item.name}
@@ -119,9 +112,7 @@ export default function BaseNavbar({
               <div className='hidden md:flex items-center gap-8'>
                 {navItems.map(item =>
                   renderNavItem ? (
-                    <React.Fragment key={item.name}>
-                      {renderNavItem(item)}
-                    </React.Fragment>
+                    <Fragment key={item.name}>{renderNavItem(item)}</Fragment>
                   ) : (
                     <Link
                       key={item.name}
@@ -165,9 +156,7 @@ export default function BaseNavbar({
             <div className='px-4 py-2 space-y-1 grid'>
               {navItems.map(item =>
                 renderNavItem ? (
-                  <React.Fragment key={item.name}>
-                    {renderNavItem(item)}
-                  </React.Fragment>
+                  <Fragment key={item.name}>{renderNavItem(item)}</Fragment>
                 ) : (
                   <Link
                     key={item.name}

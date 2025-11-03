@@ -12,16 +12,16 @@ import {
 } from '@/lib/database/cars-client'
 import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
 import { toast } from 'sonner'
-import ProtectedRoute from '@/components/auth/protected-route'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { deleteCarPhoto } from '@/lib/storage/photos'
 import { Loader2, AlertTriangle } from 'lucide-react'
-import MainNavbar from '@/components/navbar/main-navbar'
+import { MainNavbar } from '@/components/navbar/main-navbar'
 import { useUnitPreference } from '@/lib/context/unit-context'
-import LoadingSpinner from '@/components/common/loading-spinner'
-import CarForm from '@/components/forms/car-form'
-import PageHeaderWithBack from '@/components/layout/page-header-with-back'
-import ErrorAlert from '@/components/common/error-alert'
-import Container from '@/components/common/container'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
+import { CarForm } from '@/components/forms/car-form'
+import { PageHeaderWithBack } from '@/components/layout/page-header-with-back'
+import { ErrorAlert } from '@/components/common/error-alert'
+import { Container } from '@/components/common/container'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -31,6 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { unitConversions } from '@/lib/utils'
 
 export default function EditCarPage() {
   const { user } = useAuth()
@@ -178,7 +179,18 @@ export default function EditCarPage() {
     setError(null)
 
     try {
-      // Convert form data to match database schema
+      // Convert form data to match database schema (store METRIC)
+      const toMetricIfImperial = <T extends number | string | null | undefined>(
+        value: T,
+        converter: (n: number) => number
+      ): number | null => {
+        if (value === null || value === undefined || value === '') return null
+        const num =
+          typeof value === 'string' ? parseFloat(value) : (value as number)
+        if (isNaN(num)) return null
+        return unitPreference === 'imperial' ? converter(num) : num
+      }
+
       const updateData = {
         ...formData,
         year:
@@ -197,17 +209,21 @@ export default function EditCarPage() {
         horsepower: formData.horsepower
           ? parseInt(String(formData.horsepower))
           : null,
-        torque: formData.torque ? parseFloat(String(formData.torque)) : null,
+        torque: toMetricIfImperial(formData.torque, n =>
+          unitConversions.torque.imperialToMetric(n)
+        ) as number | null,
         zero_to_sixty: formData.zero_to_sixty
           ? parseFloat(String(formData.zero_to_sixty))
           : null,
-        top_speed: formData.top_speed
-          ? parseFloat(String(formData.top_speed))
-          : null,
+        top_speed: toMetricIfImperial(formData.top_speed, n =>
+          unitConversions.speed.imperialToMetric(n)
+        ) as number | null,
         quarter_mile: formData.quarter_mile
           ? parseFloat(String(formData.quarter_mile))
           : null,
-        weight: formData.weight ? parseFloat(String(formData.weight)) : null,
+        weight: toMetricIfImperial(formData.weight, n =>
+          unitConversions.weight.imperialToMetric(n)
+        ) as number | null,
         power_to_weight: formData.power_to_weight || null,
         // Preserve the current photos to prevent them from being overwritten
         photos: car.photos,

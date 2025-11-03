@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import LikeButton from '@/components/common/like-button'
-import UserAvatar from '@/components/common/user-avatar'
-import QRCodeModal from '@/components/common/qr-code-modal'
+import { LikeButton } from '@/components/common/like-button'
+import { UserAvatar } from '@/components/common/user-avatar'
+import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 
 interface CarCardProps {
@@ -21,7 +21,7 @@ interface CarCardProps {
   isOwner?: boolean
 }
 
-export default function CarCard({
+export const CarCard = ({
   car,
   profile,
   onEdit,
@@ -30,7 +30,7 @@ export default function CarCard({
   className,
   showActions = true,
   isOwner = false,
-}: CarCardProps) {
+}: CarCardProps) => {
   const router = useRouter()
   const [likeCount, setLikeCount] = useState(car.like_count || 0)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')

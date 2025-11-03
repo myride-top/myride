@@ -8,17 +8,18 @@ import {
   canUserCreateCarClient,
 } from '@/lib/database/cars-client'
 import { getUserCarSlots } from '@/lib/database/premium-client'
-import ProtectedRoute from '@/components/auth/protected-route'
-import MainNavbar from '@/components/navbar/main-navbar'
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { MainNavbar } from '@/components/navbar/main-navbar'
 import { useUnitPreference } from '@/lib/context/unit-context'
-import LoadingSpinner from '@/components/common/loading-spinner'
-import CarForm from '@/components/forms/car-form'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
+import { CarForm } from '@/components/forms/car-form'
 import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
-import PageHeaderWithBack from '@/components/layout/page-header-with-back'
-import CarLimitChecker from '@/components/create/car-limit-checker'
-import ErrorAlert from '@/components/common/error-alert'
-import Container from '@/components/common/container'
+import { PageHeaderWithBack } from '@/components/layout/page-header-with-back'
+import { CarLimitChecker } from '@/components/create/car-limit-checker'
+import { ErrorAlert } from '@/components/common/error-alert'
+import { Container } from '@/components/common/container'
+import { unitConversions } from '@/lib/utils'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
@@ -147,6 +148,8 @@ export default function CreateCarPage() {
     wheel_brand?: string | null
     front_tire_size?: string | null
     rear_tire_size?: string | null
+    front_tire_pressure?: string | number | null
+    rear_tire_pressure?: string | number | null
     front_suspension?: string | null
     rear_suspension?: string | null
     coilovers?: string | null
@@ -158,6 +161,7 @@ export default function CreateCarPage() {
     instagram_handle?: string | null
     youtube_channel?: string | null
     website_url?: string | null
+    mileage?: string | number | null
   }) => {
     if (!user) {
       setError('User not found')
@@ -168,6 +172,18 @@ export default function CreateCarPage() {
     setError(null)
 
     try {
+      // Normalize units to METRIC before persisting
+      const toMetricIfImperial = <T extends number | string | null | undefined>(
+        value: T,
+        converter: (n: number) => number
+      ): number | null => {
+        if (value === null || value === undefined || value === '') return null
+        const num =
+          typeof value === 'string' ? parseFloat(value) : (value as number)
+        if (isNaN(num)) return null
+        return unitPreference === 'imperial' ? converter(num) : num
+      }
+
       const newCar = await createCarClient(
         {
           user_id: user.id,
@@ -201,7 +217,9 @@ export default function CreateCarPage() {
           horsepower: formData.horsepower
             ? parseInt(String(formData.horsepower))
             : null,
-          torque: formData.torque ? parseFloat(String(formData.torque)) : null,
+          torque: toMetricIfImperial(formData.torque, n =>
+            unitConversions.torque.imperialToMetric(n)
+          ) as number | null,
           engine_type: formData.engine_type || null,
           fuel_type: formData.fuel_type || null,
           transmission: formData.transmission || null,
@@ -209,13 +227,15 @@ export default function CreateCarPage() {
           zero_to_sixty: formData.zero_to_sixty
             ? parseFloat(String(formData.zero_to_sixty))
             : null,
-          top_speed: formData.top_speed
-            ? parseFloat(String(formData.top_speed))
-            : null,
+          top_speed: toMetricIfImperial(formData.top_speed, n =>
+            unitConversions.speed.imperialToMetric(n)
+          ) as number | null,
           quarter_mile: formData.quarter_mile
             ? parseFloat(String(formData.quarter_mile))
             : null,
-          weight: formData.weight ? parseFloat(String(formData.weight)) : null,
+          weight: toMetricIfImperial(formData.weight, n =>
+            unitConversions.weight.imperialToMetric(n)
+          ) as number | null,
           power_to_weight: formData.power_to_weight || null,
           front_brakes: formData.front_brakes || null,
           rear_brakes: formData.rear_brakes || null,
@@ -229,11 +249,17 @@ export default function CreateCarPage() {
           front_tire_size: formData.front_tire_size || null,
           front_tire_brand: null,
           front_tire_model: null,
-          front_tire_pressure: null,
+          front_tire_pressure: toMetricIfImperial(
+            formData.front_tire_pressure as any,
+            n => unitConversions.pressure.imperialToMetric(n)
+          ) as number | null,
           rear_tire_size: formData.rear_tire_size || null,
           rear_tire_brand: null,
           rear_tire_model: null,
-          rear_tire_pressure: null,
+          rear_tire_pressure: toMetricIfImperial(
+            formData.rear_tire_pressure as any,
+            n => unitConversions.pressure.imperialToMetric(n)
+          ) as number | null,
           front_suspension: formData.front_suspension || null,
           rear_suspension: formData.rear_suspension || null,
           suspension_type: null,
@@ -255,7 +281,9 @@ export default function CreateCarPage() {
           modifications: null,
           dyno_results: null,
           vin: null,
-          mileage: null,
+          mileage: toMetricIfImperial(formData.mileage, n =>
+            unitConversions.distance.imperialToMetric(n)
+          ) as number | null,
           fuel_economy: null,
           maintenance_history: null,
           build_thread_url: null,
@@ -311,7 +339,7 @@ export default function CreateCarPage() {
               currentCars={carSlots.currentCars}
               maxAllowedCars={carSlots.maxAllowedCars}
               isPremium={carSlots.isPremium}
-              onUpgradeClick={() => router.push('/support')}
+              onUpgradeClick={() => router.push('/premium')}
             />
           </div>
         </div>

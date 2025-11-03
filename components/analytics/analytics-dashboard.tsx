@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Card, {
   CardContent,
   CardDescription,
@@ -72,9 +72,9 @@ interface AnalyticsDashboardProps {
   className?: string
 }
 
-export default function AnalyticsDashboard({
+export const AnalyticsDashboard = ({
   className = '',
-}: AnalyticsDashboardProps) {
+}: AnalyticsDashboardProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<AnalyticsData | null>(null)

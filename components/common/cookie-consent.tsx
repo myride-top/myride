@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCookieConsent } from '@/lib/hooks/use-cookie-consent'
 
-export default function CookieConsent() {
+export const CookieConsent = () => {
   const [isVisible, setIsVisible] = useState(false)
   const pathname = usePathname()
   const { consentStatus, isLoaded, acceptCookies, declineCookies } =

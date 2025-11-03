@@ -1,4 +1,3 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
 interface PageHeaderProps {
@@ -11,7 +10,7 @@ interface PageHeaderProps {
   showDivider?: boolean
 }
 
-export default function PageHeader({
+export const PageHeader = ({
   title,
   description,
   className = '',
@@ -19,7 +18,7 @@ export default function PageHeader({
   descriptionClassName = '',
   size = 'md',
   showDivider = false,
-}: PageHeaderProps) {
+}: PageHeaderProps) => {
   const sizeClasses = {
     sm: {
       title: 'text-2xl md:text-3xl',
@@ -51,7 +50,7 @@ export default function PageHeader({
       >
         {title}
       </h1>
-      
+
       {description && (
         <p
           className={cn(
@@ -63,10 +62,8 @@ export default function PageHeader({
           {description}
         </p>
       )}
-      
-      {showDivider && (
-        <div className="w-full h-px bg-border mt-6" />
-      )}
+
+      {showDivider && <div className='w-full h-px bg-border mt-6' />}
     </div>
   )
 }

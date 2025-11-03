@@ -21,11 +21,11 @@ interface SpecificationSectionProps {
   className?: string
 }
 
-export default function SpecificationSection({
+export const SpecificationSection = ({
   title,
   specifications,
   className,
-}: SpecificationSectionProps) {
+}: SpecificationSectionProps) => {
   const { unitPreference } = useUnitPreference()
 
   // Filter out specifications with null/empty values

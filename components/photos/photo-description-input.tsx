@@ -4,19 +4,19 @@ import { useState, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 
-interface PhotoDescriptionInputSimpleProps {
+interface PhotoDescriptionInputProps {
   photoUrl: string
   initialDescription: string
   onUpdate: (photoUrl: string, description: string) => Promise<void>
   isUpdating?: boolean
 }
 
-export default function PhotoDescriptionInputSimple({
+export const PhotoDescriptionInput = ({
   photoUrl,
   initialDescription,
   onUpdate,
   isUpdating = false,
-}: PhotoDescriptionInputSimpleProps) {
+}: PhotoDescriptionInputProps) => {
   const [description, setDescription] = useState(initialDescription)
   const [isLocalUpdating, setIsLocalUpdating] = useState(false)
 

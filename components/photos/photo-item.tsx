@@ -12,9 +12,9 @@ import {
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Trash2, Star, MoreVertical } from 'lucide-react'
-import PhotoDescriptionInputSimple from './photo-description-input-simple'
+import { PhotoDescriptionInput } from './photo-description-input'
 
-interface PhotoItemSimpleProps {
+interface PhotoItemProps {
   photo: CarPhoto
   isMain: boolean
   onSetMain: (photoUrl: string) => void
@@ -36,7 +36,7 @@ const categoryLabels: Record<PhotoCategory, string> = {
   other: 'Other',
 }
 
-export default function PhotoItemSimple({
+export const PhotoItem = ({
   photo,
   isMain,
   onSetMain,
@@ -44,7 +44,7 @@ export default function PhotoItemSimple({
   onUpdateDescription,
   onUpdateCategory,
   isUpdating = false,
-}: PhotoItemSimpleProps) {
+}: PhotoItemProps) => {
   const {
     attributes,
     listeners,
@@ -160,7 +160,7 @@ export default function PhotoItemSimple({
         </DropdownMenu>
 
         {/* Description input */}
-        <PhotoDescriptionInputSimple
+        <PhotoDescriptionInput
           photoUrl={photo.url}
           initialDescription={photo.description || ''}
           onUpdate={onUpdateDescription}

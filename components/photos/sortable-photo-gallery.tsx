@@ -7,7 +7,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import PhotoItemSimple from './photo-item-simple'
+import { PhotoItem } from './photo-item'
 
 interface SortablePhotoGalleryProps {
   photos: CarPhoto[]
@@ -20,7 +20,7 @@ interface SortablePhotoGalleryProps {
   isUpdating?: boolean
 }
 
-export default function SortablePhotoGallery({
+export const SortablePhotoGallery = ({
   photos,
   mainPhotoUrl,
   onSetMain,
@@ -29,7 +29,7 @@ export default function SortablePhotoGallery({
   onUpdateCategory,
   onReorder,
   isUpdating = false,
-}: SortablePhotoGalleryProps) {
+}: SortablePhotoGalleryProps) => {
   // Deduplicate photos by URL to prevent React key errors
   const uniquePhotos = photos.filter(
     (photo, index, self) => index === self.findIndex(p => p.url === photo.url)
@@ -77,7 +77,7 @@ export default function SortablePhotoGallery({
       >
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
           {uniquePhotos.map(photo => (
-            <PhotoItemSimple
+            <PhotoItem
               key={photo.url}
               photo={photo}
               isMain={photo.url === mainPhotoUrl}

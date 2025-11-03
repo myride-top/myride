@@ -2,13 +2,13 @@
 
 import { useAuth } from '@/lib/context/auth-context'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading } = useAuth()
   const router = useRouter()
 

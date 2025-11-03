@@ -1,8 +1,7 @@
-import React from 'react'
 import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import IconWrapper from './icon-wrapper'
-import Card from './card'
+import { IconWrapper } from './icon-wrapper'
+import { Card } from './card'
 
 export interface Feature {
   icon: LucideIcon
@@ -20,13 +19,13 @@ interface FeatureCardProps {
   index?: number
 }
 
-export default function FeatureCard({
+export const FeatureCard = ({
   feature,
   className = '',
   showGradient = false,
   showHoverEffect = true,
   index = 0,
-}: FeatureCardProps) {
+}: FeatureCardProps) => {
   const {
     icon,
     title,
@@ -46,10 +45,10 @@ export default function FeatureCard({
     >
       <Card
         variant={showGradient ? 'gradient' : 'default'}
-        padding="lg"
-        rounded="2xl"
+        padding='lg'
+        rounded='2xl'
         hover={showHoverEffect}
-        className="h-full relative"
+        className='h-full relative'
       >
         {/* Background gradient on hover */}
         {showGradient && (
@@ -63,15 +62,15 @@ export default function FeatureCard({
         )}
 
         {/* Icon */}
-        <div className="relative mb-4">
+        <div className='relative mb-4'>
           <IconWrapper
             icon={icon}
-            size="md"
+            size='md'
             variant={showGradient ? 'gradient' : 'custom'}
             bgColor={bgColor}
             color={showGradient ? undefined : 'text-primary'}
             showHoverEffect={showHoverEffect}
-            rounded="xl"
+            rounded='xl'
           />
         </div>
 
