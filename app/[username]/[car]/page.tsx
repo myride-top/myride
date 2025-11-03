@@ -91,36 +91,68 @@ export default function CarDetailPage() {
           setLikeCount(carData.like_count || 0)
         }
 
+        // Load profile - prioritize current user's profile if they own this car
         try {
-          const byId = await getProfileByUserIdClient(carData.user_id)
-          if (byId) {
-            setProfile(byId)
-          } else {
-            const byUsername = await getProfileByUsernameClient(
+          let loadedProfile: Profile | null = null
+
+          // If signed in user owns this car, try to fetch their profile first
+          if (user && user.id === carData.user_id) {
+            loadedProfile = await getProfileByUserIdClient(user.id)
+          }
+
+          // If not found yet, try by car owner's user_id
+          if (!loadedProfile) {
+            loadedProfile = await getProfileByUserIdClient(carData.user_id)
+          }
+
+          // If still not found, try by username
+          if (!loadedProfile) {
+            loadedProfile = await getProfileByUsernameClient(
               params.username as string
             )
-            if (byUsername) {
-              setProfile(byUsername)
-            } else {
-              setProfile({
-                id: carData.user_id,
-                username: params.username as string,
-                full_name: null,
-                avatar_url: null,
-                unit_preference: 'metric' as const,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                is_premium: false,
-                premium_purchased_at: null,
-                car_slots_purchased: 0,
-                stripe_customer_id: null,
-                stripe_subscription_id: null,
-                total_supported_amount: 0,
-                is_supporter: false,
-              })
-            }
           }
-        } catch {}
+
+          // If we have a profile, use it
+          if (loadedProfile) {
+            setProfile(loadedProfile)
+          } else {
+            // Only create fallback if we really couldn't find anything
+            setProfile({
+              id: carData.user_id,
+              username: params.username as string,
+              full_name: null,
+              avatar_url: null,
+              unit_preference: 'metric' as const,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              is_premium: false,
+              premium_purchased_at: null,
+              car_slots_purchased: 0,
+              stripe_customer_id: null,
+              stripe_subscription_id: null,
+              total_supported_amount: 0,
+              is_supporter: false,
+            })
+          }
+        } catch (profileError) {
+          // If profile fetch fails, create a fallback
+          setProfile({
+            id: carData.user_id,
+            username: params.username as string,
+            full_name: null,
+            avatar_url: null,
+            unit_preference: 'metric' as const,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            is_premium: false,
+            premium_purchased_at: null,
+            car_slots_purchased: 0,
+            stripe_customer_id: null,
+            stripe_subscription_id: null,
+            total_supported_amount: 0,
+            is_supporter: false,
+          })
+        }
       } catch {
         setError('Failed to load car data')
       } finally {
@@ -131,7 +163,7 @@ export default function CarDetailPage() {
     if (params.car && params.username) {
       loadCarData()
     }
-  }, [params.car, params.username])
+  }, [params.car, params.username, user])
 
   // Check if current user has liked this car
   useEffect(() => {

@@ -179,17 +179,70 @@ export default function EditCarPage() {
     setError(null)
 
     try {
-      // Convert form data to match database schema (store METRIC)
-      const toMetricIfImperial = <T extends number | string | null | undefined>(
-        value: T,
-        converter: (n: number) => number
+      // Helper to parse and validate numeric values
+      const parseNumber = (
+        value: string | number | null | undefined
       ): number | null => {
         if (value === null || value === undefined || value === '') return null
-        const num =
-          typeof value === 'string' ? parseFloat(value) : (value as number)
-        if (isNaN(num)) return null
-        return unitPreference === 'imperial' ? converter(num) : num
+        const num = typeof value === 'string' ? parseFloat(value) : value
+        return isNaN(num) ? null : num
       }
+
+      // Helper to save both imperial and metric values
+      const saveWithConversion = (
+        value: string | number | null | undefined,
+        metricToImperialConverter: (n: number) => number,
+        imperialToMetricConverter: (n: number) => number
+      ): { imperial: number | null; metric: number | null } => {
+        const num = parseNumber(value)
+        if (num === null) return { imperial: null, metric: null }
+
+        if (unitPreference === 'metric') {
+          // User entered metric value - save to metric column, convert to imperial
+          return {
+            imperial: metricToImperialConverter(num),
+            metric: num,
+          }
+        } else {
+          // User entered imperial value - save to imperial column, convert to metric
+          return {
+            imperial: num,
+            metric: imperialToMetricConverter(num),
+          }
+        }
+      }
+
+      // Save all values with both imperial and metric
+      const torqueData = saveWithConversion(
+        formData.torque,
+        n => unitConversions.torque.metricToImperial(n),
+        n => unitConversions.torque.imperialToMetric(n)
+      )
+      const topSpeedData = saveWithConversion(
+        formData.top_speed,
+        n => unitConversions.speed.metricToImperial(n),
+        n => unitConversions.speed.imperialToMetric(n)
+      )
+      const weightData = saveWithConversion(
+        formData.weight,
+        n => unitConversions.weight.metricToImperial(n),
+        n => unitConversions.weight.imperialToMetric(n)
+      )
+      const frontTirePressureData = saveWithConversion(
+        (formData as any).front_tire_pressure,
+        n => unitConversions.pressure.metricToImperial(n),
+        n => unitConversions.pressure.imperialToMetric(n)
+      )
+      const rearTirePressureData = saveWithConversion(
+        (formData as any).rear_tire_pressure,
+        n => unitConversions.pressure.metricToImperial(n),
+        n => unitConversions.pressure.imperialToMetric(n)
+      )
+      const mileageData = saveWithConversion(
+        (formData as any).mileage,
+        n => unitConversions.distance.metricToImperial(n),
+        n => unitConversions.distance.imperialToMetric(n)
+      )
 
       const updateData = {
         ...formData,
@@ -209,21 +262,24 @@ export default function EditCarPage() {
         horsepower: formData.horsepower
           ? parseInt(String(formData.horsepower))
           : null,
-        torque: toMetricIfImperial(formData.torque, n =>
-          unitConversions.torque.imperialToMetric(n)
-        ) as number | null,
+        torque: torqueData.imperial,
+        torque_metric: torqueData.metric,
         zero_to_sixty: formData.zero_to_sixty
           ? parseFloat(String(formData.zero_to_sixty))
           : null,
-        top_speed: toMetricIfImperial(formData.top_speed, n =>
-          unitConversions.speed.imperialToMetric(n)
-        ) as number | null,
+        top_speed: topSpeedData.imperial,
+        top_speed_metric: topSpeedData.metric,
         quarter_mile: formData.quarter_mile
           ? parseFloat(String(formData.quarter_mile))
           : null,
-        weight: toMetricIfImperial(formData.weight, n =>
-          unitConversions.weight.imperialToMetric(n)
-        ) as number | null,
+        weight: weightData.imperial,
+        weight_metric: weightData.metric,
+        front_tire_pressure: frontTirePressureData.imperial,
+        front_tire_pressure_metric: frontTirePressureData.metric,
+        rear_tire_pressure: rearTirePressureData.imperial,
+        rear_tire_pressure_metric: rearTirePressureData.metric,
+        mileage: mileageData.imperial,
+        mileage_metric: mileageData.metric,
         power_to_weight: formData.power_to_weight || null,
         // Preserve the current photos to prevent them from being overwritten
         photos: car.photos,
@@ -348,8 +404,95 @@ export default function EditCarPage() {
 
           {/* Car Form */}
           <CarForm
+            key={`edit-${car.id}-${unitPreference}`}
             mode='edit'
-            initialData={car}
+            initialData={
+              unitPreference === 'metric'
+                ? {
+                    ...car,
+                    // Use metric columns directly, fallback to converting imperial if metric not available
+                    torque:
+                      car.torque_metric ??
+                      (car.torque
+                        ? unitConversions.torque.imperialToMetric(car.torque)
+                        : null),
+                    top_speed:
+                      car.top_speed_metric ??
+                      (car.top_speed
+                        ? unitConversions.speed.imperialToMetric(car.top_speed)
+                        : null),
+                    weight:
+                      car.weight_metric ??
+                      (car.weight
+                        ? unitConversions.weight.imperialToMetric(car.weight)
+                        : null),
+                    front_tire_pressure:
+                      car.front_tire_pressure_metric ??
+                      (car.front_tire_pressure
+                        ? unitConversions.pressure.imperialToMetric(
+                            car.front_tire_pressure
+                          )
+                        : null),
+                    rear_tire_pressure:
+                      car.rear_tire_pressure_metric ??
+                      (car.rear_tire_pressure
+                        ? unitConversions.pressure.imperialToMetric(
+                            car.rear_tire_pressure
+                          )
+                        : null),
+                    mileage:
+                      car.mileage_metric ??
+                      (car.mileage
+                        ? unitConversions.distance.imperialToMetric(car.mileage)
+                        : null),
+                  }
+                : {
+                    ...car,
+                    // Use imperial columns directly, fallback to converting metric if imperial not available
+                    torque:
+                      car.torque ??
+                      (car.torque_metric
+                        ? unitConversions.torque.metricToImperial(
+                            car.torque_metric
+                          )
+                        : null),
+                    top_speed:
+                      car.top_speed ??
+                      (car.top_speed_metric
+                        ? unitConversions.speed.metricToImperial(
+                            car.top_speed_metric
+                          )
+                        : null),
+                    weight:
+                      car.weight ??
+                      (car.weight_metric
+                        ? unitConversions.weight.metricToImperial(
+                            car.weight_metric
+                          )
+                        : null),
+                    front_tire_pressure:
+                      car.front_tire_pressure ??
+                      (car.front_tire_pressure_metric
+                        ? unitConversions.pressure.metricToImperial(
+                            car.front_tire_pressure_metric
+                          )
+                        : null),
+                    rear_tire_pressure:
+                      car.rear_tire_pressure ??
+                      (car.rear_tire_pressure_metric
+                        ? unitConversions.pressure.metricToImperial(
+                            car.rear_tire_pressure_metric
+                          )
+                        : null),
+                    mileage:
+                      car.mileage ??
+                      (car.mileage_metric
+                        ? unitConversions.distance.metricToImperial(
+                            car.mileage_metric
+                          )
+                        : null),
+                  }
+            }
             onSubmit={handleSubmit}
             unitPreference={unitPreference}
             saving={saving}

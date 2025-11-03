@@ -1,4 +1,4 @@
-import { convertToPreferredUnit } from '@/lib/utils'
+import { convertToPreferredUnit, unitConversions } from '@/lib/utils'
 import { useUnitPreference } from '@/lib/context/unit-context'
 
 interface SpecificationSectionProps {
@@ -26,7 +26,7 @@ export const SpecificationSection = ({
   specifications,
   className,
 }: SpecificationSectionProps) => {
-  const { unitPreference } = useUnitPreference()
+  const { unitPreference, isLoading: unitLoading } = useUnitPreference()
 
   // Filter out specifications with null/empty values
   const validSpecs = specifications.filter(
@@ -38,28 +38,40 @@ export const SpecificationSection = ({
   }
 
   const formatValue = (spec: (typeof validSpecs)[0]) => {
+    // Values are already in the user's preferred units from car-specifications
+    // Just format with the correct unit label
     if (spec.unitType && typeof spec.value === 'number') {
-      // Only convert supported unit types
-      const supportedTypes = [
-        'torque',
-        'weight',
-        'speed',
-        'pressure',
-        'distance',
-      ] as const
-      if (
-        supportedTypes.includes(
-          spec.unitType as (typeof supportedTypes)[number]
-        )
-      ) {
-        return convertToPreferredUnit(
-          spec.value,
-          spec.unitType as (typeof supportedTypes)[number],
-          unitPreference
-        )
+      const value = spec.value
+      const preference = unitLoading ? 'metric' : (unitPreference || 'metric')
+      
+      // Format with correct unit label based on preference
+      switch (spec.unitType) {
+        case 'torque':
+          return preference === 'metric'
+            ? `${value} ${unitConversions.torque.metricUnit}`
+            : `${value} ${unitConversions.torque.imperialUnit}`
+        case 'weight':
+          return preference === 'metric'
+            ? `${value} ${unitConversions.weight.metricUnit}`
+            : `${value} ${unitConversions.weight.imperialUnit}`
+        case 'speed':
+          return preference === 'metric'
+            ? `${value} ${unitConversions.speed.metricUnit}`
+            : `${value} ${unitConversions.speed.imperialUnit}`
+        case 'pressure':
+          return preference === 'metric'
+            ? `${value} ${unitConversions.pressure.metricUnit}`
+            : `${value} ${unitConversions.pressure.imperialUnit}`
+        case 'distance':
+          return preference === 'metric'
+            ? `${value} ${unitConversions.distance.metricUnit}`
+            : `${value} ${unitConversions.distance.imperialUnit}`
+        default:
+          return spec.value.toString()
       }
     }
 
+    // Non-convertible units (like HP, L, seconds) just show with their unit
     if (spec.unit && typeof spec.value === 'number') {
       return `${spec.value} ${spec.unit}`
     }

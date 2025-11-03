@@ -68,6 +68,7 @@ export function convertToMetric(
 }
 
 // Helper function to convert and format values based on unit preference
+// IMPORTANT: Database ALWAYS stores values in IMPERIAL units (PSI, mph, lbs, lb-ft, miles)
 export function convertToPreferredUnit(
   value: number | null | undefined,
   type: keyof typeof unitConversions,
@@ -75,12 +76,13 @@ export function convertToPreferredUnit(
 ): string {
   if (value === null || value === undefined) return ''
 
-  // Values in the database are stored in METRIC units.
-  if (unitPreference === 'imperial') {
-    const converted = unitConversions[type].metricToImperial(value)
-    return formatUnit(converted, unitConversions[type].imperialUnit)
+  // Database stores IMPERIAL - convert to metric for display if user prefers metric
+  if (unitPreference === 'metric') {
+    const converted = unitConversions[type].imperialToMetric(value)
+    return formatUnit(converted, unitConversions[type].metricUnit)
   } else {
-    return formatUnit(value, unitConversions[type].metricUnit)
+    // User prefers imperial - show value as-is with imperial unit label
+    return formatUnit(value, unitConversions[type].imperialUnit)
   }
 }
 

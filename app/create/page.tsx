@@ -172,17 +172,70 @@ export default function CreateCarPage() {
     setError(null)
 
     try {
-      // Normalize units to METRIC before persisting
-      const toMetricIfImperial = <T extends number | string | null | undefined>(
-        value: T,
-        converter: (n: number) => number
+      // Helper to parse and validate numeric values
+      const parseNumber = (
+        value: string | number | null | undefined
       ): number | null => {
         if (value === null || value === undefined || value === '') return null
-        const num =
-          typeof value === 'string' ? parseFloat(value) : (value as number)
-        if (isNaN(num)) return null
-        return unitPreference === 'imperial' ? converter(num) : num
+        const num = typeof value === 'string' ? parseFloat(value) : value
+        return isNaN(num) ? null : num
       }
+
+      // Helper to save both imperial and metric values
+      const saveWithConversion = (
+        value: string | number | null | undefined,
+        metricToImperialConverter: (n: number) => number,
+        imperialToMetricConverter: (n: number) => number
+      ): { imperial: number | null; metric: number | null } => {
+        const num = parseNumber(value)
+        if (num === null) return { imperial: null, metric: null }
+
+        if (unitPreference === 'metric') {
+          // User entered metric value - save to metric column, convert to imperial
+          return {
+            imperial: metricToImperialConverter(num),
+            metric: num,
+          }
+        } else {
+          // User entered imperial value - save to imperial column, convert to metric
+          return {
+            imperial: num,
+            metric: imperialToMetricConverter(num),
+          }
+        }
+      }
+
+      // Save all values with both imperial and metric
+      const torqueData = saveWithConversion(
+        formData.torque,
+        n => unitConversions.torque.metricToImperial(n),
+        n => unitConversions.torque.imperialToMetric(n)
+      )
+      const topSpeedData = saveWithConversion(
+        formData.top_speed,
+        n => unitConversions.speed.metricToImperial(n),
+        n => unitConversions.speed.imperialToMetric(n)
+      )
+      const weightData = saveWithConversion(
+        formData.weight,
+        n => unitConversions.weight.metricToImperial(n),
+        n => unitConversions.weight.imperialToMetric(n)
+      )
+      const frontTirePressureData = saveWithConversion(
+        formData.front_tire_pressure,
+        n => unitConversions.pressure.metricToImperial(n),
+        n => unitConversions.pressure.imperialToMetric(n)
+      )
+      const rearTirePressureData = saveWithConversion(
+        formData.rear_tire_pressure,
+        n => unitConversions.pressure.metricToImperial(n),
+        n => unitConversions.pressure.imperialToMetric(n)
+      )
+      const mileageData = saveWithConversion(
+        formData.mileage,
+        n => unitConversions.distance.metricToImperial(n),
+        n => unitConversions.distance.imperialToMetric(n)
+      )
 
       const newCar = await createCarClient(
         {
@@ -217,9 +270,8 @@ export default function CreateCarPage() {
           horsepower: formData.horsepower
             ? parseInt(String(formData.horsepower))
             : null,
-          torque: toMetricIfImperial(formData.torque, n =>
-            unitConversions.torque.imperialToMetric(n)
-          ) as number | null,
+          torque: torqueData.imperial,
+          torque_metric: torqueData.metric,
           engine_type: formData.engine_type || null,
           fuel_type: formData.fuel_type || null,
           transmission: formData.transmission || null,
@@ -227,15 +279,13 @@ export default function CreateCarPage() {
           zero_to_sixty: formData.zero_to_sixty
             ? parseFloat(String(formData.zero_to_sixty))
             : null,
-          top_speed: toMetricIfImperial(formData.top_speed, n =>
-            unitConversions.speed.imperialToMetric(n)
-          ) as number | null,
+          top_speed: topSpeedData.imperial,
+          top_speed_metric: topSpeedData.metric,
           quarter_mile: formData.quarter_mile
             ? parseFloat(String(formData.quarter_mile))
             : null,
-          weight: toMetricIfImperial(formData.weight, n =>
-            unitConversions.weight.imperialToMetric(n)
-          ) as number | null,
+          weight: weightData.imperial,
+          weight_metric: weightData.metric,
           power_to_weight: formData.power_to_weight || null,
           front_brakes: formData.front_brakes || null,
           rear_brakes: formData.rear_brakes || null,
@@ -249,17 +299,13 @@ export default function CreateCarPage() {
           front_tire_size: formData.front_tire_size || null,
           front_tire_brand: null,
           front_tire_model: null,
-          front_tire_pressure: toMetricIfImperial(
-            formData.front_tire_pressure as any,
-            n => unitConversions.pressure.imperialToMetric(n)
-          ) as number | null,
+          front_tire_pressure: frontTirePressureData.imperial,
+          front_tire_pressure_metric: frontTirePressureData.metric,
           rear_tire_size: formData.rear_tire_size || null,
           rear_tire_brand: null,
           rear_tire_model: null,
-          rear_tire_pressure: toMetricIfImperial(
-            formData.rear_tire_pressure as any,
-            n => unitConversions.pressure.imperialToMetric(n)
-          ) as number | null,
+          rear_tire_pressure: rearTirePressureData.imperial,
+          rear_tire_pressure_metric: rearTirePressureData.metric,
           front_suspension: formData.front_suspension || null,
           rear_suspension: formData.rear_suspension || null,
           suspension_type: null,
@@ -281,9 +327,8 @@ export default function CreateCarPage() {
           modifications: null,
           dyno_results: null,
           vin: null,
-          mileage: toMetricIfImperial(formData.mileage, n =>
-            unitConversions.distance.imperialToMetric(n)
-          ) as number | null,
+          mileage: mileageData.imperial,
+          mileage_metric: mileageData.metric,
           fuel_economy: null,
           maintenance_history: null,
           build_thread_url: null,

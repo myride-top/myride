@@ -1,6 +1,7 @@
 import { Car } from '@/lib/types/database'
 import { SpecificationSection } from './specification-section'
 import { useUnitPreference } from '@/lib/context/unit-context'
+import { unitConversions } from '@/lib/utils'
 
 interface CarSpecificationsProps {
   car: Car
@@ -47,7 +48,14 @@ export const CarSpecifications = ({
       value: car.horsepower,
       unit: 'HP',
     },
-    { key: 'torque', label: 'Torque', value: car.torque, unitType: 'torque' },
+    { 
+      key: 'torque', 
+      label: 'Torque', 
+      value: unitPreference === 'metric' 
+        ? (car.torque_metric ?? (car.torque ? unitConversions.torque.imperialToMetric(car.torque) : null))
+        : (car.torque ?? (car.torque_metric ? unitConversions.torque.metricToImperial(car.torque_metric) : null)),
+      unitType: 'torque' 
+    },
     { key: 'engine_type', label: 'Engine Type', value: car.engine_type },
     { key: 'fuel_type', label: 'Fuel Type', value: car.fuel_type },
     { key: 'transmission', label: 'Transmission', value: car.transmission },
@@ -61,7 +69,9 @@ export const CarSpecifications = ({
     {
       key: 'top_speed',
       label: 'Top Speed',
-      value: car.top_speed,
+      value: unitPreference === 'metric'
+        ? (car.top_speed_metric ?? (car.top_speed ? unitConversions.speed.imperialToMetric(car.top_speed) : null))
+        : (car.top_speed ?? (car.top_speed_metric ? unitConversions.speed.metricToImperial(car.top_speed_metric) : null)),
       unitType: 'speed',
     },
     {
@@ -70,7 +80,14 @@ export const CarSpecifications = ({
       value: car.quarter_mile,
       unit: 's',
     },
-    { key: 'weight', label: 'Weight', value: car.weight, unitType: 'weight' },
+    { 
+      key: 'weight', 
+      label: 'Weight', 
+      value: unitPreference === 'metric'
+        ? (car.weight_metric ?? (car.weight ? unitConversions.weight.imperialToMetric(car.weight) : null))
+        : (car.weight ?? (car.weight_metric ? unitConversions.weight.metricToImperial(car.weight_metric) : null)),
+      unitType: 'weight' 
+    },
     {
       key: 'power_to_weight',
       label: 'Power to Weight Ratio',
@@ -105,7 +122,9 @@ export const CarSpecifications = ({
     {
       key: 'front_tire_pressure',
       label: 'Front Tire Pressure',
-      value: car.front_tire_pressure,
+      value: unitPreference === 'metric'
+        ? (car.front_tire_pressure_metric ?? (car.front_tire_pressure ? unitConversions.pressure.imperialToMetric(car.front_tire_pressure) : null))
+        : (car.front_tire_pressure ?? (car.front_tire_pressure_metric ? unitConversions.pressure.metricToImperial(car.front_tire_pressure_metric) : null)),
       unitType: 'pressure',
     },
     {
@@ -126,7 +145,9 @@ export const CarSpecifications = ({
     {
       key: 'rear_tire_pressure',
       label: 'Rear Tire Pressure',
-      value: car.rear_tire_pressure,
+      value: unitPreference === 'metric'
+        ? (car.rear_tire_pressure_metric ?? (car.rear_tire_pressure ? unitConversions.pressure.imperialToMetric(car.rear_tire_pressure) : null))
+        : (car.rear_tire_pressure ?? (car.rear_tire_pressure_metric ? unitConversions.pressure.metricToImperial(car.rear_tire_pressure_metric) : null)),
       unitType: 'pressure',
     },
   ]
@@ -202,7 +223,9 @@ export const CarSpecifications = ({
     {
       key: 'mileage',
       label: 'Mileage',
-      value: car.mileage,
+      value: unitPreference === 'metric'
+        ? (car.mileage_metric ?? (car.mileage ? unitConversions.distance.imperialToMetric(car.mileage) : null))
+        : (car.mileage ?? (car.mileage_metric ? unitConversions.distance.metricToImperial(car.mileage_metric) : null)),
       unitType: 'distance',
     },
     { key: 'fuel_economy', label: 'Fuel Economy', value: car.fuel_economy },

@@ -103,7 +103,8 @@ export interface Car {
   engine_cylinders: number | null
   engine_code: string | null // e.g., "B58", "LS3", "K20"
   horsepower: number | null // in HP
-  torque: number | null // in lb-ft
+  torque: number | null // in lb-ft (imperial)
+  torque_metric: number | null // in Nm (metric)
   engine_type: string | null // e.g., "Turbocharged I4"
   fuel_type: string | null // e.g., "Gasoline"
   transmission: string | null // e.g., "6-Speed Manual"
@@ -111,9 +112,11 @@ export interface Car {
 
   // Performance Specifications
   zero_to_sixty: number | null // 0-60 mph time in seconds
-  top_speed: number | null // in mph
+  top_speed: number | null // in mph (imperial)
+  top_speed_metric: number | null // in km/h (metric)
   quarter_mile: number | null // quarter mile time in seconds
-  weight: number | null // in lbs
+  weight: number | null // in lbs (imperial)
+  weight_metric: number | null // in kg (metric)
   power_to_weight: string | null // e.g., "10.2 lbs/hp"
 
   // Brake System
@@ -140,12 +143,14 @@ export interface Car {
   front_tire_size: string | null
   front_tire_brand: string | null
   front_tire_model: string | null
-  front_tire_pressure: number | null
+  front_tire_pressure: number | null // in PSI (imperial)
+  front_tire_pressure_metric: number | null // in bar (metric)
   // Rear Tires
   rear_tire_size: string | null
   rear_tire_brand: string | null
   rear_tire_model: string | null
-  rear_tire_pressure: number | null
+  rear_tire_pressure: number | null // in PSI (imperial)
+  rear_tire_pressure_metric: number | null // in bar (metric)
 
   // Exterior
   body_kit: string | null
@@ -169,7 +174,8 @@ export interface Car {
 
   // Additional Details
   vin: string | null
-  mileage: number | null
+  mileage: number | null // in miles (imperial)
+  mileage_metric: number | null // in km (metric)
   fuel_economy: string | null
   maintenance_history: string | null
 

@@ -42,60 +42,55 @@ export const UnitDisplay = ({
     )
   }
 
-  // Convert value based on unit type and preference
+  // Database stores values in IMPERIAL units
+  // Convert to metric only if user preference is metric
   let displayValue = value
   let displayUnit = unit
 
   if (unitType) {
-    // Database stores METRIC. Convert to imperial if needed.
-    switch (unitPreference) {
-      case 'imperial':
-        switch (unitType) {
-          case 'torque':
-            displayValue = unitConversions.torque.metricToImperial(value)
-            displayUnit = 'lb-ft'
-            break
-          case 'weight':
-            displayValue = unitConversions.weight.metricToImperial(value)
-            displayUnit = 'lbs'
-            break
-          case 'pressure':
-            displayValue = unitConversions.pressure.metricToImperial(value)
-            displayUnit = 'PSI'
-            break
-          case 'speed':
-            displayValue = unitConversions.speed.metricToImperial(value)
-            displayUnit = 'mph'
-            break
-          case 'distance':
-            displayValue = unitConversions.distance.metricToImperial(value)
-            displayUnit = 'miles'
-            break
-        }
-        break
-      case 'metric':
-      default:
-        // Keep metric as-is; pick metric unit if none provided
-        if (!unit) {
-          switch (unitType) {
-            case 'torque':
-              displayUnit = 'N⋅m'
-              break
-            case 'weight':
-              displayUnit = 'kg'
-              break
-            case 'pressure':
-              displayUnit = 'bar'
-              break
-            case 'speed':
-              displayUnit = 'km/h'
-              break
-            case 'distance':
-              displayUnit = 'km'
-              break
-          }
-        }
-        break
+    if (unitPreference === 'metric') {
+      // Convert imperial → metric for display
+      switch (unitType) {
+        case 'torque':
+          displayValue = unitConversions.torque.imperialToMetric(value)
+          displayUnit = 'N⋅m'
+          break
+        case 'weight':
+          displayValue = unitConversions.weight.imperialToMetric(value)
+          displayUnit = 'kg'
+          break
+        case 'pressure':
+          displayValue = unitConversions.pressure.imperialToMetric(value)
+          displayUnit = 'bar'
+          break
+        case 'speed':
+          displayValue = unitConversions.speed.imperialToMetric(value)
+          displayUnit = 'km/h'
+          break
+        case 'distance':
+          displayValue = unitConversions.distance.imperialToMetric(value)
+          displayUnit = 'km'
+          break
+      }
+    } else {
+      // Show imperial units as-is
+      switch (unitType) {
+        case 'torque':
+          displayUnit = unit || 'lb-ft'
+          break
+        case 'weight':
+          displayUnit = unit || 'lbs'
+          break
+        case 'pressure':
+          displayUnit = unit || 'PSI'
+          break
+        case 'speed':
+          displayUnit = unit || 'mph'
+          break
+        case 'distance':
+          displayUnit = unit || 'miles'
+          break
+      }
     }
   }
 
@@ -138,7 +133,7 @@ interface TorqueDisplayProps
 
 export function TorqueDisplay({
   value,
-  imperialUnit = 'Nm',
+  imperialUnit = 'lb-ft',
   ...props
 }: TorqueDisplayProps) {
   return (
@@ -159,7 +154,7 @@ interface WeightDisplayProps
 
 export function WeightDisplay({
   value,
-  imperialUnit = 'kg',
+  imperialUnit = 'lbs',
   ...props
 }: WeightDisplayProps) {
   return (
@@ -180,7 +175,7 @@ interface SpeedDisplayProps
 
 export function SpeedDisplay({
   value,
-  imperialUnit = 'km/h',
+  imperialUnit = 'mph',
   ...props
 }: SpeedDisplayProps) {
   return (
@@ -201,7 +196,7 @@ interface PressureDisplayProps
 
 export function PressureDisplay({
   value,
-  imperialUnit = 'bar',
+  imperialUnit = 'PSI',
   ...props
 }: PressureDisplayProps) {
   return (

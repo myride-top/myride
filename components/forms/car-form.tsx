@@ -707,15 +707,16 @@ function WheelsTiresStep({
 
         <div>
           <label className='block text-sm font-medium text-foreground mb-2'>
-            Front Tire Pressure ({unitPreference === 'metric' ? 'kPa' : 'PSI'})
+            Front Tire Pressure ({unitPreference === 'metric' ? 'bar' : 'PSI'})
           </label>
           <input
             type='number'
             name='front_tire_pressure'
             value={carData.front_tire_pressure || ''}
             onChange={onInputChange}
-            placeholder={unitPreference === 'metric' ? '220' : '32'}
+            placeholder={unitPreference === 'metric' ? '2.2' : '32'}
             min='0'
+            step={unitPreference === 'metric' ? '0.1' : '1'}
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
@@ -750,15 +751,16 @@ function WheelsTiresStep({
 
         <div>
           <label className='block text-sm font-medium text-foreground mb-2'>
-            Rear Tire Pressure ({unitPreference === 'metric' ? 'kPa' : 'PSI'})
+            Rear Tire Pressure ({unitPreference === 'metric' ? 'bar' : 'PSI'})
           </label>
           <input
             type='number'
             name='rear_tire_pressure'
             value={carData.rear_tire_pressure || ''}
             onChange={onInputChange}
-            placeholder={unitPreference === 'metric' ? '220' : '32'}
+            placeholder={unitPreference === 'metric' ? '2.2' : '32'}
             min='0'
+            step={unitPreference === 'metric' ? '0.1' : '1'}
             className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
           />
         </div>
