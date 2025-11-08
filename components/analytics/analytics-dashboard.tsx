@@ -30,8 +30,6 @@ import {
   Filter,
   BarChart3,
   Activity,
-  Users,
-  Target,
   Info,
   Sparkles,
 } from 'lucide-react'
@@ -87,11 +85,11 @@ export const AnalyticsDashboard = ({
   const [timeRange, setTimeRange] = useState('6m')
   // Combined filter: "global" or "individual:all" or "individual:carId"
   const [viewFilter, setViewFilter] = useState<string>('global')
-  
+
   // Parse viewFilter to get viewMode and selectedCar
   const viewMode = viewFilter === 'global' ? 'global' : 'individual'
-  const selectedCar = viewFilter.startsWith('individual:') 
-    ? viewFilter.replace('individual:', '') 
+  const selectedCar = viewFilter.startsWith('individual:')
+    ? viewFilter.replace('individual:', '')
     : 'all'
 
   // Fetch analytics data
@@ -132,17 +130,6 @@ export const AnalyticsDashboard = ({
   useEffect(() => {
     fetchAnalyticsData()
   }, [fetchAnalyticsData])
-
-  // Generate chart data from car performance
-  const generateChartData = () => {
-    if (!carPerformance || carPerformance.length === 0) {
-      return []
-    }
-    if (selectedCar === 'all') {
-      return carPerformance
-    }
-    return carPerformance.filter(car => car.id === selectedCar)
-  }
 
   const handleTimeRangeChange = (range: string) => {
     console.log('Time range changed to:', range)
@@ -196,7 +183,9 @@ export const AnalyticsDashboard = ({
     return (
       <div
         className={`flex items-center gap-1 text-sm font-medium ${
-          isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+          isPositive
+            ? 'text-emerald-600 dark:text-emerald-400'
+            : 'text-red-600 dark:text-red-400'
         }`}
       >
         {isPositive ? (
@@ -271,14 +260,15 @@ export const AnalyticsDashboard = ({
 
   const carChartData = useMemo(() => {
     if (!carPerformance || carPerformance.length === 0) return []
-    
+
     // Filter cars based on selection
-    const filteredCars = selectedCar === 'all' 
-      ? carPerformance 
-      : carPerformance.filter(car => car.id === selectedCar)
-    
+    const filteredCars =
+      selectedCar === 'all'
+        ? carPerformance
+        : carPerformance.filter(car => car.id === selectedCar)
+
     if (filteredCars.length === 0) return []
-    
+
     return filteredCars.map(car => ({
       name: car.name.length > 15 ? car.name.substring(0, 15) + '...' : car.name,
       Views: car.views,
@@ -428,7 +418,9 @@ export const AnalyticsDashboard = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='global'>Celkové statistiky</SelectItem>
-                <SelectItem value='individual:all'>Jednotlivá auta - Všechna auta</SelectItem>
+                <SelectItem value='individual:all'>
+                  Jednotlivá auta - Všechna auta
+                </SelectItem>
                 {carPerformance.map(car => (
                   <SelectItem key={car.id} value={`individual:${car.id}`}>
                     Jednotlivá auta - {car.name}
@@ -467,13 +459,16 @@ export const AnalyticsDashboard = ({
               </div>
               <div className='truncate'>
                 <Text>Zobrazení</Text>
-                <Metric className='text-2xl'>{data.views.toLocaleString()}</Metric>
+                <Metric className='text-2xl'>
+                  {data.views.toLocaleString()}
+                </Metric>
                 {formatChange(data.viewsChange)}
               </div>
             </Flex>
             <div className='mt-4'>
               <Text className='text-xs text-muted-foreground'>
-                Celkový počet zobrazení vašich aut za {timeRangeLabel.toLowerCase()}
+                Celkový počet zobrazení vašich aut za{' '}
+                {timeRangeLabel.toLowerCase()}
               </Text>
             </div>
           </TremorCard>
@@ -487,7 +482,9 @@ export const AnalyticsDashboard = ({
               </div>
               <div className='truncate'>
                 <Text>Líbí se</Text>
-                <Metric className='text-2xl'>{data.likes.toLocaleString()}</Metric>
+                <Metric className='text-2xl'>
+                  {data.likes.toLocaleString()}
+                </Metric>
                 {formatChange(data.likesChange)}
               </div>
             </Flex>
@@ -507,7 +504,9 @@ export const AnalyticsDashboard = ({
               </div>
               <div className='truncate'>
                 <Text>Sdílení</Text>
-                <Metric className='text-2xl'>{data.shares.toLocaleString()}</Metric>
+                <Metric className='text-2xl'>
+                  {data.shares.toLocaleString()}
+                </Metric>
                 {formatChange(data.sharesChange)}
               </div>
             </Flex>
@@ -527,7 +526,9 @@ export const AnalyticsDashboard = ({
               </div>
               <div className='truncate'>
                 <Text>Komentáře</Text>
-                <Metric className='text-2xl'>{data.comments.toLocaleString()}</Metric>
+                <Metric className='text-2xl'>
+                  {data.comments.toLocaleString()}
+                </Metric>
                 {formatChange(data.commentsChange)}
               </div>
             </Flex>
@@ -554,7 +555,9 @@ export const AnalyticsDashboard = ({
               </CardDescription>
             </div>
             <div className='text-right'>
-              <div className='text-3xl font-bold text-primary'>{totalEngagement}%</div>
+              <div className='text-3xl font-bold text-primary'>
+                {totalEngagement}%
+              </div>
               <div className='text-sm text-muted-foreground'>
                 (Lajky + Sdílení + Komentáře) / Zobrazení × 100
               </div>
@@ -571,9 +574,14 @@ export const AnalyticsDashboard = ({
             </div>
             <CategoryBar
               values={[
-                (data.likes / (data.likes + data.shares + data.comments || 1)) * 100,
-                (data.shares / (data.likes + data.shares + data.comments || 1)) * 100,
-                (data.comments / (data.likes + data.shares + data.comments || 1)) * 100,
+                (data.likes / (data.likes + data.shares + data.comments || 1)) *
+                  100,
+                (data.shares /
+                  (data.likes + data.shares + data.comments || 1)) *
+                  100,
+                (data.comments /
+                  (data.likes + data.shares + data.comments || 1)) *
+                  100,
               ]}
               colors={['red', 'emerald', 'amber']}
               className='mt-3'
@@ -613,7 +621,7 @@ export const AnalyticsDashboard = ({
                     category='value'
                     index='name'
                     colors={['blue', 'red', 'emerald', 'amber']}
-                    valueFormatter={(value) => value.toLocaleString()}
+                    valueFormatter={value => value.toLocaleString()}
                     showLabel={true}
                   />
                 ) : (
@@ -630,7 +638,8 @@ export const AnalyticsDashboard = ({
               <TremorCard>
                 <Title>Porovnání období</Title>
                 <Subtitle>
-                  Současné období vs. předchozí období - zjistěte, jak se vaše metriky změnily
+                  Současné období vs. předchozí období - zjistěte, jak se vaše
+                  metriky změnily
                 </Subtitle>
                 <BarChart
                   className='mt-6'
@@ -638,7 +647,7 @@ export const AnalyticsDashboard = ({
                   index='metric'
                   categories={['current', 'previous']}
                   colors={['blue', 'slate']}
-                  valueFormatter={(value) => value.toLocaleString()}
+                  valueFormatter={value => value.toLocaleString()}
                   yAxisWidth={60}
                 />
               </TremorCard>
@@ -650,7 +659,8 @@ export const AnalyticsDashboard = ({
             <TremorCard>
               <Title>Nejlepší auta podle zapojení</Title>
               <Subtitle>
-                Vaše nejúspěšnější auta seřazená podle míry zapojení (engagement rate)
+                Vaše nejúspěšnější auta seřazená podle míry zapojení (engagement
+                rate)
               </Subtitle>
               <div className='mt-6 space-y-4'>
                 {carPerformance.slice(0, 5).map((car, index) => (
@@ -701,7 +711,8 @@ export const AnalyticsDashboard = ({
             <CardHeader>
               <CardTitle>Detailní výkon aut</CardTitle>
               <CardDescription>
-                Kompletní přehled metrik pro každé auto - zjistěte, které auto je nejúspěšnější
+                Kompletní přehled metrik pro každé auto - zjistěte, které auto
+                je nejúspěšnější
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -719,7 +730,10 @@ export const AnalyticsDashboard = ({
                   </thead>
                   <tbody>
                     {chartData.map(car => (
-                      <tr key={car.id} className='border-b hover:bg-muted/50 transition-colors'>
+                      <tr
+                        key={car.id}
+                        className='border-b hover:bg-muted/50 transition-colors'
+                      >
                         <td className='p-3'>
                           <div className='flex items-center gap-3'>
                             {car.image && (
@@ -762,7 +776,7 @@ export const AnalyticsDashboard = ({
                 index='name'
                 categories={['Engagement']}
                 colors={['purple']}
-                valueFormatter={(value) => `${value.toFixed(1)}%`}
+                valueFormatter={value => `${value.toFixed(1)}%`}
                 yAxisWidth={60}
               />
             ) : (
@@ -792,7 +806,7 @@ export const AnalyticsDashboard = ({
                     index='name'
                     categories={['Views']}
                     colors={['blue']}
-                    valueFormatter={(value) => value.toLocaleString()}
+                    valueFormatter={value => value.toLocaleString()}
                     yAxisWidth={60}
                   />
                 ) : (
@@ -820,7 +834,7 @@ export const AnalyticsDashboard = ({
                     index='name'
                     categories={['Engagement']}
                     colors={['purple']}
-                    valueFormatter={(value) => `${value.toFixed(1)}%`}
+                    valueFormatter={value => `${value.toFixed(1)}%`}
                     yAxisWidth={60}
                   />
                 ) : (
@@ -838,7 +852,8 @@ export const AnalyticsDashboard = ({
             <TremorCard>
               <Title>Porovnání všech metrik</Title>
               <Subtitle>
-                Kompletní přehled všech interakcí napříč vašimi auty - zjistěte, které auto má nejvíce zobrazení, lajků, sdílení a komentářů
+                Kompletní přehled všech interakcí napříč vašimi auty - zjistěte,
+                které auto má nejvíce zobrazení, lajků, sdílení a komentářů
               </Subtitle>
               <BarChart
                 className='mt-6'
@@ -846,7 +861,7 @@ export const AnalyticsDashboard = ({
                 index='name'
                 categories={['Views', 'Likes', 'Shares', 'Comments']}
                 colors={['blue', 'red', 'emerald', 'amber']}
-                valueFormatter={(value) => value.toLocaleString()}
+                valueFormatter={value => value.toLocaleString()}
                 yAxisWidth={60}
               />
             </TremorCard>
