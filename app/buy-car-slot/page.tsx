@@ -223,7 +223,7 @@ export default function BuyCarSlotPage() {
                 ) : (
                   <>
                     <CarIcon className='w-6 h-6 mr-3' />
-                    Purchase Car Slot for $1.00
+                    Purchase Car Slot for $2.00
                   </>
                 )}
               </button>
@@ -241,7 +241,7 @@ export default function BuyCarSlotPage() {
                   How much does a car slot cost?
                 </h3>
                 <p className='text-sm text-muted-foreground'>
-                  Each additional car slot costs $1.00 as a one-time payment.
+                  Each additional car slot costs $2.00 as a one-time payment.
                 </p>
               </div>
 

@@ -156,7 +156,7 @@ export async function updateProfileClient(
 ### **Payment Types**
 
 1. **Premium Access** - $10 lifetime premium
-2. **Car Slots** - $1 per additional car slot
+2. **Car Slots** - $2 per additional car slot
 
 ### **Security Features**
 

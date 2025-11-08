@@ -104,7 +104,7 @@ export async function getStripeCustomerId(
   }
 }
 
-// Add a car slot to user (for $1 purchases)
+// Add a car slot to user (for $2 purchases)
 export async function addCarSlot(userId: string): Promise<boolean> {
   try {
     // First get current value

@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const session = await PaymentService.createCheckoutSession({
       userId: user.id,
       customerEmail,
-      amount: 100, // $1.00 in cents
+      amount: 200, // $2.00 in cents
       name: 'Additional Car Slot',
       description: 'Add one more car to your MyRide profile',
       successUrl: `${
