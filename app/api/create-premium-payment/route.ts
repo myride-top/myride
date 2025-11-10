@@ -51,11 +51,32 @@ export async function POST(request: NextRequest) {
       return createSecureResponse({ error: 'Unauthorized' }, 401)
     }
 
-    const { customerEmail } = await request.json()
+    const body = await request.json().catch(() => ({}))
+    const { customerEmail } = body
 
     // Validate input
-    if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
-      return createSecureResponse({ error: 'Invalid email format' }, 400)
+    if (customerEmail !== undefined) {
+      if (typeof customerEmail !== 'string') {
+        return createSecureResponse({ error: 'Invalid email format' }, 400)
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+        return createSecureResponse({ error: 'Invalid email format' }, 400)
+      }
+    }
+
+    // Check if user already has premium
+    try {
+      const { isUserPremium } = await import('@/lib/database/premium-client')
+      const isPremium = await isUserPremium(user.id)
+      if (isPremium) {
+        return createSecureResponse(
+          { error: 'User already has premium access' },
+          400
+        )
+      }
+    } catch (error) {
+      console.error('Error checking premium status:', error)
+      // Continue anyway, let webhook handle it
     }
 
     const session = await PaymentService.createCheckoutSession({

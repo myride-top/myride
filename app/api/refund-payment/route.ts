@@ -7,10 +7,9 @@ import {
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { getStripeClient } from '@/lib/services/stripe-client'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-})
+const stripe = getStripeClient()
 
 export async function POST(request: NextRequest) {
   // Apply rate limiting
@@ -55,12 +54,12 @@ export async function POST(request: NextRequest) {
       return createSecureResponse({ error: 'Unauthorized' }, 401)
     }
 
-    const { paymentIntentId, reason, amount } = await request.json()
+    const { sessionId, reason, amount } = await request.json()
 
     // Validate required fields
-    if (!paymentIntentId) {
+    if (!sessionId || typeof sessionId !== 'string') {
       return createSecureResponse(
-        { error: 'Payment Intent ID is required' },
+        { error: 'Checkout Session ID is required' },
         400
       )
     }
@@ -71,20 +70,84 @@ export async function POST(request: NextRequest) {
       return createSecureResponse({ error: 'Invalid refund reason' }, 400)
     }
 
-    // Retrieve the payment intent to verify ownership
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+    // Validate amount if provided
+    if (amount !== undefined) {
+      if (typeof amount !== 'number' || amount <= 0) {
+        return createSecureResponse({ error: 'Invalid refund amount' }, 400)
+      }
+    }
 
-    if (paymentIntent.metadata?.userId !== user.id) {
+    // Retrieve the checkout session to verify ownership
+    let session: Stripe.Checkout.Session
+    try {
+      session = await stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ['payment_intent'],
+      })
+    } catch (error) {
+      if (error instanceof Stripe.errors.StripeError) {
+        if (error.code === 'resource_missing') {
+          return createSecureResponse(
+            { error: 'Checkout session not found' },
+            404
+          )
+        }
+      }
+      throw error
+    }
+
+    // Verify the session belongs to the authenticated user
+    if (session.metadata?.userId !== user.id) {
       return createSecureResponse(
         { error: 'Payment not found or access denied' },
         404
       )
     }
 
-    // Check if payment is already refunded
+    // Check if payment is completed
+    if (session.payment_status !== 'paid') {
+      return createSecureResponse(
+        { error: 'Payment must be completed to be refunded' },
+        400
+      )
+    }
+
+    // Get payment intent from session
+    const paymentIntentId =
+      typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : session.payment_intent?.id
+
+    if (!paymentIntentId) {
+      return createSecureResponse(
+        { error: 'Payment intent not found for this session' },
+        400
+      )
+    }
+
+    // Retrieve payment intent to check status and amount
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+
     if (paymentIntent.status !== 'succeeded') {
       return createSecureResponse(
         { error: 'Payment must be successful to be refunded' },
+        400
+      )
+    }
+
+    // Check if already refunded
+    const existingRefunds = await stripe.refunds.list({
+      payment_intent: paymentIntentId,
+      limit: 100,
+    })
+
+    const totalRefunded = existingRefunds.data.reduce(
+      (sum, refund) => sum + refund.amount,
+      0
+    )
+
+    if (totalRefunded >= paymentIntent.amount) {
+      return createSecureResponse(
+        { error: 'Payment has already been fully refunded' },
         400
       )
     }
@@ -96,7 +159,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Add amount if partial refund
-    if (amount && amount > 0 && amount < paymentIntent.amount) {
+    const remainingAmount = paymentIntent.amount - totalRefunded
+    if (amount && amount > 0) {
+      if (amount > remainingAmount) {
+        return createSecureResponse(
+          {
+            error: `Refund amount exceeds remaining amount ($${(
+              remainingAmount / 100
+            ).toFixed(2)})`,
+          },
+          400
+        )
+      }
       refundOptions.amount = amount
     }
 
@@ -109,7 +183,7 @@ export async function POST(request: NextRequest) {
         user.id,
         paymentIntent.amount,
         refund.amount,
-        paymentIntent.metadata?.type || 'unknown',
+        session.metadata?.type || paymentIntent.metadata?.type || 'unknown',
         reason || 'requested_by_customer'
       )
     } catch (error) {

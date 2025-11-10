@@ -48,8 +48,7 @@ export default function BuyCarSlotPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
-          customerEmail: user.email,
+          customerEmail: user.email || undefined,
         }),
       })
 

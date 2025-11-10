@@ -24,6 +24,7 @@ import {
   Share2,
   ChevronLeft,
   ChevronRight,
+  Crown,
 } from 'lucide-react'
 import {
   likeCarClient,
@@ -32,7 +33,6 @@ import {
   getCarLikeCountClient,
 } from '@/lib/database/cars-client'
 import { MainNavbar } from '@/components/navbar/main-navbar'
-import { LandingNavbar } from '@/components/navbar/landing-navbar'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { EmptyState } from '@/components/common/empty-state'
 import { CarSpecifications } from '@/components/cars/car-specifications'
@@ -348,7 +348,7 @@ export default function CarDetailPage() {
   if (error || !car) {
     return (
       <div className='min-h-screen bg-background'>
-        {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
+        <MainNavbar showCreateButton={true} />
 
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
           <div className='flex items-center mb-6'>
@@ -460,7 +460,7 @@ export default function CarDetailPage() {
 
   return (
     <div className='min-h-screen bg-background'>
-      {user ? <MainNavbar showCreateButton={true} /> : <LandingNavbar />}
+      <MainNavbar showCreateButton={true} />
 
       {/* Custom Header with Back Button and Actions - Matching PageHeaderWithBack Style */}
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
@@ -488,7 +488,10 @@ export default function CarDetailPage() {
                   username={profile?.username || (params.username as string)}
                   size='sm'
                 />
-                <span>
+                <span className='flex items-center gap-1'>
+                  {profile?.is_premium && (
+                    <Crown className='w-4 h-4 text-yellow-500' />
+                  )}
                   @{profile?.username || params.username || 'Unknown'}
                 </span>
               </div>

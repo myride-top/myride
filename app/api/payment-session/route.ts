@@ -1,16 +1,14 @@
 import { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import Stripe from 'stripe'
 import {
   generalRateLimit,
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { getStripeClient } from '@/lib/services/stripe-client'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-})
+const stripe = getStripeClient()
 
 export async function GET(request: NextRequest) {
   // Apply rate limiting

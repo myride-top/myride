@@ -145,10 +145,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <PageLayout
-          user={user ? { ...user, email: user.email || '' } : undefined}
-          showCreateButton={false}
-        >
+        <PageLayout showCreateButton={false}>
           <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
             <LoadingSpinner message='Loading dashboard...' />
           </div>
@@ -189,10 +186,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <PageLayout
-        user={user ? { ...user, email: user.email || '' } : undefined}
-        showCreateButton={false}
-      >
+      <PageLayout showCreateButton={false}>
         <PageHeader
           title='Dashboard'
           description='Manage your cars and track your performance'

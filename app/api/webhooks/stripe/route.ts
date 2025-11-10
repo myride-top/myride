@@ -4,12 +4,10 @@ import {
   webhookRateLimit,
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
+import { getStripeClient, getWebhookSecret } from '@/lib/services/stripe-client'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-})
-
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const stripe = getStripeClient()
+const endpointSecret = getWebhookSecret()
 
 export async function POST(request: NextRequest) {
   // Apply rate limiting for webhooks
@@ -37,6 +35,13 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Log webhook event for debugging (without sensitive data)
+    console.log('Processing webhook event:', {
+      type: event.type,
+      id: event.id,
+      created: new Date(event.created * 1000).toISOString(),
+    })
+
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
@@ -62,13 +67,20 @@ export async function POST(request: NextRequest) {
         break
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        console.log(`Unhandled event type: ${event.type}`, {
+          eventId: event.id,
+        })
         break
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook processing failed:', error)
+    console.error('Webhook processing failed:', {
+      eventId: event.id,
+      eventType: event.type,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -162,33 +174,78 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 async function handlePremiumPurchase(session: Stripe.Checkout.Session) {
   const { userId } = session.metadata || {}
 
-  if (userId) {
-    try {
-      // Import the premium client function
-      const { activatePremiumUser } = await import(
-        '@/lib/database/premium-client'
-      )
+  if (!userId) {
+    console.error('Missing userId in session metadata for premium purchase:', {
+      sessionId: session.id,
+      metadata: session.metadata,
+    })
+    return
+  }
 
-      // Activate premium status for the user
-      const success = await activatePremiumUser(
-        userId,
-        session.customer as string
-      )
+  try {
+    // Get customer ID from session
+    // session.customer can be a string (customer ID), a Customer object, or null
+    let stripeCustomerId: string | null = null
 
-      if (success) {
-        // Send welcome email
-        try {
-          const { sendPremiumWelcomeEmail } = await import(
-            '@/lib/services/email'
-          )
-          await sendPremiumWelcomeEmail(userId)
-        } catch (error) {
-          console.error('Error sending premium welcome email:', error)
-        }
-      } else {
-        console.error('Failed to activate premium for user:', userId)
+    if (typeof session.customer === 'string') {
+      stripeCustomerId = session.customer
+    } else if (session.customer && typeof session.customer === 'object' && 'id' in session.customer) {
+      stripeCustomerId = session.customer.id
+    } else if (!session.customer) {
+      // If customer is null, try to retrieve it from the session
+      // This can happen if customer was created during checkout
+      const retrievedSession = await stripe.checkout.sessions.retrieve(session.id, {
+        expand: ['customer'],
+      })
+      
+      if (typeof retrievedSession.customer === 'string') {
+        stripeCustomerId = retrievedSession.customer
+      } else if (retrievedSession.customer && typeof retrievedSession.customer === 'object' && 'id' in retrievedSession.customer) {
+        stripeCustomerId = retrievedSession.customer.id
       }
-    } catch {}
+    }
+
+    console.log('Processing premium purchase:', {
+      userId,
+      sessionId: session.id,
+      stripeCustomerId,
+      customerType: typeof session.customer,
+    })
+
+    // Import the server-side premium function (uses service role key)
+    const { activatePremiumUserServer } = await import(
+      '@/lib/database/premium-server'
+    )
+
+    // Activate premium status for the user
+    const success = await activatePremiumUserServer(userId, stripeCustomerId)
+
+    if (success) {
+      console.log('Successfully activated premium for user:', userId)
+      
+      // Send welcome email
+      try {
+        const { sendPremiumWelcomeEmail } = await import(
+          '@/lib/services/email'
+        )
+        await sendPremiumWelcomeEmail(userId)
+      } catch (error) {
+        console.error('Error sending premium welcome email:', error)
+      }
+    } else {
+      console.error('Failed to activate premium for user:', {
+        userId,
+        stripeCustomerId,
+        sessionId: session.id,
+      })
+    }
+  } catch (error) {
+    console.error('Error handling premium purchase:', {
+      userId,
+      sessionId: session.id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
   }
 }
 
@@ -196,30 +253,51 @@ async function handlePremiumPurchase(session: Stripe.Checkout.Session) {
 async function handleCarSlotPurchase(session: Stripe.Checkout.Session) {
   const { userId } = session.metadata || {}
 
-  if (userId) {
-    try {
-      // Import the premium client function
-      const { addCarSlot } = await import('@/lib/database/premium-client')
+  if (!userId) {
+    console.error('Missing userId in session metadata for car slot purchase:', {
+      sessionId: session.id,
+      metadata: session.metadata,
+    })
+    return
+  }
 
-      // Add one car slot to the user
-      const success = await addCarSlot(userId)
+  try {
+    console.log('Processing car slot purchase:', {
+      userId,
+      sessionId: session.id,
+    })
 
-      if (success) {
-        // Send confirmation email
-        try {
-          const { sendCarSlotConfirmationEmail } = await import(
-            '@/lib/services/email'
-          )
-          await sendCarSlotConfirmationEmail(userId)
-        } catch (error) {
-          console.error('Error sending car slot confirmation email:', error)
-        }
-      } else {
-        console.error('Failed to add car slot for user:', userId)
+    // Import the server-side premium function (uses service role key)
+    const { addCarSlotServer } = await import('@/lib/database/premium-server')
+
+    // Add one car slot to the user
+    const success = await addCarSlotServer(userId)
+
+    if (success) {
+      console.log('Successfully added car slot for user:', userId)
+      
+      // Send confirmation email
+      try {
+        const { sendCarSlotConfirmationEmail } = await import(
+          '@/lib/services/email'
+        )
+        await sendCarSlotConfirmationEmail(userId)
+      } catch (error) {
+        console.error('Error sending car slot confirmation email:', error)
       }
-    } catch (error) {
-      console.error('Error processing car slot purchase:', error)
+    } else {
+      console.error('Failed to add car slot for user:', {
+        userId,
+        sessionId: session.id,
+      })
     }
+  } catch (error) {
+    console.error('Error processing car slot purchase:', {
+      userId,
+      sessionId: session.id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
   }
 }
 

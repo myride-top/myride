@@ -26,8 +26,7 @@ export default function PremiumPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
-          customerEmail: user.email,
+          customerEmail: user.email || undefined,
         }),
       })
 

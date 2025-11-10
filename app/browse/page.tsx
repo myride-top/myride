@@ -280,20 +280,14 @@ export default function BrowsePage() {
 
   if (loading) {
     return (
-      <PageLayout
-        user={user ? { ...user, email: user.email || '' } : undefined}
-        showCreateButton={true}
-      >
+      <PageLayout showCreateButton={true}>
         <LoadingState message='Loading cars...' />
       </PageLayout>
     )
   }
 
   return (
-    <PageLayout
-      user={user ? { ...user, email: user.email || '' } : undefined}
-      showCreateButton={true}
-    >
+    <PageLayout showCreateButton={true}>
       <PageHeader
         title='Browse Cars'
         description='Discover amazing cars from the community'
@@ -591,27 +585,27 @@ export default function BrowsePage() {
         <Grid cols={3} gap='md'>
           {filteredAndSortedCars.map(car => {
             // Extract profile from the joined data
+            const carWithProfile = car as Car & { profiles?: Profile | null }
+            const profileData = carWithProfile.profiles
+            
+            // Debug: check if is_premium is being loaded
+            // console.log('Profile data for', profileData?.username, ':', profileData?.is_premium)
+            
             const profile: Profile = {
               id: car.user_id,
-              username:
-                (car as { profiles?: { username: string } }).profiles
-                  ?.username || 'unknown',
-              full_name:
-                (car as { profiles?: { full_name: string | null } }).profiles
-                  ?.full_name || null,
-              avatar_url:
-                (car as { profiles?: { avatar_url: string | null } }).profiles
-                  ?.avatar_url || null,
-              unit_preference: 'metric',
-              created_at: '',
-              updated_at: '',
-              is_premium: false,
-              premium_purchased_at: null,
-              car_slots_purchased: 0,
-              stripe_customer_id: null,
-              stripe_subscription_id: null,
-              total_supported_amount: 0,
-              is_supporter: false,
+              username: profileData?.username || 'unknown',
+              full_name: profileData?.full_name || null,
+              avatar_url: profileData?.avatar_url || null,
+              unit_preference: profileData?.unit_preference || 'metric',
+              created_at: profileData?.created_at || '',
+              updated_at: profileData?.updated_at || '',
+              is_premium: profileData?.is_premium ?? false,
+              premium_purchased_at: profileData?.premium_purchased_at || null,
+              car_slots_purchased: profileData?.car_slots_purchased || 0,
+              stripe_customer_id: profileData?.stripe_customer_id || null,
+              stripe_subscription_id: profileData?.stripe_subscription_id || null,
+              total_supported_amount: profileData?.total_supported_amount || 0,
+              is_supporter: profileData?.is_supporter || false,
             }
             const isOwner = user?.id === car.user_id
 
