@@ -12,7 +12,6 @@ import {
   XCircle,
   RefreshCw,
   DollarSign,
-  Calendar,
   AlertCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -97,7 +96,11 @@ export default function PaymentsPage() {
 
     setRefunding(selectedPayment.sessionId)
     try {
-      const body: any = {
+      const body: {
+        sessionId: string
+        reason: string
+        amount?: number
+      } = {
         sessionId: selectedPayment.sessionId,
         reason: refundReason,
       }

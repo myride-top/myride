@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import Stripe from 'stripe'
 import {
   generalRateLimit,
   createRateLimitResponse,
@@ -66,14 +67,14 @@ export async function GET(request: NextRequest) {
     // We'll search by metadata userId since customer might not be set
     // First try to get sessions by customer ID if available
     let sessions: Stripe.Response<Stripe.ApiList<Stripe.Checkout.Session>>
-    
+
     if (customerId) {
       try {
         sessions = await stripe.checkout.sessions.list({
           customer: customerId,
           limit: 100,
         })
-      } catch (error) {
+      } catch {
         // If customer lookup fails, fall back to listing all sessions
         sessions = await stripe.checkout.sessions.list({
           limit: 100,
@@ -94,7 +95,7 @@ export async function GET(request: NextRequest) {
     const payments = await Promise.all(
       userSessions.map(async session => {
         let paymentIntentId: string | null = null
-        let refunds: any[] = []
+        let refunds: Stripe.Refund[] = []
         let refundedAmount = 0
 
         if (session.payment_intent) {
@@ -155,4 +156,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
