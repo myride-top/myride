@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/context/auth-context'
 import { MainNavbar } from '@/components/navbar/main-navbar'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
-import { Crown, BarChart3, Share2, Car, ArrowRight } from 'lucide-react'
+import { Crown, BarChart3, Share2, Car, ArrowRight, MapPin } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function PremiumPage() {
@@ -62,6 +62,13 @@ export default function PremiumPage() {
       description: 'Add as many cars as you want to your garage',
       hype: 'Build your dream collection',
       color: 'from-green-500 to-emerald-500',
+    },
+    {
+      icon: <MapPin className='w-5 h-5' />,
+      title: 'Map Events',
+      description: 'Create and manage car events on an interactive map',
+      hype: 'Connect with car enthusiasts',
+      color: 'from-indigo-500 to-purple-500',
     },
     {
       icon: <Share2 className='w-5 h-5' />,

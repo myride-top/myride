@@ -2,7 +2,7 @@ import { MinimalFooter } from '@/components/common/minimal-footer'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Premium - MyRide',
+  title: 'Premium',
   description:
     'Upgrade to MyRide Premium for unlimited cars, advanced analytics, garage sharing, and exclusive features. Only $10 for lifetime access.',
   keywords:
