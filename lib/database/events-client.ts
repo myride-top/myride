@@ -33,6 +33,9 @@ export async function createEventClient(
     longitude: number
     event_date: string
     end_date?: string
+    event_type?: string
+    event_image_url?: string | null
+    route?: [number, number][] | null
   }
 ): Promise<{ success: boolean; error?: string; data?: Event }> {
   try {
@@ -75,6 +78,9 @@ export async function updateEventClient(
     longitude?: number
     event_date?: string
     end_date?: string | null
+    event_type?: string
+    event_image_url?: string | null
+    route?: [number, number][] | null
   }
 ): Promise<{ success: boolean; error?: string; data?: Event }> {
   try {
@@ -227,6 +233,7 @@ export interface EventAttendeeWithDetails {
     make: string
     model: string
     year: number
+    horsepower: number | null
     url_slug: string
     username: string | null
   } | null
@@ -287,6 +294,82 @@ export async function getUserEventAttendanceClient(
     return data
   } catch {
     return null
+  }
+}
+
+// Analytics Functions
+export async function trackEventViewClient(
+  eventId: string,
+  userId?: string,
+  metadata?: {
+    ipAddress?: string
+    userAgent?: string
+    referrer?: string
+  }
+): Promise<boolean> {
+  try {
+    const response = await fetch(`/api/events/${eventId}/view`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        metadata: {
+          userAgent: metadata?.userAgent || navigator.userAgent,
+          referrer: metadata?.referrer || document.referrer || undefined,
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      return false
+    }
+
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function trackEventShareClient(
+  eventId: string,
+  platform:
+    | 'twitter'
+    | 'facebook'
+    | 'instagram'
+    | 'whatsapp'
+    | 'telegram'
+    | 'copy_link'
+    | 'other',
+  userId?: string,
+  metadata?: {
+    shareUrl?: string
+    ipAddress?: string
+    userAgent?: string
+  }
+): Promise<boolean> {
+  try {
+    const response = await fetch(`/api/events/${eventId}/share`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        platform,
+        metadata: {
+          shareUrl: metadata?.shareUrl || window.location.href,
+          userAgent: metadata?.userAgent || navigator.userAgent,
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      return false
+    }
+
+    return true
+  } catch {
+    return false
   }
 }
 

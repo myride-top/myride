@@ -47,7 +47,14 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   const [mapCenter, setMapCenter] = useState<[number, number]>([
     50.0755, 14.4378,
   ]) // Prague default
-  const [eventIcon, setEventIcon] = useState<DivIcon | null>(null)
+  const [eventIcons, setEventIcons] = useState<Map<string, DivIcon>>(new Map())
+  const [defaultEventIcons, setDefaultEventIcons] = useState<
+    Map<string, DivIcon>
+  >(new Map())
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(
+    null
+  )
+  const [userLocationIcon, setUserLocationIcon] = useState<DivIcon | null>(null)
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -79,10 +86,15 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
         })
       }
 
-      // Create custom event marker icon
-      const icon = L.divIcon({
-        className: 'custom-event-marker',
-        html: `
+      // Create default icons for each event type
+      const icons = new Map<string, DivIcon>()
+
+      // Meetup icon - purple gradient with car emoji
+      icons.set(
+        'meetup',
+        L.divIcon({
+          className: 'custom-event-marker',
+          html: `
           <div style="
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             width: 32px;
@@ -104,16 +116,279 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
             ">🚗</div>
           </div>
         `,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32],
-      })
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        })
+      )
 
-      setEventIcon(icon)
+      // Race icon - red gradient with flag emoji
+      icons.set(
+        'race',
+        L.divIcon({
+          className: 'custom-event-marker',
+          html: `
+          <div style="
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 18px;
+              line-height: 1;
+            ">🏁</div>
+          </div>
+        `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        })
+      )
+
+      // Show icon - gold gradient with trophy emoji
+      icons.set(
+        'show',
+        L.divIcon({
+          className: 'custom-event-marker',
+          html: `
+          <div style="
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 18px;
+              line-height: 1;
+            ">🏆</div>
+          </div>
+        `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        })
+      )
+
+      // Cruise icon - blue gradient with map emoji
+      icons.set(
+        'cruise',
+        L.divIcon({
+          className: 'custom-event-marker',
+          html: `
+          <div style="
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 18px;
+              line-height: 1;
+            ">🗺️</div>
+          </div>
+        `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        })
+      )
+
+      // Track Day icon - green gradient with checkered flag emoji
+      icons.set(
+        'track_day',
+        L.divIcon({
+          className: 'custom-event-marker',
+          html: `
+          <div style="
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 18px;
+              line-height: 1;
+            ">🏎️</div>
+          </div>
+        `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        })
+      )
+
+      // Other icon - gray gradient with calendar emoji
+      icons.set(
+        'other',
+        L.divIcon({
+          className: 'custom-event-marker',
+          html: `
+          <div style="
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 18px;
+              line-height: 1;
+            ">📅</div>
+          </div>
+        `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        })
+      )
+
+      setDefaultEventIcons(icons)
     }
 
     initLeaflet()
   }, [])
+
+  // Create user location marker icon with avatar
+  useEffect(() => {
+    if (typeof window === 'undefined' || !profile) return
+
+    const createUserIcon = async () => {
+      const L = (await import('leaflet')).default
+
+      // Get initials for fallback
+      const getInitials = () => {
+        if (profile.full_name) {
+          const names = profile.full_name.trim().split(' ')
+          if (names.length >= 2) {
+            return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
+          }
+          return names[0][0].toUpperCase()
+        }
+        return profile.username.charAt(0).toUpperCase()
+      }
+
+      const avatarUrl = profile.avatar_url
+      const initials = getInitials()
+
+      // Create user location marker icon with avatar
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: `
+          <div style="
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            overflow: hidden;
+            background: ${avatarUrl ? 'transparent' : '#10b981'};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+          ">
+            ${
+              avatarUrl
+                ? `<img src="${avatarUrl}" alt="Your location" style="width: 100%; height: 100%; object-fit: cover;" />`
+                : `<div style="color: white; font-weight: bold; font-size: 16px;">${initials}</div>`
+            }
+          </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      })
+
+      setUserLocationIcon(userIcon)
+    }
+
+    createUserIcon()
+  }, [profile])
+
+  // Create custom icons for events with images
+  useEffect(() => {
+    if (typeof window === 'undefined' || defaultEventIcons.size === 0) return
+
+    const createEventIcons = async () => {
+      const L = (await import('leaflet')).default
+      const newIcons = new Map<string, DivIcon>()
+
+      events.forEach(event => {
+        if (event.event_image_url) {
+          const icon = L.divIcon({
+            className: 'custom-event-marker',
+            html: `
+              <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 3px solid white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                overflow: hidden;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <img src="${event.event_image_url}" alt="${event.title}" style="width: 100%; height: 100%; object-fit: cover;" />
+              </div>
+            `,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20],
+          })
+          newIcons.set(event.id, icon)
+        }
+      })
+
+      setEventIcons(newIcons)
+    }
+
+    createEventIcons()
+  }, [events, defaultEventIcons])
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -132,7 +407,12 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
-          setMapCenter([position.coords.latitude, position.coords.longitude])
+          const location: [number, number] = [
+            position.coords.latitude,
+            position.coords.longitude,
+          ]
+          setUserLocation(location)
+          setMapCenter(location)
         },
         () => {
           // Use default if geolocation fails
@@ -183,25 +463,42 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
           subdomains='abcd'
           maxZoom={20}
         />
-        {events.map(event => (
-          <Marker
-            key={event.id}
-            position={[event.latitude, event.longitude]}
-            icon={eventIcon || undefined}
-          >
-            <Popup maxWidth={320} className='event-popup'>
-              <EventPopup
-                event={event}
-                onAttendanceChange={() => {
-                  // Reload events
-                  window.location.reload()
-                }}
-                onEventUpdated={handleEventUpdated}
-                onEventDeleted={handleEventDeleted}
-              />
-            </Popup>
+        {/* User location marker */}
+        {userLocation && userLocationIcon && (
+          <Marker position={userLocation} icon={userLocationIcon}>
+            <Popup>Your location</Popup>
           </Marker>
-        ))}
+        )}
+        {/* Event markers */}
+        {events.map(event => {
+          // Use custom icon if event has an image, otherwise use default icon based on event type
+          const iconToUse = event.event_image_url
+            ? eventIcons.get(event.id) ||
+              defaultEventIcons.get(event.event_type) ||
+              defaultEventIcons.get('meetup')
+            : defaultEventIcons.get(event.event_type) ||
+              defaultEventIcons.get('meetup')
+
+          return (
+            <Marker
+              key={event.id}
+              position={[event.latitude, event.longitude]}
+              icon={iconToUse || undefined}
+            >
+              <Popup maxWidth={320} className='event-popup'>
+                <EventPopup
+                  event={event}
+                  onAttendanceChange={() => {
+                    // Reload events
+                    window.location.reload()
+                  }}
+                  onEventUpdated={handleEventUpdated}
+                  onEventDeleted={handleEventDeleted}
+                />
+              </Popup>
+            </Marker>
+          )
+        })}
       </MapContainer>
 
       {user && (

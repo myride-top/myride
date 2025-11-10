@@ -14,11 +14,210 @@ import { getCarsByUserClient } from '@/lib/database/cars-client'
 import { Car } from '@/lib/types/database'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { Calendar, MapPin, Users, Edit, Trash2 } from 'lucide-react'
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Edit,
+  Trash2,
+  Share2,
+  Route,
+} from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { AttendeesDialog } from './attendees-dialog'
 import { EditEventDialog } from './edit-event-dialog'
 import { DeleteEventDialog } from './delete-event-dialog'
 import { deleteEventClient } from '@/lib/database/events-client'
+import { useEventAnalytics } from '@/lib/hooks/use-event-analytics'
+import { EventQRCodeModal } from './event-qr-code-modal'
+import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
+import { useTheme } from 'next-themes'
+
+// Dynamically import map components for route display
+const MapContainer = dynamic(
+  () => import('react-leaflet').then(mod => mod.MapContainer),
+  { ssr: false }
+)
+const TileLayer = dynamic(
+  () => import('react-leaflet').then(mod => mod.TileLayer),
+  { ssr: false }
+)
+const Polyline = dynamic(
+  () => import('react-leaflet').then(mod => mod.Polyline),
+  {
+    ssr: false,
+  }
+)
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), {
+  ssr: false,
+})
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), {
+  ssr: false,
+})
+
+// Component to fit map bounds to route
+const FitBounds = dynamic(
+  () =>
+    import('react-leaflet').then(mod => {
+      const { useMap } = mod
+      return function FitBounds({ route }: { route: [number, number][] }) {
+        const map = useMap()
+        useEffect(() => {
+          if (route.length > 0) {
+            const L = (window as any).L
+            if (L) {
+              const bounds = L.latLngBounds(route)
+              map.fitBounds(bounds, { padding: [20, 20] })
+            }
+          }
+        }, [map, route])
+        return null
+      }
+    }),
+  { ssr: false }
+)
+
+// Component to display route in popup
+function RouteMap({
+  route,
+  center,
+  isDarkMode,
+}: {
+  route: [number, number][]
+  center: [number, number]
+  isDarkMode: boolean
+}) {
+  const [startMarkerIcon, setStartMarkerIcon] = useState<any>(null)
+  const [endMarkerIcon, setEndMarkerIcon] = useState<any>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const createMarkers = async () => {
+      const L = (await import('leaflet')).default
+
+      // Create custom start marker icon - green flag style
+      const startIcon = L.divIcon({
+        className: 'route-start-marker',
+        html: `
+          <div style="
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+            ">🚩</div>
+          </div>
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -36],
+      })
+
+      // Create custom end marker icon - red flag style
+      const endIcon = L.divIcon({
+        className: 'route-end-marker',
+        html: `
+          <div style="
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              transform: rotate(45deg);
+              color: white;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+            ">🏁</div>
+          </div>
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -36],
+      })
+
+      setStartMarkerIcon(startIcon)
+      setEndMarkerIcon(endIcon)
+    }
+
+    createMarkers()
+  }, [])
+
+  return (
+    <MapContainer
+      center={center}
+      zoom={10}
+      style={{ height: '100%', width: '100%' }}
+    >
+      <TileLayer
+        key={isDarkMode ? 'dark' : 'light'}
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url={
+          isDarkMode
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+        }
+        subdomains='abcd'
+        maxZoom={20}
+      />
+      {route.length > 0 && (
+        <>
+          <Polyline
+            positions={route}
+            color='#3b82f6'
+            weight={4}
+            opacity={0.8}
+          />
+          <FitBounds route={route} />
+          {/* Start marker */}
+          {route.length > 0 && startMarkerIcon && (
+            <Marker position={route[0]} icon={startMarkerIcon}>
+              <Popup>
+                <div className='text-center'>
+                  <strong>Start of Route</strong>
+                  <br />
+                  Starting point
+                </div>
+              </Popup>
+            </Marker>
+          )}
+          {/* End marker */}
+          {route.length > 0 && endMarkerIcon && (
+            <Marker position={route[route.length - 1]} icon={endMarkerIcon}>
+              <Popup>
+                <div className='text-center'>
+                  <strong>End of Route</strong>
+                  <br />
+                  Final destination
+                </div>
+              </Popup>
+            </Marker>
+          )}
+        </>
+      )}
+    </MapContainer>
+  )
+}
 
 interface EventPopupProps {
   event: EventWithAttendeeCount
@@ -45,8 +244,42 @@ export function EventPopup({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showQRCode, setShowQRCode] = useState(false)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false)
+  const { theme, resolvedTheme } = useTheme()
 
   const isCreator = user?.id === event.created_by
+  const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
+  const isCruiseWithRoute =
+    event.event_type === 'cruise' && event.route && event.route.length > 0
+
+  // Track event analytics
+  const { trackShare } = useEventAnalytics(event.id, event.created_by)
+
+  const handleShare = async () => {
+    if (!qrCodeDataUrl) {
+      setIsGeneratingQR(true)
+      try {
+        const shareUrl = `${
+          typeof window !== 'undefined' ? window.location.origin : ''
+        }/map?event=${event.id}`
+        const dataUrl = await generateQRCodeWithLogo(shareUrl, '/icon.jpg', {
+          width: 300,
+          margin: 2,
+          logoSize: 80,
+        })
+        setQrCodeDataUrl(dataUrl)
+        setShowQRCode(true)
+      } catch {
+        toast.error('Failed to generate QR code')
+      } finally {
+        setIsGeneratingQR(false)
+      }
+    } else {
+      setShowQRCode(true)
+    }
+  }
 
   // Format date in 24-hour format without seconds
   const formatDateTime = (dateString: string): string => {
@@ -232,6 +465,42 @@ export function EventPopup({
               {event.attendee_count} attending
             </span>
           </button>
+          {isCruiseWithRoute && (
+            <div className='pt-2'>
+              <div className='flex items-center gap-2 text-sm text-muted-foreground mb-2'>
+                <Route className='w-4 h-4 flex-shrink-0' />
+                <span className='font-medium'>Route</span>
+              </div>
+              <div className='h-48 w-full border rounded-md overflow-hidden'>
+                <RouteMap
+                  route={event.route || []}
+                  center={[event.latitude, event.longitude]}
+                  isDarkMode={isDarkMode}
+                />
+              </div>
+            </div>
+          )}
+          <div className='pt-2'>
+            <Button
+              onClick={handleShare}
+              variant='outline'
+              size='sm'
+              className='w-full'
+              disabled={isGeneratingQR}
+            >
+              {isGeneratingQR ? (
+                <>
+                  <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Share2 className='w-4 h-4 mr-2' />
+                  Share Event
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {isCreator && (
@@ -339,6 +608,27 @@ export function EventPopup({
           />
         </>
       )}
+
+      <EventQRCodeModal
+        isOpen={showQRCode}
+        onClose={() => setShowQRCode(false)}
+        qrCodeDataUrl={qrCodeDataUrl}
+        event={{
+          title: event.title,
+          event_date: event.event_date,
+          end_date: event.end_date,
+          description: event.description,
+        }}
+        currentUrl={
+          typeof window !== 'undefined'
+            ? `${window.location.origin}/map?event=${event.id}`
+            : undefined
+        }
+        onShare={() => {
+          // Track share analytics when QR code modal opens
+          trackShare('other')
+        }}
+      />
     </div>
   )
 }

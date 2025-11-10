@@ -75,8 +75,17 @@ export async function PUT(
 
     // Parse request body
     const body = await request.json()
-    const { title, description, latitude, longitude, event_date, end_date } =
-      body
+    const {
+      title,
+      description,
+      latitude,
+      longitude,
+      event_date,
+      end_date,
+      event_type,
+      event_image_url,
+      route,
+    } = body
 
     // Validate coordinates if provided
     if (latitude !== undefined || longitude !== undefined) {
@@ -129,6 +138,9 @@ export async function PUT(
       longitude?: number
       event_date?: string
       end_date?: string | null
+      event_type?: string
+      event_image_url?: string | null
+      route?: [number, number][] | null
       updated_at?: string
     } = {
       updated_at: new Date().toISOString(),
@@ -140,6 +152,10 @@ export async function PUT(
     if (longitude !== undefined) updateData.longitude = longitude
     if (event_date !== undefined) updateData.event_date = event_date
     if (end_date !== undefined) updateData.end_date = end_date || null
+    if (event_type !== undefined) updateData.event_type = event_type
+    if (event_image_url !== undefined)
+      updateData.event_image_url = event_image_url || null
+    if (route !== undefined) updateData.route = route || null
 
     const { data: updatedEvent, error: updateError } = await supabase
       .from('events')

@@ -46,6 +46,16 @@ export interface Database {
         Insert: Omit<EventAttendee, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<EventAttendee, 'id' | 'created_at' | 'updated_at'>>
       }
+      event_views: {
+        Row: EventView
+        Insert: Omit<EventView, 'id' | 'created_at'>
+        Update: Partial<Omit<EventView, 'id' | 'created_at'>>
+      }
+      event_shares: {
+        Row: EventShare
+        Insert: Omit<EventShare, 'id' | 'created_at'>
+        Update: Partial<Omit<EventShare, 'id' | 'created_at'>>
+      }
     }
     Views: {
       [_ in never]: never
@@ -263,6 +273,14 @@ export interface SupportTransaction {
   updated_at: string
 }
 
+export type EventType =
+  | 'meetup'
+  | 'race'
+  | 'show'
+  | 'cruise'
+  | 'track_day'
+  | 'other'
+
 export interface Event {
   id: string
   title: string
@@ -271,6 +289,9 @@ export interface Event {
   longitude: number
   event_date: string
   end_date: string | null
+  event_type: EventType
+  event_image_url: string | null
+  route: [number, number][] | null // Array of [lat, lng] coordinates for cruise routes
   created_by: string
   created_at: string
   updated_at: string
@@ -284,6 +305,34 @@ export interface EventAttendee {
   attending: boolean
   created_at: string
   updated_at: string
+}
+
+export interface EventView {
+  id: string
+  event_id: string
+  user_id?: string // Optional - anonymous views are allowed
+  ip_address?: string // For tracking unique views
+  user_agent?: string // Browser/device info
+  referrer?: string // Where the view came from
+  created_at: string
+}
+
+export interface EventShare {
+  id: string
+  event_id: string
+  user_id?: string
+  share_platform:
+    | 'twitter'
+    | 'facebook'
+    | 'instagram'
+    | 'whatsapp'
+    | 'telegram'
+    | 'copy_link'
+    | 'other'
+  share_url?: string // The URL that was shared
+  ip_address?: string // For tracking unique shares
+  user_agent?: string // Browser/device info
+  created_at: string
 }
 
 // Photo categories for organization

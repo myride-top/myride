@@ -65,7 +65,12 @@ export function AttendeesDialog({
                         onClick={e => e.stopPropagation()}
                       >
                         <CarIcon className='w-3.5 h-3.5 flex-shrink-0' />
-                        <span className='truncate'>{attendee.car.name}</span>
+                        <span className='truncate'>
+                          {attendee.car.name}
+                          {attendee.car.year && ` (${attendee.car.year})`}
+                          {attendee.car.horsepower &&
+                            ` • ${Math.round(attendee.car.horsepower * 0.7457)} kW`}
+                        </span>
                       </Link>
                     )}
                   </div>

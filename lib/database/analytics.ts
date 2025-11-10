@@ -24,6 +24,16 @@ export interface CarPerformance {
   image?: string
 }
 
+export interface EventPerformance {
+  id: string
+  title: string
+  views: number
+  attendees: number
+  shares: number
+  event_date: string
+  description?: string
+}
+
 export interface TimeRangeData {
   current: AnalyticsData
   previous: AnalyticsData
@@ -325,4 +335,101 @@ function calculateChange(current: number, previous: number): number {
     return current > 0 ? 100 : 0
   }
   return Math.round(((current - previous) / previous) * 100 * 10) / 10
+}
+
+export async function getEventPerformance(
+  userId: string,
+  timeRange: string = '6m'
+): Promise<EventPerformance[]> {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+      },
+    }
+  )
+
+  try {
+    const currentPeriod = getTimeRangeDates(timeRange)
+
+    // Get all events created by this user (we'll filter stats by time range)
+    const { data: events, error: eventsError } = await supabase
+      .from('events')
+      .select('id, title, description, event_date')
+      .eq('created_by', userId)
+      .order('event_date', { ascending: false })
+
+    if (eventsError || !events) {
+      return []
+    }
+
+    // Get detailed stats for each event
+    const eventPerformance: EventPerformance[] = []
+
+    for (const event of events) {
+      const eventIds = [event.id]
+
+      // Get attendees count
+      const { count: attendees } = await supabase
+        .from('event_attendees')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', event.id)
+        .eq('attending', true)
+        .gte('created_at', currentPeriod.start.toISOString())
+        .lte('created_at', currentPeriod.end.toISOString())
+
+      // Get views count
+      const { count: views } = await supabase
+        .from('event_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', event.id)
+        .gte('created_at', currentPeriod.start.toISOString())
+        .lte('created_at', currentPeriod.end.toISOString())
+
+      // Get shares count
+      const { count: shares } = await supabase
+        .from('event_shares')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', event.id)
+        .gte('created_at', currentPeriod.start.toISOString())
+        .lte('created_at', currentPeriod.end.toISOString())
+
+      eventPerformance.push({
+        id: event.id,
+        title: event.title,
+        views,
+        attendees: attendees || 0,
+        shares,
+        event_date: event.event_date,
+        description: event.description || undefined,
+      })
+    }
+
+    // Sort by attendees (highest first), then by event date
+    return eventPerformance.sort((a, b) => {
+      if (b.attendees !== a.attendees) {
+        return b.attendees - a.attendees
+      }
+      return new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
+    })
+  } catch (error) {
+    console.error('Error fetching event performance:', error)
+    return []
+  }
 }

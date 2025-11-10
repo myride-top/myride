@@ -21,6 +21,7 @@ interface AttendeeWithRelations extends EventAttendee {
     make: string
     model: string
     year: number
+    horsepower: number | null
     url_slug: string
     user_id: string
   } | null
@@ -44,6 +45,7 @@ interface FormattedAttendee {
     make: string
     model: string
     year: number
+    horsepower: number | null
     url_slug: string
     username: string | null
   } | null
@@ -115,6 +117,7 @@ export async function GET(
           make,
           model,
           year,
+          horsepower,
           url_slug,
           user_id
         )
@@ -171,6 +174,7 @@ export async function GET(
                 make: attendee.cars.make,
                 model: attendee.cars.model,
                 year: attendee.cars.year,
+                horsepower: attendee.cars.horsepower,
                 url_slug: attendee.cars.url_slug,
                 username: profilesMap.get(attendee.cars.user_id) || null,
               }

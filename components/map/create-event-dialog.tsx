@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { createEventClient } from '@/lib/database/events-client'
+import {
+  createEventClient,
+  updateEventClient,
+} from '@/lib/database/events-client'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {
   Dialog,
@@ -15,7 +18,17 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DateTimePicker } from '@/components/ui/datetime'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { toast } from 'sonner'
+import { Upload, X, Image as ImageIcon, MapPin, Trash2, Undo2 } from 'lucide-react'
+import { EventType } from '@/lib/types/database'
+import { uploadEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
 
 // Dynamically import map components
@@ -30,18 +43,25 @@ const TileLayer = dynamic(
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), {
   ssr: false,
 })
+const Polyline = dynamic(() => import('react-leaflet').then(mod => mod.Polyline), {
+  ssr: false,
+})
 const MapClickHandler = dynamic(
   () =>
     import('react-leaflet').then(mod => {
       const { useMapEvents } = mod
       return function MapClickHandler({
         onClick,
+        enabled,
       }: {
         onClick: (lat: number, lng: number) => void
+        enabled?: boolean
       }) {
         useMapEvents({
           click: e => {
-            onClick(e.latlng.lat, e.latlng.lng)
+            if (enabled) {
+              onClick(e.latlng.lat, e.latlng.lng)
+            }
           },
         })
         return null
@@ -70,6 +90,12 @@ export function CreateEventDialog({
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
   const [position, setPosition] = useState<[number, number]>(initialCenter)
   const [loading, setLoading] = useState(false)
+  const [eventType, setEventType] = useState<EventType>('meetup')
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [route, setRoute] = useState<[number, number][]>([])
+  const [isDrawingRoute, setIsDrawingRoute] = useState(false)
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -86,8 +112,74 @@ export function CreateEventDialog({
       const endTime = new Date(tomorrow)
       endTime.setHours(endTime.getHours() + 2)
       setEndDate(endTime)
+      // Reset form
+      setTitle('')
+      setDescription('')
+      setEventType('meetup')
+      setSelectedImage(null)
+      setImagePreview(null)
+      setRoute([])
+      setIsDrawingRoute(false)
     }
   }, [open, initialCenter])
+
+  // Reset route when event type changes
+  useEffect(() => {
+    if (eventType !== 'cruise') {
+      setRoute([])
+      setIsDrawingRoute(false)
+    }
+  }, [eventType])
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB')
+      return
+    }
+
+    setSelectedImage(file)
+
+    // Create preview
+    const reader = new FileReader()
+    reader.onload = e => {
+      setImagePreview(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeImage = () => {
+    setSelectedImage(null)
+    setImagePreview(null)
+  }
+
+  const handleMapClick = (lat: number, lng: number) => {
+    if (isDrawingRoute && eventType === 'cruise') {
+      setRoute([...route, [lat, lng]])
+    } else if (!isDrawingRoute) {
+      setPosition([lat, lng])
+    }
+  }
+
+  const removeLastRoutePoint = () => {
+    if (route.length > 0) {
+      setRoute(route.slice(0, -1))
+    }
+  }
+
+  const clearRoute = () => {
+    setRoute([])
+    setIsDrawingRoute(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,6 +198,7 @@ export function CreateEventDialog({
 
     setLoading(true)
     try {
+      // First create the event
       const result = await createEventClient({
         title,
         description: description || undefined,
@@ -113,18 +206,40 @@ export function CreateEventDialog({
         longitude: position[1],
         event_date: eventDate.toISOString(),
         end_date: endDate ? endDate.toISOString() : undefined,
+        event_type: eventType,
+        route: eventType === 'cruise' && route.length > 0 ? route : null,
       })
 
       if (result.success && result.data) {
+        let imageUrl: string | null = null
+
+        // Upload image if selected
+        if (selectedImage && result.data.id) {
+          setUploadingImage(true)
+          try {
+            const uploadedUrl = await uploadEventImage(selectedImage, result.data.id)
+            if (uploadedUrl) {
+              imageUrl = uploadedUrl
+              // Update event with image URL
+              await updateEventClient(result.data.id, {
+                event_image_url: imageUrl,
+              })
+            }
+          } catch (error) {
+            console.error('Failed to upload image:', error)
+            toast.error('Event created but image upload failed')
+          } finally {
+            setUploadingImage(false)
+          }
+        }
+
         const newEvent: EventWithAttendeeCount = {
           ...result.data,
+          event_image_url: imageUrl || result.data.event_image_url,
           attendee_count: 0,
         }
         onEventCreated(newEvent)
-        setTitle('')
-        setDescription('')
-        setEventDate(undefined)
-        setEndDate(undefined)
+        onOpenChange(false)
       } else {
         toast.error(result.error || 'Failed to create event')
       }
@@ -171,6 +286,68 @@ export function CreateEventDialog({
             />
           </div>
 
+          <div>
+            <label className='text-sm font-medium mb-1 block'>
+              Event Type *
+            </label>
+            <Select value={eventType} onValueChange={value => setEventType(value as EventType)}>
+              <SelectTrigger>
+                <SelectValue placeholder='Select event type' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='meetup'>Meetup</SelectItem>
+                <SelectItem value='race'>Race</SelectItem>
+                <SelectItem value='show'>Show</SelectItem>
+                <SelectItem value='cruise'>Cruise</SelectItem>
+                <SelectItem value='track_day'>Track Day</SelectItem>
+                <SelectItem value='other'>Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className='text-sm font-medium mb-1 block'>
+              Event Image/Icon
+            </label>
+            <div className='space-y-2'>
+              {imagePreview ? (
+                <div className='relative inline-block'>
+                  <img
+                    src={imagePreview}
+                    alt='Preview'
+                    className='w-32 h-32 object-cover rounded-lg border'
+                  />
+                  <button
+                    type='button'
+                    onClick={removeImage}
+                    className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600'
+                  >
+                    <X className='w-4 h-4' />
+                  </button>
+                </div>
+              ) : (
+                <label className='flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-accent/50 transition-colors'>
+                  <div className='flex flex-col items-center justify-center pt-5 pb-6'>
+                    <Upload className='w-8 h-8 mb-2 text-muted-foreground' />
+                    <p className='mb-2 text-sm text-muted-foreground'>
+                      <span className='font-semibold'>Click to upload</span> or drag and drop
+                    </p>
+                    <p className='text-xs text-muted-foreground'>
+                      PNG, JPG, GIF up to 5MB
+                    </p>
+                  </div>
+                  <input
+                    type='file'
+                    className='hidden'
+                    accept='image/*'
+                    onChange={handleImageSelect}
+                    disabled={uploadingImage}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <div>
               <label className='text-sm font-medium mb-1 block'>
@@ -192,9 +369,52 @@ export function CreateEventDialog({
 
           <div>
             <label className='text-sm font-medium mb-1 block'>
-              Location (click on map to set)
+              {eventType === 'cruise'
+                ? 'Route (click on map to add points)'
+                : 'Location (click on map to set)'}
             </label>
-            <div className='h-64 w-full border rounded-md overflow-hidden'>
+            {eventType === 'cruise' && (
+              <div className='mb-2 flex gap-2 flex-wrap'>
+                <Button
+                  type='button'
+                  variant={isDrawingRoute ? 'default' : 'outline'}
+                  size='sm'
+                  onClick={() => setIsDrawingRoute(!isDrawingRoute)}
+                >
+                  <MapPin className='w-4 h-4 mr-2' />
+                  {isDrawingRoute ? 'Stop Drawing' : 'Start Drawing Route'}
+                </Button>
+                {route.length > 0 && (
+                  <>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      onClick={removeLastRoutePoint}
+                      disabled={route.length === 0}
+                    >
+                      <Undo2 className='w-4 h-4 mr-2' />
+                      Remove Last
+                    </Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      onClick={clearRoute}
+                    >
+                      <Trash2 className='w-4 h-4 mr-2' />
+                      Clear Route
+                    </Button>
+                  </>
+                )}
+                {route.length > 0 && (
+                  <span className='text-sm text-muted-foreground self-center'>
+                    {route.length} point{route.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+            )}
+            <div className='h-64 w-full border rounded-md overflow-hidden relative'>
               <MapContainer
                 center={position}
                 zoom={10}
@@ -212,13 +432,33 @@ export function CreateEventDialog({
                   maxZoom={20}
                 />
                 <MapClickHandler
-                  onClick={(lat, lng) => setPosition([lat, lng])}
+                  onClick={handleMapClick}
+                  enabled={true}
                 />
                 <Marker position={position} />
+                {route.length > 0 && (
+                  <Polyline
+                    positions={route}
+                    color='#3b82f6'
+                    weight={4}
+                    opacity={0.8}
+                  />
+                )}
+                {route.map((point, index) => (
+                  <Marker key={index} position={point}>
+                    <Popup>
+                      Point {index + 1}
+                      <br />
+                      {point[0].toFixed(6)}, {point[1].toFixed(6)}
+                    </Popup>
+                  </Marker>
+                ))}
               </MapContainer>
             </div>
             <p className='text-xs text-muted-foreground mt-1'>
-              Coordinates: {position[0].toFixed(6)}, {position[1].toFixed(6)}
+              {eventType === 'cruise' && route.length > 0
+                ? `Route: ${route.length} point${route.length !== 1 ? 's' : ''}`
+                : `Coordinates: ${position[0].toFixed(6)}, ${position[1].toFixed(6)}`}
             </p>
           </div>
 

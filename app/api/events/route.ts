@@ -63,9 +63,18 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Filter out events that have already ended
+    const now = new Date()
+    const activeEvents =
+      events?.filter(event => {
+        // Use end_date if available, otherwise use event_date
+        const endDate = event.end_date ? new Date(event.end_date) : new Date(event.event_date)
+        return endDate >= now
+      }) || []
+
     // Get attendee counts for each event
-    if (events && events.length > 0) {
-      const eventIds = events.map(e => e.id)
+    if (activeEvents && activeEvents.length > 0) {
+      const eventIds = activeEvents.map(e => e.id)
       const { data: attendees } = await supabase
         .from('event_attendees')
         .select('event_id, attending')
@@ -78,7 +87,7 @@ export async function GET(request: NextRequest) {
         attendeeCounts.set(attendee.event_id, count + 1)
       })
 
-      const eventsWithCounts = events.map(event => ({
+      const eventsWithCounts = activeEvents.map(event => ({
         ...event,
         attendee_count: attendeeCounts.get(event.id) || 0,
       }))
@@ -158,8 +167,17 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const { title, description, latitude, longitude, event_date, end_date } =
-      body
+    const {
+      title,
+      description,
+      latitude,
+      longitude,
+      event_date,
+      end_date,
+      event_type,
+      event_image_url,
+      route,
+    } = body
 
     // Validate input
     if (!title || !latitude || !longitude || !event_date) {
@@ -202,6 +220,9 @@ export async function POST(request: NextRequest) {
         longitude,
         event_date,
         end_date: end_date || null,
+        event_type: event_type || 'meetup',
+        event_image_url: event_image_url || null,
+        route: route || null,
         created_by: user.id,
       })
       .select()

@@ -146,3 +146,57 @@ export async function deleteProfileAvatar(userId: string): Promise<boolean> {
 
   return true
 }
+
+export async function uploadEventImage(
+  file: File,
+  eventId: string
+): Promise<string | null> {
+  const supabase = createClient()
+
+  // Check if user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return null
+  }
+
+  // Generate unique filename
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${eventId}/image.${fileExt}`
+
+  const { error } = await supabase.storage
+    .from('event-images')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: true,
+    })
+
+  if (error) {
+    return null
+  }
+
+  // Get public URL
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('event-images').getPublicUrl(fileName)
+
+  return publicUrl
+}
+
+export async function deleteEventImage(imageUrl: string): Promise<boolean> {
+  const supabase = createClient()
+
+  // Extract file path from URL
+  const urlParts = imageUrl.split('/')
+  const fileName =
+    urlParts[urlParts.length - 2] + '/' + urlParts[urlParts.length - 1]
+
+  const { error } = await supabase.storage.from('event-images').remove([fileName])
+
+  if (error) {
+    return false
+  }
+
+  return true
+}

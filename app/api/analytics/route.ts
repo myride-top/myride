@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { getAnalyticsData, getCarPerformance } from '@/lib/database/analytics'
+import {
+  getAnalyticsData,
+  getCarPerformance,
+  getEventPerformance,
+} from '@/lib/database/analytics'
 
 export async function GET(request: NextRequest) {
   try {
@@ -44,14 +48,18 @@ export async function GET(request: NextRequest) {
     const timeRange = searchParams.get('timeRange') || '6m'
 
     // Fetch analytics data
-    const [analyticsData, carPerformance] = await Promise.all([
-      getAnalyticsData(user.id, timeRange),
-      getCarPerformance(user.id, timeRange),
-    ])
+    const [analyticsData, carPerformance, eventPerformance] = await Promise.all(
+      [
+        getAnalyticsData(user.id, timeRange),
+        getCarPerformance(user.id, timeRange),
+        getEventPerformance(user.id, timeRange),
+      ]
+    )
 
     return NextResponse.json({
       data: analyticsData,
       carPerformance,
+      eventPerformance,
       timeRange,
     })
   } catch (error) {
