@@ -15,7 +15,7 @@ import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { CarForm } from '@/components/forms/car-form'
 import { toast } from 'sonner'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
-import { PageHeaderWithBack } from '@/components/layout/page-header-with-back'
+import { PageHeader } from '@/components/layout/page-header'
 import { CarLimitChecker } from '@/components/create/car-limit-checker'
 import { ErrorAlert } from '@/components/common/error-alert'
 import { Container } from '@/components/common/container'
@@ -397,10 +397,11 @@ export default function CreateCarPage() {
       <div className='min-h-screen bg-background'>
         <MainNavbar showCreateButton={true} />
 
-        <PageHeaderWithBack
+        <PageHeader
           backHref='/dashboard'
           title='Create Your Car'
           description='Add a new car to your collection'
+          showBackButton={true}
         />
 
         {/* Main Content */}

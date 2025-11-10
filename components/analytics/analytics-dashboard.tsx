@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/common/card'
-import { Button } from '@/components/common/button'
+import { Button } from '@/components/ui/button-enhanced'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,

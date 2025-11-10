@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
+import { useUnitPreference } from '@/lib/context/unit-context'
 import { getAllCarsClient } from '@/lib/database/cars-client'
 import { Car, Profile } from '@/lib/types/database'
 import { PageLayout } from '@/components/layout/page-layout'
@@ -11,7 +12,7 @@ import { ErrorState } from '@/components/common/error-state'
 import { EmptyState } from '@/components/common/empty-state'
 import { CarCard } from '@/components/cars/car-card'
 import { Grid } from '@/components/common/grid'
-import { Button } from '@/components/common/button'
+import { Button } from '@/components/ui/button-enhanced'
 import { Badge } from '@/components/ui/badge'
 import {
   Select,
@@ -22,6 +23,13 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { CarIcon, Filter, X } from 'lucide-react'
+import {
+  normalizeTransmission,
+  normalizeFuelType,
+  normalizeEngineType,
+  matchesNormalizedFilter,
+} from '@/lib/utils/filter-normalization'
+import { unitConversions, getUnitLabel } from '@/lib/utils'
 
 interface FilterState {
   search: string
@@ -34,6 +42,18 @@ interface FilterState {
   fuelType: string
   minHorsepower: string
   maxHorsepower: string
+  engineCylinders: string
+  minDisplacement: string
+  maxDisplacement: string
+  minTorque: string
+  maxTorque: string
+  minZeroToSixty: string
+  maxZeroToSixty: string
+  minTopSpeed: string
+  maxTopSpeed: string
+  minWeight: string
+  maxWeight: string
+  engineType: string
 }
 
 type SortOption =
@@ -50,6 +70,7 @@ type SortOption =
 
 export default function BrowsePage() {
   const { user } = useAuth()
+  const { unitPreference } = useUnitPreference()
   const [cars, setCars] = useState<Car[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -66,6 +87,18 @@ export default function BrowsePage() {
     fuelType: 'all',
     minHorsepower: '',
     maxHorsepower: '',
+    engineCylinders: 'all',
+    minDisplacement: '',
+    maxDisplacement: '',
+    minTorque: '',
+    maxTorque: '',
+    minZeroToSixty: '',
+    maxZeroToSixty: '',
+    minTopSpeed: '',
+    maxTopSpeed: '',
+    minWeight: '',
+    maxWeight: '',
+    engineType: 'all',
   })
 
   // Get unique values for filter options
@@ -75,7 +108,7 @@ export default function BrowsePage() {
   }, [cars])
 
   const uniqueModels = useMemo(() => {
-    if (!filters.make) return []
+    if (!filters.make || filters.make === 'all') return []
     const models = cars
       .filter(car => car.make === filters.make)
       .map(car => car.model)
@@ -90,18 +123,44 @@ export default function BrowsePage() {
     return Array.from(new Set(drivetrains)).sort()
   }, [cars])
 
+  // Normalized transmissions - unify duplicates
   const uniqueTransmissions = useMemo(() => {
     const transmissions = cars
       .map(car => car.transmission)
       .filter((transmission): transmission is string => Boolean(transmission))
+      .map(normalizeTransmission)
+      .filter((t): t is string => Boolean(t))
     return Array.from(new Set(transmissions)).sort()
   }, [cars])
 
+  // Normalized fuel types - unify duplicates
   const uniqueFuelTypes = useMemo(() => {
     const fuelTypes = cars
       .map(car => car.fuel_type)
       .filter((fuelType): fuelType is string => Boolean(fuelType))
+      .map(normalizeFuelType)
+      .filter((ft): ft is string => Boolean(ft))
     return Array.from(new Set(fuelTypes)).sort()
+  }, [cars])
+
+  // Additional filter options
+  const uniqueEngineCylinders = useMemo(() => {
+    const cylinders = cars
+      .map(car => car.engine_cylinders)
+      .filter((cyl): cyl is number => Boolean(cyl))
+    return Array.from(new Set(cylinders))
+      .sort((a, b) => a - b)
+      .map(String)
+  }, [cars])
+
+  // Normalized engine types - unify duplicates
+  const uniqueEngineTypes = useMemo(() => {
+    const types = cars
+      .map(car => car.engine_type)
+      .filter((type): type is string => Boolean(type))
+      .map(normalizeEngineType)
+      .filter((type): type is string => Boolean(type))
+    return Array.from(new Set(types)).sort()
   }, [cars])
 
   // Filter and sort cars
@@ -140,19 +199,125 @@ export default function BrowsePage() {
       )
         return false
 
-      // Transmission filter
+      // Transmission filter (using normalized matching)
       if (
         filters.transmission &&
         filters.transmission !== 'all' &&
-        car.transmission !== filters.transmission
+        !matchesNormalizedFilter(
+          car.transmission,
+          filters.transmission,
+          normalizeTransmission
+        )
       )
         return false
 
-      // Fuel type filter
+      // Fuel type filter (using normalized matching)
       if (
         filters.fuelType &&
         filters.fuelType !== 'all' &&
-        car.fuel_type !== filters.fuelType
+        !matchesNormalizedFilter(car.fuel_type, filters.fuelType, normalizeFuelType)
+      )
+        return false
+
+      // Engine cylinders filter
+      if (
+        filters.engineCylinders &&
+        filters.engineCylinders !== 'all' &&
+        car.engine_cylinders !== parseInt(filters.engineCylinders)
+      )
+        return false
+
+      // Engine displacement range filter
+      if (
+        filters.minDisplacement &&
+        car.engine_displacement &&
+        car.engine_displacement < parseFloat(filters.minDisplacement)
+      )
+        return false
+      if (
+        filters.maxDisplacement &&
+        car.engine_displacement &&
+        car.engine_displacement > parseFloat(filters.maxDisplacement)
+      )
+        return false
+
+      // Torque range filter (convert from user input to imperial for comparison)
+      if (filters.minTorque && car.torque) {
+        const minTorqueValue = parseFloat(filters.minTorque)
+        const minTorqueImperial =
+          unitPreference === 'metric'
+            ? unitConversions.torque.metricToImperial(minTorqueValue)
+            : minTorqueValue
+        if (car.torque < minTorqueImperial) return false
+      }
+      if (filters.maxTorque && car.torque) {
+        const maxTorqueValue = parseFloat(filters.maxTorque)
+        const maxTorqueImperial =
+          unitPreference === 'metric'
+            ? unitConversions.torque.metricToImperial(maxTorqueValue)
+            : maxTorqueValue
+        if (car.torque > maxTorqueImperial) return false
+      }
+
+      // 0-60 range filter (seconds are the same for both units)
+      if (
+        filters.minZeroToSixty &&
+        car.zero_to_sixty &&
+        car.zero_to_sixty < parseFloat(filters.minZeroToSixty)
+      )
+        return false
+      if (
+        filters.maxZeroToSixty &&
+        car.zero_to_sixty &&
+        car.zero_to_sixty > parseFloat(filters.maxZeroToSixty)
+      )
+        return false
+
+      // Top speed range filter (convert from user input to imperial for comparison)
+      if (filters.minTopSpeed && car.top_speed) {
+        const minSpeedValue = parseFloat(filters.minTopSpeed)
+        const minSpeedImperial =
+          unitPreference === 'metric'
+            ? unitConversions.speed.metricToImperial(minSpeedValue)
+            : minSpeedValue
+        if (car.top_speed < minSpeedImperial) return false
+      }
+      if (filters.maxTopSpeed && car.top_speed) {
+        const maxSpeedValue = parseFloat(filters.maxTopSpeed)
+        const maxSpeedImperial =
+          unitPreference === 'metric'
+            ? unitConversions.speed.metricToImperial(maxSpeedValue)
+            : maxSpeedValue
+        if (car.top_speed > maxSpeedImperial) return false
+      }
+
+      // Weight range filter (convert from user input to imperial for comparison)
+      if (filters.minWeight && car.weight) {
+        const minWeightValue = parseFloat(filters.minWeight)
+        const minWeightImperial =
+          unitPreference === 'metric'
+            ? unitConversions.weight.metricToImperial(minWeightValue)
+            : minWeightValue
+        if (car.weight < minWeightImperial) return false
+      }
+      if (filters.maxWeight && car.weight) {
+        const maxWeightValue = parseFloat(filters.maxWeight)
+        const maxWeightImperial =
+          unitPreference === 'metric'
+            ? unitConversions.weight.metricToImperial(maxWeightValue)
+            : maxWeightValue
+        if (car.weight > maxWeightImperial) return false
+      }
+
+      // Engine type filter (using normalized matching)
+      if (
+        filters.engineType &&
+        filters.engineType !== 'all' &&
+        !matchesNormalizedFilter(
+          car.engine_type,
+          filters.engineType,
+          normalizeEngineType
+        )
       )
         return false
 
@@ -206,7 +371,7 @@ export default function BrowsePage() {
     })
 
     return filtered
-  }, [cars, filters, sortBy])
+  }, [cars, filters, sortBy, unitPreference])
 
   // Handle like changes
   const handleLikeChange = async (carId: string, newLikeCount: number) => {
@@ -265,6 +430,18 @@ export default function BrowsePage() {
       fuelType: 'all',
       minHorsepower: '',
       maxHorsepower: '',
+      engineCylinders: 'all',
+      minDisplacement: '',
+      maxDisplacement: '',
+      minTorque: '',
+      maxTorque: '',
+      minZeroToSixty: '',
+      maxZeroToSixty: '',
+      minTopSpeed: '',
+      maxTopSpeed: '',
+      minWeight: '',
+      maxWeight: '',
+      engineType: 'all',
     })
   }
 
@@ -410,7 +587,7 @@ export default function BrowsePage() {
                 <Select
                   value={filters.model}
                   onValueChange={value => handleFilterChange('model', value)}
-                  disabled={!filters.make}
+                  disabled={!filters.make || filters.make === 'all'}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder='All Models' />
@@ -553,6 +730,195 @@ export default function BrowsePage() {
                     min='0'
                   />
                 </div>
+              </div>
+
+              {/* Engine Cylinders */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  Engine Cylinders
+                </label>
+                <Select
+                  value={filters.engineCylinders}
+                  onValueChange={value =>
+                    handleFilterChange('engineCylinders', value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder='All Cylinders' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>All Cylinders</SelectItem>
+                    {uniqueEngineCylinders.map(cylinders => (
+                      <SelectItem key={cylinders} value={cylinders}>
+                        {cylinders} Cylinders
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Engine Displacement Range */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  Engine Displacement (L)
+                </label>
+                <div className='flex gap-2'>
+                  <Input
+                    type='number'
+                    placeholder='Min L'
+                    value={filters.minDisplacement}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('minDisplacement', e.target.value)
+                    }
+                    min='0'
+                    step='0.1'
+                  />
+                  <Input
+                    type='number'
+                    placeholder='Max L'
+                    value={filters.maxDisplacement}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('maxDisplacement', e.target.value)
+                    }
+                    min='0'
+                    step='0.1'
+                  />
+                </div>
+              </div>
+
+              {/* Torque Range */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  Torque Range ({getUnitLabel('torque', unitPreference)})
+                </label>
+                <div className='flex gap-2'>
+                  <Input
+                    type='number'
+                    placeholder='Min'
+                    value={filters.minTorque}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('minTorque', e.target.value)
+                    }
+                    min='0'
+                  />
+                  <Input
+                    type='number'
+                    placeholder='Max'
+                    value={filters.maxTorque}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('maxTorque', e.target.value)
+                    }
+                    min='0'
+                  />
+                </div>
+              </div>
+
+              {/* 0-60 Range */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  {unitPreference === 'metric' ? '0-100 km/h' : '0-60 mph'} (seconds)
+                </label>
+                <div className='flex gap-2'>
+                  <Input
+                    type='number'
+                    placeholder='Min'
+                    value={filters.minZeroToSixty}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('minZeroToSixty', e.target.value)
+                    }
+                    min='0'
+                    step='0.1'
+                  />
+                  <Input
+                    type='number'
+                    placeholder='Max'
+                    value={filters.maxZeroToSixty}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('maxZeroToSixty', e.target.value)
+                    }
+                    min='0'
+                    step='0.1'
+                  />
+                </div>
+              </div>
+
+              {/* Top Speed Range */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  Top Speed ({getUnitLabel('speed', unitPreference)})
+                </label>
+                <div className='flex gap-2'>
+                  <Input
+                    type='number'
+                    placeholder='Min'
+                    value={filters.minTopSpeed}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('minTopSpeed', e.target.value)
+                    }
+                    min='0'
+                  />
+                  <Input
+                    type='number'
+                    placeholder='Max'
+                    value={filters.maxTopSpeed}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('maxTopSpeed', e.target.value)
+                    }
+                    min='0'
+                  />
+                </div>
+              </div>
+
+              {/* Weight Range */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  Weight ({getUnitLabel('weight', unitPreference)})
+                </label>
+                <div className='flex gap-2'>
+                  <Input
+                    type='number'
+                    placeholder='Min'
+                    value={filters.minWeight}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('minWeight', e.target.value)
+                    }
+                    min='0'
+                  />
+                  <Input
+                    type='number'
+                    placeholder='Max'
+                    value={filters.maxWeight}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleFilterChange('maxWeight', e.target.value)
+                    }
+                    min='0'
+                  />
+                </div>
+              </div>
+
+              {/* Engine Type */}
+              <div>
+                <label className='text-sm font-medium mb-2 block'>
+                  Engine Type
+                </label>
+                <Select
+                  value={filters.engineType}
+                  onValueChange={value =>
+                    handleFilterChange('engineType', value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder='All Engine Types' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>All Engine Types</SelectItem>
+                    {uniqueEngineTypes.map(type => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

@@ -19,7 +19,7 @@ import { MainNavbar } from '@/components/navbar/main-navbar'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { CarForm } from '@/components/forms/car-form'
-import { PageHeaderWithBack } from '@/components/layout/page-header-with-back'
+import { PageHeader } from '@/components/layout/page-header'
 import { ErrorAlert } from '@/components/common/error-alert'
 import { Container } from '@/components/common/container'
 import { Button } from '@/components/ui/button'
@@ -388,10 +388,11 @@ export default function EditCarPage() {
       <div className='min-h-screen bg-background'>
         <MainNavbar showCreateButton={true} />
 
-        <PageHeaderWithBack
+        <PageHeader
           title='Edit Your Car'
           description="Update your car's information and photos"
           backHref={`/${params.username}/${car.url_slug}`}
+          showBackButton={true}
         />
 
         {/* Main Content */}

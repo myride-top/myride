@@ -466,16 +466,14 @@ export default function CarDetailPage() {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center'>
-            {user && (
-              <div className='mr-4'>
-                <BackButton
-                  href='/dashboard'
-                  variant='ghost'
-                  size='sm'
-                  showText={false}
-                />
-              </div>
-            )}
+            <div className='mr-4'>
+              <BackButton
+                onClick={() => router.back()}
+                variant='ghost'
+                size='sm'
+                showText={false}
+              />
+            </div>
 
             <div className='flex-1'>
               <h1 className='text-3xl md:text-4xl font-bold text-foreground'>

@@ -127,3 +127,4 @@ export function SecondaryButton(props: Omit<ButtonProps, 'variant'>) {
 export function SupportButton(props: Omit<ButtonProps, 'variant'>) {
   return <Button {...props} variant='support' />
 }
+
