@@ -19,10 +19,7 @@ import { Calendar, MapPin, Users, Edit, Trash2 } from 'lucide-react'
 import { AttendeesDialog } from './attendees-dialog'
 import { EditEventDialog } from './edit-event-dialog'
 import { DeleteEventDialog } from './delete-event-dialog'
-import {
-  updateEventClient,
-  deleteEventClient,
-} from '@/lib/database/events-client'
+import { deleteEventClient } from '@/lib/database/events-client'
 
 interface EventPopupProps {
   event: EventWithAttendeeCount
@@ -39,12 +36,10 @@ export function EventPopup({
 }: EventPopupProps) {
   const { user } = useAuth()
   const [cars, setCars] = useState<Car[]>([])
-  const [attendance, setAttendance] = useState<EventAttendee | null>(null)
   const [attendees, setAttendees] = useState<EventAttendeeWithDetails[]>([])
   const [loading, setLoading] = useState(false)
   const [attending, setAttending] = useState(false)
   const [selectedCarId, setSelectedCarId] = useState<string>('')
-  const [loadingAttendees, setLoadingAttendees] = useState(true)
   const [isAttendeesDialogOpen, setIsAttendeesDialogOpen] = useState(false)
   const [address, setAddress] = useState<string | null>(null)
   const [loadingAddress, setLoadingAddress] = useState(true)
@@ -93,7 +88,6 @@ export function EventPopup({
             setCars(userCars)
           }
           if (userAttendance) {
-            setAttendance(userAttendance)
             setAttending(userAttendance.attending)
             setSelectedCarId(userAttendance.car_id || '')
           }
@@ -103,7 +97,6 @@ export function EventPopup({
         } catch (error) {
           console.error('Error loading data:', error)
         } finally {
-          setLoadingAttendees(false)
         }
       } else {
         // Load attendees even if user is not logged in
@@ -117,7 +110,6 @@ export function EventPopup({
         } catch (error) {
           console.error('Error loading attendees:', error)
         } finally {
-          setLoadingAttendees(false)
         }
       }
     }
@@ -157,7 +149,6 @@ export function EventPopup({
         const result = await removeEventAttendanceClient(event.id)
         if (result.success) {
           toast.success('Attendance removed')
-          setAttendance(null)
           setAttending(false)
           onAttendanceChange()
         } else {
@@ -166,7 +157,7 @@ export function EventPopup({
         }
       }
     } catch (error) {
-      toast.error('Failed to update attendance')
+      toast.error(`Failed to update attendance: ${error}`)
       setAttending(!willAttend) // Revert on error
     } finally {
       setLoading(false)
@@ -194,7 +185,7 @@ export function EventPopup({
         toast.error(result.error || 'Failed to delete event')
       }
     } catch (error) {
-      toast.error('Failed to delete event')
+      toast.error(`Failed to delete event: ${error}`)
     } finally {
       setDeleting(false)
     }
@@ -286,7 +277,7 @@ export function EventPopup({
                 htmlFor={`attend-${event.id}`}
                 className='text-sm font-medium cursor-pointer'
               >
-                I'm attending
+                I&apos;m attending
               </label>
             </div>
 
@@ -313,7 +304,7 @@ export function EventPopup({
 
             {attending && (
               <Button
-                onClick={handleAttendanceChange}
+                onClick={() => handleAttendanceChange(attending)}
                 disabled={loading}
                 className='w-full'
                 size='sm'

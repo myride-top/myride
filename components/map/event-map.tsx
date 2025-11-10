@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/lib/context/auth-context'
@@ -12,6 +12,7 @@ import { PremiumRequiredDialog } from './premium-required-dialog'
 import { Plus, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import type { DivIcon } from 'leaflet'
 
 // Dynamically import Leaflet to avoid SSR issues
 const MapContainer = dynamic(
@@ -22,15 +23,12 @@ const TileLayer = dynamic(
   () => import('react-leaflet').then(mod => mod.TileLayer),
   { ssr: false }
 )
-const Marker = dynamic(
-  () => import('react-leaflet').then(mod => mod.Marker),
-  { ssr: false }
-)
-const Popup = dynamic(
-  () => import('react-leaflet').then(mod => mod.Popup),
-  { ssr: false }
-)
-
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), {
+  ssr: false,
+})
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), {
+  ssr: false,
+})
 
 import { EventPopup } from './event-popup'
 
@@ -46,8 +44,10 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isPremiumRequiredDialogOpen, setIsPremiumRequiredDialogOpen] =
     useState(false)
-  const [mapCenter, setMapCenter] = useState<[number, number]>([50.0755, 14.4378]) // Prague default
-  const [eventIcon, setEventIcon] = useState<any>(null)
+  const [mapCenter, setMapCenter] = useState<[number, number]>([
+    50.0755, 14.4378,
+  ]) // Prague default
+  const [eventIcon, setEventIcon] = useState<DivIcon | null>(null)
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -58,17 +58,24 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
 
     const initLeaflet = async () => {
       // Import Leaflet CSS
+      // @ts-expect-error - CSS files don't have type declarations
       await import('leaflet/dist/leaflet.css')
-      
+
       const L = (await import('leaflet')).default
 
       // Fix default marker icon issue (only once)
-      if (L.Icon.Default.prototype._getIconUrl !== undefined) {
-        delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl
+      const iconPrototype = L.Icon.Default.prototype as {
+        _getIconUrl?: () => string
+      }
+      if (iconPrototype._getIconUrl !== undefined) {
+        delete iconPrototype._getIconUrl
         L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+          iconRetinaUrl:
+            'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+          iconUrl:
+            'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+          shadowUrl:
+            'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
         })
       }
 
@@ -182,10 +189,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
             position={[event.latitude, event.longitude]}
             icon={eventIcon || undefined}
           >
-            <Popup
-              maxWidth={320}
-              className='event-popup'
-            >
+            <Popup maxWidth={320} className='event-popup'>
               <EventPopup
                 event={event}
                 onAttendanceChange={() => {
@@ -236,4 +240,3 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     </div>
   )
 }
-

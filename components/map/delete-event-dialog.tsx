@@ -35,8 +35,9 @@ export function DeleteEventDialog({
             Delete Event
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "{eventTitle}"? This action cannot
-            be undone and will remove all attendance records for this event.
+            Are you sure you want to delete &quot;{eventTitle}&quot;? This
+            action cannot be undone and will remove all attendance records for
+            this event.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -47,11 +48,7 @@ export function DeleteEventDialog({
           >
             Cancel
           </Button>
-          <Button
-            variant='destructive'
-            onClick={onConfirm}
-            disabled={loading}
-          >
+          <Button variant='destructive' onClick={onConfirm} disabled={loading}>
             {loading ? 'Deleting...' : 'Delete Event'}
           </Button>
         </DialogFooter>
@@ -59,4 +56,3 @@ export function DeleteEventDialog({
     </Dialog>
   )
 }
-

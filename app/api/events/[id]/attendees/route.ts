@@ -6,6 +6,48 @@ import {
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { EventAttendee } from '@/lib/types/database'
+
+interface AttendeeWithRelations extends EventAttendee {
+  profiles: {
+    id: string
+    username: string
+    full_name: string | null
+    avatar_url: string | null
+  } | null
+  cars: {
+    id: string
+    name: string
+    make: string
+    model: string
+    year: number
+    url_slug: string
+    user_id: string
+  } | null
+}
+
+interface FormattedAttendee {
+  id: string
+  user_id: string
+  car_id: string | null
+  attending: boolean
+  created_at: string
+  profile: {
+    id: string
+    username: string
+    full_name: string | null
+    avatar_url: string | null
+  } | null
+  car: {
+    id: string
+    name: string
+    make: string
+    model: string
+    year: number
+    url_slug: string
+    username: string | null
+  } | null
+}
 
 export async function GET(
   request: NextRequest,
@@ -83,16 +125,14 @@ export async function GET(
       .order('created_at', { ascending: false })
 
     if (attendeesError) {
-      return createSecureResponse(
-        { error: 'Failed to fetch attendees' },
-        500
-      )
+      return createSecureResponse({ error: 'Failed to fetch attendees' }, 500)
     }
 
     // Get profile usernames for car links
-    const userIds = attendees
-      ?.map((a: any) => a.cars?.user_id)
-      .filter(Boolean) as string[]
+    const userIds =
+      (attendees as AttendeeWithRelations[] | null)
+        ?.map(a => a.cars?.user_id)
+        .filter((id): id is string => Boolean(id)) || []
     const uniqueUserIds = [...new Set(userIds)]
 
     const profilesMap = new Map<string, string>()
@@ -108,32 +148,35 @@ export async function GET(
     }
 
     // Format attendees with proper structure
-    const formattedAttendees = attendees?.map((attendee: any) => ({
-      id: attendee.id,
-      user_id: attendee.user_id,
-      car_id: attendee.car_id,
-      attending: attendee.attending,
-      created_at: attendee.created_at,
-      profile: attendee.profiles
-        ? {
-            id: attendee.profiles.id,
-            username: attendee.profiles.username,
-            full_name: attendee.profiles.full_name,
-            avatar_url: attendee.profiles.avatar_url,
-          }
-        : null,
-      car: attendee.cars
-        ? {
-            id: attendee.cars.id,
-            name: attendee.cars.name,
-            make: attendee.cars.make,
-            model: attendee.cars.model,
-            year: attendee.cars.year,
-            url_slug: attendee.cars.url_slug,
-            username: profilesMap.get(attendee.cars.user_id) || null,
-          }
-        : null,
-    }))
+    const formattedAttendees: FormattedAttendee[] =
+      (attendees as AttendeeWithRelations[] | null)?.map(
+        (attendee: AttendeeWithRelations): FormattedAttendee => ({
+          id: attendee.id,
+          user_id: attendee.user_id,
+          car_id: attendee.car_id,
+          attending: attendee.attending,
+          created_at: attendee.created_at,
+          profile: attendee.profiles
+            ? {
+                id: attendee.profiles.id,
+                username: attendee.profiles.username,
+                full_name: attendee.profiles.full_name,
+                avatar_url: attendee.profiles.avatar_url,
+              }
+            : null,
+          car: attendee.cars
+            ? {
+                id: attendee.cars.id,
+                name: attendee.cars.name,
+                make: attendee.cars.make,
+                model: attendee.cars.model,
+                year: attendee.cars.year,
+                url_slug: attendee.cars.url_slug,
+                username: profilesMap.get(attendee.cars.user_id) || null,
+              }
+            : null,
+        })
+      ) || []
 
     return createSecureResponse({ attendees: formattedAttendees || [] })
   } catch (error) {
@@ -147,4 +190,3 @@ export async function GET(
     )
   }
 }
-

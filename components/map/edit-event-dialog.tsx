@@ -64,7 +64,6 @@ export function EditEventDialog({
   event,
   onEventUpdated,
 }: EditEventDialogProps) {
-  const { user } = useAuth()
   const { theme, resolvedTheme } = useTheme()
   const [title, setTitle] = useState(event.title)
   const [description, setDescription] = useState(event.description || '')
@@ -136,7 +135,7 @@ export function EditEventDialog({
         toast.error(result.error || 'Failed to update event')
       }
     } catch (error) {
-      toast.error('Failed to update event')
+      toast.error(`Failed to update event: ${error}`)
     } finally {
       setLoading(false)
     }
@@ -181,10 +180,7 @@ export function EditEventDialog({
               <label className='text-sm font-medium mb-1 block'>
                 Start Date & Time *
               </label>
-              <DateTimePicker
-                date={eventDate}
-                onDateChange={setEventDate}
-              />
+              <DateTimePicker date={eventDate} onDateChange={setEventDate} />
             </div>
             <div>
               <label className='text-sm font-medium mb-1 block'>

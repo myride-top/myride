@@ -62,12 +62,10 @@ export function PremiumRequiredDialog({
             <div className='flex items-start gap-3'>
               <Users className='w-5 h-5 text-primary mt-0.5 flex-shrink-0' />
               <div>
-                <h4 className='font-semibold text-sm mb-1'>
-                  Manage Attendees
-                </h4>
+                <h4 className='font-semibold text-sm mb-1'>Manage Attendees</h4>
                 <p className='text-sm text-muted-foreground'>
-                  See who's coming and connect with fellow car enthusiasts at
-                  your events.
+                  See who&apos;s coming and connect with fellow car enthusiasts
+                  at your events.
                 </p>
               </div>
             </div>
@@ -75,9 +73,7 @@ export function PremiumRequiredDialog({
             <div className='flex items-start gap-3'>
               <Sparkles className='w-5 h-5 text-primary mt-0.5 flex-shrink-0' />
               <div>
-                <h4 className='font-semibold text-sm mb-1'>
-                  Premium Benefits
-                </h4>
+                <h4 className='font-semibold text-sm mb-1'>Premium Benefits</h4>
                 <p className='text-sm text-muted-foreground'>
                   Unlimited cars, advanced analytics, and exclusive features.
                 </p>
@@ -87,9 +83,7 @@ export function PremiumRequiredDialog({
 
           <div className='bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4'>
             <div className='text-center'>
-              <div className='text-2xl font-bold text-foreground mb-1'>
-                $10
-              </div>
+              <div className='text-2xl font-bold text-foreground mb-1'>$10</div>
               <div className='text-sm text-muted-foreground'>
                 One-time payment, lifetime access
               </div>
@@ -117,4 +111,3 @@ export function PremiumRequiredDialog({
     </Dialog>
   )
 }
-

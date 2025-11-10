@@ -28,10 +28,9 @@ const TileLayer = dynamic(
   () => import('react-leaflet').then(mod => mod.TileLayer),
   { ssr: false }
 )
-const Marker = dynamic(
-  () => import('react-leaflet').then(mod => mod.Marker),
-  { ssr: false }
-)
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), {
+  ssr: false,
+})
 const MapClickHandler = dynamic(
   () =>
     import('react-leaflet').then(mod => {
@@ -65,7 +64,6 @@ export function CreateEventDialog({
   onEventCreated,
   initialCenter,
 }: CreateEventDialogProps) {
-  const { user } = useAuth()
   const { theme, resolvedTheme } = useTheme()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -132,7 +130,7 @@ export function CreateEventDialog({
         toast.error(result.error || 'Failed to create event')
       }
     } catch (error) {
-      toast.error('Failed to create event')
+      toast.error(`Failed to create event: ${error}`)
     } finally {
       setLoading(false)
     }
@@ -179,10 +177,7 @@ export function CreateEventDialog({
               <label className='text-sm font-medium mb-1 block'>
                 Start Date & Time *
               </label>
-              <DateTimePicker
-                date={eventDate}
-                onDateChange={setEventDate}
-              />
+              <DateTimePicker date={eventDate} onDateChange={setEventDate} />
             </div>
             <div>
               <label className='text-sm font-medium mb-1 block'>
@@ -246,4 +241,3 @@ export function CreateEventDialog({
     </Dialog>
   )
 }
-
