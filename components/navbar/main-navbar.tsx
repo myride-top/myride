@@ -17,6 +17,7 @@ import {
   ChevronDown,
   AlertCircle,
   LayoutDashboard,
+  CreditCard,
 } from 'lucide-react'
 import { BaseNavbar } from './base-navbar'
 
@@ -87,6 +88,9 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
         break
       case 'premium':
         router.push('/premium')
+        break
+      case 'payments':
+        router.push('/payments')
         break
     }
   }
@@ -194,6 +198,14 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                       Buy Premium
                     </button>
                   )}
+
+                  <button
+                    onClick={() => handleOptionClick('payments')}
+                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                  >
+                    <CreditCard className='w-4 h-4 mr-3' />
+                    Payment History
+                  </button>
 
                   <div className='border-t border-border my-1'></div>
 

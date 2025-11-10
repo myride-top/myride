@@ -808,7 +808,7 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
     // Get profiles for all users
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url')
+      .select('id, username, full_name, avatar_url, is_premium')
       .in('id', userIds)
 
     if (profilesError) {

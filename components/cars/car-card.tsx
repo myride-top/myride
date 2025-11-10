@@ -1,5 +1,5 @@
 import { Car, Profile } from '@/lib/types/database'
-import { Share2, Image, Edit } from 'lucide-react'
+import { Share2, Image, Edit, Crown } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -156,7 +156,10 @@ export const CarCard = ({
               username={profile.username}
               size='sm'
             />
-            <span className='text-sm text-muted-foreground'>
+            <span className='text-sm text-muted-foreground flex items-center gap-1'>
+              {profile.is_premium && (
+                <Crown className='w-3.5 h-3.5 text-yellow-500' />
+              )}
               @{profile.username}
             </span>
           </div>

@@ -1,15 +1,8 @@
 import { cn } from '@/lib/utils'
 import { MainNavbar } from '../navbar/main-navbar'
-import { LandingNavbar } from '../navbar/landing-navbar'
 
 interface PageLayoutProps {
   children: React.ReactNode
-  user?: {
-    id: string
-    name?: string
-    email: string
-    image?: string
-  }
   showCreateButton?: boolean
   className?: string
   mainClassName?: string
@@ -18,7 +11,6 @@ interface PageLayoutProps {
 
 export const PageLayout = ({
   children,
-  user,
   showCreateButton = false,
   className = '',
   mainClassName = '',
@@ -26,11 +18,7 @@ export const PageLayout = ({
 }: PageLayoutProps) => {
   return (
     <div className={cn('min-h-screen bg-background', className)}>
-      {user ? (
-        <MainNavbar showCreateButton={showCreateButton} />
-      ) : (
-        <LandingNavbar />
-      )}
+      <MainNavbar showCreateButton={showCreateButton} />
 
       <main
         className={cn(

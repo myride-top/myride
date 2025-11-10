@@ -34,6 +34,45 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const pathname = request.nextUrl.pathname
+
+  // Allow public access to car detail pages ([username]/[car])
+  // Pattern: /username/car-slug (exactly 2 path segments, not a known route)
+  const pathSegments = pathname.split('/').filter(Boolean)
+  const knownRoutes = [
+    'browse',
+    'create',
+    'profile',
+    'dashboard',
+    'login',
+    'register',
+    'analytics',
+    'premium',
+    'buy-car-slot',
+    'legal',
+    'api',
+    '_next',
+  ]
+  const isCarDetailPage =
+    pathSegments.length === 2 &&
+    !knownRoutes.includes(pathSegments[0]) &&
+    !pathSegments[0].startsWith('_') &&
+    !pathSegments[0].startsWith('api')
+
+  // If it's a car detail page, allow public access
+  if (isCarDetailPage) {
+    return supabaseResponse
+  }
+
+  // Handle root path redirects
+  if (pathname === '/') {
+    if (user) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    } else {
+      return NextResponse.redirect(new URL('/browse', request.url))
+    }
+  }
+
   // If user is authenticated and trying to access auth pages, redirect to dashboard
   if (
     user &&
