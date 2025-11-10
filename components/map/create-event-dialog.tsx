@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { useAuth } from '@/lib/context/auth-context'
 import { createEventClient } from '@/lib/database/events-client'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {

@@ -12,7 +12,6 @@ import {
 } from '@/lib/database/events-client'
 import { getCarsByUserClient } from '@/lib/database/cars-client'
 import { Car } from '@/lib/types/database'
-import { EventAttendee } from '@/lib/types/database'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { Calendar, MapPin, Users, Edit, Trash2 } from 'lucide-react'
