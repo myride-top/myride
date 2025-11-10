@@ -23,7 +23,9 @@ import { BaseNavbar } from './base-navbar'
 
 import type { NavItem } from '@/lib/types/navbar'
 
-const navItems: NavItem[] = [{ name: 'Browse Cars', href: '/browse' }]
+const navItems: NavItem[] = [
+  { name: 'Browse Cars', href: '/browse' },
+]
 
 interface MainNavbarProps {
   showCreateButton?: boolean

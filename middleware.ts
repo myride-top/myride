@@ -49,6 +49,7 @@ export async function middleware(request: NextRequest) {
     'analytics',
     'premium',
     'buy-car-slot',
+    'map',
     'legal',
     'api',
     '_next',
@@ -88,7 +89,8 @@ export async function middleware(request: NextRequest) {
     !user &&
     (request.nextUrl.pathname.startsWith('/create') ||
       request.nextUrl.pathname.startsWith('/profile') ||
-      request.nextUrl.pathname.startsWith('/dashboard'))
+      request.nextUrl.pathname.startsWith('/dashboard') ||
+      request.nextUrl.pathname.startsWith('/map'))
   ) {
     // Redirect to login for protected routes
     return NextResponse.redirect(new URL('/login', request.url))

@@ -36,6 +36,16 @@ export interface Database {
         Insert: Omit<CommentLike, 'id' | 'created_at'>
         Update: Partial<Omit<CommentLike, 'id' | 'created_at'>>
       }
+      events: {
+        Row: Event
+        Insert: Omit<Event, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Event, 'id' | 'created_at' | 'updated_at'>>
+      }
+      event_attendees: {
+        Row: EventAttendee
+        Insert: Omit<EventAttendee, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<EventAttendee, 'id' | 'created_at' | 'updated_at'>>
+      }
     }
     Views: {
       [_ in never]: never
@@ -249,6 +259,29 @@ export interface SupportTransaction {
   amount: number // Amount in cents
   payment_intent_id: string // Stripe payment intent ID
   status: 'pending' | 'completed' | 'failed' | 'refunded'
+  created_at: string
+  updated_at: string
+}
+
+export interface Event {
+  id: string
+  title: string
+  description: string | null
+  latitude: number
+  longitude: number
+  event_date: string
+  end_date: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface EventAttendee {
+  id: string
+  event_id: string
+  user_id: string
+  car_id: string | null
+  attending: boolean
   created_at: string
   updated_at: string
 }
