@@ -71,6 +71,12 @@ export const Footer = () => {
             >
               Cookie Policy
             </Link>
+            <Link
+              href='/legal/licenses'
+              className='hover:text-primary transition-colors'
+            >
+              Licenses
+            </Link>
           </div>
         </div>
       </div>

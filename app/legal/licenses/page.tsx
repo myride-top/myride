@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   keywords:
     'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
   openGraph: {
-    title: 'MyRide - Licensese',
+    title: 'MyRide - Licenses',
     description:
       'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
     type: 'website',
