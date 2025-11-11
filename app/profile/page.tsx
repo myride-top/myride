@@ -11,9 +11,25 @@ import {
 import { Profile } from '@/lib/types/database'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { toast } from 'sonner'
-import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { Loader2, AlertTriangle } from 'lucide-react'
 import { AvatarUpload } from '@/components/common/avatar-upload'
+import { isUserPremium } from '@/lib/database/premium-client'
+import { Crown } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { PageLayout } from '@/components/layout/page-layout'
+import { PageHeader } from '@/components/layout/page-header'
+import { FormSection } from '@/components/forms/form-section'
+import FormField from '@/components/forms/form-field'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -22,10 +38,18 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isPremium, setIsPremium] = useState(false)
   const [formData, setFormData] = useState({
     username: '',
     full_name: '',
     unit_preference: 'metric' as 'metric' | 'imperial',
+    // Premium fields
+    bio: '',
+    location: '',
+    instagram_handle: '',
+    youtube_channel: '',
+    website_url: '',
+    garage_description: '',
   })
   const [avatarUrl, setAvatarUrl] = useState<string>('')
 
@@ -33,14 +57,26 @@ export default function ProfilePage() {
     const loadProfile = async () => {
       if (user) {
         try {
-          const userProfile = await getProfileByUserIdClient(user.id)
+          const [userProfile, premiumStatus] = await Promise.all([
+            getProfileByUserIdClient(user.id),
+            isUserPremium(user.id),
+          ])
+          
           setProfile(userProfile)
+          setIsPremium(premiumStatus)
 
           if (userProfile) {
             setFormData({
               username: userProfile.username || '',
               full_name: userProfile.full_name || '',
               unit_preference: userProfile.unit_preference || 'metric',
+              // Premium fields
+              bio: userProfile.bio || '',
+              location: userProfile.location || '',
+              instagram_handle: userProfile.instagram_handle || '',
+              youtube_channel: userProfile.youtube_channel || '',
+              website_url: userProfile.website_url || '',
+              garage_description: userProfile.garage_description || '',
             })
             setAvatarUrl(userProfile.avatar_url || '')
           } else {
@@ -49,6 +85,12 @@ export default function ProfilePage() {
               username: `user_${user.id.slice(0, 8)}`,
               full_name: user.email || '',
               unit_preference: 'metric',
+              bio: '',
+              location: '',
+              instagram_handle: '',
+              youtube_channel: '',
+              website_url: '',
+              garage_description: '',
             })
             setAvatarUrl('')
           }
@@ -89,12 +131,24 @@ export default function ProfilePage() {
         }
       }
 
-      const result = await updateProfileClient(user.id, {
+      const updateData: Partial<Profile> = {
         username: formData.username,
         full_name: formData.full_name,
         unit_preference: formData.unit_preference,
         // avatar_url is already updated when avatar changes, no need to update again
-      })
+      }
+
+      // Only include premium fields if user is premium
+      if (isPremium) {
+        updateData.bio = formData.bio || null
+        updateData.location = formData.location || null
+        updateData.instagram_handle = formData.instagram_handle || null
+        updateData.youtube_channel = formData.youtube_channel || null
+        updateData.website_url = formData.website_url || null
+        updateData.garage_description = formData.garage_description || null
+      }
+
+      const result = await updateProfileClient(user.id, updateData)
 
       if (result.success && result.data) {
         setProfile(result.data)
@@ -110,7 +164,7 @@ export default function ProfilePage() {
   }
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -144,39 +198,26 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen flex items-center justify-center bg-background'>
-          <div className='text-center'>
-            <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto'></div>
-            <p className='mt-4 text-muted-foreground'>Loading profile...</p>
+        <PageLayout showCreateButton={false}>
+          <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
+            <LoadingSpinner message='Loading profile...' />
           </div>
-        </div>
+        </PageLayout>
       </ProtectedRoute>
     )
   }
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
+      <PageLayout showCreateButton={false}>
+        <PageHeader
+          title='Edit Profile'
+          description='Manage your profile information and garage customization'
+        />
 
-        {/* Page Header */}
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-28'>
-          <div className='flex items-center'>
-            <button
-              onClick={() => router.back()}
-              className='mr-4 text-foreground hover:text-foreground/80 cursor-pointer'
-            >
-              <ArrowLeft className='w-6 h-6' />
-            </button>
-            <h1 className='text-3xl font-bold text-foreground'>Edit Profile</h1>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <main className='max-w-3xl mx-auto py-6 sm:px-6 lg:px-8'>
-          <div className='px-4 py-6 sm:px-0'>
-            <div className='bg-card shadow rounded-lg border border-border'>
-              <div className='px-4 py-5 sm:p-6'>
+        <div className='max-w-3xl mx-auto'>
+          <div className='bg-card shadow rounded-lg border border-border'>
+            <div className='px-4 py-5 sm:p-6'>
                 {/* User Info */}
                 <div className='mb-6'>
                   <h3 className='text-lg font-medium text-foreground mb-2'>
@@ -195,27 +236,25 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Error/Success Messages */}
-                {error && (
-                  <div className='mb-4 rounded-md bg-destructive/10 p-4 border border-destructive/20'>
-                    <div className='flex'>
-                      <div className='flex-shrink-0'>
-                        <AlertTriangle className='h-5 w-5 text-destructive' />
-                      </div>
-                      <div className='ml-3'>
-                        <p className='text-sm text-destructive'>{error}</p>
-                      </div>
+              {/* Error/Success Messages */}
+              {error && (
+                <div className='mb-6 rounded-md bg-destructive/10 p-4 border border-destructive/20'>
+                  <div className='flex'>
+                    <div className='flex-shrink-0'>
+                      <AlertTriangle className='h-5 w-5 text-destructive' />
+                    </div>
+                    <div className='ml-3'>
+                      <p className='text-sm text-destructive'>{error}</p>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Profile Form */}
-                <form onSubmit={handleSubmit} className='space-y-6'>
-                  {/* Avatar Upload */}
+              {/* Profile Form */}
+              <form onSubmit={handleSubmit} className='space-y-8'>
+                {/* Avatar Upload Section */}
+                <FormSection title='Profile Avatar' showBorder={false}>
                   <div className='flex flex-col items-center space-y-4'>
-                    <h3 className='text-lg font-medium text-foreground'>
-                      Profile Avatar
-                    </h3>
                     <AvatarUpload
                       currentAvatarUrl={avatarUrl}
                       userId={user?.id || ''}
@@ -223,93 +262,184 @@ export default function ProfilePage() {
                       size='lg'
                     />
                   </div>
+                </FormSection>
 
-                  <div>
-                    <label
-                      htmlFor='username'
-                      className='block text-sm font-medium text-foreground'
-                    >
-                      Username
-                    </label>
-                    <input
-                      type='text'
-                      id='username'
-                      name='username'
-                      value={formData.username}
-                      onChange={handleInputChange}
-                      required
-                      className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
-                      placeholder='Enter your username'
-                    />
-                    <p className='mt-1 text-sm text-muted-foreground'>
-                      This will be your public username on MyRide
-                    </p>
-                  </div>
+                {/* Basic Information Section */}
+                <FormSection title='Basic Information'>
+                  <FormField
+                    label='Username'
+                    name='username'
+                    type='text'
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    required
+                    placeholder='Enter your username'
+                    className='space-y-2'
+                  />
+                  <p className='text-sm text-muted-foreground -mt-4'>
+                    This will be your public username on MyRide
+                  </p>
 
-                  <div>
-                    <label
-                      htmlFor='full_name'
-                      className='block text-sm font-medium text-foreground'
-                    >
-                      Full Name
-                    </label>
-                    <input
-                      type='text'
-                      id='full_name'
-                      name='full_name'
-                      value={formData.full_name}
-                      onChange={handleInputChange}
-                      className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
-                      placeholder='Enter your full name'
-                    />
-                  </div>
+                  <FormField
+                    label='Full Name'
+                    name='full_name'
+                    type='text'
+                    value={formData.full_name}
+                    onChange={handleInputChange}
+                    placeholder='Enter your full name'
+                    className='space-y-2'
+                  />
 
-                  <div>
-                    <label
-                      htmlFor='unit_preference'
-                      className='block text-sm font-medium text-foreground'
-                    >
-                      Unit System
-                    </label>
-                    <select
-                      id='unit_preference'
-                      name='unit_preference'
+                  <div className='space-y-2'>
+                    <Label htmlFor='unit_preference'>Unit System</Label>
+                    <Select
                       value={formData.unit_preference}
-                      onChange={handleInputChange}
-                      className='mt-1 block w-full border-input rounded-md shadow-sm focus:ring-ring focus:border-ring bg-background text-foreground sm:text-sm'
+                      onValueChange={value =>
+                        setFormData(prev => ({
+                          ...prev,
+                          unit_preference: value as 'metric' | 'imperial',
+                        }))
+                      }
                     >
-                      <option value='metric'>Metric (km/h, Nm, bar, kg)</option>
-                      <option value='imperial'>
-                        Imperial (mph, lb-ft, PSI, lbs)
-                      </option>
-                    </select>
-                    <p className='mt-1 text-sm text-muted-foreground'>
+                      <SelectTrigger id='unit_preference'>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='metric'>
+                          Metric (km/h, Nm, bar, kg)
+                        </SelectItem>
+                        <SelectItem value='imperial'>
+                          Imperial (mph, lb-ft, PSI, lbs)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className='text-sm text-muted-foreground'>
                       Choose your preferred unit system for car specifications
                     </p>
                   </div>
+                </FormSection>
 
-                  <div className='flex justify-end'>
-                    <button
-                      type='submit'
-                      disabled={saving}
-                      className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-                    >
-                      {saving ? (
-                        <>
-                          <Loader2 className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' />
-                          Saving...
-                        </>
-                      ) : (
-                        'Save Changes'
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </div>
+                {/* Premium Garage Customization Section */}
+                {isPremium && (
+                  <FormSection title='Garage Customization'>
+                    <div className='flex items-center gap-2 mb-4'>
+                      <Crown className='w-5 h-5 text-yellow-500' />
+                      <span className='text-xs bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-2 py-1 rounded-full'>
+                        Premium Feature
+                      </span>
+                    </div>
+                    <p className='text-sm text-muted-foreground mb-6'>
+                      Customize how your garage page appears to visitors. These
+                      options are only available to premium users.
+                    </p>
+
+                    <div className='space-y-6'>
+                      <FormField
+                        label='Garage Description'
+                        name='garage_description'
+                        type='textarea'
+                        value={formData.garage_description}
+                        onChange={handleInputChange}
+                        placeholder='Describe your car collection...'
+                        rows={3}
+                        className='space-y-2'
+                      />
+                      <p className='text-sm text-muted-foreground -mt-4'>
+                        A brief description that appears at the top of your garage
+                        page
+                      </p>
+
+                      <FormField
+                        label='Bio'
+                        name='bio'
+                        type='textarea'
+                        value={formData.bio}
+                        onChange={handleInputChange}
+                        placeholder='Tell visitors about yourself...'
+                        rows={4}
+                        className='space-y-2'
+                      />
+                      <p className='text-sm text-muted-foreground -mt-4'>
+                        A longer bio about yourself and your passion for cars
+                      </p>
+
+                      <FormField
+                        label='Location'
+                        name='location'
+                        type='text'
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        placeholder='City, Country'
+                        className='space-y-2'
+                      />
+                      <p className='text-sm text-muted-foreground -mt-4'>
+                        Your location (e.g., "Los Angeles, CA" or "London, UK")
+                      </p>
+
+                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+                        <div className='space-y-2'>
+                          <Label htmlFor='instagram_handle'>Instagram Handle</Label>
+                          <div className='flex rounded-md'>
+                            <span className='inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm'>
+                              @
+                            </span>
+                            <Input
+                              id='instagram_handle'
+                              name='instagram_handle'
+                              type='text'
+                              value={formData.instagram_handle}
+                              onChange={handleInputChange}
+                              className='rounded-l-none'
+                              placeholder='username'
+                            />
+                          </div>
+                        </div>
+
+                        <FormField
+                          label='YouTube Channel'
+                          name='youtube_channel'
+                          type='text'
+                          value={formData.youtube_channel}
+                          onChange={handleInputChange}
+                          placeholder='Channel name or URL'
+                          className='space-y-2'
+                        />
+                      </div>
+
+                      <FormField
+                        label='Website URL'
+                        name='website_url'
+                        type='url'
+                        value={formData.website_url}
+                        onChange={handleInputChange}
+                        placeholder='https://yourwebsite.com'
+                        className='space-y-2'
+                      />
+                      <p className='text-sm text-muted-foreground -mt-4'>
+                        Your personal website or portfolio
+                      </p>
+                    </div>
+                  </FormSection>
+                )}
+
+                {/* Form Actions */}
+                <div className='flex justify-end pt-6 border-t border-border'>
+                  <Button type='submit' disabled={saving}>
+                    {saving ? (
+                      <>
+                        <Loader2 className='animate-spin -ml-1 mr-2 h-4 w-4' />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </PageLayout>
     </ProtectedRoute>
   )
 }

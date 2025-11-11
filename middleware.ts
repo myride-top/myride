@@ -36,8 +36,8 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Allow public access to car detail pages ([username]/[car])
-  // Pattern: /username/car-slug (exactly 2 path segments, not a known route)
+  // Allow public access to profile/garage pages ([username]) and car detail pages ([username]/[car])
+  // Pattern: /username (1 path segment) or /username/car-slug (2 path segments), not a known route
   const pathSegments = pathname.split('/').filter(Boolean)
   const knownRoutes = [
     'browse',
@@ -54,14 +54,19 @@ export async function middleware(request: NextRequest) {
     'api',
     '_next',
   ]
+  const isProfilePage =
+    pathSegments.length === 1 &&
+    !knownRoutes.includes(pathSegments[0]) &&
+    !pathSegments[0].startsWith('_') &&
+    !pathSegments[0].startsWith('api')
   const isCarDetailPage =
     pathSegments.length === 2 &&
     !knownRoutes.includes(pathSegments[0]) &&
     !pathSegments[0].startsWith('_') &&
     !pathSegments[0].startsWith('api')
 
-  // If it's a car detail page, allow public access
-  if (isCarDetailPage) {
+  // If it's a profile/garage page or car detail page, allow public access
+  if (isProfilePage || isCarDetailPage) {
     return supabaseResponse
   }
 

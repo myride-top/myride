@@ -481,17 +481,37 @@ export default function CarDetailPage() {
               </h1>
               <div className='flex items-center gap-2 mt-2 text-lg text-muted-foreground'>
                 <span>by</span>
-                <UserAvatar
-                  avatarUrl={profile?.avatar_url || undefined}
-                  username={profile?.username || (params.username as string)}
-                  size='sm'
-                />
-                <span className='flex items-center gap-1'>
-                  {profile?.is_premium && (
-                    <Crown className='w-4 h-4 text-yellow-500' />
-                  )}
-                  @{profile?.username || params.username || 'Unknown'}
-                </span>
+                {profile?.is_premium ? (
+                  <Link
+                    href={`/${profile.username}`}
+                    className='flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer'
+                    title={`View ${profile.full_name || profile.username}'s garage`}
+                  >
+                    <UserAvatar
+                      avatarUrl={profile?.avatar_url || undefined}
+                      username={profile?.username || (params.username as string)}
+                      size='sm'
+                    />
+                    <span className='flex items-center gap-1 hover:text-foreground transition-colors'>
+                      <Crown className='w-4 h-4 text-yellow-500' />
+                      @{profile.username || params.username || 'Unknown'}
+                    </span>
+                  </Link>
+                ) : (
+                  <>
+                    <UserAvatar
+                      avatarUrl={profile?.avatar_url || undefined}
+                      username={profile?.username || (params.username as string)}
+                      size='sm'
+                    />
+                    <span className='flex items-center gap-1'>
+                      {profile?.is_premium && (
+                        <Crown className='w-4 h-4 text-yellow-500' />
+                      )}
+                      @{profile?.username || params.username || 'Unknown'}
+                    </span>
+                  </>
+                )}
               </div>
 
               {/* Mobile Action Buttons - Under profile name */}

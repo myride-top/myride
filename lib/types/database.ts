@@ -84,6 +84,13 @@ export interface Profile {
   stripe_subscription_id: string | null
   total_supported_amount: number // Total amount supported across all creators
   is_supporter: boolean // Whether this user has supported any creator
+  // Premium-only garage customization fields
+  bio: string | null // Bio/about section for garage page
+  location: string | null // Location
+  instagram_handle: string | null // Instagram handle (without @)
+  youtube_channel: string | null // YouTube channel URL or handle
+  website_url: string | null // Personal website URL
+  garage_description: string | null // Description shown on garage page
 }
 
 export interface CarLike {

@@ -17,6 +17,8 @@ interface QRCodeModalProps {
   }
   profile?: {
     username: string
+    avatar_url?: string | null
+    full_name?: string | null
   } | null
   currentUrl?: string
   onShare?: () => void
@@ -106,10 +108,16 @@ export const QRCodeModal = ({
             </p>
           </div>
 
-          {/* Car Info */}
+          {/* Car/Garage Info */}
           <div className='bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6'>
             <div className='flex items-center gap-3'>
-              {car.main_photo_url ? (
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name || profile.username || 'Profile'}
+                  className='w-12 h-12 rounded-full object-cover'
+                />
+              ) : car.main_photo_url ? (
                 <img
                   src={car.main_photo_url}
                   alt={car.name}
