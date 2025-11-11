@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Upload, X, Image as ImageIcon, MapPin, Trash2, Undo2 } from 'lucide-react'
+import { Upload, X, MapPin, Trash2, Undo2 } from 'lucide-react'
 import { EventType } from '@/lib/types/database'
 import { uploadEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
@@ -43,9 +43,15 @@ const TileLayer = dynamic(
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), {
   ssr: false,
 })
-const Polyline = dynamic(() => import('react-leaflet').then(mod => mod.Polyline), {
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), {
   ssr: false,
 })
+const Polyline = dynamic(
+  () => import('react-leaflet').then(mod => mod.Polyline),
+  {
+    ssr: false,
+  }
+)
 const MapClickHandler = dynamic(
   () =>
     import('react-leaflet').then(mod => {
@@ -217,7 +223,10 @@ export function CreateEventDialog({
         if (selectedImage && result.data.id) {
           setUploadingImage(true)
           try {
-            const uploadedUrl = await uploadEventImage(selectedImage, result.data.id)
+            const uploadedUrl = await uploadEventImage(
+              selectedImage,
+              result.data.id
+            )
             if (uploadedUrl) {
               imageUrl = uploadedUrl
               // Update event with image URL
@@ -290,7 +299,10 @@ export function CreateEventDialog({
             <label className='text-sm font-medium mb-1 block'>
               Event Type *
             </label>
-            <Select value={eventType} onValueChange={value => setEventType(value as EventType)}>
+            <Select
+              value={eventType}
+              onValueChange={value => setEventType(value as EventType)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder='Select event type' />
               </SelectTrigger>
@@ -330,7 +342,8 @@ export function CreateEventDialog({
                   <div className='flex flex-col items-center justify-center pt-5 pb-6'>
                     <Upload className='w-8 h-8 mb-2 text-muted-foreground' />
                     <p className='mb-2 text-sm text-muted-foreground'>
-                      <span className='font-semibold'>Click to upload</span> or drag and drop
+                      <span className='font-semibold'>Click to upload</span> or
+                      drag and drop
                     </p>
                     <p className='text-xs text-muted-foreground'>
                       PNG, JPG, GIF up to 5MB
@@ -431,10 +444,7 @@ export function CreateEventDialog({
                   subdomains='abcd'
                   maxZoom={20}
                 />
-                <MapClickHandler
-                  onClick={handleMapClick}
-                  enabled={true}
-                />
+                <MapClickHandler onClick={handleMapClick} enabled={true} />
                 <Marker position={position} />
                 {route.length > 0 && (
                   <Polyline
@@ -458,7 +468,9 @@ export function CreateEventDialog({
             <p className='text-xs text-muted-foreground mt-1'>
               {eventType === 'cruise' && route.length > 0
                 ? `Route: ${route.length} point${route.length !== 1 ? 's' : ''}`
-                : `Coordinates: ${position[0].toFixed(6)}, ${position[1].toFixed(6)}`}
+                : `Coordinates: ${position[0].toFixed(
+                    6
+                  )}, ${position[1].toFixed(6)}`}
             </p>
           </div>
 

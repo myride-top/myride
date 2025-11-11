@@ -383,8 +383,6 @@ export async function getEventPerformance(
     const eventPerformance: EventPerformance[] = []
 
     for (const event of events) {
-      const eventIds = [event.id]
-
       // Get attendees count
       const { count: attendees } = await supabase
         .from('event_attendees')
@@ -413,9 +411,9 @@ export async function getEventPerformance(
       eventPerformance.push({
         id: event.id,
         title: event.title,
-        views,
+        views: views || 0,
         attendees: attendees || 0,
-        shares,
+        shares: shares || 0,
         event_date: event.event_date,
         description: event.description || undefined,
       })

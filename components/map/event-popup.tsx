@@ -32,6 +32,8 @@ import { useEventAnalytics } from '@/lib/hooks/use-event-analytics'
 import { EventQRCodeModal } from './event-qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { useTheme } from 'next-themes'
+import type * as Leaflet from 'leaflet'
+import type { DivIcon } from 'leaflet'
 
 // Dynamically import map components for route display
 const MapContainer = dynamic(
@@ -64,7 +66,7 @@ const FitBounds = dynamic(
         const map = useMap()
         useEffect(() => {
           if (route.length > 0) {
-            const L = (window as any).L
+            const L = (window as Window & { L: typeof Leaflet }).L
             if (L) {
               const bounds = L.latLngBounds(route)
               map.fitBounds(bounds, { padding: [20, 20] })
@@ -87,8 +89,8 @@ function RouteMap({
   center: [number, number]
   isDarkMode: boolean
 }) {
-  const [startMarkerIcon, setStartMarkerIcon] = useState<any>(null)
-  const [endMarkerIcon, setEndMarkerIcon] = useState<any>(null)
+  const [startMarkerIcon, setStartMarkerIcon] = useState<DivIcon | null>(null)
+  const [endMarkerIcon, setEndMarkerIcon] = useState<DivIcon | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
