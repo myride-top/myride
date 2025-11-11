@@ -18,6 +18,7 @@ import {
   AlertCircle,
   LayoutDashboard,
   CreditCard,
+  BarChart3,
 } from 'lucide-react'
 import { BaseNavbar } from './base-navbar'
 
@@ -25,6 +26,7 @@ import type { NavItem } from '@/lib/types/navbar'
 
 const navItems: NavItem[] = [
   { name: 'Browse Cars', href: '/browse' },
+  { name: 'Map', href: '/map' },
 ]
 
 interface MainNavbarProps {
@@ -97,12 +99,44 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
     }
   }
 
+  const handleNavItemClick = (item: NavItem, e: React.MouseEvent) => {
+    // If clicking on Map and user is not logged in, redirect to login
+    if (item.href === '/map' && !user) {
+      e.preventDefault()
+      router.push('/login')
+      return
+    }
+  }
+
+  const renderNavItem = (item: NavItem) => {
+    if (item.href === '/map') {
+      return (
+        <Link
+          href={item.href}
+          onClick={e => handleNavItemClick(item, e)}
+          className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-block block px-3 py-2 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-md md:rounded-none'
+        >
+          {item.name}
+        </Link>
+      )
+    }
+    return (
+      <Link
+        href={item.href}
+        className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-block block px-3 py-2 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-md md:rounded-none'
+      >
+        {item.name}
+      </Link>
+    )
+  }
+
   return (
     <BaseNavbar
       variant='solid'
       navItems={navItems}
       logoHref={user ? '/dashboard' : '/'}
       layout='right-aligned'
+      renderNavItem={renderNavItem}
     >
       {user ? (
         <div className='flex items-center space-x-2'>
@@ -157,6 +191,19 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                     <LayoutDashboard className='w-4 h-4 mr-3' />
                     Dashboard
                   </button>
+
+                  {profile?.is_premium && (
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false)
+                        router.push('/analytics')
+                      }}
+                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                    >
+                      <BarChart3 className='w-4 h-4 mr-3' />
+                      Analytics
+                    </button>
+                  )}
 
                   <button
                     onClick={() => handleOptionClick('profile')}

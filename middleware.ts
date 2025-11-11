@@ -90,7 +90,8 @@ export async function middleware(request: NextRequest) {
     (request.nextUrl.pathname.startsWith('/create') ||
       request.nextUrl.pathname.startsWith('/profile') ||
       request.nextUrl.pathname.startsWith('/dashboard') ||
-      request.nextUrl.pathname.startsWith('/map'))
+      request.nextUrl.pathname.startsWith('/map') ||
+      request.nextUrl.pathname.startsWith('/analytics'))
   ) {
     // Redirect to login for protected routes
     return NextResponse.redirect(new URL('/login', request.url))
