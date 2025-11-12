@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {
-  updateEventAttendanceClient,
-  removeEventAttendanceClient,
   getUserEventAttendanceClient,
   getEventAttendeesWithDetailsClient,
   EventAttendeeWithDetails,
@@ -240,7 +238,6 @@ export function EventPopup({
   const [cars, setCars] = useState<Car[]>([])
   const [attendees, setAttendees] = useState<EventAttendeeWithDetails[]>([])
   const [attending, setAttending] = useState(false)
-  const [selectedCarId, setSelectedCarId] = useState<string>('')
   const [isAttendeesDialogOpen, setIsAttendeesDialogOpen] = useState(false)
   const [address, setAddress] = useState<string | null>(null)
   const [loadingAddress, setLoadingAddress] = useState(true)
@@ -325,7 +322,6 @@ export function EventPopup({
           }
           if (userAttendance) {
             setAttending(userAttendance.attending)
-            setSelectedCarId(userAttendance.car_id || '')
           }
           if (attendeesData) {
             setAttendees(attendeesData)
@@ -535,7 +531,6 @@ export function EventPopup({
                 ])
                 if (userAttendance) {
                   setAttending(userAttendance.attending)
-                  setSelectedCarId(userAttendance.car_id || '')
                 }
                 if (attendeesData) {
                   setAttendees(attendeesData)
