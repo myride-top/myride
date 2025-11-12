@@ -132,6 +132,12 @@ export default function CarDetailPage() {
               stripe_subscription_id: null,
               total_supported_amount: 0,
               is_supporter: false,
+              bio: null,
+              location: null,
+              instagram_handle: null,
+              youtube_channel: null,
+              website_url: null,
+              garage_description: null,
             })
           }
         } catch {
@@ -151,6 +157,12 @@ export default function CarDetailPage() {
             stripe_subscription_id: null,
             total_supported_amount: 0,
             is_supporter: false,
+            bio: null,
+            location: null,
+            instagram_handle: null,
+            youtube_channel: null,
+            website_url: null,
+            garage_description: null,
           })
         }
       } catch {
