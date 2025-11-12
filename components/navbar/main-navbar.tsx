@@ -114,7 +114,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
         <Link
           href={item.href}
           onClick={e => handleNavItemClick(item, e)}
-          className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-block block px-3 py-2 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-md md:rounded-none'
+          className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-flex md:block px-4 py-3 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-lg md:rounded-none active:scale-[0.98]'
         >
           {item.name}
         </Link>
@@ -123,7 +123,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
     return (
       <Link
         href={item.href}
-        className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-block block px-3 py-2 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-md md:rounded-none'
+        className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-flex md:block px-4 py-3 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-lg md:rounded-none active:scale-[0.98]'
       >
         {item.name}
       </Link>
@@ -137,10 +137,10 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
       logoHref={user ? '/dashboard' : '/'}
       layout='right-aligned'
       renderNavItem={renderNavItem}
+      rightNavContent={<ThemeToggle />}
     >
-      {user ? (
-        <div className='flex items-center space-x-2'>
-          <ThemeToggle />
+      <div className='flex items-center space-x-2'>
+        {user ? (
           <div className='relative' ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -269,23 +269,23 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
               </div>
             )}
           </div>
-        </div>
-      ) : (
-        <div className='flex items-center space-x-4'>
-          <Link
-            href='/login'
-            className='text-foreground hover:text-foreground/80 px-3 py-2 rounded-md text-sm font-medium cursor-pointer'
-          >
-            Sign In
-          </Link>
-          <Link
-            href='/register'
-            className='bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 cursor-pointer'
-          >
-            Sign Up
-          </Link>
-        </div>
-      )}
+        ) : (
+          <div className='flex items-center gap-2 md:gap-4'>
+            <Link
+              href='/login'
+              className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:px-0 md:py-0 px-2 py-1.5 md:px-4 md:py-3 rounded-lg md:rounded-none hover:bg-accent md:hover:bg-transparent active:scale-[0.98] whitespace-nowrap text-sm md:text-base'
+            >
+              Sign In
+            </Link>
+            <Link
+              href='/register'
+              className='bg-primary text-primary-foreground px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0'
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
+      </div>
     </BaseNavbar>
   )
 }
