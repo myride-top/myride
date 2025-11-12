@@ -334,11 +334,11 @@ export default function EditCarPage() {
         setCar(updatedCar)
 
         // Save timeline entries if any
-        if (formData.timeline !== undefined) {
+        if (timeline !== undefined) {
           try {
             // Process timeline entries: upload photos that are data URLs (previews)
             const processedTimeline = await Promise.all(
-              formData.timeline.map(async entry => {
+              timeline.map(async entry => {
                 let photoUrl = entry.photo_url
                 let photoUrl2 = entry.photo_url_2 || null
 

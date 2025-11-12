@@ -65,7 +65,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
         />
 
         <div className='space-y-8'>
-          {displayTimeline.map((entry, index) => (
+          {displayTimeline.map(entry => (
             <div key={entry.id} className='relative flex gap-6'>
               {/* Timeline dot */}
               <div className='relative z-10 flex-shrink-0'>
