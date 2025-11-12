@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import {
   getProfileByUserIdClient,
@@ -33,7 +32,6 @@ import { LoadingSpinner } from '@/components/common/loading-spinner'
 
 export default function ProfilePage() {
   const { user } = useAuth()
-  const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -61,7 +59,7 @@ export default function ProfilePage() {
             getProfileByUserIdClient(user.id),
             isUserPremium(user.id),
           ])
-          
+
           setProfile(userProfile)
           setIsPremium(premiumStatus)
 
@@ -164,7 +162,9 @@ export default function ProfilePage() {
   }
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -218,23 +218,23 @@ export default function ProfilePage() {
         <div className='max-w-3xl mx-auto'>
           <div className='bg-card shadow rounded-lg border border-border'>
             <div className='px-4 py-5 sm:p-6'>
-                {/* User Info */}
-                <div className='mb-6'>
-                  <h3 className='text-lg font-medium text-foreground mb-2'>
-                    Account Information
-                  </h3>
-                  <div className='bg-muted rounded-md p-4'>
-                    <p className='text-sm text-muted-foreground'>
-                      <span className='font-medium'>Email:</span> {user?.email}
-                    </p>
-                    <p className='text-sm text-muted-foreground'>
-                      <span className='font-medium'>Member since:</span>{' '}
-                      {user?.created_at
-                        ? new Date(user.created_at).toLocaleDateString()
-                        : 'N/A'}
-                    </p>
-                  </div>
+              {/* User Info */}
+              <div className='mb-6'>
+                <h3 className='text-lg font-medium text-foreground mb-2'>
+                  Account Information
+                </h3>
+                <div className='bg-muted rounded-md p-4'>
+                  <p className='text-sm text-muted-foreground'>
+                    <span className='font-medium'>Email:</span> {user?.email}
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    <span className='font-medium'>Member since:</span>{' '}
+                    {user?.created_at
+                      ? new Date(user.created_at).toLocaleDateString()
+                      : 'N/A'}
+                  </p>
                 </div>
+              </div>
 
               {/* Error/Success Messages */}
               {error && (
@@ -345,8 +345,8 @@ export default function ProfilePage() {
                         className='space-y-2'
                       />
                       <p className='text-sm text-muted-foreground -mt-4'>
-                        A brief description that appears at the top of your garage
-                        page
+                        A brief description that appears at the top of your
+                        garage page
                       </p>
 
                       <FormField
@@ -373,12 +373,15 @@ export default function ProfilePage() {
                         className='space-y-2'
                       />
                       <p className='text-sm text-muted-foreground -mt-4'>
-                        Your location (e.g., "Los Angeles, CA" or "London, UK")
+                        Your location (e.g., &quot;Los Angeles, CA&quot; or
+                        &quot;London, UK&quot;)
                       </p>
 
                       <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                         <div className='space-y-2'>
-                          <Label htmlFor='instagram_handle'>Instagram Handle</Label>
+                          <Label htmlFor='instagram_handle'>
+                            Instagram Handle
+                          </Label>
                           <div className='flex rounded-md'>
                             <span className='inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm'>
                               @

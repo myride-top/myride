@@ -64,6 +64,7 @@ export async function generateQRCodeWithLogo(
           return img
         }
       } catch (error) {
+        console.log(error)
         return null
       }
       return null

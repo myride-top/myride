@@ -239,7 +239,6 @@ export function EventPopup({
   const { user } = useAuth()
   const [cars, setCars] = useState<Car[]>([])
   const [attendees, setAttendees] = useState<EventAttendeeWithDetails[]>([])
-  const [loading, setLoading] = useState(false)
   const [attending, setAttending] = useState(false)
   const [selectedCarId, setSelectedCarId] = useState<string>('')
   const [isAttendeesDialogOpen, setIsAttendeesDialogOpen] = useState(false)
@@ -352,54 +351,6 @@ export function EventPopup({
     }
     loadData()
   }, [user, event.id, event.latitude, event.longitude])
-
-  const handleAttendanceChange = async (newAttending?: boolean) => {
-    if (!user) return
-
-    // Use the provided value or current state
-    const willAttend = newAttending !== undefined ? newAttending : attending
-
-    setLoading(true)
-    try {
-      if (willAttend) {
-        const result = await updateEventAttendanceClient(
-          event.id,
-          true,
-          selectedCarId && selectedCarId !== 'none' ? selectedCarId : null
-        )
-        if (result.success) {
-          // Reload attendees
-          const attendeesData = await getEventAttendeesWithDetailsClient(
-            event.id
-          )
-          if (attendeesData) {
-            setAttendees(attendeesData)
-          }
-          setAttending(true)
-          toast.success('You are now attending this event!')
-          onAttendanceChange()
-        } else {
-          toast.error(result.error || 'Failed to update attendance')
-          setAttending(!willAttend) // Revert on error
-        }
-      } else {
-        const result = await removeEventAttendanceClient(event.id)
-        if (result.success) {
-          toast.success('Attendance removed')
-          setAttending(false)
-          onAttendanceChange()
-        } else {
-          toast.error(result.error || 'Failed to remove attendance')
-          setAttending(!willAttend) // Revert on error
-        }
-      }
-    } catch (error) {
-      toast.error(`Failed to update attendance: ${error}`)
-      setAttending(!willAttend) // Revert on error
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleEventUpdated = (updatedEvent: EventWithAttendeeCount) => {
     if (onEventUpdated) {
