@@ -47,19 +47,19 @@ export const CookieConsent = () => {
 
   return (
     <div className='fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-300'>
-      <div className='bg-card border-t border-border/50 backdrop-blur supports-[backdrop-filter]:bg-card/80'>
-        <div className='max-w-7xl mx-auto px-4 py-3'>
-          <div className='flex items-center justify-between gap-4'>
+      <div className='bg-card border-t border-border/50 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-lg'>
+        <div className='max-w-7xl mx-auto px-3 md:px-4 py-3 md:py-4'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4'>
             {/* Cookie Icon and Text */}
-            <div className='flex items-center gap-3 flex-1 min-w-0'>
-              <Cookie className='h-5 w-5 text-primary flex-shrink-0' />
+            <div className='flex items-start gap-2 sm:gap-3 flex-1 min-w-0'>
+              <Cookie className='h-5 w-5 text-primary flex-shrink-0 mt-0.5' />
               <div className='flex-1 min-w-0'>
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-xs sm:text-sm text-muted-foreground leading-relaxed'>
                   We use cookies to enhance your experience. By continuing to
                   use this site, you agree to our{' '}
                   <Link
                     href='/legal/cookies'
-                    className='text-primary hover:underline font-medium'
+                    className='text-primary hover:underline font-medium inline'
                   >
                     Cookie Policy
                   </Link>
@@ -69,25 +69,25 @@ export const CookieConsent = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className='flex items-center gap-2 flex-shrink-0'>
+            <div className='flex items-center justify-end gap-2 flex-shrink-0'>
               <button
                 onClick={handleDecline}
-                className='text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded'
+                className='text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 sm:px-2 sm:py-1 rounded-md font-medium whitespace-nowrap'
               >
                 Decline
               </button>
               <button
                 onClick={handleAccept}
-                className='text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors px-3 py-1 rounded font-medium'
+                className='text-xs sm:text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors px-4 py-2 sm:px-3 sm:py-1 rounded-md font-medium whitespace-nowrap'
               >
                 Accept
               </button>
               <button
                 onClick={handleClose}
-                className='text-muted-foreground hover:text-foreground transition-colors p-1 rounded'
+                className='text-muted-foreground hover:text-foreground transition-colors p-1.5 sm:p-1 rounded-md flex-shrink-0'
                 aria-label='Close cookie notice'
               >
-                <X className='h-4 w-4' />
+                <X className='h-4 w-4 sm:h-4 sm:w-4' />
               </button>
             </div>
           </div>
