@@ -426,21 +426,21 @@ export function EventPopup({
   }
 
   return (
-    <div className='w-80 max-h-[70vh] flex flex-col overflow-hidden'>
-      <div className='flex-1 overflow-y-auto p-3 space-y-3 pr-2'>
+    <div className='w-[85vw] max-w-[85vw] sm:w-80 sm:max-w-80 max-h-[70vh] flex flex-col overflow-hidden'>
+      <div className='flex-1 overflow-y-auto p-2 sm:p-3 space-y-2 sm:space-y-3 pr-2'>
         <div>
-          <h3 className='font-semibold text-lg mb-1'>{event.title}</h3>
+          <h3 className='font-semibold text-sm sm:text-lg mb-0.5 sm:mb-1 break-words leading-tight'>{event.title}</h3>
           {event.description && (
-            <p className='text-sm text-muted-foreground mb-2'>
+            <p className='text-[10px] sm:text-sm text-muted-foreground mb-1 sm:mb-2 break-words leading-snug'>
               {event.description}
             </p>
           )}
         </div>
 
-        <div className='space-y-2 text-sm'>
-          <div className='flex items-center gap-2 text-muted-foreground'>
-            <Calendar className='w-4 h-4 flex-shrink-0' />
-            <span className='break-words'>
+        <div className='space-y-1.5 sm:space-y-2 text-[11px] sm:text-sm'>
+          <div className='flex items-start gap-1.5 sm:gap-2 text-muted-foreground'>
+            <Calendar className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
+            <span className='break-words leading-tight text-[11px] sm:text-sm'>
               {event.end_date
                 ? `${formatDateTime(event.event_date)} - ${formatDateTime(
                     event.end_date
@@ -448,9 +448,9 @@ export function EventPopup({
                 : formatDateTime(event.event_date)}
             </span>
           </div>
-          <div className='flex items-center gap-2 text-muted-foreground'>
-            <MapPin className='w-4 h-4 flex-shrink-0' />
-            <span className='break-words'>
+          <div className='flex items-start gap-1.5 sm:gap-2 text-muted-foreground'>
+            <MapPin className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
+            <span className='break-words leading-tight text-[11px] sm:text-sm'>
               {loadingAddress
                 ? 'Loading...'
                 : address
@@ -460,20 +460,20 @@ export function EventPopup({
           </div>
           <button
             onClick={() => setIsAttendeesDialogOpen(true)}
-            className='flex items-center gap-2 text-primary hover:text-primary/80 underline transition-colors cursor-pointer'
+            className='flex items-center gap-1.5 sm:gap-2 text-primary hover:text-primary/80 underline transition-colors cursor-pointer text-[11px] sm:text-sm'
           >
-            <Users className='w-4 h-4 flex-shrink-0' />
+            <Users className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
             <span className='font-medium'>
               {event.attendee_count} attending
             </span>
           </button>
           {isCruiseWithRoute && (
-            <div className='pt-2'>
-              <div className='flex items-center gap-2 text-sm text-muted-foreground mb-2'>
-                <Route className='w-4 h-4 flex-shrink-0' />
+            <div className='pt-1 sm:pt-2'>
+              <div className='flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm text-muted-foreground mb-1.5 sm:mb-2'>
+                <Route className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
                 <span className='font-medium'>Route</span>
               </div>
-              <div className='h-48 w-full border rounded-md overflow-hidden'>
+              <div className='h-24 sm:h-48 w-full border rounded-md overflow-hidden'>
                 <RouteMap
                   route={event.route || []}
                   center={[event.latitude, event.longitude]}
@@ -482,23 +482,23 @@ export function EventPopup({
               </div>
             </div>
           )}
-          <div className='pt-2'>
+          <div className='pt-1 sm:pt-2'>
             <Button
               onClick={handleShare}
               variant='outline'
               size='sm'
-              className='w-full'
+              className='w-full text-[11px] sm:text-sm h-8 sm:h-9'
               disabled={isGeneratingQR}
             >
               {isGeneratingQR ? (
                 <>
-                  <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
-                  Generating...
+                  <div className='w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                  <span className='text-[11px] sm:text-sm'>Generating...</span>
                 </>
               ) : (
                 <>
-                  <Share2 className='w-4 h-4 mr-2' />
-                  Share Event
+                  <Share2 className='w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2' />
+                  <span className='text-[11px] sm:text-sm'>Share Event</span>
                 </>
               )}
             </Button>
@@ -506,31 +506,31 @@ export function EventPopup({
         </div>
 
         {isCreator && (
-          <div className='pt-2 border-t flex gap-2'>
+          <div className='pt-1.5 sm:pt-2 border-t flex gap-1.5 sm:gap-2'>
             <Button
               variant='outline'
               size='sm'
               onClick={() => setIsEditDialogOpen(true)}
-              className='flex-1'
+              className='flex-1 text-[11px] sm:text-sm h-8 sm:h-9'
             >
-              <Edit className='w-4 h-4 mr-2' />
-              Edit
+              <Edit className='w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2' />
+              <span className='text-[11px] sm:text-sm'>Edit</span>
             </Button>
             <Button
               variant='destructive'
               size='sm'
               onClick={() => setIsDeleteDialogOpen(true)}
-              className='flex-1'
+              className='flex-1 text-[11px] sm:text-sm h-8 sm:h-9'
             >
-              <Trash2 className='w-4 h-4 mr-2' />
-              Delete
+              <Trash2 className='w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2' />
+              <span className='text-[11px] sm:text-sm'>Delete</span>
             </Button>
           </div>
         )}
 
         {user && (
-          <div className='pt-2 border-t space-y-3 pb-1'>
-            <div className='flex items-center space-x-2'>
+          <div className='pt-1.5 sm:pt-2 border-t space-y-2 sm:space-y-3 pb-1'>
+            <div className='flex items-center space-x-1.5 sm:space-x-2'>
               <input
                 type='checkbox'
                 id={`attend-${event.id}`}
@@ -541,11 +541,11 @@ export function EventPopup({
                   handleAttendanceChange(newValue)
                 }}
                 disabled={loading}
-                className='w-4 h-4 flex-shrink-0'
+                className='w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0'
               />
               <label
                 htmlFor={`attend-${event.id}`}
-                className='text-sm font-medium cursor-pointer'
+                className='text-[11px] sm:text-sm font-medium cursor-pointer'
               >
                 I&apos;m attending
               </label>
@@ -553,14 +553,14 @@ export function EventPopup({
 
             {attending && cars.length > 0 && (
               <div>
-                <label className='text-sm font-medium mb-1 block'>
+                <label className='text-[11px] sm:text-sm font-medium mb-1 block'>
                   Select your car:
                 </label>
                 <select
                   value={selectedCarId || 'none'}
                   onChange={e => setSelectedCarId(e.target.value)}
                   disabled={loading}
-                  className='w-full px-3 py-2 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                  className='w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-input bg-background rounded-md text-[11px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                 >
                   <option value='none'>No car selected</option>
                   {cars.map(car => (
@@ -576,7 +576,7 @@ export function EventPopup({
               <Button
                 onClick={() => handleAttendanceChange(attending)}
                 disabled={loading}
-                className='w-full'
+                className='w-full text-[11px] sm:text-sm h-8 sm:h-9'
                 size='sm'
               >
                 {loading ? 'Saving...' : 'Save Attendance'}

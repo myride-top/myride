@@ -96,15 +96,16 @@ export async function getAnalyticsData(
 
     const carIds = cars.map(car => car.id)
 
-    // Get current period stats
+    // Get current period stats (include events)
     const currentStats = await getStatsForPeriod(
       supabase,
       carIds,
       currentPeriod.start,
-      currentPeriod.end
+      currentPeriod.end,
+      userId
     )
 
-    // Get previous period stats for comparison
+    // Get previous period stats for comparison (include events)
     const previousPeriod = getPreviousPeriod(
       currentPeriod.start,
       currentPeriod.end
@@ -113,7 +114,8 @@ export async function getAnalyticsData(
       supabase,
       carIds,
       previousPeriod.start,
-      previousPeriod.end
+      previousPeriod.end,
+      userId
     )
 
     // Calculate changes
@@ -242,7 +244,8 @@ async function getStatsForPeriod(
   supabase: SupabaseClient,
   carIds: string[],
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  userId?: string
 ): Promise<{ views: number; likes: number; shares: number; comments: number }> {
   const startISO = startDate.toISOString()
   const endISO = endDate.toISOString()
@@ -252,13 +255,35 @@ async function getStatsForPeriod(
     end: endISO,
   })
 
-  // Get views
-  const { count: views } = await supabase
+  // Get car views
+  const { count: carViews } = await supabase
     .from('car_views')
     .select('*', { count: 'exact', head: true })
     .in('car_id', carIds)
     .gte('created_at', startISO)
     .lte('created_at', endISO)
+
+  // Get event views (if userId is provided)
+  let eventViews = 0
+  if (userId) {
+    const { data: userEvents } = await supabase
+      .from('events')
+      .select('id')
+      .eq('created_by', userId)
+
+    if (userEvents && userEvents.length > 0) {
+      const eventIds = userEvents.map(e => e.id)
+      const { count } = await supabase
+        .from('event_views')
+        .select('*', { count: 'exact', head: true })
+        .in('event_id', eventIds)
+        .gte('created_at', startISO)
+        .lte('created_at', endISO)
+      eventViews = count || 0
+    }
+  }
+
+  const views = (carViews || 0) + eventViews
 
   // Get likes
   const { count: likes } = await supabase
@@ -268,13 +293,35 @@ async function getStatsForPeriod(
     .gte('created_at', startISO)
     .lte('created_at', endISO)
 
-  // Get shares
-  const { count: shares } = await supabase
+  // Get car shares
+  const { count: carShares } = await supabase
     .from('car_shares')
     .select('*', { count: 'exact', head: true })
     .in('car_id', carIds)
     .gte('created_at', startISO)
     .lte('created_at', endISO)
+
+  // Get event shares (if userId is provided)
+  let eventShares = 0
+  if (userId) {
+    const { data: userEvents } = await supabase
+      .from('events')
+      .select('id')
+      .eq('created_by', userId)
+
+    if (userEvents && userEvents.length > 0) {
+      const eventIds = userEvents.map(e => e.id)
+      const { count } = await supabase
+        .from('event_shares')
+        .select('*', { count: 'exact', head: true })
+        .in('event_id', eventIds)
+        .gte('created_at', startISO)
+        .lte('created_at', endISO)
+      eventShares = count || 0
+    }
+  }
+
+  const shares = (carShares || 0) + eventShares
 
   // Get comments
   const { count: comments } = await supabase
@@ -285,9 +332,9 @@ async function getStatsForPeriod(
     .lte('created_at', endISO)
 
   const result = {
-    views: views || 0,
+    views,
     likes: likes || 0,
-    shares: shares || 0,
+    shares,
     comments: comments || 0,
   }
 

@@ -191,29 +191,29 @@ export const AnalyticsDashboard = ({
   }
 
   return (
-    <div className={`space-y-8 ${className}`}>
+    <div className={`space-y-4 md:space-y-8 ${className}`}>
       {/* New Header Design */}
-      <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 p-8'>
+      <div className='relative overflow-hidden rounded-xl md:rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 p-4 md:p-8'>
         <div className='relative z-10'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6'>
+          <div className='flex flex-col gap-4 md:gap-6'>
             <div className='space-y-2'>
-              <div className='flex items-center gap-3'>
-                <div className='p-3 bg-primary/10 rounded-xl'>
-                  <BarChart3 className='h-8 w-8 text-primary' />
+              <div className='flex items-center gap-2 md:gap-3'>
+                <div className='p-2 md:p-3 bg-primary/10 rounded-lg md:rounded-xl'>
+                  <BarChart3 className='h-5 w-5 md:h-8 md:w-8 text-primary' />
                 </div>
                 <div>
-                  <h1 className='text-4xl font-bold tracking-tight'>
+                  <h1 className='text-2xl md:text-4xl font-bold tracking-tight'>
                     Analytics Dashboard
                   </h1>
-                  <p className='text-muted-foreground text-lg'>
+                  <p className='text-muted-foreground text-sm md:text-lg'>
                     Track performance of your cars and events
                   </p>
                 </div>
               </div>
             </div>
-            <div className='flex items-center gap-3'>
+            <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3'>
               <Select value={timeRange} onValueChange={handleTimeRangeChange}>
-                <SelectTrigger className='w-48 bg-background/80 backdrop-blur-sm'>
+                <SelectTrigger className='w-full sm:w-48 bg-background/80 backdrop-blur-sm text-sm'>
                   <Calendar className='h-4 w-4 mr-2' />
                   <SelectValue />
                 </SelectTrigger>
@@ -229,7 +229,7 @@ export const AnalyticsDashboard = ({
                 onClick={handleRefresh}
                 variant='outline'
                 size='sm'
-                className='bg-background/80 backdrop-blur-sm'
+                className='bg-background/80 backdrop-blur-sm w-full sm:w-auto'
               >
                 <RefreshCw className='h-4 w-4 mr-2' />
                 Refresh
@@ -237,29 +237,29 @@ export const AnalyticsDashboard = ({
             </div>
           </div>
         </div>
-        <div className='absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
-        <div className='absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2' />
+        <div className='absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
+        <div className='absolute bottom-0 left-0 w-24 h-24 md:w-48 md:h-48 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2' />
       </div>
 
       {/* Your Cars */}
       {carPerformance.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle className='text-2xl flex items-center gap-2'>
-              <Eye className='h-6 w-6 text-primary' />
+          <CardHeader className='p-4 md:p-6'>
+            <CardTitle className='text-xl md:text-2xl flex items-center gap-2'>
+              <Eye className='h-5 w-5 md:h-6 md:w-6 text-primary' />
               Your Cars
             </CardTitle>
-            <CardDescription className='mt-2'>
+            <CardDescription className='mt-1 md:mt-2 text-sm'>
               Your cars performance for{' '}
               {getTimeRangeLabel(timeRange).toLowerCase()}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className='space-y-3'>
+          <CardContent className='p-4 md:p-6'>
+            <div className='space-y-2 md:space-y-3'>
               {carPerformance.slice(0, 10).map(car => (
                 <div
                   key={car.id}
-                  className='group relative flex items-center gap-4 p-4 rounded-xl border bg-card hover:bg-muted/50 hover:shadow-md transition-all duration-200'
+                  className='group relative flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl border bg-card hover:bg-muted/50 hover:shadow-md transition-all duration-200'
                 >
                   {/* Car Image */}
                   {car.image && (
@@ -267,29 +267,29 @@ export const AnalyticsDashboard = ({
                       <img
                         src={car.image}
                         alt={car.name}
-                        className='w-20 h-20 rounded-xl object-cover border-2 border-border shadow-md group-hover:scale-105 transition-transform duration-200'
+                        className='w-16 h-16 md:w-20 md:h-20 rounded-lg md:rounded-xl object-cover border-2 border-border shadow-md group-hover:scale-105 transition-transform duration-200'
                       />
                     </div>
                   )}
 
                   {/* Car Info */}
                   <div className='flex-1 min-w-0'>
-                    <h3 className='font-bold text-lg truncate'>{car.name}</h3>
-                    <div className='flex items-center gap-4 mt-2 flex-wrap'>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Eye className='h-4 w-4' />
-                        <span>{car.views.toLocaleString()} views</span>
+                    <h3 className='font-bold text-base md:text-lg truncate'>{car.name}</h3>
+                    <div className='flex items-center gap-2 md:gap-3 mt-1.5 md:mt-2 flex-nowrap overflow-x-auto'>
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Eye className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
+                        <span>{car.views.toLocaleString()}</span>
                       </div>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Heart className='h-4 w-4' />
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Heart className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
                         <span>{car.likes.toLocaleString()}</span>
                       </div>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Share2 className='h-4 w-4' />
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Share2 className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
                         <span>{car.shares.toLocaleString()}</span>
                       </div>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <MessageCircle className='h-4 w-4' />
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <MessageCircle className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
                         <span>{car.comments.toLocaleString()}</span>
                       </div>
                     </div>
@@ -304,55 +304,53 @@ export const AnalyticsDashboard = ({
       {/* Your Events */}
       {eventPerformance.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle className='text-2xl flex items-center gap-2'>
-              <Calendar className='h-6 w-6 text-primary' />
+          <CardHeader className='p-4 md:p-6'>
+            <CardTitle className='text-xl md:text-2xl flex items-center gap-2'>
+              <Calendar className='h-5 w-5 md:h-6 md:w-6 text-primary' />
               Your Events
             </CardTitle>
-            <CardDescription className='mt-2'>
+            <CardDescription className='mt-1 md:mt-2 text-sm'>
               Your events performance for{' '}
               {getTimeRangeLabel(timeRange).toLowerCase()}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className='space-y-3'>
+          <CardContent className='p-4 md:p-6'>
+            <div className='space-y-2 md:space-y-3'>
               {eventPerformance.map(event => (
                 <div
                   key={event.id}
-                  className='group relative flex items-center gap-4 p-4 rounded-xl border bg-card hover:bg-muted/50 hover:shadow-md transition-all duration-200'
+                  className='group relative flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg md:rounded-xl border bg-card hover:bg-muted/50 hover:shadow-md transition-all duration-200'
                 >
                   {/* Event Icon */}
-                  <div className='flex-shrink-0 p-3 bg-primary/10 rounded-xl'>
-                    <Calendar className='h-8 w-8 text-primary' />
+                  <div className='flex-shrink-0 p-2 md:p-3 bg-primary/10 rounded-lg md:rounded-xl'>
+                    <Calendar className='h-6 w-6 md:h-8 md:w-8 text-primary' />
                   </div>
 
                   {/* Event Info */}
                   <div className='flex-1 min-w-0'>
-                    <h3 className='font-bold text-lg truncate'>
+                    <h3 className='font-bold text-base md:text-lg truncate'>
                       {event.title}
                     </h3>
                     {event.description && (
-                      <p className='text-sm text-muted-foreground mt-1 line-clamp-1'>
+                      <p className='text-xs md:text-sm text-muted-foreground mt-1 line-clamp-1'>
                         {event.description}
                       </p>
                     )}
-                    <div className='flex items-center gap-4 mt-2 flex-wrap'>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Eye className='h-4 w-4' />
-                        <span>{event.views.toLocaleString()} views</span>
+                    <div className='flex items-center gap-2 md:gap-3 mt-1.5 md:mt-2 flex-nowrap overflow-x-auto'>
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Eye className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
+                        <span>{event.views.toLocaleString()}</span>
                       </div>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Users className='h-4 w-4' />
-                        <span>
-                          {event.attendees.toLocaleString()} attendees
-                        </span>
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Users className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
+                        <span>{event.attendees.toLocaleString()}</span>
                       </div>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Share2 className='h-4 w-4' />
-                        <span>{event.shares.toLocaleString()} shares</span>
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Share2 className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
+                        <span>{event.shares.toLocaleString()}</span>
                       </div>
-                      <div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-                        <Calendar className='h-4 w-4' />
+                      <div className='flex items-center gap-1 text-xs md:text-sm text-muted-foreground whitespace-nowrap'>
+                        <Calendar className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
                         <span>
                           {new Date(event.event_date).toLocaleDateString(
                             'en-US',

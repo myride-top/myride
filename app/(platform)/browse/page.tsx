@@ -215,7 +215,11 @@ export default function BrowsePage() {
       if (
         filters.fuelType &&
         filters.fuelType !== 'all' &&
-        !matchesNormalizedFilter(car.fuel_type, filters.fuelType, normalizeFuelType)
+        !matchesNormalizedFilter(
+          car.fuel_type,
+          filters.fuelType,
+          normalizeFuelType
+        )
       )
         return false
 
@@ -816,7 +820,8 @@ export default function BrowsePage() {
               {/* 0-60 Range */}
               <div>
                 <label className='text-sm font-medium mb-2 block'>
-                  {unitPreference === 'metric' ? '0-100 km/h' : '0-60 mph'} (seconds)
+                  {unitPreference === 'metric' ? '0-100 km/h' : '0-60 mph'}{' '}
+                  (seconds)
                 </label>
                 <div className='flex gap-2'>
                   <Input
@@ -953,10 +958,10 @@ export default function BrowsePage() {
             // Extract profile from the joined data
             const carWithProfile = car as Car & { profiles?: Profile | null }
             const profileData = carWithProfile.profiles
-            
+
             // Debug: check if is_premium is being loaded
             // console.log('Profile data for', profileData?.username, ':', profileData?.is_premium)
-            
+
             const profile: Profile = {
               id: car.user_id,
               username: profileData?.username || 'unknown',
@@ -969,9 +974,16 @@ export default function BrowsePage() {
               premium_purchased_at: profileData?.premium_purchased_at || null,
               car_slots_purchased: profileData?.car_slots_purchased || 0,
               stripe_customer_id: profileData?.stripe_customer_id || null,
-              stripe_subscription_id: profileData?.stripe_subscription_id || null,
+              stripe_subscription_id:
+                profileData?.stripe_subscription_id || null,
               total_supported_amount: profileData?.total_supported_amount || 0,
               is_supporter: profileData?.is_supporter || false,
+              bio: profileData?.bio || null,
+              location: profileData?.location || null,
+              instagram_handle: profileData?.instagram_handle || null,
+              youtube_channel: profileData?.youtube_channel || null,
+              website_url: profileData?.website_url || null,
+              garage_description: profileData?.garage_description || null,
             }
             const isOwner = user?.id === car.user_id
 

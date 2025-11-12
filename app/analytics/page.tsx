@@ -141,7 +141,7 @@ export default function AnalyticsPage() {
   return (
     <ProtectedRoute>
       <MainNavbar showCreateButton={true} />
-      <div className='container mx-auto px-4 pb-8 pt-28'>
+      <div className='container mx-auto px-3 md:px-4 pb-6 md:pb-8 pt-20 md:pt-28'>
         <AnalyticsDashboard />
       </div>
     </ProtectedRoute>

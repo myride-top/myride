@@ -59,39 +59,31 @@ export const StatsCard = ({
         rounded='lg'
         className={cn(
           'overflow-hidden shadow group relative',
+          'p-2 md:p-3',
           className,
           statClassName
         )}
       >
-        <div className='flex items-center'>
-          <div className='flex-shrink-0'>
-            <IconWrapper
-              icon={icon}
-              size='sm'
-              variant={isPremium ? 'primary' : 'muted'}
-              className='w-5 h-5 md:w-6 md:h-6'
-            />
+        <div className='flex items-center justify-center gap-2 md:gap-3'>
+          <IconWrapper
+            icon={icon}
+            size='sm'
+            variant={isPremium ? 'primary' : 'muted'}
+            className='w-4 h-4 md:w-5 md:h-5 flex-shrink-0'
+          />
+          <div
+            className={cn(
+              'text-base md:text-xl font-semibold text-card-foreground',
+              !isPremium && 'blur-sm'
+            )}
+          >
+            {value}
           </div>
-          <div className='ml-3 md:ml-5 w-0 flex-1'>
-            <dl>
-              <dt className='text-xs md:text-sm font-medium text-muted-foreground truncate flex items-center gap-1'>
-                {label}
-                {!isPremium && (
-                  <span className='ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white'>
-                    PREMIUM
-                  </span>
-                )}
-              </dt>
-              <dd
-                className={cn(
-                  'text-base md:text-lg font-medium text-card-foreground',
-                  !isPremium && 'blur-sm'
-                )}
-              >
-                {value}
-              </dd>
-            </dl>
-          </div>
+          {!isPremium && premiumUpgradeHref && (
+            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] md:text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white ml-auto'>
+              PREMIUM
+            </span>
+          )}
         </div>
 
         {/* Premium upgrade overlay */}

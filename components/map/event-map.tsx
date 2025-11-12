@@ -55,6 +55,10 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     null
   )
   const [userLocationIcon, setUserLocationIcon] = useState<DivIcon | null>(null)
+  const [userLocationAddress, setUserLocationAddress] = useState<string | null>(
+    null
+  )
+  const [loadingUserAddress, setLoadingUserAddress] = useState(false)
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -413,6 +417,24 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
           ]
           setUserLocation(location)
           setMapCenter(location)
+          
+          // Load address for user location
+          setLoadingUserAddress(true)
+          fetch(
+            `/api/geocode?lat=${location[0]}&lng=${location[1]}`
+          )
+            .then(response => response.json())
+            .then(data => {
+              if (data.address) {
+                setUserLocationAddress(data.address)
+              }
+            })
+            .catch(() => {
+              // Ignore errors
+            })
+            .finally(() => {
+              setLoadingUserAddress(false)
+            })
         },
         () => {
           // Use default if geolocation fails
@@ -466,7 +488,69 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
         {/* User location marker */}
         {userLocation && userLocationIcon && (
           <Marker position={userLocation} icon={userLocationIcon}>
-            <Popup>Your location</Popup>
+            <Popup maxWidth={280} className='user-location-popup'>
+              <div className='p-2 min-w-[200px]'>
+                <div className='flex items-center gap-2 mb-2'>
+                  {profile?.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.username}
+                      className='w-10 h-10 rounded-full object-cover border-2 border-primary'
+                    />
+                  ) : (
+                    <div className='w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-semibold text-sm border-2 border-primary'>
+                      {profile?.full_name
+                        ? profile.full_name
+                            .trim()
+                            .split(' ')
+                            .map(n => n[0])
+                            .join('')
+                            .toUpperCase()
+                            .slice(0, 2)
+                        : profile?.username?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  <div className='flex-1 min-w-0'>
+                    <h3 className='font-semibold text-sm truncate'>
+                      {profile?.full_name || profile?.username || 'You'}
+                    </h3>
+                    {profile?.username && profile.username !== profile?.full_name && (
+                      <p className='text-xs text-muted-foreground truncate'>
+                        @{profile.username}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className='space-y-1.5 text-xs'>
+                  <div className='flex items-start gap-2 text-muted-foreground'>
+                    <span className='font-medium min-w-[60px]'>Location:</span>
+                    <span className='break-words'>
+                      {loadingUserAddress
+                        ? 'Loading...'
+                        : userLocationAddress
+                        ? userLocationAddress
+                        : `${userLocation[0].toFixed(4)}, ${userLocation[1].toFixed(4)}`}
+                    </span>
+                  </div>
+                  <div className='flex items-start gap-2 text-muted-foreground'>
+                    <span className='font-medium min-w-[60px]'>Coordinates:</span>
+                    <span className='font-mono text-[10px]'>
+                      {userLocation[0].toFixed(6)}, {userLocation[1].toFixed(6)}
+                    </span>
+                  </div>
+                </div>
+                {profile?.username && (
+                  <div className='mt-2 pt-2 border-t'>
+                    <a
+                      href={`/${profile.username}`}
+                      className='text-xs text-primary hover:underline'
+                    >
+                      View Profile →
+                    </a>
+                  </div>
+                )}
+              </div>
+            </Popup>
           </Marker>
         )}
         {/* Event markers */}

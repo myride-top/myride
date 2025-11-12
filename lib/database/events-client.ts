@@ -373,3 +373,45 @@ export async function trackEventShareClient(
   }
 }
 
+export interface UserEventStats {
+  views: number
+  shares: number
+}
+
+export async function getUserEventStatsClient(
+  userId: string
+): Promise<UserEventStats> {
+  try {
+    // Get all events created by this user
+    const { data: userEvents, error: eventsError } = await supabase
+      .from('events')
+      .select('id')
+      .eq('created_by', userId)
+
+    if (eventsError || !userEvents || userEvents.length === 0) {
+      return { views: 0, shares: 0 }
+    }
+
+    const eventIds = userEvents.map(e => e.id)
+
+    // Get total event views
+    const { count: eventViews } = await supabase
+      .from('event_views')
+      .select('*', { count: 'exact', head: true })
+      .in('event_id', eventIds)
+
+    // Get total event shares
+    const { count: eventShares } = await supabase
+      .from('event_shares')
+      .select('*', { count: 'exact', head: true })
+      .in('event_id', eventIds)
+
+    return {
+      views: eventViews || 0,
+      shares: eventShares || 0,
+    }
+  } catch {
+    return { views: 0, shares: 0 }
+  }
+}
+

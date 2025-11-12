@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { MainNavbar } from '@/components/navbar/main-navbar'
 
 export const metadata: Metadata = {
   title: {
@@ -42,5 +43,10 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <>
+      <MainNavbar showCreateButton={false} />
+      {children}
+    </>
+  )
 }

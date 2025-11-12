@@ -7,6 +7,7 @@ import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { getCarsByUserClient } from '@/lib/database/cars-client'
 import { getUserCarSlots } from '@/lib/database/premium-client'
 import { canUserCreateCarSimpleClient } from '@/lib/database/cars-client'
+import { getUserEventStatsClient } from '@/lib/database/events-client'
 import { Profile, Car } from '@/lib/types/database'
 import Link from 'next/link'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -18,6 +19,7 @@ import {
   Share2,
   MessageCircle,
   AlertCircle,
+  BarChart3,
 } from 'lucide-react'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { EmptyState } from '@/components/common/empty-state'
@@ -29,6 +31,8 @@ import { PremiumUpgradeBanner } from '@/components/dashboard/premium-upgrade-ban
 import { Grid } from '@/components/common/grid'
 import { PageLayout } from '@/components/layout/page-layout'
 import { PageHeader } from '@/components/layout/page-header'
+import { QRCodeModal } from '@/components/common/qr-code-modal'
+import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -49,18 +53,21 @@ export default function DashboardPage() {
     isPremium: false,
   })
   const [canCreateCar, setCanCreateCar] = useState(true)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
+  const [showQRCode, setShowQRCode] = useState(false)
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false)
 
   // Function to recalculate stats
-  const recalculateStats = (currentCars: Car[]) => {
+  const recalculateStats = async (currentCars: Car[], userId?: string) => {
     const totalLikes = currentCars.reduce(
       (sum, car) => sum + (car.like_count || 0),
       0
     )
-    const totalViews = currentCars.reduce(
+    const totalCarViews = currentCars.reduce(
       (sum, car) => sum + (car.view_count || 0),
       0
     )
-    const totalShares = currentCars.reduce(
+    const totalCarShares = currentCars.reduce(
       (sum, car) => sum + (car.share_count || 0),
       0
     )
@@ -69,10 +76,23 @@ export default function DashboardPage() {
       0
     )
 
+    // Get event stats if userId is provided
+    let eventViews = 0
+    let eventShares = 0
+    if (userId) {
+      try {
+        const eventStats = await getUserEventStatsClient(userId)
+        eventViews = eventStats.views
+        eventShares = eventStats.shares
+      } catch (error) {
+        console.error('Error fetching event stats:', error)
+      }
+    }
+
     setStats({
       totalLikes,
-      totalViews,
-      totalShares,
+      totalViews: totalCarViews + eventViews,
+      totalShares: totalCarShares + eventShares,
       totalComments,
     })
   }
@@ -94,7 +114,7 @@ export default function DashboardPage() {
         if (refreshedCars) {
           setCars(refreshedCars)
           // Recalculate stats with fresh data
-          recalculateStats(refreshedCars)
+          recalculateStats(refreshedCars, user.id)
         }
       } catch {}
     }
@@ -123,7 +143,7 @@ export default function DashboardPage() {
 
         if (carsData) {
           setCars(carsData)
-          recalculateStats(carsData)
+          await recalculateStats(carsData, user.id)
         }
 
         if (slotsData) {
@@ -141,6 +161,40 @@ export default function DashboardPage() {
 
     loadDashboardData()
   }, [user])
+
+  const handleShareProfile = async () => {
+    if (!carSlots.isPremium) {
+      toast.error('Premium feature: Upgrade to share your entire garage')
+      return
+    }
+
+    if (!profile?.username) {
+      toast.error('Username not found')
+      return
+    }
+
+    if (!qrCodeDataUrl) {
+      setIsGeneratingQR(true)
+      try {
+        const shareUrl = `${window.location.origin}/${profile.username}`
+        // Use user's avatar if available, otherwise fall back to icon
+        const logoUrl = profile?.avatar_url || '/icon.jpg'
+        const dataUrl = await generateQRCodeWithLogo(shareUrl, logoUrl, {
+          width: 300,
+          margin: 2,
+          logoSize: 80,
+        })
+        setQrCodeDataUrl(dataUrl)
+        setShowQRCode(true)
+      } catch {
+        toast.error('Failed to generate QR code')
+      } finally {
+        setIsGeneratingQR(false)
+      }
+    } else {
+      setShowQRCode(true)
+    }
+  }
 
   if (loading) {
     return (
@@ -193,17 +247,27 @@ export default function DashboardPage() {
         />
 
         {/* Stats Overview */}
-        <Grid
-          mobileCols={2}
-          cols={4}
-          mobileGap='sm'
-          gap='md'
-          className='mb-6 md:mb-8'
-        >
-          {dashboardStats.map(stat => (
-            <StatsCard key={stat.label} stat={stat} />
-          ))}
-        </Grid>
+        <div className='mb-6 md:mb-8'>
+          <div className='flex items-center justify-between mb-3 md:mb-4'>
+            <h2 className='text-lg md:text-xl font-semibold text-foreground'>
+              Performance Overview
+            </h2>
+            {carSlots.isPremium && (
+              <Link
+                href='/analytics'
+                className='inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium text-primary hover:text-primary/80 transition-colors'
+              >
+                <BarChart3 className='h-3 w-3 md:h-4 md:w-4' />
+                <span>Analytics</span>
+              </Link>
+            )}
+          </div>
+          <Grid mobileCols={4} cols={4} mobileGap='sm' gap='md'>
+            {dashboardStats.map(stat => (
+              <StatsCard key={stat.label} stat={stat} />
+            ))}
+          </Grid>
+        </div>
 
         {/* Buy More Slots Section for Non-Premium Users */}
         {!carSlots.isPremium && cars.length >= carSlots.maxAllowedCars && (
@@ -216,25 +280,51 @@ export default function DashboardPage() {
 
         {/* Cars Grid */}
         <div>
-          <div className='flex items-center justify-between mb-6'>
-            <h2 className='text-2xl font-bold text-foreground'>Your Cars</h2>
-            {canCreateCar ? (
-              <Link
-                href='/create'
-                className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
-              >
-                <Plus className='w-5 h-5 mr-2' />
-                Add New Car
-              </Link>
-            ) : (
-              <Link
-                href='/buy-car-slot'
-                className='inline-flex items-center px-4 py-2 border border-orange-200 dark:border-orange-800 text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors cursor-pointer'
-              >
-                <AlertCircle className='w-4 h-4 mr-2' />
-                Car Limit Reached
-              </Link>
-            )}
+          <div className='flex items-center justify-between gap-2 mb-6'>
+            <h2 className='text-lg md:text-2xl font-bold text-foreground flex-shrink-0'>
+              Your Cars
+            </h2>
+            <div className='flex items-center gap-2 flex-wrap'>
+              {/* Share Profile Button - Only show if user is premium */}
+              {carSlots.isPremium && profile?.username && (
+                <button
+                  onClick={handleShareProfile}
+                  disabled={isGeneratingQR}
+                  className='inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-border shadow-sm text-xs md:text-sm font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap'
+                  title='Share your garage'
+                >
+                  {isGeneratingQR ? (
+                    <>
+                      <div className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                      <span className='hidden sm:inline'>Generating...</span>
+                      <span className='sm:hidden'>...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0' />
+                      <span className='truncate'>Share Garage</span>
+                    </>
+                  )}
+                </button>
+              )}
+              {canCreateCar ? (
+                <Link
+                  href='/create'
+                  className='inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-transparent shadow-sm text-xs md:text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer whitespace-nowrap'
+                >
+                  <Plus className='w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 flex-shrink-0' />
+                  <span className='truncate'>Add New Car</span>
+                </Link>
+              ) : (
+                <Link
+                  href='/buy-car-slot'
+                  className='inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-orange-200 dark:border-orange-800 text-xs md:text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors cursor-pointer whitespace-nowrap'
+                >
+                  <AlertCircle className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0' />
+                  <span className='truncate'>Car Limit Reached</span>
+                </Link>
+              )}
+            </div>
           </div>
 
           {cars.length === 0 ? (
@@ -269,6 +359,31 @@ export default function DashboardPage() {
             </Grid>
           )}
         </div>
+
+        {/* QR Code Modal for Garage Sharing */}
+        {carSlots.isPremium && profile && (
+          <QRCodeModal
+            isOpen={showQRCode}
+            onClose={() => setShowQRCode(false)}
+            qrCodeDataUrl={qrCodeDataUrl}
+            car={{
+              name: `${profile.full_name || profile.username}'s Garage`,
+              year: new Date().getFullYear(),
+              make: 'MyRide',
+              model: 'Garage Collection',
+            }}
+            profile={{
+              username: profile.username,
+              avatar_url: profile.avatar_url,
+              full_name: profile.full_name,
+            }}
+            currentUrl={
+              profile.username
+                ? `${window.location.origin}/${profile.username}`
+                : undefined
+            }
+          />
+        )}
       </PageLayout>
     </ProtectedRoute>
   )

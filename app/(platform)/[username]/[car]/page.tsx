@@ -463,10 +463,11 @@ export default function CarDetailPage() {
       <MainNavbar showCreateButton={true} />
 
       {/* Custom Header with Back Button and Actions - Matching PageHeaderWithBack Style */}
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center'>
-            <div className='mr-4'>
+      <div className='max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-6 pt-20 md:pt-24'>
+        <div className='flex flex-col gap-3 md:gap-0'>
+          {/* Top row: Back button and car name */}
+          <div className='flex items-start gap-3'>
+            <div className='flex-shrink-0 mt-1'>
               <BackButton
                 onClick={() => router.back()}
                 variant='ghost'
@@ -475,119 +476,134 @@ export default function CarDetailPage() {
               />
             </div>
 
-            <div className='flex-1'>
-              <h1 className='text-3xl md:text-4xl font-bold text-foreground'>
+            <div className='flex-1 min-w-0'>
+              <h1 className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight break-words'>
                 {car.name}
               </h1>
-              <div className='flex items-center gap-2 mt-2 text-lg text-muted-foreground'>
-                <span>by</span>
-                {profile?.is_premium ? (
-                  <Link
-                    href={`/${profile.username}`}
-                    className='flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer'
-                    title={`View ${profile.full_name || profile.username}'s garage`}
-                  >
-                    <UserAvatar
-                      avatarUrl={profile?.avatar_url || undefined}
-                      username={profile?.username || (params.username as string)}
-                      size='sm'
-                    />
-                    <span className='flex items-center gap-1 hover:text-foreground transition-colors'>
-                      <Crown className='w-4 h-4 text-yellow-500' />
-                      @{profile.username || params.username || 'Unknown'}
-                    </span>
-                  </Link>
-                ) : (
-                  <>
-                    <UserAvatar
-                      avatarUrl={profile?.avatar_url || undefined}
-                      username={profile?.username || (params.username as string)}
-                      size='sm'
-                    />
-                    <span className='flex items-center gap-1'>
-                      {profile?.is_premium && (
-                        <Crown className='w-4 h-4 text-yellow-500' />
-                      )}
-                      @{profile?.username || params.username || 'Unknown'}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              {/* Mobile Action Buttons - Under profile name */}
-              <div className='flex items-center space-x-2 mt-4 lg:hidden'>
-                {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
-                {user && car && user.id !== car.user_id ? (
-                  <button
-                    onClick={handleLike}
-                    disabled={isLikeLoading}
-                    className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
-                    title={isLiked ? 'Unlike car' : 'Like car'}
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        isLiked ? 'fill-current text-red-500' : ''
-                      }`}
-                    />
-                    <span>
-                      {likeCount > 0
-                        ? `${likeCount} like${likeCount !== 1 ? 's' : ''}`
-                        : 'Like'}
-                    </span>
-                  </button>
-                ) : (
-                  likeCount > 0 && (
-                    <div className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground'>
-                      <Heart className='w-4 h-4' />
-                      <span>
-                        {likeCount} like{likeCount !== 1 ? 's' : ''}
+              <div className='flex items-center justify-between gap-3 mt-1.5 md:mt-2'>
+                <div className='flex items-center gap-1.5 md:gap-2 text-sm md:text-lg text-muted-foreground'>
+                  <span className='text-xs md:text-base'>by</span>
+                  {profile?.is_premium ? (
+                    <Link
+                      href={`/${profile.username}`}
+                      className='flex items-center gap-1.5 md:gap-2 hover:opacity-80 transition-opacity cursor-pointer'
+                      title={`View ${
+                        profile.full_name || profile.username
+                      }'s garage`}
+                    >
+                      <UserAvatar
+                        avatarUrl={profile?.avatar_url || undefined}
+                        username={
+                          profile?.username || (params.username as string)
+                        }
+                        size='sm'
+                      />
+                      <span className='flex items-center gap-1 hover:text-foreground transition-colors text-sm md:text-base'>
+                        <Crown className='w-3.5 h-3.5 md:w-4 md:h-4 text-yellow-500 flex-shrink-0' />
+                        <span className='truncate'>
+                          @{profile.username || params.username || 'Unknown'}
+                        </span>
                       </span>
-                    </div>
-                  )
-                )}
-
-                <button
-                  onClick={handleQRCode}
-                  disabled={isGeneratingQR}
-                  className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-                  title={`Share ${car.name} via QR Code`}
-                >
-                  {isGeneratingQR ? (
-                    <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                    </Link>
                   ) : (
-                    <Share2 className='w-4 h-4 mr-2' />
+                    <>
+                      <UserAvatar
+                        avatarUrl={profile?.avatar_url || undefined}
+                        username={
+                          profile?.username || (params.username as string)
+                        }
+                        size='sm'
+                      />
+                      <span className='flex items-center gap-1 text-sm md:text-base'>
+                        {profile?.is_premium && (
+                          <Crown className='w-3.5 h-3.5 md:w-4 md:h-4 text-yellow-500 flex-shrink-0' />
+                        )}
+                        <span className='truncate'>
+                          @{profile?.username || params.username || 'Unknown'}
+                        </span>
+                      </span>
+                    </>
                   )}
-                  {isGeneratingQR ? 'Generating...' : 'Share'}
-                </button>
-                {user && car && user.id === car.user_id && (
-                  <Link
-                    href={`/${profile?.username}/${car.url_slug}/edit`}
-                    className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+                </div>
+
+                {/* Mobile Action Buttons - Next to username */}
+                <div className='flex items-center gap-1.5 lg:hidden'>
+                  {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
+                  {user && car && user.id !== car.user_id ? (
+                    <button
+                      onClick={handleLike}
+                      disabled={isLikeLoading}
+                      className='flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer flex-shrink-0 group'
+                      title={isLiked ? 'Unlike car' : 'Like car'}
+                    >
+                      <Heart
+                        className={`w-4 h-4 transition-colors ${
+                          isLiked
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-muted-foreground group-hover:text-red-500'
+                        }`}
+                      />
+                      {likeCount > 0 && (
+                        <span className='text-xs font-medium text-foreground min-w-[1rem]'>
+                          {likeCount}
+                        </span>
+                      )}
+                    </button>
+                  ) : (
+                    likeCount > 0 && (
+                      <div className='flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-muted/50 border border-border/50 flex-shrink-0'>
+                        <Heart className='w-4 h-4 text-muted-foreground' />
+                        <span className='text-xs font-medium text-foreground'>
+                          {likeCount}
+                        </span>
+                      </div>
+                    )
+                  )}
+
+                  <button
+                    onClick={handleQRCode}
+                    disabled={isGeneratingQR}
+                    className='flex items-center justify-center w-9 h-9 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 group'
+                    title={`Share ${car.name} via QR Code`}
                   >
-                    <Edit className='w-4 h-4 mr-2' />
-                    Edit
-                  </Link>
-                )}
+                    {isGeneratingQR ? (
+                      <div className='w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                    ) : (
+                      <Share2 className='w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors' />
+                    )}
+                  </button>
+                  {user && car && user.id === car.user_id && (
+                    <Link
+                      href={`/${profile?.username}/${car.url_slug}/edit`}
+                      className='flex items-center justify-center w-9 h-9 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer flex-shrink-0 group'
+                      title='Edit car'
+                    >
+                      <Edit className='w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors' />
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Desktop Action Buttons - Right side (unchanged) */}
-          <div className='hidden lg:flex items-center space-x-4'>
+          {/* Desktop Action Buttons - Right side */}
+          <div className='hidden lg:flex items-center gap-2'>
             {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
             {user && car && user.id !== car.user_id ? (
               <button
                 onClick={handleLike}
                 disabled={isLikeLoading}
-                className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+                className='flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer group'
                 title={isLiked ? 'Unlike car' : 'Like car'}
               >
                 <Heart
-                  className={`w-4 h-4 ${
-                    isLiked ? 'fill-current text-red-500' : ''
+                  className={`w-4 h-4 transition-colors ${
+                    isLiked
+                      ? 'fill-red-500 text-red-500'
+                      : 'text-muted-foreground group-hover:text-red-500'
                   }`}
                 />
-                <span>
+                <span className='text-sm font-medium text-foreground'>
                   {likeCount > 0
                     ? `${likeCount} like${likeCount !== 1 ? 's' : ''}`
                     : 'Like'}
@@ -595,9 +611,9 @@ export default function CarDetailPage() {
               </button>
             ) : (
               likeCount > 0 && (
-                <div className='flex items-center space-x-2 px-3 py-2 bg-muted rounded-md text-sm font-medium text-muted-foreground'>
-                  <Heart className='w-4 h-4' />
-                  <span>
+                <div className='flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50'>
+                  <Heart className='w-4 h-4 text-muted-foreground' />
+                  <span className='text-sm font-medium text-foreground'>
                     {likeCount} like{likeCount !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -607,23 +623,27 @@ export default function CarDetailPage() {
             <button
               onClick={handleQRCode}
               disabled={isGeneratingQR}
-              className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+              className='flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group'
               title={`Share ${car.name} via QR Code`}
             >
               {isGeneratingQR ? (
-                <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                <div className='w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
               ) : (
-                <Share2 className='w-4 h-4 mr-2' />
+                <Share2 className='w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors' />
               )}
-              {isGeneratingQR ? 'Generating...' : 'Share'}
+              <span className='text-sm font-medium text-foreground'>
+                {isGeneratingQR ? 'Generating...' : 'Share'}
+              </span>
             </button>
             {user && car && user.id === car.user_id && (
               <Link
                 href={`/${profile?.username}/${car.url_slug}/edit`}
-                className='inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
+                className='flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer group'
               >
-                <Edit className='w-4 h-4 mr-2' />
-                Edit
+                <Edit className='w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors' />
+                <span className='text-sm font-medium text-foreground'>
+                  Edit
+                </span>
               </Link>
             )}
           </div>
