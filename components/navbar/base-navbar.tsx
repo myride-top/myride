@@ -70,7 +70,7 @@ export const BaseNavbar = ({
 
     document.addEventListener('mousedown', handleClickOutside)
     document.addEventListener('keydown', handleEscape)
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
@@ -142,18 +142,20 @@ export const BaseNavbar = ({
           <div className='flex items-center gap-2 md:gap-4 flex-shrink-0'>
             {/* Desktop: Theme toggle */}
             {rightNavContent && (
-              <div className='hidden md:block'>{rightNavContent}</div>
+              <div className='hidden md:flex items-center'>
+                {rightNavContent}
+              </div>
             )}
 
-            {/* Navigation items for right-aligned layout */}
-            {navItems.length > 0 &&
-              layout === 'right-aligned' &&
-              navItems.map((item, index) => (
-                <div key={item.name} className='hidden md:block'>
-                  {renderNavItem ? (
-                    renderNavItem(item)
+            {/* Desktop: Navigation items for right-aligned layout */}
+            {navItems.length > 0 && layout === 'right-aligned' && (
+              <div className='hidden md:flex items-center gap-4'>
+                {navItems.map(item =>
+                  renderNavItem ? (
+                    <Fragment key={item.name}>{renderNavItem(item)}</Fragment>
                   ) : (
                     <Link
+                      key={item.name}
                       href={item.href}
                       target={item.external ? '_blank' : undefined}
                       rel={item.external ? 'noopener noreferrer' : undefined}
@@ -161,9 +163,10 @@ export const BaseNavbar = ({
                     >
                       {item.name}
                     </Link>
-                  )}
-                </div>
-              ))}
+                  )
+                )}
+              </div>
+            )}
 
             {/* Mobile: Theme toggle and menu button */}
             <div className='md:hidden flex items-center gap-2'>
@@ -204,50 +207,53 @@ export const BaseNavbar = ({
               : '-translate-x-full'
           }`}
         >
-            <div className='flex flex-col h-full'>
-              {/* Mobile Menu Header */}
-              <div className='flex items-center justify-between p-4 border-b border-border'>
-                <Link
-                  href={logoHref}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className='flex items-center'
-                >
-                  <img src='/logo.svg' alt='MyRide' className='h-7 w-auto' />
-                </Link>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className='p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md'
-                  aria-label='Close menu'
-                >
-                  <X className='h-5 w-5' />
-                </button>
-              </div>
-
-              {/* Mobile Menu Items */}
-              {navItems.length > 0 && (
-                <div className='flex-1 overflow-y-auto px-3 py-4 space-y-1'>
-                  {navItems.map(item =>
-                    renderNavItem ? (
-                      <div key={item.name} onClick={() => setIsMobileMenuOpen(false)}>
-                        {renderNavItem(item)}
-                      </div>
-                    ) : (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        target={item.external ? '_blank' : undefined}
-                        rel={item.external ? 'noopener noreferrer' : undefined}
-                        className='flex items-center px-4 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-lg transition-all duration-200 active:scale-[0.98]'
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    )
-                  )}
-                </div>
-              )}
+          <div className='flex flex-col h-full'>
+            {/* Mobile Menu Header */}
+            <div className='flex items-center justify-between p-4 border-b border-border'>
+              <Link
+                href={logoHref}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className='flex items-center'
+              >
+                <img src='/logo.svg' alt='MyRide' className='h-7 w-auto' />
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className='p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md'
+                aria-label='Close menu'
+              >
+                <X className='h-5 w-5' />
+              </button>
             </div>
+
+            {/* Mobile Menu Items */}
+            {navItems.length > 0 && (
+              <div className='flex-1 overflow-y-auto px-3 py-4 space-y-1'>
+                {navItems.map(item =>
+                  renderNavItem ? (
+                    <div
+                      key={item.name}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {renderNavItem(item)}
+                    </div>
+                  ) : (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      target={item.external ? '_blank' : undefined}
+                      rel={item.external ? 'noopener noreferrer' : undefined}
+                      className='flex items-center px-4 py-3 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-lg transition-all duration-200 active:scale-[0.98]'
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                )}
+              </div>
+            )}
           </div>
+        </div>
       </div>
     </nav>
   )
