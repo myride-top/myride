@@ -1,7 +1,8 @@
 import React from 'react'
-import { Crown, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { LinkButton } from '@/components/ui/link-button'
+import { PremiumButton } from '@/components/common/premium-button'
 
 interface PremiumUpgradeBannerProps {
   currentCars: number
@@ -46,15 +47,14 @@ export const PremiumUpgradeBanner = ({
               <Plus className='w-3 h-3 mr-1' />
               Buy Slots
             </LinkButton>
-            <LinkButton
-              href='/premium'
-              variant='outline'
+            <PremiumButton
+              featureName='Go Premium'
+              featureDescription='Upgrade to premium for unlimited car slots, advanced analytics, garage sharing, and exclusive features.'
               size='sm'
-              className='border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/50 hover:bg-amber-100 dark:hover:bg-amber-900/70'
+              variant='default'
             >
-              <Crown className='w-3 h-3 mr-1' />
               Go Premium
-            </LinkButton>
+            </PremiumButton>
           </div>
         </div>
       </div>
@@ -87,14 +87,14 @@ export const PremiumUpgradeBanner = ({
             <Plus className='w-4 h-4 mr-2' />
             Buy More Slots
           </LinkButton>
-          <LinkButton
-            href='/premium'
-            variant='outline'
-            className='border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/50 hover:bg-amber-100 dark:hover:bg-amber-900/70'
+          <PremiumButton
+            featureName='Go Premium'
+            featureDescription='Upgrade to premium for unlimited car slots, advanced analytics, garage sharing, and exclusive features.'
+            size='md'
+            variant='default'
           >
-            <Crown className='w-4 h-4 mr-2' />
             Go Premium
-          </LinkButton>
+          </PremiumButton>
         </div>
       </div>
     </div>

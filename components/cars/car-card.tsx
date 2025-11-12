@@ -73,6 +73,10 @@ export const CarCard = ({
     }
   }
 
+  const handleImageClick = () => {
+    router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
+  }
+
   return (
     <div
       className={cn(
@@ -81,7 +85,10 @@ export const CarCard = ({
       )}
     >
       {/* Photo */}
-      <div className='relative aspect-[4/3] bg-muted overflow-hidden'>
+      <div
+        className='relative aspect-[4/3] bg-muted overflow-hidden cursor-pointer'
+        onClick={handleImageClick}
+      >
         {(() => {
           // Get the photo URL to display
           const photoUrl =

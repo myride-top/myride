@@ -1,8 +1,8 @@
-import { LucideIcon } from 'lucide-react'
+import { LucideIcon, Crown, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
 import { IconWrapper } from './icon-wrapper'
 import { Card } from './card'
+import { PremiumButton } from './premium-button'
 
 export interface Stat {
   icon: LucideIcon
@@ -60,6 +60,14 @@ export const StatsCard = ({
         className={cn(
           'overflow-hidden shadow group relative',
           'p-2 md:p-3',
+          'transition-all duration-200',
+          !isPremium && premiumUpgradeHref && [
+            'border-2 border-amber-400/40 dark:border-amber-500/40',
+            'bg-gradient-to-br from-amber-50/30 via-yellow-50/20 to-amber-50/30',
+            'dark:from-amber-950/20 dark:via-yellow-950/10 dark:to-amber-950/20',
+            'hover:border-amber-400/60 dark:hover:border-amber-500/60',
+            'hover:shadow-lg hover:shadow-amber-500/20 dark:hover:shadow-amber-600/20',
+          ],
           className,
           statClassName
         )}
@@ -70,37 +78,43 @@ export const StatsCard = ({
             {label}
           </div>
           <div className='flex items-center justify-center gap-2 md:gap-3'>
-            <IconWrapper
-              icon={icon}
-              size='sm'
-              variant={isPremium ? 'primary' : 'muted'}
-              className='w-4 h-4 md:w-5 md:h-5 flex-shrink-0'
-            />
+            {!isPremium && premiumUpgradeHref ? (
+              <div className='relative flex items-center justify-center'>
+                <Crown className='w-4 h-4 md:w-5 md:h-5 text-amber-600 dark:text-amber-400 flex-shrink-0' />
+                <Sparkles
+                  className='absolute -top-0.5 -right-0.5 w-2 h-2 md:w-2.5 md:h-2.5 text-amber-600 dark:text-amber-400 animate-pulse'
+                />
+              </div>
+            ) : (
+              <IconWrapper
+                icon={icon}
+                size='sm'
+                variant={isPremium ? 'primary' : 'muted'}
+                className='w-4 h-4 md:w-5 md:h-5 flex-shrink-0'
+              />
+            )}
             <div
               className={cn(
                 'text-base md:text-xl font-semibold text-card-foreground',
-                !isPremium && 'blur-sm'
+                !isPremium && premiumUpgradeHref && 'text-amber-700 dark:text-amber-300'
               )}
             >
-              {value}
+              {!isPremium && premiumUpgradeHref ? '—' : value}
             </div>
-            {!isPremium && premiumUpgradeHref && (
-              <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] md:text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white ml-auto'>
-                PREMIUM
-              </span>
-            )}
           </div>
         </div>
 
         {/* Premium upgrade overlay */}
         {!isPremium && premiumUpgradeHref && (
-          <div className='absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs'>
-            <Link
-              href={premiumUpgradeHref}
-              className='bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium hover:bg-primary/90 transition-colors'
+          <div className='absolute inset-0 bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-amber-500/10 dark:from-amber-600/10 dark:via-yellow-600/5 dark:to-amber-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs'>
+            <PremiumButton
+              featureName={label}
+              featureDescription={`View your ${label.toLowerCase()} statistics with premium access.`}
+              size='sm'
+              variant='default'
             >
               Upgrade to Premium
-            </Link>
+            </PremiumButton>
           </div>
         )}
       </Card>

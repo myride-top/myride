@@ -20,6 +20,7 @@ import {
   MessageCircle,
   AlertCircle,
   BarChart3,
+  Lock,
 } from 'lucide-react'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { EmptyState } from '@/components/common/empty-state'
@@ -33,6 +34,8 @@ import { PageLayout } from '@/components/layout/page-layout'
 import { PageHeader } from '@/components/layout/page-header'
 import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
+import { cn } from '@/lib/utils'
+import { PremiumButton } from '@/components/common/premium-button'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -164,7 +167,6 @@ export default function DashboardPage() {
 
   const handleShareProfile = async () => {
     if (!carSlots.isPremium) {
-      toast.error('Premium feature: Upgrade to share your entire garage')
       return
     }
 
@@ -176,7 +178,7 @@ export default function DashboardPage() {
     if (!qrCodeDataUrl) {
       setIsGeneratingQR(true)
       try {
-        const shareUrl = `${window.location.origin}/${profile.username}`
+        const shareUrl = `${window.location.origin}/u/${profile.username}`
         // Use user's avatar if available, otherwise fall back to icon
         const logoUrl = profile?.avatar_url || '/icon.jpg'
         const dataUrl = await generateQRCodeWithLogo(shareUrl, logoUrl, {
@@ -246,28 +248,30 @@ export default function DashboardPage() {
           description='Manage your cars and track your performance'
         />
 
-        {/* Stats Overview */}
-        <div className='mb-6 md:mb-8'>
-          <div className='flex items-center justify-between mb-3 md:mb-4'>
-            <h2 className='text-lg md:text-xl font-semibold text-foreground'>
-              Performance Overview
-            </h2>
-            {carSlots.isPremium && (
-              <Link
-                href='/analytics'
-                className='inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium text-primary hover:text-primary/80 transition-colors'
-              >
-                <BarChart3 className='h-3 w-3 md:h-4 md:w-4' />
-                <span>Analytics</span>
-              </Link>
-            )}
+        {/* Stats Overview - Only show if user has cars */}
+        {cars.length > 0 && (
+          <div className='mb-6 md:mb-8'>
+            <div className='flex items-center justify-between mb-3 md:mb-4'>
+              <h2 className='text-lg md:text-xl font-semibold text-foreground'>
+                Performance Overview
+              </h2>
+              {carSlots.isPremium && (
+                <Link
+                  href='/analytics'
+                  className='inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium text-primary hover:text-primary/80 transition-colors'
+                >
+                  <BarChart3 className='h-3 w-3 md:h-4 md:w-4' />
+                  <span>Analytics</span>
+                </Link>
+              )}
+            </div>
+            <Grid mobileCols={4} cols={4} mobileGap='sm' gap='md'>
+              {dashboardStats.map(stat => (
+                <StatsCard key={stat.label} stat={stat} />
+              ))}
+            </Grid>
           </div>
-          <Grid mobileCols={4} cols={4} mobileGap='sm' gap='md'>
-            {dashboardStats.map(stat => (
-              <StatsCard key={stat.label} stat={stat} />
-            ))}
-          </Grid>
-        </div>
+        )}
 
         {/* Buy More Slots Section for Non-Premium Users */}
         {!carSlots.isPremium && cars.length >= carSlots.maxAllowedCars && (
@@ -275,6 +279,7 @@ export default function DashboardPage() {
             currentCars={cars.length}
             maxAllowedCars={carSlots.maxAllowedCars}
             className='mb-6'
+            variant={carSlots.maxAllowedCars - cars.length === 0 ? 'compact' : 'default'}
           />
         )}
 
@@ -285,43 +290,49 @@ export default function DashboardPage() {
               Your Cars
             </h2>
             <div className='flex items-center gap-2 flex-wrap'>
-              {/* Share Profile Button - Only show if user is premium */}
-              {carSlots.isPremium && profile?.username && (
-                <button
-                  onClick={handleShareProfile}
-                  disabled={isGeneratingQR}
-                  className='inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-border shadow-sm text-xs md:text-sm font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap'
-                  title='Share your garage'
-                >
-                  {isGeneratingQR ? (
-                    <>
-                      <div className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
-                      <span className='hidden sm:inline'>Generating...</span>
-                      <span className='sm:hidden'>...</span>
-                    </>
+              {/* Share Profile Button - Only show if user has cars, locked for non-premium */}
+              {profile?.username && cars.length > 0 && (
+                <>
+                  {carSlots.isPremium ? (
+                    <button
+                      onClick={handleShareProfile}
+                      disabled={isGeneratingQR}
+                      className={cn(
+                        'inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-border shadow-sm text-xs md:text-sm font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap',
+                        isGeneratingQR && 'opacity-50 cursor-not-allowed'
+                      )}
+                      title='Share your garage'
+                    >
+                      {isGeneratingQR ? (
+                        <>
+                          <div className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                          <span className='hidden sm:inline'>Generating...</span>
+                          <span className='sm:hidden'>...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share2 className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0' />
+                          <span className='truncate'>Share Garage</span>
+                        </>
+                      )}
+                    </button>
                   ) : (
-                    <>
-                      <Share2 className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0' />
-                      <span className='truncate'>Share Garage</span>
-                    </>
+                    <PremiumButton
+                      featureName='Share Garage'
+                      featureDescription='Share your entire garage with a custom URL and QR code. Make your profile public and shareable.'
+                    >
+                      Share Garage
+                    </PremiumButton>
                   )}
-                </button>
+                </>
               )}
-              {canCreateCar ? (
+              {canCreateCar && (
                 <Link
                   href='/create'
                   className='inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-transparent shadow-sm text-xs md:text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer whitespace-nowrap'
                 >
                   <Plus className='w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 flex-shrink-0' />
                   <span className='truncate'>Add New Car</span>
-                </Link>
-              ) : (
-                <Link
-                  href='/buy-car-slot'
-                  className='inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 border border-orange-200 dark:border-orange-800 text-xs md:text-sm font-medium rounded-md shadow-sm text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors cursor-pointer whitespace-nowrap'
-                >
-                  <AlertCircle className='w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2 flex-shrink-0' />
-                  <span className='truncate'>Car Limit Reached</span>
                 </Link>
               )}
             </div>

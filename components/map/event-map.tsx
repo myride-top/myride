@@ -8,8 +8,8 @@ import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Profile } from '@/lib/types/database'
 import { CreateEventDialog } from './create-event-dialog'
-import { PremiumRequiredDialog } from './premium-required-dialog'
-import { Plus, Lock } from 'lucide-react'
+import { PremiumButton } from '@/components/common/premium-button'
+import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import type { DivIcon } from 'leaflet'
@@ -42,8 +42,6 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   const { theme, resolvedTheme } = useTheme()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [isPremiumRequiredDialogOpen, setIsPremiumRequiredDialogOpen] =
-    useState(false)
   const [mapCenter, setMapCenter] = useState<[number, number]>([
     50.0755, 14.4378,
   ]) // Prague default
@@ -59,6 +57,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     null
   )
   const [loadingUserAddress, setLoadingUserAddress] = useState(false)
+  const [leafletLoaded, setLeafletLoaded] = useState(false)
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -292,6 +291,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
       )
 
       setDefaultEventIcons(icons)
+      setLeafletLoaded(true)
     }
 
     initLeaflet()
@@ -462,8 +462,6 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   const handleCreateEventClick = () => {
     if (profile?.is_premium) {
       setIsCreateDialogOpen(true)
-    } else {
-      setIsPremiumRequiredDialogOpen(true)
     }
   }
 
@@ -554,21 +552,26 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
           </Marker>
         )}
         {/* Event markers */}
-        {events.map(event => {
-          // Use custom icon if event has an image, otherwise use default icon based on event type
-          const iconToUse = event.event_image_url
-            ? eventIcons.get(event.id) ||
-              defaultEventIcons.get(event.event_type) ||
-              defaultEventIcons.get('meetup')
-            : defaultEventIcons.get(event.event_type) ||
-              defaultEventIcons.get('meetup')
+        {leafletLoaded &&
+          defaultEventIcons.size > 0 &&
+          events.map(event => {
+            // Use custom icon if event has an image, otherwise use default icon based on event type
+            const iconToUse = event.event_image_url
+              ? eventIcons.get(event.id) ||
+                defaultEventIcons.get(event.event_type) ||
+                defaultEventIcons.get('meetup')
+              : defaultEventIcons.get(event.event_type) ||
+                defaultEventIcons.get('meetup')
 
-          return (
-            <Marker
-              key={event.id}
-              position={[event.latitude, event.longitude]}
-              icon={iconToUse || undefined}
-            >
+            // Only render if we have an icon
+            if (!iconToUse) return null
+
+            return (
+              <Marker
+                key={event.id}
+                position={[event.latitude, event.longitude]}
+                icon={iconToUse}
+              >
               <Popup maxWidth={320} className='event-popup'>
                 <EventPopup
                   event={event}
@@ -587,23 +590,25 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
 
       {user && (
         <div className='absolute top-4 right-4 z-[1000]'>
-          <Button
-            onClick={handleCreateEventClick}
-            className='shadow-lg cursor-pointer'
-            variant={profile?.is_premium ? 'default' : 'outline'}
-          >
-            {profile?.is_premium ? (
-              <>
-                <Plus className='w-4 h-4 mr-2' />
-                Create Event
-              </>
-            ) : (
-              <>
-                <Lock className='w-4 h-4 mr-2' />
-                Create Event
-              </>
-            )}
-          </Button>
+          {profile?.is_premium ? (
+            <Button
+              onClick={handleCreateEventClick}
+              className='shadow-lg cursor-pointer'
+              variant='default'
+            >
+              <Plus className='w-4 h-4 mr-2' />
+              Create Event
+            </Button>
+          ) : (
+            <PremiumButton
+              featureName='Create Events'
+              featureDescription='Create and manage car meets, shows, and gatherings on the map. See who&apos;s coming and connect with fellow car enthusiasts.'
+              variant='outline'
+              size='md'
+            >
+              Create Event
+            </PremiumButton>
+          )}
         </div>
       )}
 
@@ -612,11 +617,6 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
         onOpenChange={setIsCreateDialogOpen}
         onEventCreated={handleEventCreated}
         initialCenter={mapCenter}
-      />
-
-      <PremiumRequiredDialog
-        open={isPremiumRequiredDialogOpen}
-        onOpenChange={setIsPremiumRequiredDialogOpen}
       />
     </div>
   )

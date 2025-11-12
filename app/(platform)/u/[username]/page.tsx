@@ -14,11 +14,13 @@ import { Grid } from '@/components/common/grid'
 import { UserAvatar } from '@/components/common/user-avatar'
 import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
-import { Crown, Share2, MapPin, Instagram, Youtube, Globe } from 'lucide-react'
+import { Crown, Share2, MapPin, Instagram, Youtube, Globe, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 export default function ProfileGaragePage() {
   const params = useParams()
+  const router = useRouter()
   const { user } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [cars, setCars] = useState<Car[]>([])
@@ -138,6 +140,50 @@ export default function ProfileGaragePage() {
             title='Profile not found'
             description={error || 'The requested profile could not be found.'}
           />
+        </div>
+      </>
+    )
+  }
+
+  // Block access to non-premium profiles - only premium users can have public profiles
+  if (!isPremium) {
+    return (
+      <>
+        <MainNavbar showCreateButton={false} />
+        <div className='min-h-screen flex items-center justify-center bg-background'>
+          <div className='max-w-md mx-auto px-4'>
+            <div className='text-center py-12'>
+              <div className='mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-6'>
+                <Lock className='h-8 w-8 text-primary' />
+              </div>
+              <h2 className='text-3xl font-bold mb-2 text-foreground'>
+                Profile Not Available
+              </h2>
+              <p className='text-lg text-muted-foreground mb-6'>
+                {isOwner
+                  ? "This profile is private. Upgrade to premium to make your profile public and shareable."
+                  : "This profile is only available to premium members. This user needs to upgrade to premium to make their profile public."}
+              </p>
+              <div className='flex flex-col sm:flex-row gap-3 justify-center'>
+                {isOwner ? (
+                  <Link
+                    href='/premium'
+                    className='inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'
+                  >
+                    <Crown className='w-4 h-4 mr-2' />
+                    Upgrade to Premium
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => router.push('/browse')}
+                    className='inline-flex items-center justify-center px-4 py-2 border border-border rounded-md text-foreground bg-card hover:bg-accent transition-colors'
+                  >
+                    Browse Cars
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </>
     )
