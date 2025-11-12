@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard'
 import { MainNavbar } from '@/components/navbar/main-navbar'
 import { ProtectedRoute } from '@/components/auth/protected-route'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/card'
 import { Button } from '@/components/ui/button-enhanced'
 import { Crown, BarChart3, ArrowRight, Lock } from 'lucide-react'
@@ -41,10 +42,7 @@ export default function AnalyticsPage() {
   if (authLoading || loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4'></div>
-          <p className='text-muted-foreground'>Loading...</p>
-        </div>
+        <LoadingSpinner message='Loading...' />
       </div>
     )
   }

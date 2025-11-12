@@ -140,16 +140,20 @@ export const BaseNavbar = ({
 
           {/* Right side content (auth, theme toggle, etc.) */}
           <div className='flex items-center gap-2 md:gap-4 flex-shrink-0'>
+            {/* Desktop: Theme toggle */}
+            {rightNavContent && (
+              <div className='hidden md:block'>{rightNavContent}</div>
+            )}
+
             {/* Navigation items for right-aligned layout */}
-            {navItems.length > 0 && layout === 'right-aligned' && (
-              <div className='hidden md:flex items-center gap-4'>
-                {rightNavContent}
-                {navItems.map(item =>
-                  renderNavItem ? (
-                    <Fragment key={item.name}>{renderNavItem(item)}</Fragment>
+            {navItems.length > 0 &&
+              layout === 'right-aligned' &&
+              navItems.map((item, index) => (
+                <div key={item.name} className='hidden md:block'>
+                  {renderNavItem ? (
+                    renderNavItem(item)
                   ) : (
                     <Link
-                      key={item.name}
                       href={item.href}
                       target={item.external ? '_blank' : undefined}
                       rel={item.external ? 'noopener noreferrer' : undefined}
@@ -157,10 +161,9 @@ export const BaseNavbar = ({
                     >
                       {item.name}
                     </Link>
-                  )
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              ))}
 
             {/* Mobile: Theme toggle and menu button */}
             <div className='md:hidden flex items-center gap-2'>

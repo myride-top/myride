@@ -354,7 +354,14 @@ export default function CarDetailPage() {
   }
 
   if (loading) {
-    return <LoadingSpinner fullScreen message='Loading car details...' />
+    return (
+      <div className='min-h-screen bg-background'>
+        <MainNavbar showCreateButton={true} />
+        <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
+          <LoadingSpinner message='Loading car details...' />
+        </div>
+      </div>
+    )
   }
 
   if (error || !car) {

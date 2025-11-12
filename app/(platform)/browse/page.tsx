@@ -7,7 +7,7 @@ import { getAllCarsClient } from '@/lib/database/cars-client'
 import { Car, Profile } from '@/lib/types/database'
 import { PageLayout } from '@/components/layout/page-layout'
 import { PageHeader } from '@/components/layout/page-header'
-import { LoadingState } from '@/components/common/loading-state'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { ErrorState } from '@/components/common/error-state'
 import { EmptyState } from '@/components/common/empty-state'
 import { CarCard } from '@/components/cars/car-card'
@@ -462,7 +462,9 @@ export default function BrowsePage() {
   if (loading) {
     return (
       <PageLayout showCreateButton={true}>
-        <LoadingState message='Loading cars...' />
+        <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
+          <LoadingSpinner message='Loading cars...' />
+        </div>
       </PageLayout>
     )
   }

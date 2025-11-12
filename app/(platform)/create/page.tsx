@@ -366,7 +366,7 @@ export default function CreateCarPage() {
       <ProtectedRoute>
         <div className='min-h-screen bg-background'>
           <MainNavbar showCreateButton={true} />
-          <div className='flex items-center justify-center min-h-screen'>
+          <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
             <LoadingSpinner message='Loading...' />
           </div>
         </div>

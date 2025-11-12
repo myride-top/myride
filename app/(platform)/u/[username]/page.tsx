@@ -124,7 +124,7 @@ export default function ProfileGaragePage() {
     return (
       <>
         <MainNavbar showCreateButton={false} />
-        <div className='min-h-screen flex items-center justify-center bg-background'>
+        <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
           <LoadingSpinner message='Loading garage...' />
         </div>
       </>
