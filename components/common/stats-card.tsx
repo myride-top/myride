@@ -64,26 +64,32 @@ export const StatsCard = ({
           statClassName
         )}
       >
-        <div className='flex items-center justify-center gap-2 md:gap-3'>
-          <IconWrapper
-            icon={icon}
-            size='sm'
-            variant={isPremium ? 'primary' : 'muted'}
-            className='w-4 h-4 md:w-5 md:h-5 flex-shrink-0'
-          />
-          <div
-            className={cn(
-              'text-base md:text-xl font-semibold text-card-foreground',
-              !isPremium && 'blur-sm'
-            )}
-          >
-            {value}
+        <div className='flex flex-col items-center justify-center gap-1 md:gap-2'>
+          {/* Label text - desktop only */}
+          <div className='hidden md:block text-xs font-medium text-muted-foreground text-center'>
+            {label}
           </div>
-          {!isPremium && premiumUpgradeHref && (
-            <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] md:text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white ml-auto'>
-              PREMIUM
-            </span>
-          )}
+          <div className='flex items-center justify-center gap-2 md:gap-3'>
+            <IconWrapper
+              icon={icon}
+              size='sm'
+              variant={isPremium ? 'primary' : 'muted'}
+              className='w-4 h-4 md:w-5 md:h-5 flex-shrink-0'
+            />
+            <div
+              className={cn(
+                'text-base md:text-xl font-semibold text-card-foreground',
+                !isPremium && 'blur-sm'
+              )}
+            >
+              {value}
+            </div>
+            {!isPremium && premiumUpgradeHref && (
+              <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] md:text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white ml-auto'>
+                PREMIUM
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Premium upgrade overlay */}
