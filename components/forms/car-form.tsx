@@ -1,15 +1,47 @@
 'use client'
 
 import { useState } from 'react'
-import { Car, CarPhoto, PhotoCategory } from '@/lib/types/database'
+import { Car, CarPhoto, PhotoCategory, CarTimeline } from '@/lib/types/database'
 import { getUnitLabel } from '@/lib/utils'
 import { SortablePhotoGallery } from '@/components/photos/sortable-photo-gallery'
 import { PhotoUpload } from '@/components/photos/photo-upload'
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Plus,
+  Trash2,
+  X,
+  Image as ImageIcon,
+  Calendar as CalendarIcon,
+} from 'lucide-react'
+import { uploadCarPhoto } from '@/lib/storage/photos'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
+import type { DropdownNavProps, DropdownProps } from 'react-day-picker'
 
 interface CarFormProps {
   mode: 'create' | 'edit'
-  initialData?: Partial<Car>
+  initialData?: Partial<Car> & {
+    timeline?: Omit<
+      CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    >[]
+  }
   onSubmit: (data: CarFormData) => Promise<void>
   onPhotoUploadComplete?: (photo: CarPhoto) => Promise<void>
   onBatchUploadComplete?: (photos: CarPhoto[]) => Promise<void>
@@ -102,6 +134,7 @@ interface CarFormData {
   brake_rotors: string | null
   brake_caliper_brand: string | null
   brake_lines: string | null
+  timeline?: Omit<CarTimeline, 'id' | 'car_id' | 'created_at' | 'updated_at'>[]
   id?: string
   user_id?: string
   created_at?: string
@@ -130,7 +163,8 @@ const STEPS = [
     description: 'VIN, mileage, and other details',
   },
   { id: 9, title: 'Social', description: 'Link your profiles' },
-  { id: 10, title: 'Review', description: 'Review and save changes' },
+  { id: 10, title: 'Timeline', description: 'Document your build journey' },
+  { id: 11, title: 'Review', description: 'Review and save changes' },
 ]
 
 // Step Components
@@ -1324,6 +1358,453 @@ function PhotosSocialStep({
   )
 }
 
+function TimelineStep({
+  carData,
+  onInputChange,
+  carId,
+}: {
+  carData: CarFormData
+  onInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | {
+          target: {
+            name: string
+            value:
+              | string
+              | string[]
+              | Omit<
+                  CarTimeline,
+                  'id' | 'car_id' | 'created_at' | 'updated_at'
+                >[]
+          }
+        }
+  ) => void
+  carId?: string
+}) {
+  const [timeline, setTimeline] = useState<
+    Omit<CarTimeline, 'id' | 'car_id' | 'created_at' | 'updated_at'>[]
+  >(carData.timeline || [])
+  const [uploadingPhoto, setUploadingPhoto] = useState<{
+    entryIndex: number
+    photoIndex: 1 | 2
+  } | null>(null)
+
+  const addTimelineEntry = () => {
+    const newEntry: Omit<
+      CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    > = {
+      date: new Date().toISOString().split('T')[0],
+      title: '',
+      description: null,
+      photo_url: null,
+      photo_url_2: null,
+      order_index: timeline.length,
+    }
+    const updated = [...timeline, newEntry]
+    setTimeline(updated)
+    onInputChange({
+      target: { name: 'timeline', value: updated },
+    })
+  }
+
+  const removeTimelineEntry = (index: number) => {
+    const updated = timeline.filter((_, i) => i !== index)
+    // Reorder indices
+    const reordered = updated.map((entry, i) => ({
+      ...entry,
+      order_index: i,
+    }))
+    setTimeline(reordered)
+    onInputChange({
+      target: { name: 'timeline', value: reordered },
+    })
+  }
+
+  const updateTimelineEntry = (
+    index: number,
+    field: keyof Omit<
+      CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    >,
+    value: string | null
+  ) => {
+    const updated = [...timeline]
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    }
+    setTimeline(updated)
+    onInputChange({
+      target: { name: 'timeline', value: updated },
+    })
+  }
+
+  const handlePhotoUpload = async (
+    entryIndex: number,
+    photoIndex: 1 | 2,
+    file: File
+  ): Promise<void> => {
+    const field = photoIndex === 1 ? 'photo_url' : 'photo_url_2'
+
+    if (!carId) {
+      // For new cars, we'll need to upload after car creation
+      // For now, create a preview URL
+      const reader = new FileReader()
+      reader.onload = e => {
+        const result = e.target?.result as string
+        updateTimelineEntry(entryIndex, field, result)
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    setUploadingPhoto({ entryIndex, photoIndex })
+    try {
+      const photoUrl = await uploadCarPhoto(file, carId)
+      if (photoUrl) {
+        updateTimelineEntry(entryIndex, field, photoUrl)
+      }
+    } catch (error) {
+      console.error('Error uploading timeline photo:', error)
+    } finally {
+      setUploadingPhoto(null)
+    }
+  }
+
+  const handleCalendarChange = (
+    value: string | number,
+    e: React.ChangeEventHandler<HTMLSelectElement>
+  ) => {
+    const event = {
+      target: {
+        value: String(value),
+      },
+    } as React.ChangeEvent<HTMLSelectElement>
+    e(event)
+  }
+
+  return (
+    <div className='space-y-6'>
+      <div>
+        <h3 className='text-xl font-semibold text-foreground mb-2'>
+          Build Timeline
+        </h3>
+        <p className='text-sm text-muted-foreground mb-6'>
+          Document your build journey with dates, milestones, and photos. Add
+          entries to show the progression of your build.
+        </p>
+      </div>
+
+      <div className='space-y-6'>
+        {timeline.map((entry, index) => (
+          <div
+            key={index}
+            className='border border-border rounded-lg p-6 bg-card'
+          >
+            <div className='flex items-center justify-between mb-4'>
+              <h4 className='text-lg font-medium text-foreground'>
+                Entry {index + 1}
+              </h4>
+              <button
+                type='button'
+                onClick={() => removeTimelineEntry(index)}
+                className='text-destructive hover:text-destructive/80 transition-colors'
+              >
+                <Trash2 className='w-4 h-4' />
+              </button>
+            </div>
+
+            <div className='space-y-4'>
+              <div>
+                <label className='block text-sm font-medium text-foreground mb-2'>
+                  Date <span className='text-destructive'>*</span>
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant='outline'
+                      className={cn(
+                        'w-full justify-start text-left font-normal',
+                        !entry.date && 'text-muted-foreground'
+                      )}
+                    >
+                      <CalendarIcon className='mr-2 h-4 w-4' />
+                      {entry.date ? (
+                        format(new Date(entry.date), 'PPP')
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-auto p-0' align='start'>
+                    <Calendar
+                      mode='single'
+                      selected={
+                        entry.date
+                          ? (() => {
+                              // Parse YYYY-MM-DD as local date to avoid timezone issues
+                              const [year, month, day] = entry.date
+                                .split('-')
+                                .map(Number)
+                              return new Date(year, month - 1, day)
+                            })()
+                          : undefined
+                      }
+                      onSelect={date => {
+                        if (date) {
+                          // Format as YYYY-MM-DD in local timezone
+                          const year = date.getFullYear()
+                          const month = String(date.getMonth() + 1).padStart(
+                            2,
+                            '0'
+                          )
+                          const day = String(date.getDate()).padStart(2, '0')
+                          updateTimelineEntry(
+                            index,
+                            'date',
+                            `${year}-${month}-${day}`
+                          )
+                        }
+                      }}
+                      className='rounded-md border p-2'
+                      classNames={{
+                        month_caption: 'mx-0',
+                      }}
+                      captionLayout='dropdown'
+                      defaultMonth={
+                        entry.date
+                          ? (() => {
+                              const [year, month] = entry.date
+                                .split('-')
+                                .map(Number)
+                              return new Date(year, month - 1, 1)
+                            })()
+                          : new Date()
+                      }
+                      startMonth={new Date(1980, 0)}
+                      hideNavigation
+                      components={{
+                        DropdownNav: (props: DropdownNavProps) => {
+                          return (
+                            <div className='flex w-full items-center gap-2'>
+                              {props.children}
+                            </div>
+                          )
+                        },
+                        Dropdown: (props: DropdownProps) => {
+                          return (
+                            <Select
+                              value={String(props.value)}
+                              onValueChange={value => {
+                                if (props.onChange) {
+                                  handleCalendarChange(value, props.onChange)
+                                }
+                              }}
+                            >
+                              <SelectTrigger className='h-8 w-fit font-medium first:grow'>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className='max-h-[min(26rem,var(--radix-select-content-available-height))]'>
+                                {props.options?.map(option => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={String(option.value)}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )
+                        },
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className='block text-sm font-medium text-foreground mb-2'>
+                  Title <span className='text-destructive'>*</span>
+                </label>
+                <input
+                  type='text'
+                  value={entry.title}
+                  onChange={e =>
+                    updateTimelineEntry(index, 'title', e.target.value)
+                  }
+                  placeholder='e.g., Engine swap completed'
+                  className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+                  required
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-medium text-foreground mb-2'>
+                  Description
+                </label>
+                <textarea
+                  value={entry.description || ''}
+                  onChange={e =>
+                    updateTimelineEntry(
+                      index,
+                      'description',
+                      e.target.value || null
+                    )
+                  }
+                  placeholder='Describe what happened on this date...'
+                  rows={4}
+                  className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+                />
+              </div>
+
+              {/* Photos Section - Up to 2 photos */}
+              <div>
+                <label className='block text-sm font-medium text-foreground mb-2'>
+                  Photos (up to 2)
+                </label>
+                <div className='space-y-4'>
+                  {/* Photo 1 */}
+                  <div>
+                    <label className='block text-xs text-muted-foreground mb-2'>
+                      Photo 1
+                    </label>
+                    {entry.photo_url ? (
+                      <div className='relative'>
+                        <img
+                          src={entry.photo_url}
+                          alt={`${entry.title} - Photo 1`}
+                          className='w-full rounded-lg object-cover max-h-64 mb-2'
+                        />
+                        <button
+                          type='button'
+                          onClick={() =>
+                            updateTimelineEntry(index, 'photo_url', null)
+                          }
+                          className='absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80 transition-colors'
+                        >
+                          <X className='w-4 h-4' />
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type='file'
+                          accept='image/*'
+                          onChange={e => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              handlePhotoUpload(index, 1, file)
+                            }
+                          }}
+                          className='hidden'
+                          id={`timeline-photo-${index}-1`}
+                          disabled={
+                            uploadingPhoto?.entryIndex === index &&
+                            uploadingPhoto?.photoIndex === 1
+                          }
+                        />
+                        <label
+                          htmlFor={`timeline-photo-${index}-1`}
+                          className='flex items-center justify-center w-full h-32 border-2 border-dashed border-input rounded-lg cursor-pointer hover:border-ring transition-colors'
+                        >
+                          {uploadingPhoto?.entryIndex === index &&
+                          uploadingPhoto?.photoIndex === 1 ? (
+                            <Loader2 className='w-6 h-6 animate-spin text-muted-foreground' />
+                          ) : (
+                            <div className='text-center'>
+                              <ImageIcon className='w-6 h-6 mx-auto mb-2 text-muted-foreground' />
+                              <span className='text-sm text-muted-foreground'>
+                                Click to upload photo
+                              </span>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Photo 2 */}
+                  <div>
+                    <label className='block text-xs text-muted-foreground mb-2'>
+                      Photo 2
+                    </label>
+                    {entry.photo_url_2 ? (
+                      <div className='relative'>
+                        <img
+                          src={entry.photo_url_2}
+                          alt={`${entry.title} - Photo 2`}
+                          className='w-full rounded-lg object-cover max-h-64 mb-2'
+                        />
+                        <button
+                          type='button'
+                          onClick={() =>
+                            updateTimelineEntry(index, 'photo_url_2', null)
+                          }
+                          className='absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80 transition-colors'
+                        >
+                          <X className='w-4 h-4' />
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type='file'
+                          accept='image/*'
+                          onChange={e => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              handlePhotoUpload(index, 2, file)
+                            }
+                          }}
+                          className='hidden'
+                          id={`timeline-photo-${index}-2`}
+                          disabled={
+                            uploadingPhoto?.entryIndex === index &&
+                            uploadingPhoto?.photoIndex === 2
+                          }
+                        />
+                        <label
+                          htmlFor={`timeline-photo-${index}-2`}
+                          className='flex items-center justify-center w-full h-32 border-2 border-dashed border-input rounded-lg cursor-pointer hover:border-ring transition-colors'
+                        >
+                          {uploadingPhoto?.entryIndex === index &&
+                          uploadingPhoto?.photoIndex === 2 ? (
+                            <Loader2 className='w-6 h-6 animate-spin text-muted-foreground' />
+                          ) : (
+                            <div className='text-center'>
+                              <ImageIcon className='w-6 h-6 mx-auto mb-2 text-muted-foreground' />
+                              <span className='text-sm text-muted-foreground'>
+                                Click to upload photo
+                              </span>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <button
+          type='button'
+          onClick={addTimelineEntry}
+          className='w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-input rounded-lg hover:border-ring transition-colors text-muted-foreground hover:text-foreground'
+        >
+          <Plus className='w-5 h-5' />
+          <span>Add Timeline Entry</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function ReviewSubmitStep({
   mode,
 }: {
@@ -1439,6 +1920,10 @@ export const CarForm = ({
     brake_rotors: '',
     brake_caliper_brand: '',
     brake_lines: '',
+    timeline: [] as Omit<
+      CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    >[],
     ...initialData,
   })
 
@@ -1505,13 +1990,15 @@ export const CarForm = ({
           formData.dyno_results ||
           formData.build_thread_url
         )
-      case 9: // Photos & Social - ANY field can be filled
+      case 9: // Social - ANY field can be filled
         return !!(
           formData.instagram_handle ||
           formData.youtube_channel ||
           formData.website_url
         )
-      case 10: // Review & Submit
+      case 10: // Timeline - ANY entry can be filled
+        return !!(formData.timeline && formData.timeline.length > 0)
+      case 11: // Review & Submit
         return false // This step doesn't collect data
       default:
         return false
@@ -1523,26 +2010,52 @@ export const CarForm = ({
       | React.ChangeEvent<
           HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
         >
-      | { target: { name: string; value: string | string[] } }
+      | {
+          target: {
+            name: string
+            value:
+              | string
+              | string[]
+              | Omit<
+                  CarTimeline,
+                  'id' | 'car_id' | 'created_at' | 'updated_at'
+                >[]
+          }
+        }
   ) => {
     const { name, value } = e.target
 
-    if (name === 'build_goals') {
-      // Handle build_goals as a comma-separated array
+    if (name === 'timeline') {
+      // Handle timeline as a timeline array
       setFormData(prev => ({
         ...prev,
-        [name]: Array.isArray(value) ? value : [value],
+        timeline: value as Omit<
+          CarTimeline,
+          'id' | 'car_id' | 'created_at' | 'updated_at'
+        >[],
+      }))
+    } else if (name === 'build_goals') {
+      // Handle build_goals as a comma-separated array
+      const goalsValue: string[] = Array.isArray(value)
+        ? (value as string[])
+        : [value as string]
+      setFormData(prev => ({
+        ...prev,
+        build_goals: goalsValue,
       }))
     } else if (name === 'modifications') {
       // Handle modifications as a comma-separated array
+      const modsValue: string[] = Array.isArray(value)
+        ? (value as string[])
+        : [value as string]
       setFormData(prev => ({
         ...prev,
-        [name]: Array.isArray(value) ? value : [value],
+        modifications: modsValue,
       }))
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: value,
+        [name]: value as string,
       }))
     }
   }
@@ -1677,7 +2190,7 @@ export const CarForm = ({
               />
             )}
 
-            {/* Step 9: Photos & Social */}
+            {/* Step 9: Social */}
             {currentStep === 9 && (
               <PhotosSocialStep
                 carData={formData}
@@ -1686,8 +2199,17 @@ export const CarForm = ({
               />
             )}
 
-            {/* Step 10: Review & Submit */}
+            {/* Step 10: Timeline */}
             {currentStep === 10 && (
+              <TimelineStep
+                carData={formData}
+                onInputChange={handleInputChange}
+                carId={formData.id}
+              />
+            )}
+
+            {/* Step 11: Review & Submit */}
+            {currentStep === 11 && (
               <ReviewSubmitStep
                 carData={formData}
                 onInputChange={handleInputChange}

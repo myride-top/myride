@@ -32,6 +32,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { unitConversions } from '@/lib/utils'
+import {
+  upsertCarTimelineClient,
+  getCarTimelineClient,
+} from '@/lib/database/timeline-client'
+import { uploadCarPhoto } from '@/lib/storage/photos'
 
 export default function EditCarPage() {
   const { user } = useAuth()
@@ -41,6 +46,12 @@ export default function EditCarPage() {
   const carId = params.car as string
 
   const [car, setCar] = useState<Car | null>(null)
+  const [timeline, setTimeline] = useState<
+    Omit<
+      import('@/lib/types/database').CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    >[]
+  >([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -72,7 +83,9 @@ export default function EditCarPage() {
               const fixedCar = await fixCarUrlSlug(carData.id)
               if (fixedCar) {
                 // Redirect to the new URL
-                router.replace(`/u/${params.username}/${fixedCar.url_slug}/edit`)
+                router.replace(
+                  `/u/${params.username}/${fixedCar.url_slug}/edit`
+                )
                 return
               }
             }
@@ -114,6 +127,23 @@ export default function EditCarPage() {
 
             // Don't modify the original car data - handle deduplication in UI only
             setCar(carData)
+
+            // Load timeline
+            try {
+              const timelineData = await getCarTimelineClient(carData.id)
+              setTimeline(
+                timelineData.map(entry => ({
+                  date: entry.date,
+                  title: entry.title,
+                  description: entry.description,
+                  photo_url: entry.photo_url,
+                  photo_url_2: entry.photo_url_2 || null,
+                  order_index: entry.order_index,
+                }))
+              )
+            } catch (timelineError) {
+              console.error('Error loading timeline:', timelineError)
+            }
           } else {
             setError('Car not found')
           }
@@ -175,6 +205,10 @@ export default function EditCarPage() {
     youtube_channel?: string | null
     website_url?: string | null
     mileage?: string | number | null
+    timeline?: Omit<
+      import('@/lib/types/database').CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    >[]
   }) => {
     if (!car || !user) return
 
@@ -247,8 +281,11 @@ export default function EditCarPage() {
         n => unitConversions.distance.imperialToMetric(n)
       )
 
+      // Exclude timeline from updateData since it's stored in a separate table
+      const { timeline, ...carFormData } = formData
+
       const updateData = {
-        ...formData,
+        ...carFormData,
         year:
           typeof formData.year === 'string'
             ? parseInt(formData.year)
@@ -295,6 +332,54 @@ export default function EditCarPage() {
 
       if (updatedCar) {
         setCar(updatedCar)
+
+        // Save timeline entries if any
+        if (formData.timeline !== undefined) {
+          try {
+            // Process timeline entries: upload photos that are data URLs (previews)
+            const processedTimeline = await Promise.all(
+              formData.timeline.map(async entry => {
+                let photoUrl = entry.photo_url
+                let photoUrl2 = entry.photo_url_2 || null
+
+                // If photo_url is a data URL (base64), upload it
+                if (photoUrl && photoUrl.startsWith('data:')) {
+                  // Convert data URL to File
+                  const response = await fetch(photoUrl)
+                  const blob = await response.blob()
+                  const file = new File([blob], 'timeline-photo.jpg', {
+                    type: blob.type,
+                  })
+                  const uploadedUrl = await uploadCarPhoto(file, car.id)
+                  photoUrl = uploadedUrl || null
+                }
+
+                // If photo_url_2 is a data URL (base64), upload it
+                if (photoUrl2 && photoUrl2.startsWith('data:')) {
+                  // Convert data URL to File
+                  const response = await fetch(photoUrl2)
+                  const blob = await response.blob()
+                  const file = new File([blob], 'timeline-photo-2.jpg', {
+                    type: blob.type,
+                  })
+                  const uploadedUrl = await uploadCarPhoto(file, car.id)
+                  photoUrl2 = uploadedUrl || null
+                }
+
+                return {
+                  ...entry,
+                  photo_url: photoUrl,
+                  photo_url_2: photoUrl2,
+                }
+              })
+            )
+            await upsertCarTimelineClient(car.id, processedTimeline)
+          } catch (timelineError) {
+            console.error('Error saving timeline:', timelineError)
+            // Don't fail the whole update if timeline fails
+          }
+        }
+
         toast.success('Car updated successfully!')
         router.push(`/u/${params.username}/${updatedCar.url_slug}`)
       } else {
@@ -449,6 +534,7 @@ export default function EditCarPage() {
                       (car.mileage
                         ? unitConversions.distance.imperialToMetric(car.mileage)
                         : null),
+                    timeline: timeline,
                   }
                 : {
                     ...car,
@@ -495,6 +581,7 @@ export default function EditCarPage() {
                             car.mileage_metric
                           )
                         : null),
+                    timeline: timeline,
                   }
             }
             onSubmit={handleSubmit}

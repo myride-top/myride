@@ -585,6 +585,7 @@ export async function updateCarClient(
 
     if (error) {
       console.error('Database update error:', error)
+      console.error('Error details:', JSON.stringify(error, null, 2))
       return null
     }
 

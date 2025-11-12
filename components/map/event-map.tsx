@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/lib/context/auth-context'
-import { EventWithAttendeeCount } from '@/lib/database/events-client'
+import {
+  EventWithAttendeeCount,
+  getAllEventsClient,
+} from '@/lib/database/events-client'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Profile } from '@/lib/types/database'
 import { CreateEventDialog } from './create-event-dialog'
@@ -459,6 +462,17 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     onEventsChange(events.filter(e => e.id !== eventId))
   }
 
+  const reloadEvents = async () => {
+    try {
+      const updatedEvents = await getAllEventsClient()
+      if (updatedEvents) {
+        onEventsChange(updatedEvents)
+      }
+    } catch (error) {
+      console.error('Error reloading events:', error)
+    }
+  }
+
   const handleCreateEventClick = () => {
     if (profile?.is_premium) {
       setIsCreateDialogOpen(true)
@@ -575,10 +589,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
               <Popup maxWidth={320} className='event-popup'>
                 <EventPopup
                   event={event}
-                  onAttendanceChange={() => {
-                    // Reload events
-                    window.location.reload()
-                  }}
+                  onAttendanceChange={reloadEvents}
                   onEventUpdated={handleEventUpdated}
                   onEventDeleted={handleEventDeleted}
                 />

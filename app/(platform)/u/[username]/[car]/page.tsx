@@ -43,6 +43,9 @@ import { useRouter } from 'next/navigation'
 import { useCarAnalytics } from '@/lib/hooks/use-car-analytics'
 import { CarComments } from '@/components/cars/car-comments'
 import { BackButton } from '@/components/common/back-button'
+import { CarTimeline } from '@/components/cars/car-timeline'
+import { getCarTimelineClient } from '@/lib/database/timeline-client'
+import { CarTimeline as CarTimelineType } from '@/lib/types/database'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -63,6 +66,7 @@ export default function CarDetailPage() {
   const [showQRCode, setShowQRCode] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [isGeneratingQR, setIsGeneratingQR] = useState(false)
+  const [timeline, setTimeline] = useState<CarTimelineType[]>([])
 
   // Track car analytics (views, shares) - always call hook to maintain order
   const { trackShare } = useCarAnalytics(car?.id || '', car?.user_id || '')
@@ -164,6 +168,14 @@ export default function CarDetailPage() {
             website_url: null,
             garage_description: null,
           })
+        }
+
+        // Load timeline
+        try {
+          const timelineData = await getCarTimelineClient(carData.id)
+          setTimeline(timelineData)
+        } catch (timelineError) {
+          console.error('Error loading timeline:', timelineError)
         }
       } catch {
         setError('Failed to load car data')
@@ -836,6 +848,13 @@ export default function CarDetailPage() {
                     ) : undefined
                   }
                 />
+              )}
+
+              {/* Timeline Section - Between photos and comments */}
+              {timeline.length > 0 && (
+                <div className='mt-8'>
+                  <CarTimeline timeline={timeline} carName={car.name} />
+                </div>
               )}
 
               {/* Comments Section - Desktop: Under photos in left column */}

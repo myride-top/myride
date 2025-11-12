@@ -20,6 +20,8 @@ import { CarLimitChecker } from '@/components/create/car-limit-checker'
 import { ErrorAlert } from '@/components/common/error-alert'
 import { Container } from '@/components/common/container'
 import { unitConversions } from '@/lib/utils'
+import { upsertCarTimelineClient } from '@/lib/database/timeline-client'
+import { uploadCarPhoto } from '@/lib/storage/photos'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
@@ -162,6 +164,10 @@ export default function CreateCarPage() {
     youtube_channel?: string | null
     website_url?: string | null
     mileage?: string | number | null
+    timeline?: Omit<
+      import('@/lib/types/database').CarTimeline,
+      'id' | 'car_id' | 'created_at' | 'updated_at'
+    >[]
   }) => {
     if (!user) {
       setError('User not found')
@@ -346,6 +352,53 @@ export default function CreateCarPage() {
       )
 
       if (newCar) {
+        // Save timeline entries if any
+        if (formData.timeline && formData.timeline.length > 0) {
+          try {
+            // Process timeline entries: upload photos that are data URLs (previews)
+            const processedTimeline = await Promise.all(
+              formData.timeline.map(async entry => {
+                let photoUrl = entry.photo_url
+                let photoUrl2 = entry.photo_url_2 || null
+
+                // If photo_url is a data URL (base64), upload it
+                if (photoUrl && photoUrl.startsWith('data:')) {
+                  // Convert data URL to File
+                  const response = await fetch(photoUrl)
+                  const blob = await response.blob()
+                  const file = new File([blob], 'timeline-photo.jpg', {
+                    type: blob.type,
+                  })
+                  const uploadedUrl = await uploadCarPhoto(file, newCar.id)
+                  photoUrl = uploadedUrl || null
+                }
+
+                // If photo_url_2 is a data URL (base64), upload it
+                if (photoUrl2 && photoUrl2.startsWith('data:')) {
+                  // Convert data URL to File
+                  const response = await fetch(photoUrl2)
+                  const blob = await response.blob()
+                  const file = new File([blob], 'timeline-photo-2.jpg', {
+                    type: blob.type,
+                  })
+                  const uploadedUrl = await uploadCarPhoto(file, newCar.id)
+                  photoUrl2 = uploadedUrl || null
+                }
+
+                return {
+                  ...entry,
+                  photo_url: photoUrl,
+                  photo_url_2: photoUrl2,
+                }
+              })
+            )
+            await upsertCarTimelineClient(newCar.id, processedTimeline)
+          } catch (timelineError) {
+            console.error('Error saving timeline:', timelineError)
+            // Don't fail the whole creation if timeline fails
+          }
+        }
+
         toast.success('Car created successfully!')
         router.push(
           `/u/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`

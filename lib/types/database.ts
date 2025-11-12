@@ -56,6 +56,11 @@ export interface Database {
         Insert: Omit<EventShare, 'id' | 'created_at'>
         Update: Partial<Omit<EventShare, 'id' | 'created_at'>>
       }
+      car_timeline: {
+        Row: CarTimeline
+        Insert: Omit<CarTimeline, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<CarTimeline, 'id' | 'created_at' | 'updated_at'>>
+      }
     }
     Views: {
       [_ in never]: never
@@ -356,3 +361,16 @@ export const PHOTO_CATEGORIES = [
 ] as const
 
 export type PhotoCategory = (typeof PHOTO_CATEGORIES)[number]
+
+export interface CarTimeline {
+  id: string
+  car_id: string
+  date: string // ISO date string (YYYY-MM-DD)
+  title: string
+  description: string | null
+  photo_url: string | null
+  photo_url_2: string | null
+  order_index: number
+  created_at: string
+  updated_at: string
+}

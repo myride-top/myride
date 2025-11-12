@@ -34,7 +34,7 @@ interface MainNavbarProps {
 }
 
 export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
-  const { user, signOut } = useAuth()
+  const { user, loading, signOut } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -100,8 +100,9 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
   }
 
   const handleNavItemClick = (item: NavItem, e: React.MouseEvent) => {
-    // If clicking on Map and user is not logged in, redirect to login
-    if (item.href === '/map' && !user) {
+    // Only redirect if auth has finished loading and user is not logged in
+    // Otherwise, let the middleware handle authentication
+    if (item.href === '/map' && !loading && !user) {
       e.preventDefault()
       router.push('/login')
       return
