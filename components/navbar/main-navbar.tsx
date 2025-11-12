@@ -115,7 +115,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
         <Link
           href={item.href}
           onClick={e => handleNavItemClick(item, e)}
-          className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-flex md:block px-4 py-3 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-lg md:rounded-none active:scale-[0.98]'
+          className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium block md:inline-flex px-4 py-3 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-lg md:rounded-none active:scale-[0.98]'
         >
           {item.name}
         </Link>
@@ -124,7 +124,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
     return (
       <Link
         href={item.href}
-        className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium md:inline-flex md:block px-4 py-3 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-lg md:rounded-none active:scale-[0.98]'
+        className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium block md:inline-flex px-4 py-3 md:px-0 md:py-0 hover:bg-accent md:hover:bg-transparent rounded-lg md:rounded-none active:scale-[0.98]'
       >
         {item.name}
       </Link>
