@@ -37,7 +37,7 @@ export async function generateMetadata({
         title,
         description,
         type: 'website',
-        url: `https://myride.top/${username}`,
+        url: `https://myride.top/u/${username}`,
         images: profile.avatar_url
           ? [
               {
@@ -61,7 +61,9 @@ export async function generateMetadata({
         card: 'summary_large_image',
         title,
         description,
-        images: profile.avatar_url ? [profile.avatar_url] : ['/og-image-default.svg'],
+        images: profile.avatar_url
+          ? [profile.avatar_url]
+          : ['/og-image-default.svg'],
       },
     }
 
@@ -82,4 +84,3 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
     </>
   )
 }
-

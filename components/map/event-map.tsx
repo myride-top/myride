@@ -542,7 +542,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                 {profile?.username && (
                   <div className='mt-2 pt-2 border-t'>
                     <a
-                      href={`/${profile.username}`}
+                      href={`/u/${profile.username}`}
                       className='text-xs text-primary hover:underline'
                     >
                       View Profile →

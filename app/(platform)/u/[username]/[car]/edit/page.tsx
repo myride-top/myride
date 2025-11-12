@@ -72,7 +72,7 @@ export default function EditCarPage() {
               const fixedCar = await fixCarUrlSlug(carData.id)
               if (fixedCar) {
                 // Redirect to the new URL
-                router.replace(`/${params.username}/${fixedCar.url_slug}/edit`)
+                router.replace(`/u/${params.username}/${fixedCar.url_slug}/edit`)
                 return
               }
             }
@@ -296,7 +296,7 @@ export default function EditCarPage() {
       if (updatedCar) {
         setCar(updatedCar)
         toast.success('Car updated successfully!')
-        router.push(`/${params.username}/${updatedCar.url_slug}`)
+        router.push(`/u/${params.username}/${updatedCar.url_slug}`)
       } else {
         setError('Failed to update car')
       }
@@ -391,7 +391,7 @@ export default function EditCarPage() {
         <PageHeader
           title='Edit Your Car'
           description="Update your car's information and photos"
-          backHref={`/${params.username}/${car.url_slug}`}
+          backHref={`/u/${params.username}/${car.url_slug}`}
           showBackButton={true}
         />
 

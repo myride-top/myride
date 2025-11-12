@@ -60,7 +60,7 @@ export function AttendeesDialog({
                     </div>
                     {attendee.car && attendee.car.username && (
                       <Link
-                        href={`/${attendee.car.username}/${attendee.car.url_slug}`}
+                        href={`/u/${attendee.car.username}/${attendee.car.url_slug}`}
                         className='text-xs text-muted-foreground hover:text-primary flex items-center gap-1.5 mt-1'
                         onClick={e => e.stopPropagation()}
                       >

@@ -351,7 +351,7 @@ export default function DashboardPage() {
                   profile={profile}
                   isOwner={true}
                   onEdit={car =>
-                    router.push(`/${profile?.username}/${car.url_slug}/edit`)
+                    router.push(`/u/${profile?.username}/${car.url_slug}/edit`)
                   }
                   onLikeChange={handleLikeChange}
                 />

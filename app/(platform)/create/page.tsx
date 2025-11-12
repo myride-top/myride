@@ -348,7 +348,7 @@ export default function CreateCarPage() {
       if (newCar) {
         toast.success('Car created successfully!')
         router.push(
-          `/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`
+          `/u/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`
         )
       } else {
         setError('Failed to create car')

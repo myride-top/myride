@@ -53,7 +53,7 @@ export const CarCard = ({
 
     if (!qrCodeDataUrl) {
       try {
-        const shareUrl = `${window.location.origin}/${profile?.username}/${car.url_slug}`
+        const shareUrl = `${window.location.origin}/u/${profile?.username}/${car.url_slug}`
         const dataUrl = await generateQRCodeWithLogo(shareUrl, '/icon.jpg', {
           width: 200,
           margin: 1,
@@ -135,7 +135,7 @@ export const CarCard = ({
         className='p-4 cursor-pointer'
         onClick={() => {
           // Navigate to car detail page
-          router.push(`/${profile?.username || 'user'}/${car.url_slug}`)
+          router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
         }}
       >
         {/* Car Info */}
@@ -178,7 +178,7 @@ export const CarCard = ({
             />
 
             <Link
-              href={`/${profile?.username || 'user'}/${car.url_slug}`}
+              href={`/u/${profile?.username || 'user'}/${car.url_slug}`}
               className='text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer ml-auto'
             >
               View Details →
@@ -194,7 +194,7 @@ export const CarCard = ({
         qrCodeDataUrl={qrCodeDataUrl}
         car={car}
         profile={profile}
-        currentUrl={`${window.location.origin}/${profile?.username}/${car.url_slug}`}
+        currentUrl={`${window.location.origin}/u/${profile?.username}/${car.url_slug}`}
       />
     </div>
   )

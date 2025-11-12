@@ -61,7 +61,7 @@ export async function generateMetadata({
         title,
         description,
         type: 'website',
-        url: `https://myride.top/${username}/${carSlug}`,
+        url: `https://myride.top/u/${username}/${carSlug}`,
         images: imageUrl
           ? [
               {
@@ -101,3 +101,4 @@ export async function generateMetadata({
 export default function CarLayout({ children }: CarLayoutProps) {
   return <>{children}</>
 }
+

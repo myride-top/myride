@@ -485,7 +485,7 @@ export default function CarDetailPage() {
                   <span className='text-xs md:text-base'>by</span>
                   {profile?.is_premium ? (
                     <Link
-                      href={`/${profile.username}`}
+                      href={`/u/${profile.username}`}
                       className='flex items-center gap-1.5 md:gap-2 hover:opacity-80 transition-opacity cursor-pointer'
                       title={`View ${
                         profile.full_name || profile.username
@@ -574,7 +574,7 @@ export default function CarDetailPage() {
                   </button>
                   {user && car && user.id === car.user_id && (
                     <Link
-                      href={`/${profile?.username}/${car.url_slug}/edit`}
+                      href={`/u/${profile?.username}/${car.url_slug}/edit`}
                       className='flex items-center justify-center w-9 h-9 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer flex-shrink-0 group'
                       title='Edit car'
                     >
@@ -637,7 +637,7 @@ export default function CarDetailPage() {
             </button>
             {user && car && user.id === car.user_id && (
               <Link
-                href={`/${profile?.username}/${car.url_slug}/edit`}
+                href={`/u/${profile?.username}/${car.url_slug}/edit`}
                 className='flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer group'
               >
                 <Edit className='w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors' />
@@ -807,7 +807,7 @@ export default function CarDetailPage() {
                   action={
                     car.photos && car.photos.length > 0 ? (
                       <Link
-                        href={`/${
+                        href={`/u/${
                           profile?.username || params.username
                         }/${encodeURIComponent(car.name)}/edit`}
                         className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
