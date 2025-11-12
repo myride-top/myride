@@ -464,9 +464,9 @@ export default function CarDetailPage() {
 
       {/* Custom Header with Back Button and Actions - Matching PageHeaderWithBack Style */}
       <div className='max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-6 pt-20 md:pt-24'>
-        <div className='flex flex-col gap-3 md:gap-0'>
-          {/* Top row: Back button and car name */}
-          <div className='flex items-start gap-3'>
+        <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 md:gap-0'>
+          {/* Left side: Back button, car name, and username */}
+          <div className='flex items-start gap-3 flex-1 min-w-0'>
             <div className='flex-shrink-0 mt-1'>
               <BackButton
                 onClick={() => router.back()}
@@ -587,7 +587,7 @@ export default function CarDetailPage() {
           </div>
 
           {/* Desktop Action Buttons - Right side */}
-          <div className='hidden lg:flex items-center gap-2'>
+          <div className='hidden lg:flex items-center gap-2 flex-shrink-0'>
             {/* Show like count for all users - clickable if user is signed in and doesn't own the car */}
             {user && car && user.id !== car.user_id ? (
               <button

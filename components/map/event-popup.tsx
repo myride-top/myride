@@ -27,6 +27,7 @@ import dynamic from 'next/dynamic'
 import { AttendeesDialog } from './attendees-dialog'
 import { EditEventDialog } from './edit-event-dialog'
 import { DeleteEventDialog } from './delete-event-dialog'
+import { AttendanceDialog } from './attendance-dialog'
 import { deleteEventClient } from '@/lib/database/events-client'
 import { useEventAnalytics } from '@/lib/hooks/use-event-analytics'
 import { EventQRCodeModal } from './event-qr-code-modal'
@@ -170,10 +171,11 @@ function RouteMap({
       center={center}
       zoom={10}
       style={{ height: '100%', width: '100%' }}
+      zoomControl={false}
     >
       <TileLayer
         key={isDarkMode ? 'dark' : 'light'}
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        attribution=''
         url={
           isDarkMode
             ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -245,6 +247,7 @@ export function EventPopup({
   const [loadingAddress, setLoadingAddress] = useState(true)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isAttendanceDialogOpen, setIsAttendanceDialogOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
@@ -425,212 +428,214 @@ export function EventPopup({
     }
   }
 
+  const containerClassName = `w-[85vw] max-w-[85vw] sm:w-80 sm:max-w-80 ${
+    isCruiseWithRoute ? 'max-h-[85vh]' : 'max-h-[70vh]'
+  } flex flex-col overflow-hidden`
+  const contentClassName = `flex-1 ${
+    isCruiseWithRoute ? 'overflow-visible' : 'overflow-y-auto'
+  } p-2 sm:p-3 space-y-2 sm:space-y-3 pr-2`
+
   return (
-    <div className='w-[85vw] max-w-[85vw] sm:w-80 sm:max-w-80 max-h-[70vh] flex flex-col overflow-hidden'>
-      <div className='flex-1 overflow-y-auto p-2 sm:p-3 space-y-2 sm:space-y-3 pr-2'>
-        <div>
-          <h3 className='font-semibold text-sm sm:text-lg mb-0.5 sm:mb-1 break-words leading-tight'>{event.title}</h3>
-          {event.description && (
-            <p className='text-[10px] sm:text-sm text-muted-foreground mb-1 sm:mb-2 break-words leading-snug'>
-              {event.description}
-            </p>
-          )}
+    <>
+      <div className={containerClassName}>
+        <div className={contentClassName}>
+          <div>
+            <h3 className='font-semibold text-sm sm:text-lg mb-0.5 sm:mb-1 break-words leading-tight'>
+              {event.title}
+            </h3>
+            {event.description && (
+              <p className='text-[10px] sm:text-sm text-muted-foreground mb-1 sm:mb-2 break-words leading-snug'>
+                {event.description}
+              </p>
+            )}
+          </div>
+
+          <div className='space-y-1.5 sm:space-y-2 text-[11px] sm:text-sm'>
+            <div className='flex items-start gap-1.5 sm:gap-2 text-muted-foreground'>
+              <Calendar className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
+              <span className='break-words leading-tight text-[11px] sm:text-sm'>
+                {event.end_date
+                  ? `${formatDateTime(event.event_date)} - ${formatDateTime(
+                      event.end_date
+                    )}`
+                  : formatDateTime(event.event_date)}
+              </span>
+            </div>
+            <div className='flex items-start gap-1.5 sm:gap-2 text-muted-foreground'>
+              <MapPin className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
+              <span className='break-words leading-tight text-[11px] sm:text-sm'>
+                {loadingAddress
+                  ? 'Loading...'
+                  : address
+                  ? address
+                  : `${event.latitude.toFixed(4)}, ${event.longitude.toFixed(
+                      4
+                    )}`}
+              </span>
+            </div>
+            <button
+              onClick={() => setIsAttendeesDialogOpen(true)}
+              className='flex items-center gap-1.5 sm:gap-2 text-primary hover:text-primary/80 underline transition-colors cursor-pointer text-[11px] sm:text-sm'
+            >
+              <Users className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
+              <span className='font-medium'>
+                {event.attendee_count} attending
+              </span>
+            </button>
+            {isCruiseWithRoute && (
+              <div className='pt-1 sm:pt-2'>
+                <div className='flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm text-muted-foreground mb-1.5 sm:mb-2'>
+                  <Route className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
+                  <span className='font-medium'>Route</span>
+                </div>
+                <div className='h-24 sm:h-48 w-full border rounded-md overflow-hidden [&_.leaflet-control-attribution]:hidden'>
+                  <RouteMap
+                    route={event.route || []}
+                    center={[event.latitude, event.longitude]}
+                    isDarkMode={isDarkMode}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className='space-y-1.5 sm:space-y-2 text-[11px] sm:text-sm'>
-          <div className='flex items-start gap-1.5 sm:gap-2 text-muted-foreground'>
-            <Calendar className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
-            <span className='break-words leading-tight text-[11px] sm:text-sm'>
-              {event.end_date
-                ? `${formatDateTime(event.event_date)} - ${formatDateTime(
-                    event.end_date
-                  )}`
-                : formatDateTime(event.event_date)}
-            </span>
-          </div>
-          <div className='flex items-start gap-1.5 sm:gap-2 text-muted-foreground'>
-            <MapPin className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
-            <span className='break-words leading-tight text-[11px] sm:text-sm'>
-              {loadingAddress
-                ? 'Loading...'
-                : address
-                ? address
-                : `${event.latitude.toFixed(4)}, ${event.longitude.toFixed(4)}`}
-            </span>
-          </div>
-          <button
-            onClick={() => setIsAttendeesDialogOpen(true)}
-            className='flex items-center gap-1.5 sm:gap-2 text-primary hover:text-primary/80 underline transition-colors cursor-pointer text-[11px] sm:text-sm'
-          >
-            <Users className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
-            <span className='font-medium'>
-              {event.attendee_count} attending
-            </span>
-          </button>
-          {isCruiseWithRoute && (
-            <div className='pt-1 sm:pt-2'>
-              <div className='flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm text-muted-foreground mb-1.5 sm:mb-2'>
-                <Route className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
-                <span className='font-medium'>Route</span>
-              </div>
-              <div className='h-24 sm:h-48 w-full border rounded-md overflow-hidden'>
-                <RouteMap
-                  route={event.route || []}
-                  center={[event.latitude, event.longitude]}
-                  isDarkMode={isDarkMode}
-                />
-              </div>
-            </div>
-          )}
-          <div className='pt-1 sm:pt-2'>
+        {/* Bottom buttons */}
+        <div className='pt-3 pb-3 px-2 sm:px-3 border-t flex flex-col gap-2'>
+          <div className='flex flex-nowrap gap-2 sm:gap-2.5'>
+            {user && (
+              <Button
+                variant={attending ? 'default' : 'outline'}
+                size='sm'
+                onClick={() => setIsAttendanceDialogOpen(true)}
+                className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
+              >
+                {attending ? 'Attending' : 'Attend'}
+              </Button>
+            )}
             <Button
               onClick={handleShare}
               variant='outline'
               size='sm'
-              className='w-full text-[11px] sm:text-sm h-8 sm:h-9'
+              className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
               disabled={isGeneratingQR}
             >
               {isGeneratingQR ? (
                 <>
-                  <div className='w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
-                  <span className='text-[11px] sm:text-sm'>Generating...</span>
+                  <div className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                  <span className='hidden sm:inline text-[11px] sm:text-sm'>
+                    Generating...
+                  </span>
                 </>
               ) : (
                 <>
-                  <Share2 className='w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2' />
-                  <span className='text-[11px] sm:text-sm'>Share Event</span>
+                  <Share2 className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5' />
+                  <span className='text-[11px] sm:text-sm truncate'>Share</span>
                 </>
               )}
             </Button>
           </div>
-        </div>
-
-        {isCreator && (
-          <div className='pt-1.5 sm:pt-2 border-t flex gap-1.5 sm:gap-2'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => setIsEditDialogOpen(true)}
-              className='flex-1 text-[11px] sm:text-sm h-8 sm:h-9'
-            >
-              <Edit className='w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2' />
-              <span className='text-[11px] sm:text-sm'>Edit</span>
-            </Button>
-            <Button
-              variant='destructive'
-              size='sm'
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className='flex-1 text-[11px] sm:text-sm h-8 sm:h-9'
-            >
-              <Trash2 className='w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2' />
-              <span className='text-[11px] sm:text-sm'>Delete</span>
-            </Button>
-          </div>
-        )}
-
-        {user && (
-          <div className='pt-1.5 sm:pt-2 border-t space-y-2 sm:space-y-3 pb-1'>
-            <div className='flex items-center space-x-1.5 sm:space-x-2'>
-              <input
-                type='checkbox'
-                id={`attend-${event.id}`}
-                checked={attending}
-                onChange={e => {
-                  const newValue = e.target.checked
-                  setAttending(newValue)
-                  handleAttendanceChange(newValue)
-                }}
-                disabled={loading}
-                className='w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0'
-              />
-              <label
-                htmlFor={`attend-${event.id}`}
-                className='text-[11px] sm:text-sm font-medium cursor-pointer'
-              >
-                I&apos;m attending
-              </label>
-            </div>
-
-            {attending && cars.length > 0 && (
-              <div>
-                <label className='text-[11px] sm:text-sm font-medium mb-1 block'>
-                  Select your car:
-                </label>
-                <select
-                  value={selectedCarId || 'none'}
-                  onChange={e => setSelectedCarId(e.target.value)}
-                  disabled={loading}
-                  className='w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-input bg-background rounded-md text-[11px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-                >
-                  <option value='none'>No car selected</option>
-                  {cars.map(car => (
-                    <option key={car.id} value={car.id}>
-                      {car.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {attending && (
+          {isCreator && (
+            <div className='flex flex-nowrap gap-2 sm:gap-2.5'>
               <Button
-                onClick={() => handleAttendanceChange(attending)}
-                disabled={loading}
-                className='w-full text-[11px] sm:text-sm h-8 sm:h-9'
+                variant='outline'
                 size='sm'
+                onClick={() => setIsEditDialogOpen(true)}
+                className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
               >
-                {loading ? 'Saving...' : 'Save Attendance'}
+                <Edit className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5' />
+                <span className='text-[11px] sm:text-sm truncate'>Edit</span>
               </Button>
-            )}
-          </div>
-        )}
+              <Button
+                variant='destructive'
+                size='sm'
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
+              >
+                <Trash2 className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 flex-shrink-0' />
+                <span className='text-[11px] sm:text-sm truncate'>Delete</span>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <AttendeesDialog
-        open={isAttendeesDialogOpen}
-        onOpenChange={setIsAttendeesDialogOpen}
-        attendees={attendees}
-        eventTitle={event.title}
-      />
+      <>
+        <AttendeesDialog
+          open={isAttendeesDialogOpen}
+          onOpenChange={setIsAttendeesDialogOpen}
+          attendees={attendees}
+          eventTitle={event.title}
+        />
 
-      {isCreator && (
-        <>
-          <EditEventDialog
-            open={isEditDialogOpen}
-            onOpenChange={setIsEditDialogOpen}
-            event={event}
-            onEventUpdated={handleEventUpdated}
+        {user && (
+          <AttendanceDialog
+            open={isAttendanceDialogOpen}
+            onOpenChange={setIsAttendanceDialogOpen}
+            eventId={event.id}
+            userId={user.id}
+            cars={cars}
+            onAttendanceChanged={async () => {
+              // Reload attendance status and attendees
+              try {
+                const [userAttendance, attendeesData] = await Promise.all([
+                  getUserEventAttendanceClient(event.id, user.id),
+                  getEventAttendeesWithDetailsClient(event.id),
+                ])
+                if (userAttendance) {
+                  setAttending(userAttendance.attending)
+                  setSelectedCarId(userAttendance.car_id || '')
+                }
+                if (attendeesData) {
+                  setAttendees(attendeesData)
+                }
+                onAttendanceChange()
+              } catch (error) {
+                console.error('Error reloading attendance:', error)
+              }
+            }}
           />
-          <DeleteEventDialog
-            open={isDeleteDialogOpen}
-            onOpenChange={setIsDeleteDialogOpen}
-            eventTitle={event.title}
-            onConfirm={handleDeleteEvent}
-            loading={deleting}
-          />
-        </>
-      )}
+        )}
 
-      <EventQRCodeModal
-        isOpen={showQRCode}
-        onClose={() => setShowQRCode(false)}
-        qrCodeDataUrl={qrCodeDataUrl}
-        event={{
-          title: event.title,
-          event_date: event.event_date,
-          end_date: event.end_date,
-          description: event.description,
-        }}
-        currentUrl={
-          typeof window !== 'undefined'
-            ? `${window.location.origin}/map?event=${event.id}`
-            : undefined
-        }
-        onShare={() => {
-          // Track share analytics when QR code modal opens
-          trackShare('other')
-        }}
-      />
-    </div>
+        {isCreator && (
+          <>
+            <EditEventDialog
+              open={isEditDialogOpen}
+              onOpenChange={setIsEditDialogOpen}
+              event={event}
+              onEventUpdated={handleEventUpdated}
+            />
+            <DeleteEventDialog
+              open={isDeleteDialogOpen}
+              onOpenChange={setIsDeleteDialogOpen}
+              eventTitle={event.title}
+              onConfirm={handleDeleteEvent}
+              loading={deleting}
+            />
+          </>
+        )}
+
+        <EventQRCodeModal
+          isOpen={showQRCode}
+          onClose={() => setShowQRCode(false)}
+          qrCodeDataUrl={qrCodeDataUrl}
+          event={{
+            title: event.title,
+            event_date: event.event_date,
+            end_date: event.end_date,
+            description: event.description,
+          }}
+          currentUrl={
+            typeof window !== 'undefined'
+              ? `${window.location.origin}/map?event=${event.id}`
+              : undefined
+          }
+          onShare={() => {
+            // Track share analytics when QR code modal opens
+            trackShare('other')
+          }}
+        />
+      </>
+    </>
   )
 }
