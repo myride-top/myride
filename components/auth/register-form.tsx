@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
+import { getProfileByUsernameClient } from '@/lib/database/profiles-client'
 import { toast } from 'sonner'
 
 export const RegisterForm = () => {
@@ -26,6 +27,14 @@ export const RegisterForm = () => {
 
     if (username.length < 3) {
       toast.error('Username must be at least 3 characters long')
+      setLoading(false)
+      return
+    }
+
+    // Check if username is already taken
+    const existingProfile = await getProfileByUsernameClient(username)
+    if (existingProfile) {
+      toast.error('Username is already taken. Please choose a different username.')
       setLoading(false)
       return
     }
