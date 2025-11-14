@@ -46,6 +46,7 @@ import { BackButton } from '@/components/common/back-button'
 import { CarTimeline } from '@/components/cars/car-timeline'
 import { getCarTimelineClient } from '@/lib/database/timeline-client'
 import { CarTimeline as CarTimelineType } from '@/lib/types/database'
+import { NationalityFlag } from '@/components/common/nationality-flag'
 
 export default function CarDetailPage() {
   const params = useParams()
@@ -138,6 +139,7 @@ export default function CarDetailPage() {
               is_supporter: false,
               bio: null,
               location: null,
+              nationality: null,
               instagram_handle: null,
               youtube_channel: null,
               website_url: null,
@@ -163,6 +165,7 @@ export default function CarDetailPage() {
             is_supporter: false,
             bio: null,
             location: null,
+            nationality: null,
             instagram_handle: null,
             youtube_channel: null,
             website_url: null,
@@ -534,6 +537,12 @@ export default function CarDetailPage() {
                         <span className='truncate'>
                           @{profile.username || params.username || 'Unknown'}
                         </span>
+                        {profile.nationality && (
+                          <NationalityFlag
+                            nationality={profile.nationality}
+                            size='sm'
+                          />
+                        )}
                       </span>
                     </Link>
                   ) : (
@@ -552,6 +561,12 @@ export default function CarDetailPage() {
                         <span className='truncate'>
                           @{profile?.username || params.username || 'Unknown'}
                         </span>
+                        {profile?.nationality && (
+                          <NationalityFlag
+                            nationality={profile.nationality}
+                            size='sm'
+                          />
+                        )}
                       </span>
                     </>
                   )}

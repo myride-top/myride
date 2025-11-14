@@ -982,6 +982,7 @@ export default function BrowsePage() {
               is_supporter: profileData?.is_supporter || false,
               bio: profileData?.bio || null,
               location: profileData?.location || null,
+              nationality: profileData?.nationality || null,
               instagram_handle: profileData?.instagram_handle || null,
               youtube_channel: profileData?.youtube_channel || null,
               website_url: profileData?.website_url || null,

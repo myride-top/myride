@@ -92,6 +92,7 @@ export interface Profile {
   // Premium-only garage customization fields
   bio: string | null // Bio/about section for garage page
   location: string | null // Location
+  nationality: string | null // Nationality (country code)
   instagram_handle: string | null // Instagram handle (without @)
   youtube_channel: string | null // YouTube channel URL or handle
   website_url: string | null // Personal website URL

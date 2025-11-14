@@ -9,6 +9,7 @@ import { LikeButton } from '@/components/common/like-button'
 import { UserAvatar } from '@/components/common/user-avatar'
 import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
+import { NationalityFlag } from '@/components/common/nationality-flag'
 
 interface CarCardProps {
   car: Car
@@ -168,6 +169,12 @@ export const CarCard = ({
                 <Crown className='w-3.5 h-3.5 text-yellow-500' />
               )}
               @{profile.username}
+              {profile.nationality && (
+                <NationalityFlag
+                  nationality={profile.nationality}
+                  size='sm'
+                />
+              )}
             </span>
           </div>
         )}

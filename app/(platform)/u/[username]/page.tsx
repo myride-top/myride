@@ -18,6 +18,7 @@ import { Crown, Share2, MapPin, Instagram, Youtube, Globe, Lock } from 'lucide-r
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { NationalityFlag } from '@/components/common/nationality-flag'
 export default function ProfileGaragePage() {
   const params = useParams()
   const router = useRouter()
@@ -208,12 +209,18 @@ export default function ProfileGaragePage() {
                     className='w-20 h-20 sm:w-24 sm:h-24'
                   />
                   <div>
-                    <div className='flex items-center gap-2'>
+                    <div className='flex items-center gap-2 flex-wrap'>
                       <h1 className='text-2xl sm:text-3xl font-bold text-foreground'>
                         {profile.full_name || `@${profile.username}`}
                       </h1>
                       {isPremium && (
                         <Crown className='w-5 h-5 sm:w-6 sm:h-6 text-yellow-500' />
+                      )}
+                      {profile.nationality && (
+                        <NationalityFlag
+                          nationality={profile.nationality}
+                          size='lg'
+                        />
                       )}
                     </div>
                     <p className='text-muted-foreground mt-1'>

@@ -29,6 +29,7 @@ import { PageHeader } from '@/components/layout/page-header'
 import { FormSection } from '@/components/forms/form-section'
 import FormField from '@/components/forms/form-field'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
+import { NationalitySelect } from '@/components/forms/nationality-select'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -41,6 +42,7 @@ export default function ProfilePage() {
     username: '',
     full_name: '',
     unit_preference: 'metric' as 'metric' | 'imperial',
+    nationality: '',
     // Premium fields
     bio: '',
     location: '',
@@ -68,6 +70,7 @@ export default function ProfilePage() {
               username: userProfile.username || '',
               full_name: userProfile.full_name || '',
               unit_preference: userProfile.unit_preference || 'metric',
+              nationality: userProfile.nationality || '',
               // Premium fields
               bio: userProfile.bio || '',
               location: userProfile.location || '',
@@ -83,6 +86,7 @@ export default function ProfilePage() {
               username: `user_${user.id.slice(0, 8)}`,
               full_name: user.email || '',
               unit_preference: 'metric',
+              nationality: '',
               bio: '',
               location: '',
               instagram_handle: '',
@@ -133,6 +137,7 @@ export default function ProfilePage() {
         username: formData.username,
         full_name: formData.full_name,
         unit_preference: formData.unit_preference,
+        nationality: formData.nationality || null,
         // avatar_url is already updated when avatar changes, no need to update again
       }
 
@@ -317,6 +322,22 @@ export default function ProfilePage() {
                       Choose your preferred unit system for car specifications
                     </p>
                   </div>
+
+                  <NationalitySelect
+                    value={formData.nationality}
+                    onValueChange={value =>
+                      setFormData(prev => ({
+                        ...prev,
+                        nationality: value,
+                      }))
+                    }
+                    label='Nationality'
+                    placeholder='Select your nationality'
+                    className='space-y-2'
+                  />
+                  <p className='text-sm text-muted-foreground -mt-4'>
+                    Your nationality or country of origin
+                  </p>
                 </FormSection>
 
                 {/* Premium Garage Customization Section */}
