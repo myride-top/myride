@@ -130,17 +130,49 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
     const firstEntry = timelinePeriods.find(
       p => p.year === year && p.month === month
     )?.entries[0]
-    const element = firstEntry ? entryRefs.current[firstEntry.id] : null
-    if (element) {
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - 100 // 100px offset for navbar
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      })
-      setSelectedPeriod(key)
-      setTimeout(() => setSelectedPeriod(null), 2000)
+    if (!firstEntry) return
+
+    // If timeline is not expanded, expand it first
+    if (!isExpanded) {
+      setIsExpanded(true)
+      // Wait for DOM to update using requestAnimationFrame for more reliable timing
+      const scrollToElement = () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const element = entryRefs.current[firstEntry.id]
+            if (element) {
+              const elementPosition = element.getBoundingClientRect().top
+              const offsetPosition = elementPosition + window.pageYOffset - 100 // 100px offset for navbar
+
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth',
+              })
+              setSelectedPeriod(key)
+              setTimeout(() => setSelectedPeriod(null), 2000)
+            } else {
+              // If element still not found, try again after a short delay
+              setTimeout(scrollToElement, 100)
+            }
+          })
+        })
+      }
+      scrollToElement()
+    } else {
+      // Timeline already expanded, scroll immediately
+      const element = entryRefs.current[firstEntry.id]
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top
+        const offsetPosition = elementPosition + window.pageYOffset - 100 // 100px offset for navbar
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        })
+        setSelectedPeriod(key)
+        setTimeout(() => setSelectedPeriod(null), 2000)
+      }
     }
   }
 
@@ -250,7 +282,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
           />
 
           <div className='space-y-8'>
-            {displayTimeline.map(entry => (
+            {displayTimeline.map((entry, index) => (
               <div
                 key={entry.id}
                 ref={el => {
@@ -316,7 +348,14 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                     // Better handling for both horizontal and vertical images
                                     'max-w-full max-h-[500px] object-contain'
                                   )}
-                                  loading='lazy'
+                                  loading={index < 5 ? 'eager' : 'lazy'}
+                                  fetchPriority={
+                                    index < 2
+                                      ? 'high'
+                                      : index < 5
+                                      ? 'auto'
+                                      : 'low'
+                                  }
                                   style={{
                                     // Dynamically adjust based on aspect ratio
                                     width: 'auto',
@@ -353,7 +392,14 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                     // Better handling for both horizontal and vertical images
                                     'max-w-full max-h-[500px] object-contain'
                                   )}
-                                  loading='lazy'
+                                  loading={index < 5 ? 'eager' : 'lazy'}
+                                  fetchPriority={
+                                    index < 2
+                                      ? 'high'
+                                      : index < 5
+                                      ? 'auto'
+                                      : 'low'
+                                  }
                                   style={{
                                     // Dynamically adjust based on aspect ratio
                                     width: 'auto',
