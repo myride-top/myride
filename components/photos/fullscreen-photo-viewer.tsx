@@ -148,7 +148,12 @@ export const FullscreenPhotoViewer = ({
           onTouchEnd={onTouchEnd}
         >
           {/* Top Controls */}
-          <div className='absolute top-4 left-4 right-4 z-20 flex items-center justify-between'>
+          <div
+            className='absolute left-4 right-4 z-20 flex items-center justify-between'
+            style={{
+              top: 'max(1rem, env(safe-area-inset-top, 0px) + 1rem)',
+            }}
+          >
             {/* Photo Counter */}
             {photos.length > 1 && (
               <div className='px-3 py-1 bg-black/50 text-white text-sm rounded-full backdrop-blur-sm'>
