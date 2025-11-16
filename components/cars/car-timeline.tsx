@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import type { CarTimeline as CarTimelineType } from '@/lib/types/database'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -33,6 +33,8 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null)
   const [hoveredYear, setHoveredYear] = useState<number | null>(null)
   const entryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const [contentHeight, setContentHeight] = useState<number | null>(null)
 
   // Group timeline by year and month
   const timelinePeriods = useMemo(() => {
@@ -123,6 +125,33 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
     : sortedTimeline.slice(0, 2)
   const hasMore = sortedTimeline.length > 2
   const previewEntry = !isExpanded && hasMore ? sortedTimeline[2] : null
+
+  // Measure content height for timeline line
+  useEffect(() => {
+    if (!contentRef.current) return
+
+    const updateHeight = () => {
+      if (contentRef.current) {
+        const height = contentRef.current.scrollHeight
+        setContentHeight(height)
+      }
+    }
+
+    // Use ResizeObserver for accurate measurements including image loads
+    const resizeObserver = new ResizeObserver(() => {
+      updateHeight()
+    })
+
+    resizeObserver.observe(contentRef.current)
+
+    // Initial measurement after DOM update
+    const timeoutId = setTimeout(updateHeight, 0)
+
+    return () => {
+      clearTimeout(timeoutId)
+      resizeObserver.disconnect()
+    }
+  }, [isExpanded, displayTimeline])
 
   // Scroll to period
   const scrollToPeriod = (year: number, month: number) => {
@@ -274,14 +303,13 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
               height:
                 isExpanded || !hasMore
                   ? '100%'
-                  : `${
-                      (displayTimeline.length - 1) * 8 +
-                      displayTimeline.length * 1.5
-                    }rem`,
+                  : contentHeight
+                  ? `${contentHeight}px`
+                  : 'auto',
             }}
           />
 
-          <div className='space-y-8'>
+          <div ref={contentRef} className='space-y-4'>
             {displayTimeline.map((entry, index) => (
               <div
                 key={entry.id}
@@ -297,9 +325,9 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
 
                 {/* Timeline content */}
                 <div className='flex-1 pb-8'>
-                  <div className='border-b border-border/30 pb-6 transition-colors duration-200 hover:border-border/50'>
+                  <div className='pb-6 transition-colors duration-200 hover:border-border/50'>
                     {/* Date */}
-                    <div className='flex items-center gap-1.5 text-xs text-muted-foreground mb-3'>
+                    <div className='flex items-center gap-1.5 text-xs text-muted-foreground mb-1'>
                       <time dateTime={entry.date}>
                         {new Date(entry.date).toLocaleDateString('en-US', {
                           year: 'numeric',
@@ -310,7 +338,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                     </div>
 
                     {/* Title */}
-                    <h3 className='text-lg font-medium mb-3 text-foreground leading-tight'>
+                    <h3 className='text-lg font-medium mb-2 text-foreground leading-tight'>
                       {entry.title}
                     </h3>
 
@@ -337,14 +365,14 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                               onClick={() =>
                                 handleImageClick(entry.photo_url!, entry.title)
                               }
-                              className='block w-full group cursor-pointer'
+                              className='block w-full group/photo1 cursor-pointer'
                             >
                               <div className='relative overflow-hidden rounded-lg flex items-center justify-center'>
                                 <img
                                   src={entry.photo_url}
                                   alt={`${entry.title} - ${carName}`}
                                   className={cn(
-                                    'rounded-lg transition-transform duration-200 group-hover:scale-[1.02]',
+                                    'rounded-lg transition-transform duration-200 group-hover/photo1:scale-[1.02]',
                                     // Better handling for both horizontal and vertical images
                                     'max-w-full max-h-[500px] object-contain'
                                   )}
@@ -364,7 +392,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                 />
                                 {/* Overlay hint on hover */}
                                 <div className='absolute inset-0 rounded-lg flex items-center justify-center pointer-events-none'>
-                                  <div className='opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-xs font-medium bg-black/60 px-2 py-1 rounded backdrop-blur-sm'>
+                                  <div className='opacity-0 group-hover/photo1:opacity-100 transition-opacity duration-200 text-white text-xs font-medium bg-black/60 px-2 py-1 rounded backdrop-blur-sm'>
                                     View
                                   </div>
                                 </div>
@@ -381,14 +409,14 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                   entry.title
                                 )
                               }
-                              className='block w-full group cursor-pointer'
+                              className='block w-full group/photo2 cursor-pointer'
                             >
                               <div className='relative overflow-hidden rounded-lg flex items-center justify-center'>
                                 <img
                                   src={entry.photo_url_2}
                                   alt={`${entry.title} - ${carName} - Photo 2`}
                                   className={cn(
-                                    'rounded-lg transition-transform duration-200 group-hover:scale-[1.02]',
+                                    'rounded-lg transition-transform duration-200 group-hover/photo2:scale-[1.02]',
                                     // Better handling for both horizontal and vertical images
                                     'max-w-full max-h-[500px] object-contain'
                                   )}
@@ -408,7 +436,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                 />
                                 {/* Overlay hint on hover */}
                                 <div className='absolute inset-0 rounded-lg flex items-center justify-center pointer-events-none'>
-                                  <div className='opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-xs font-medium bg-black/60 px-2 py-1 rounded backdrop-blur-sm'>
+                                  <div className='opacity-0 group-hover/photo2:opacity-100 transition-opacity duration-200 text-white text-xs font-medium bg-black/60 px-2 py-1 rounded backdrop-blur-sm'>
                                     View
                                   </div>
                                 </div>
@@ -435,7 +463,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                 <div className='flex-1 relative overflow-hidden'>
                   <div className='border-b border-border/30 pb-6'>
                     {/* Date */}
-                    <div className='flex items-center gap-1.5 text-xs text-muted-foreground mb-3'>
+                    <div className='flex items-center gap-1.5 text-xs text-muted-foreground mb-1'>
                       <time dateTime={previewEntry.date}>
                         {new Date(previewEntry.date).toLocaleDateString(
                           'en-US',
@@ -454,7 +482,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                     </h3>
                   </div>
                   {/* Fade-out gradient overlay */}
-                  <div className='absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none' />
+                  <div className='absolute bottom-0 left-0 right-0 h-18 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none' />
                 </div>
               </div>
             )}
@@ -488,11 +516,16 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
       {/* Fullscreen Photo Viewer - Single photo only, no navigation */}
       {selectedPhoto && (
         <FullscreenPhotoViewer
-          isOpen={selectedPhoto !== null}
+          isOpen={true}
           onClose={() => {
             setSelectedPhoto(null)
           }}
-          photos={selectedPhoto ? [selectedPhoto] : []}
+          photos={[
+            {
+              url: selectedPhoto.url,
+              category: selectedPhoto.category,
+            },
+          ]}
           initialIndex={0}
           carName={carName}
         />
