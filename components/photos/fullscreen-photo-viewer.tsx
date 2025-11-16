@@ -136,7 +136,10 @@ export const FullscreenPhotoViewer = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='max-w-none w-screen h-screen p-0 bg-black/95 border-0 rounded-none overflow-hidden'>
+      <DialogContent
+        showCloseButton={false}
+        className='max-w-none w-screen h-screen p-0 bg-black/95 border-0 rounded-none overflow-hidden'
+      >
         <DialogTitle className='sr-only'>
           {carName} - Photo {currentIndex + 1} of {photos.length}
         </DialogTitle>
