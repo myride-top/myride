@@ -139,6 +139,10 @@ export const FullscreenPhotoViewer = ({
       <DialogContent
         showCloseButton={false}
         className='max-w-none w-screen h-screen p-0 bg-black/95 border-0 rounded-none overflow-hidden'
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
       >
         <DialogTitle className='sr-only'>
           {carName} - Photo {currentIndex + 1} of {photos.length}
@@ -154,7 +158,7 @@ export const FullscreenPhotoViewer = ({
           <div
             className='absolute left-4 right-4 z-20 flex items-center justify-between'
             style={{
-              top: 'max(1rem, env(safe-area-inset-top, 0px) + 1rem)',
+              top: '1.5rem',
             }}
           >
             {/* Photo Counter */}
