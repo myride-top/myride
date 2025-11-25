@@ -245,19 +245,16 @@ export async function getCarByUrlSlugAndUsername(
       return null
     }
 
-    // Get the car by url_slug (cars should be publicly viewable by url_slug)
+    // Get the car by url_slug AND user_id to handle duplicate slugs
+    // This ensures we get the correct car even if multiple users have cars with the same slug
     const { data, error } = await supabase
       .from('cars')
       .select('*')
       .eq('url_slug', urlSlug)
+      .eq('user_id', profileData.id)
       .single()
 
     if (error) {
-      return null
-    }
-
-    // Verify that the car belongs to the profile we're looking up
-    if (data.user_id !== profileData.id) {
       return null
     }
 

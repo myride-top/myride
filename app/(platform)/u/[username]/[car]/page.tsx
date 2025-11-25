@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { getCarByUrlSlugClient } from '@/lib/database/cars-client'
+import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
 import {
   getProfileByUsernameClient,
   getProfileByUserIdClient,
@@ -75,8 +75,11 @@ export default function CarDetailPage() {
   useEffect(() => {
     const loadCarData = async () => {
       try {
-        // First, get the car by URL slug (public access)
-        const carData = await getCarByUrlSlugClient(params.car as string)
+        // Get the car by URL slug AND username to handle duplicate slugs
+        const carData = await getCarByUrlSlugAndUsernameClient(
+          params.car as string,
+          params.username as string
+        )
 
         if (!carData) {
           setError('Car not found')
@@ -258,12 +261,17 @@ export default function CarDetailPage() {
 
   // Ensure selectedPhoto is valid for the current filtered photos
   useEffect(() => {
-    if (sortedPhotos.length > 0 && selectedPhoto >= sortedPhotos.length) {
+    if (sortedPhotos.length === 0) {
+      setSelectedPhoto(0)
+    } else if (selectedPhoto >= sortedPhotos.length) {
       setSelectedPhoto(0)
     }
   }, [sortedPhotos.length, selectedPhoto])
 
   const openFullscreenPhoto = (photoIndex: number) => {
+    if (sortedPhotos.length === 0 || photoIndex >= sortedPhotos.length) {
+      return
+    }
     setFullscreenPhotoIndex(photoIndex)
     setIsPhotoDialogOpen(true)
   }
@@ -271,7 +279,7 @@ export default function CarDetailPage() {
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (sortedPhotos.length <= 1) return
+      if (sortedPhotos.length === 0 || sortedPhotos.length <= 1) return
 
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
@@ -749,7 +757,8 @@ export default function CarDetailPage() {
               )}
 
               {sortedPhotos.length > 0 &&
-              selectedPhoto < sortedPhotos.length ? (
+              selectedPhoto < sortedPhotos.length &&
+              sortedPhotos[selectedPhoto] ? (
                 <div className='space-y-4'>
                   {/* Main Photo */}
                   <div className='relative'>
@@ -899,14 +908,16 @@ export default function CarDetailPage() {
         </div>
       </main>
 
-      {/* Fullscreen Photo Viewer */}
-      <FullscreenPhotoViewer
-        isOpen={isPhotoDialogOpen}
-        onClose={() => setIsPhotoDialogOpen(false)}
-        photos={sortedPhotos.map(photo => getPhotoInfo(photo))}
-        initialIndex={fullscreenPhotoIndex}
-        carName={car.name}
-      />
+      {/* Fullscreen Photo Viewer - Only render if there are photos */}
+      {sortedPhotos.length > 0 && (
+        <FullscreenPhotoViewer
+          isOpen={isPhotoDialogOpen}
+          onClose={() => setIsPhotoDialogOpen(false)}
+          photos={sortedPhotos.map(photo => getPhotoInfo(photo))}
+          initialIndex={fullscreenPhotoIndex}
+          carName={car.name}
+        />
+      )}
 
       {/* QR Code Modal */}
       <QRCodeModal
