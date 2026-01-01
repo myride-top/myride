@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Car, CarPhoto, PhotoCategory, CarTimeline } from '@/lib/types/database'
 import { getUnitLabel } from '@/lib/utils'
 import { SortablePhotoGallery } from '@/components/photos/sortable-photo-gallery'
@@ -22,6 +22,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -163,8 +171,6 @@ const STEPS = [
     description: 'VIN, mileage, and other details',
   },
   { id: 9, title: 'Social', description: 'Link your profiles' },
-  { id: 10, title: 'Timeline', description: 'Document your build journey' },
-  { id: 11, title: 'Review', description: 'Review and save changes' },
 ]
 
 // Step Components
@@ -180,14 +186,14 @@ function BasicInformationStep({
   ) => void
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
         Basic Information
       </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Car Name *
           </label>
           <input
@@ -196,13 +202,13 @@ function BasicInformationStep({
             value={carData.name || ''}
             onChange={onInputChange}
             placeholder='e.g., My Dream Build'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
             required
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             URL Slug *
           </label>
           <input
@@ -211,13 +217,13 @@ function BasicInformationStep({
             value={carData.url_slug || ''}
             onChange={onInputChange}
             placeholder='e.g., my-dream-build'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
             required
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Make *
           </label>
           <input
@@ -226,13 +232,13 @@ function BasicInformationStep({
             value={carData.make || ''}
             onChange={onInputChange}
             placeholder='e.g., Mazda'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
             required
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Model *
           </label>
           <input
@@ -241,13 +247,13 @@ function BasicInformationStep({
             value={carData.model || ''}
             onChange={onInputChange}
             placeholder='e.g., RX-7'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
             required
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Year *
           </label>
           <input
@@ -257,13 +263,13 @@ function BasicInformationStep({
             onChange={onInputChange}
             min='1900'
             max={new Date().getFullYear() + 1}
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
             required
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Description
           </label>
           <textarea
@@ -272,7 +278,7 @@ function BasicInformationStep({
             onChange={onInputChange}
             rows={4}
             placeholder='Tell us about your car...'
-            className='w-full px-3 py-2 border border-input rounded-md focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -292,12 +298,14 @@ function BuildStoryStep({
   ) => void
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>Build Story</h3>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
+        Build Story
+      </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Build Story
           </label>
           <textarea
@@ -306,12 +314,12 @@ function BuildStoryStep({
             onChange={onInputChange}
             rows={4}
             placeholder="What's the story behind it?"
-            className='w-full px-3 py-2 border border-input rounded-md focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Build Start Date
           </label>
           <input
@@ -319,12 +327,12 @@ function BuildStoryStep({
             name='build_start_date'
             value={carData.build_start_date || ''}
             onChange={onInputChange}
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Total Build Cost
           </label>
           <input
@@ -335,12 +343,12 @@ function BuildStoryStep({
             placeholder='e.g., 25000'
             min='0'
             step='0.01'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Build Goals
           </label>
           <textarea
@@ -359,12 +367,12 @@ function BuildStoryStep({
             }}
             rows={3}
             placeholder='List build goals separated by commas (e.g., Track Car, 1000hp, 100mph)'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Inspiration
           </label>
           <input
@@ -373,7 +381,7 @@ function BuildStoryStep({
             value={carData.inspiration || ''}
             onChange={onInputChange}
             placeholder='e.g., Aventador SVJ, 911 GT3 RS'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -395,14 +403,14 @@ function EnginePerformanceStep({
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
         Engine & Performance
       </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Engine Displacement ({unitPreference === 'metric' ? 'L' : 'cc'})
           </label>
           <input
@@ -411,12 +419,12 @@ function EnginePerformanceStep({
             value={carData.engine_displacement || ''}
             onChange={onInputChange}
             placeholder={unitPreference === 'metric' ? '2.0' : '2000'}
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Cylinders
           </label>
           <input
@@ -425,12 +433,12 @@ function EnginePerformanceStep({
             value={carData.engine_cylinders || ''}
             onChange={onInputChange}
             placeholder='4, 6, 8, etc.'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Engine Code
           </label>
           <input
@@ -439,12 +447,12 @@ function EnginePerformanceStep({
             value={carData.engine_code || ''}
             onChange={onInputChange}
             placeholder='e.g., K20A, 2JZ-GTE'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Horsepower
           </label>
           <input
@@ -454,12 +462,12 @@ function EnginePerformanceStep({
             onChange={onInputChange}
             placeholder='200'
             min='0'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Torque ({getUnitLabel('torque', unitPreference)})
           </label>
           <input
@@ -469,12 +477,12 @@ function EnginePerformanceStep({
             onChange={onInputChange}
             placeholder='180'
             min='0'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Engine Type
           </label>
           <input
@@ -483,12 +491,12 @@ function EnginePerformanceStep({
             value={carData.engine_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Inline-4, V6, Boxer'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Fuel Type
           </label>
           <input
@@ -497,12 +505,12 @@ function EnginePerformanceStep({
             value={carData.fuel_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Gasoline, Diesel, Electric'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Transmission
           </label>
           <input
@@ -511,12 +519,12 @@ function EnginePerformanceStep({
             value={carData.transmission || ''}
             onChange={onInputChange}
             placeholder='e.g., 6-speed Manual, 8-speed Auto'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Drivetrain
           </label>
           <input
@@ -525,12 +533,12 @@ function EnginePerformanceStep({
             value={carData.drivetrain || ''}
             onChange={onInputChange}
             placeholder='e.g., FWD, RWD, AWD'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             {unitPreference === 'metric' ? '0-100 km/h' : '0-60 mph'} (seconds)
           </label>
           <input
@@ -541,12 +549,12 @@ function EnginePerformanceStep({
             placeholder='5.2'
             min='0'
             step='0.1'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Top Speed ({getUnitLabel('speed', unitPreference)})
           </label>
           <input
@@ -556,12 +564,12 @@ function EnginePerformanceStep({
             onChange={onInputChange}
             placeholder='155'
             min='0'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Quarter Mile (seconds)
           </label>
           <input
@@ -572,12 +580,12 @@ function EnginePerformanceStep({
             placeholder='13.5'
             min='0'
             step='0.1'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Weight ({getUnitLabel('weight', unitPreference)})
           </label>
           <input
@@ -587,12 +595,12 @@ function EnginePerformanceStep({
             onChange={onInputChange}
             placeholder='1200'
             min='0'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Power to Weight Ratio
           </label>
           <input
@@ -601,7 +609,7 @@ function EnginePerformanceStep({
             value={carData.power_to_weight || ''}
             onChange={onInputChange}
             placeholder='e.g., 200 HP/ton'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -623,12 +631,14 @@ function WheelsTiresStep({
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>Wheels & Tires</h3>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
+        Wheels & Tires
+      </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Wheel Size
           </label>
           <input
@@ -637,12 +647,12 @@ function WheelsTiresStep({
             value={carData.wheel_size || ''}
             onChange={onInputChange}
             placeholder='e.g., 18x8.5'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Wheel Brand
           </label>
           <input
@@ -651,12 +661,12 @@ function WheelsTiresStep({
             value={carData.wheel_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., BBS'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Wheel Material
           </label>
           <input
@@ -665,12 +675,12 @@ function WheelsTiresStep({
             value={carData.wheel_material || ''}
             onChange={onInputChange}
             placeholder='e.g., Forged Aluminum, Cast Steel'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Wheel Offset
           </label>
           <input
@@ -679,12 +689,12 @@ function WheelsTiresStep({
             value={carData.wheel_offset || ''}
             onChange={onInputChange}
             placeholder='e.g., +35, -10'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Front Tire Size
           </label>
           <input
@@ -693,12 +703,12 @@ function WheelsTiresStep({
             value={carData.front_tire_size || ''}
             onChange={onInputChange}
             placeholder='e.g., 225/40R18'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Rear Tire Size
           </label>
           <input
@@ -707,12 +717,12 @@ function WheelsTiresStep({
             value={carData.rear_tire_size || ''}
             onChange={onInputChange}
             placeholder='e.g., 255/40R18'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Front Tire Brand
           </label>
           <input
@@ -721,12 +731,12 @@ function WheelsTiresStep({
             value={carData.front_tire_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., Michelin, Pirelli'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Front Tire Model
           </label>
           <input
@@ -735,12 +745,12 @@ function WheelsTiresStep({
             value={carData.front_tire_model || ''}
             onChange={onInputChange}
             placeholder='e.g., Pilot Sport 4S'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Front Tire Pressure ({unitPreference === 'metric' ? 'bar' : 'PSI'})
           </label>
           <input
@@ -751,12 +761,12 @@ function WheelsTiresStep({
             placeholder={unitPreference === 'metric' ? '2.2' : '32'}
             min='0'
             step={unitPreference === 'metric' ? '0.1' : '1'}
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Rear Tire Brand
           </label>
           <input
@@ -765,12 +775,12 @@ function WheelsTiresStep({
             value={carData.rear_tire_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., Michelin, Pirelli'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Rear Tire Model
           </label>
           <input
@@ -779,12 +789,12 @@ function WheelsTiresStep({
             value={carData.rear_tire_model || ''}
             onChange={onInputChange}
             placeholder='e.g., Pilot Sport 4S'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Rear Tire Pressure ({unitPreference === 'metric' ? 'bar' : 'PSI'})
           </label>
           <input
@@ -795,12 +805,12 @@ function WheelsTiresStep({
             placeholder={unitPreference === 'metric' ? '2.2' : '32'}
             min='0'
             step={unitPreference === 'metric' ? '0.1' : '1'}
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Front Brakes
           </label>
           <input
@@ -809,12 +819,12 @@ function WheelsTiresStep({
             value={carData.front_brakes || ''}
             onChange={onInputChange}
             placeholder='e.g., Brembo 4-Piston'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Rear Brakes
           </label>
           <input
@@ -823,12 +833,12 @@ function WheelsTiresStep({
             value={carData.rear_brakes || ''}
             onChange={onInputChange}
             placeholder='e.g., Brembo 2-Piston'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Brake Rotors
           </label>
           <input
@@ -837,12 +847,12 @@ function WheelsTiresStep({
             value={carData.brake_rotors || ''}
             onChange={onInputChange}
             placeholder='e.g., Slotted, Drilled, Carbon Ceramic'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Brake Caliper Brand
           </label>
           <input
@@ -851,12 +861,12 @@ function WheelsTiresStep({
             value={carData.brake_caliper_brand || ''}
             onChange={onInputChange}
             placeholder='e.g., Brembo, AP Racing'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Brake Lines
           </label>
           <input
@@ -865,7 +875,7 @@ function WheelsTiresStep({
             value={carData.brake_lines || ''}
             onChange={onInputChange}
             placeholder='e.g., Stainless Steel, Braided'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -886,14 +896,14 @@ function SuspensionChassisStep({
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
         Suspension & Chassis
       </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Front Suspension
           </label>
           <input
@@ -902,12 +912,12 @@ function SuspensionChassisStep({
             value={carData.front_suspension || ''}
             onChange={onInputChange}
             placeholder='e.g., MacPherson Strut'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Rear Suspension
           </label>
           <input
@@ -916,12 +926,12 @@ function SuspensionChassisStep({
             value={carData.rear_suspension || ''}
             onChange={onInputChange}
             placeholder='e.g., Multi-Link'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Coilovers
           </label>
           <input
@@ -930,12 +940,12 @@ function SuspensionChassisStep({
             value={carData.coilovers || ''}
             onChange={onInputChange}
             placeholder='e.g., KW Variant 3'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Sway Bars
           </label>
           <input
@@ -944,12 +954,12 @@ function SuspensionChassisStep({
             value={carData.sway_bars || ''}
             onChange={onInputChange}
             placeholder='e.g., H&R 24mm Front, 22mm Rear'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Suspension Type
           </label>
           <input
@@ -958,12 +968,12 @@ function SuspensionChassisStep({
             value={carData.suspension_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Independent, Solid Axle, Multi-Link'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Ride Height
           </label>
           <input
@@ -972,7 +982,7 @@ function SuspensionChassisStep({
             value={carData.ride_height || ''}
             onChange={onInputChange}
             placeholder='e.g., Lowered 2 inches, Stock height'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -993,12 +1003,14 @@ function ExteriorInteriorStep({
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>Exterior</h3>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
+        Exterior
+      </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Paint Color
           </label>
           <input
@@ -1007,12 +1019,12 @@ function ExteriorInteriorStep({
             value={carData.paint_color || ''}
             onChange={onInputChange}
             placeholder='e.g., Championship White'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Body Kit
           </label>
           <input
@@ -1021,12 +1033,12 @@ function ExteriorInteriorStep({
             value={carData.body_kit || ''}
             onChange={onInputChange}
             placeholder='e.g., Rocket Bunny'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Paint Type
           </label>
           <input
@@ -1035,12 +1047,12 @@ function ExteriorInteriorStep({
             value={carData.paint_type || ''}
             onChange={onInputChange}
             placeholder='e.g., Metallic, Matte, Pearl'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Wrap Color
           </label>
           <input
@@ -1049,12 +1061,12 @@ function ExteriorInteriorStep({
             value={carData.wrap_color || ''}
             onChange={onInputChange}
             placeholder='e.g., Satin Black, Gloss Red'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Carbon Fiber Parts
           </label>
           <input
@@ -1063,12 +1075,12 @@ function ExteriorInteriorStep({
             value={carData.carbon_fiber_parts || ''}
             onChange={onInputChange}
             placeholder='e.g., Hood, Trunk, Side Skirts'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Lighting
           </label>
           <input
@@ -1077,7 +1089,7 @@ function ExteriorInteriorStep({
             value={carData.lighting || ''}
             onChange={onInputChange}
             placeholder='e.g., LED Headlights, Underglow'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -1097,14 +1109,14 @@ function InteriorStep({
   ) => void
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
         Interior Details
       </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Interior Color
           </label>
           <input
@@ -1113,12 +1125,12 @@ function InteriorStep({
             value={carData.interior_color || ''}
             onChange={onInputChange}
             placeholder='e.g., Black'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Interior Material
           </label>
           <input
@@ -1127,12 +1139,12 @@ function InteriorStep({
             value={carData.interior_material || ''}
             onChange={onInputChange}
             placeholder='e.g., Leather, Alcantara, Carbon Fiber'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Seats
           </label>
           <input
@@ -1141,12 +1153,12 @@ function InteriorStep({
             value={carData.seats || ''}
             onChange={onInputChange}
             placeholder='e.g., Recaro Sport Seats'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Steering Wheel
           </label>
           <input
@@ -1155,12 +1167,12 @@ function InteriorStep({
             value={carData.steering_wheel || ''}
             onChange={onInputChange}
             placeholder='e.g., Momo, Sparco, Custom'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Shift Knob
           </label>
           <input
@@ -1169,12 +1181,12 @@ function InteriorStep({
             value={carData.shift_knob || ''}
             onChange={onInputChange}
             placeholder='e.g., B&M, Hurst, Custom'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Gauges
           </label>
           <input
@@ -1183,7 +1195,7 @@ function InteriorStep({
             value={carData.gauges || ''}
             onChange={onInputChange}
             placeholder='e.g., AEM, Defi, Stack'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -1203,14 +1215,14 @@ function AdditionalDetailsStep({
   ) => void
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
         Additional Details
       </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             VIN
           </label>
           <input
@@ -1219,12 +1231,12 @@ function AdditionalDetailsStep({
             value={carData.vin || ''}
             onChange={onInputChange}
             placeholder='e.g., 1HGBH41JXMN109186'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Mileage
           </label>
           <input
@@ -1234,12 +1246,12 @@ function AdditionalDetailsStep({
             onChange={onInputChange}
             placeholder='e.g., 50000'
             min='0'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Fuel Economy
           </label>
           <input
@@ -1248,12 +1260,12 @@ function AdditionalDetailsStep({
             value={carData.fuel_economy || ''}
             onChange={onInputChange}
             placeholder='e.g., 25 MPG City, 30 MPG Highway'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Dyno Results
           </label>
           <input
@@ -1262,12 +1274,12 @@ function AdditionalDetailsStep({
             value={carData.dyno_results || ''}
             onChange={onInputChange}
             placeholder='e.g., 350 WHP, 320 WTQ'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Modifications
           </label>
           <textarea
@@ -1287,7 +1299,7 @@ function AdditionalDetailsStep({
             }}
             rows={3}
             placeholder='e.g., Cold air intake, exhaust, tune'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -1308,12 +1320,14 @@ function PhotosSocialStep({
   unitPreference: 'metric' | 'imperial'
 }) {
   return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>Social</h3>
+    <div className='space-y-4 md:space-y-6'>
+      <h3 className='text-lg md:text-xl font-semibold text-foreground'>
+        Social
+      </h3>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Instagram Handle
           </label>
           <input
@@ -1322,12 +1336,12 @@ function PhotosSocialStep({
             value={carData.instagram_handle || ''}
             onChange={onInputChange}
             placeholder='e.g., @mycarbuild'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             YouTube Channel
           </label>
           <input
@@ -1336,12 +1350,12 @@ function PhotosSocialStep({
             value={carData.youtube_channel || ''}
             onChange={onInputChange}
             placeholder='e.g., https://youtube.com/mycarbuild'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-foreground mb-2'>
+          <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
             Website URL
           </label>
           <input
@@ -1350,7 +1364,7 @@ function PhotosSocialStep({
             value={carData.website_url || ''}
             onChange={onInputChange}
             placeholder='e.g., https://mycarbuild.com'
-            className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+            className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
           />
         </div>
       </div>
@@ -1486,31 +1500,21 @@ function TimelineStep({
   }
 
   return (
-    <div className='space-y-6'>
-      <div>
-        <h3 className='text-xl font-semibold text-foreground mb-2'>
-          Build Timeline
-        </h3>
-        <p className='text-sm text-muted-foreground mb-6'>
-          Document your build journey with dates, milestones, and photos. Add
-          entries to show the progression of your build.
-        </p>
-      </div>
-
+    <div className='space-y-4 md:space-y-6'>
       <div className='space-y-6'>
         {timeline.map((entry, index) => (
           <div
             key={index}
-            className='border border-border rounded-lg p-6 bg-card'
+            className='border border-border rounded-lg p-4 md:p-6 bg-card'
           >
             <div className='flex items-center justify-between mb-4'>
-              <h4 className='text-lg font-medium text-foreground'>
+              <h4 className='text-base md:text-lg font-medium text-foreground'>
                 Entry {index + 1}
               </h4>
               <button
                 type='button'
                 onClick={() => removeTimelineEntry(index)}
-                className='text-destructive hover:text-destructive/80 transition-colors'
+                className='text-destructive hover:text-destructive/80 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center'
               >
                 <Trash2 className='w-4 h-4' />
               </button>
@@ -1518,7 +1522,7 @@ function TimelineStep({
 
             <div className='space-y-4'>
               <div>
-                <label className='block text-sm font-medium text-foreground mb-2'>
+                <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
                   Date <span className='text-destructive'>*</span>
                 </label>
                 <Popover>
@@ -1627,7 +1631,7 @@ function TimelineStep({
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-foreground mb-2'>
+                <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
                   Title <span className='text-destructive'>*</span>
                 </label>
                 <input
@@ -1637,13 +1641,13 @@ function TimelineStep({
                     updateTimelineEntry(index, 'title', e.target.value)
                   }
                   placeholder='e.g., Engine swap completed'
-                  className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+                  className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
                   required
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-foreground mb-2'>
+                <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
                   Description
                 </label>
                 <textarea
@@ -1657,13 +1661,13 @@ function TimelineStep({
                   }
                   placeholder='Describe what happened on this date...'
                   rows={4}
-                  className='w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
+                  className='w-full px-4 py-3 text-base border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground min-h-[44px]'
                 />
               </div>
 
               {/* Photos Section - Up to 2 photos */}
               <div>
-                <label className='block text-sm font-medium text-foreground mb-2'>
+                <label className='block text-sm md:text-sm font-medium text-foreground mb-2'>
                   Photos (up to 2)
                 </label>
                 <div className='space-y-4'>
@@ -1684,7 +1688,7 @@ function TimelineStep({
                           onClick={() =>
                             updateTimelineEntry(index, 'photo_url', null)
                           }
-                          className='absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80 transition-colors'
+                          className='absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-destructive/80 transition-colors touch-manipulation'
                         >
                           <X className='w-4 h-4' />
                         </button>
@@ -1709,7 +1713,7 @@ function TimelineStep({
                         />
                         <label
                           htmlFor={`timeline-photo-${index}-1`}
-                          className='flex items-center justify-center w-full h-32 border-2 border-dashed border-input rounded-lg cursor-pointer hover:border-ring transition-colors'
+                          className='flex items-center justify-center w-full h-32 min-h-[44px] border-2 border-dashed border-input rounded-lg cursor-pointer hover:border-ring transition-colors touch-manipulation'
                         >
                           {uploadingPhoto?.entryIndex === index &&
                           uploadingPhoto?.photoIndex === 1 ? (
@@ -1744,7 +1748,7 @@ function TimelineStep({
                           onClick={() =>
                             updateTimelineEntry(index, 'photo_url_2', null)
                           }
-                          className='absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80 transition-colors'
+                          className='absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-destructive/80 transition-colors touch-manipulation'
                         >
                           <X className='w-4 h-4' />
                         </button>
@@ -1769,7 +1773,7 @@ function TimelineStep({
                         />
                         <label
                           htmlFor={`timeline-photo-${index}-2`}
-                          className='flex items-center justify-center w-full h-32 border-2 border-dashed border-input rounded-lg cursor-pointer hover:border-ring transition-colors'
+                          className='flex items-center justify-center w-full h-32 min-h-[44px] border-2 border-dashed border-input rounded-lg cursor-pointer hover:border-ring transition-colors touch-manipulation'
                         >
                           {uploadingPhoto?.entryIndex === index &&
                           uploadingPhoto?.photoIndex === 2 ? (
@@ -1795,38 +1799,11 @@ function TimelineStep({
         <button
           type='button'
           onClick={addTimelineEntry}
-          className='w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-input rounded-lg hover:border-ring transition-colors text-muted-foreground hover:text-foreground'
+          className='w-full flex items-center justify-center gap-2 px-4 py-3 min-h-[44px] border-2 border-dashed border-input rounded-lg hover:border-ring transition-colors text-muted-foreground hover:text-foreground text-base'
         >
           <Plus className='w-5 h-5' />
           <span>Add Timeline Entry</span>
         </button>
-      </div>
-    </div>
-  )
-}
-
-function ReviewSubmitStep({
-  mode,
-}: {
-  carData: CarFormData
-  onInputChange: (
-    e:
-      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | { target: { name: string; value: string | string[] } }
-  ) => void
-  unitPreference: 'metric' | 'imperial'
-  mode: 'create' | 'edit'
-}) {
-  return (
-    <div className='space-y-6'>
-      <h3 className='text-xl font-semibold text-foreground'>Review & Submit</h3>
-
-      <div className='bg-muted/50 p-6 rounded-lg'>
-        <p className='text-muted-foreground text-center'>
-          Review your car details and click &quot;
-          {mode === 'create' ? 'Create Car' : 'Save Changes'}&quot; to{' '}
-          {mode === 'create' ? 'create' : 'update'} your car.
-        </p>
       </div>
     </div>
   )
@@ -1849,6 +1826,37 @@ export const CarForm = ({
   mainPhotoUrl,
 }: CarFormProps) => {
   const [currentStep, setCurrentStep] = useState(1)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const stepsContainerRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  // Check if steps container is scrollable
+  useEffect(() => {
+    const checkScrollability = () => {
+      const container = stepsContainerRef.current
+      if (!container) return
+
+      const { scrollLeft, scrollWidth, clientWidth } = container
+      setCanScrollLeft(scrollLeft > 0)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
+    }
+
+    checkScrollability()
+    const container = stepsContainerRef.current
+    if (container) {
+      container.addEventListener('scroll', checkScrollability)
+      window.addEventListener('resize', checkScrollability)
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', checkScrollability)
+        window.removeEventListener('resize', checkScrollability)
+      }
+    }
+  }, [])
+
   const [formData, setFormData] = useState({
     name: '',
     url_slug: '',
@@ -1996,10 +2004,6 @@ export const CarForm = ({
           formData.youtube_channel ||
           formData.website_url
         )
-      case 10: // Timeline - ANY entry can be filled
-        return !!(formData.timeline && formData.timeline.length > 0)
-      case 11: // Review & Submit
-        return false // This step doesn't collect data
       default:
         return false
     }
@@ -2062,6 +2066,11 @@ export const CarForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setShowConfirmDialog(true)
+  }
+
+  const handleConfirmSubmit = async () => {
+    setShowConfirmDialog(false)
     await onSubmit(formData)
   }
 
@@ -2069,14 +2078,14 @@ export const CarForm = ({
     <div className='space-y-8'>
       {/* Multi-Step Form */}
       <div className='bg-card shadow rounded-lg border border-border'>
-        <div className='px-4 py-5 sm:p-6'>
+        <div className='px-4 py-4 sm:px-6 sm:py-6'>
           {/* Progress Bar */}
-          <div className='mb-8'>
-            <div className='flex items-center justify-between mb-4'>
-              <h3 className='text-lg font-medium text-card-foreground'>
+          <div className='mb-6 md:mb-8'>
+            <div className='flex items-center justify-between mb-3 md:mb-4'>
+              <h3 className='text-base md:text-lg font-medium text-card-foreground'>
                 {mode === 'create' ? 'Create Your Car' : 'Edit Car Details'}
               </h3>
-              <span className='text-sm text-muted-foreground'>
+              <span className='text-xs md:text-sm text-muted-foreground'>
                 Step {currentStep} of {STEPS.length}
               </span>
             </div>
@@ -2091,33 +2100,52 @@ export const CarForm = ({
           </div>
 
           {/* Step Indicators */}
-          <div className='flex justify-between mb-8'>
-            {STEPS.map(step => (
-              <div
-                key={step.id}
-                onClick={() => setCurrentStep(step.id)}
-                className={`flex flex-col items-center cursor-pointer ${
-                  currentStep === step.id
-                    ? 'text-primary'
-                    : hasStepData(step.id)
-                    ? 'text-purple-600'
-                    : 'text-muted-foreground'
-                }`}
-              >
+          <div className='mb-6 md:mb-8 relative'>
+            {/* Left gradient indicator with arrow */}
+            {canScrollLeft && (
+              <div className='absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background via-background/90 to-transparent pointer-events-none z-10 md:hidden flex items-center'>
+                <ChevronLeft className='w-5 h-5 text-muted-foreground/60 ml-1' />
+              </div>
+            )}
+            {/* Right gradient indicator with arrow */}
+            {canScrollRight && (
+              <div className='absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background via-background/90 to-transparent pointer-events-none z-10 md:hidden flex items-center justify-end'>
+                <ChevronRight className='w-5 h-5 text-muted-foreground/60 mr-1' />
+              </div>
+            )}
+            <div
+              ref={stepsContainerRef}
+              className='flex overflow-x-auto pb-2 md:pb-0 md:justify-between gap-2 md:gap-0 scrollbar-hide'
+            >
+              {STEPS.map(step => (
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 transition-colors ${
+                  key={step.id}
+                  onClick={() => setCurrentStep(step.id)}
+                  className={`flex flex-col items-center cursor-pointer flex-shrink-0 min-w-[60px] md:min-w-0 ${
                     currentStep === step.id
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'text-primary'
                       : hasStepData(step.id)
-                      ? 'bg-purple-200 text-purple-800'
-                      : 'bg-muted text-muted-foreground'
+                      ? 'text-purple-600'
+                      : 'text-muted-foreground'
                   }`}
                 >
-                  {step.id}
+                  <div
+                    className={`w-8 h-8 md:w-8 md:h-8 rounded-full flex items-center justify-center text-sm font-medium mb-1 md:mb-2 transition-colors ${
+                      currentStep === step.id
+                        ? 'bg-primary text-primary-foreground'
+                        : hasStepData(step.id)
+                        ? 'bg-purple-200 text-purple-800'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {step.id}
+                  </div>
+                  <span className='text-[10px] md:text-xs text-center leading-tight'>
+                    {step.title}
+                  </span>
                 </div>
-                <span className='text-xs text-center'>{step.title}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           {/* Step Content */}
@@ -2199,43 +2227,24 @@ export const CarForm = ({
               />
             )}
 
-            {/* Step 10: Timeline */}
-            {currentStep === 10 && (
-              <TimelineStep
-                carData={formData}
-                onInputChange={handleInputChange}
-                carId={formData.id}
-              />
-            )}
-
-            {/* Step 11: Review & Submit */}
-            {currentStep === 11 && (
-              <ReviewSubmitStep
-                carData={formData}
-                onInputChange={handleInputChange}
-                unitPreference={unitPreference}
-                mode={mode}
-              />
-            )}
-
             {/* Navigation Buttons */}
-            <div className='flex justify-between mt-8 pt-6 border-t'>
+            <div className='flex flex-col-reverse sm:flex-row justify-between gap-3 mt-6 md:mt-8 pt-4 md:pt-6 border-t'>
               <button
                 type='button'
                 onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
                 disabled={currentStep === 1}
-                className='inline-flex items-center px-4 py-2 border border-input bg-background text-foreground rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+                className='inline-flex items-center justify-center px-4 py-3 min-h-[44px] border border-input bg-background text-foreground rounded-md text-base font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto'
               >
                 <ChevronLeft className='w-4 h-4 mr-2' />
                 Previous
               </button>
 
-              <div className='flex space-x-2'>
+              <div className='flex gap-2 w-full sm:w-auto'>
                 {currentStep < STEPS.length ? (
                   <button
                     type='button'
                     onClick={() => setCurrentStep(currentStep + 1)}
-                    className='inline-flex items-center px-4 py-2 border border-transparent bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer'
+                    className='inline-flex items-center justify-center px-4 py-3 min-h-[44px] border border-transparent bg-primary text-primary-foreground rounded-md text-base font-medium hover:bg-primary/90 transition-colors cursor-pointer flex-1 sm:flex-initial'
                   >
                     Next
                     <ChevronRight className='w-4 h-4 ml-2' />
@@ -2244,7 +2253,7 @@ export const CarForm = ({
                   <button
                     type='submit'
                     disabled={saving}
-                    className='inline-flex items-center px-4 py-2 border border-transparent bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+                    className='inline-flex items-center justify-center px-4 py-3 min-h-[44px] border border-transparent bg-primary text-primary-foreground rounded-md text-base font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex-1 sm:flex-initial'
                   >
                     {saving ? (
                       <>
@@ -2264,10 +2273,28 @@ export const CarForm = ({
         </div>
       </div>
 
+      {/* Timeline Section - Show for both create and edit modes */}
+      <div className='bg-card shadow rounded-lg border border-border'>
+        <div className='px-4 py-4 sm:px-6 sm:py-6'>
+          <h3 className='text-base md:text-lg font-medium text-card-foreground mb-4 md:mb-6'>
+            Build Timeline
+          </h3>
+          <p className='text-sm text-muted-foreground mb-4'>
+            Document your build journey with dates, milestones, and photos. Add
+            entries to show the progression of your build.
+          </p>
+          <TimelineStep
+            carData={formData}
+            onInputChange={handleInputChange}
+            carId={formData.id}
+          />
+        </div>
+      </div>
+
       {/* Photo Management Section - Show for both create and edit modes */}
       <div className='bg-card shadow rounded-lg border border-border'>
-        <div className='px-4 py-5 sm:p-6'>
-          <h3 className='text-lg font-medium text-card-foreground mb-6'>
+        <div className='px-4 py-4 sm:px-6 sm:py-6'>
+          <h3 className='text-base md:text-lg font-medium text-card-foreground mb-4 md:mb-6'>
             Photos
           </h3>
           <p className='text-sm text-muted-foreground mb-4'>
@@ -2289,7 +2316,7 @@ export const CarForm = ({
           {/* Photo List */}
           {existingPhotos && existingPhotos.length > 0 && (
             <div className='mt-6'>
-              <h4 className='text-md font-medium text-foreground mb-4'>
+              <h4 className='text-base md:text-md font-medium text-foreground mb-4'>
                 Manage Photos ({existingPhotos.length})
               </h4>
               <SortablePhotoGallery
@@ -2322,6 +2349,52 @@ export const CarForm = ({
           )}
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className='max-w-md'>
+          <DialogHeader>
+            <DialogTitle>
+              {mode === 'create' ? 'Create Car?' : 'Save Changes?'}
+            </DialogTitle>
+            <DialogDescription>
+              {mode === 'create' ? (
+                <>
+                  Are you ready to create your car &quot;
+                  {formData.name || 'Untitled'}&quot;? You can always edit the
+                  details later.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to save the changes to your car? This
+                  will update all the information you&apos;ve entered.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setShowConfirmDialog(false)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmSubmit} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                  {mode === 'create' ? 'Creating...' : 'Saving...'}
+                </>
+              ) : mode === 'create' ? (
+                'Create Car'
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
