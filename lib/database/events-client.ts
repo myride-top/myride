@@ -10,19 +10,62 @@ export interface EventWithAttendeeCount extends Event {
   attendee_count: number
 }
 
-export async function getAllEventsClient(): Promise<
-  EventWithAttendeeCount[] | null
-> {
+// Cache for events to prevent unnecessary refetches
+let eventsCache: {
+  data: EventWithAttendeeCount[] | null
+  timestamp: number
+} | null = null
+
+const CACHE_DURATION = 2 * 60 * 1000 // 2 minutes
+
+export async function getAllEventsClient(
+  forceRefresh = false
+): Promise<EventWithAttendeeCount[] | null> {
   try {
-    const response = await fetch('/api/events')
+    // Return cached data if still valid and not forcing refresh
+    if (
+      !forceRefresh &&
+      eventsCache &&
+      Date.now() - eventsCache.timestamp < CACHE_DURATION
+    ) {
+      return eventsCache.data
+    }
+
+    const response = await fetch('/api/events', {
+      // Add cache headers for browser caching
+      cache: 'default',
+    })
+
     if (!response.ok) {
+      // Return stale cache if available on error
+      if (eventsCache) {
+        return eventsCache.data
+      }
       return null
     }
+
     const data = await response.json()
-    return data.events || []
+    const events = data.events || []
+
+    // Update cache
+    eventsCache = {
+      data: events,
+      timestamp: Date.now(),
+    }
+
+    return events
   } catch {
+    // Return stale cache if available on error
+    if (eventsCache) {
+      return eventsCache.data
+    }
     return null
   }
+}
+
+// Function to clear events cache (useful after creating/updating events)
+export function clearEventsCache(): void {
+  eventsCache = null
 }
 
 export async function createEventClient(

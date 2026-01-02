@@ -80,8 +80,14 @@ export const StatusMessage = ({
 
   const renderContent = () => (
     <>
-      <div className='flex justify-center mb-4'>
-        <Icon className={cn(iconClasses[size], iconColorClasses[type])} />
+      <div className='flex justify-center mb-4' aria-hidden='true'>
+        <Icon
+          className={cn(
+            iconClasses[size],
+            iconColorClasses[type],
+            type === 'loading' && 'animate-spin'
+          )}
+        />
       </div>
 
       <h3
@@ -110,8 +116,9 @@ export const StatusMessage = ({
             onClick={handleRetry}
             variant='outline'
             className='inline-flex items-center gap-2'
+            aria-label='Retry operation'
           >
-            <RefreshCw className='h-4 w-4' />
+            <RefreshCw className='h-4 w-4' aria-hidden='true' />
             Try Again
           </Button>
         )}
@@ -138,6 +145,9 @@ export const StatusMessage = ({
         variant !== 'card' && sizeClasses[size],
         className
       )}
+      role={type === 'error' ? 'alert' : 'status'}
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+      aria-atomic='true'
     >
       {renderContent()}
     </div>

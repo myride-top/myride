@@ -50,10 +50,14 @@ export async function GET(request: NextRequest) {
       return createSecureResponse({ error: 'Unauthorized' }, 401)
     }
 
-    // Get all events with attendee counts
+    // Get active events - filter expired events at database level for better performance
+    const now = new Date().toISOString()
     const { data: events, error: eventsError } = await supabase
       .from('events')
-      .select('*')
+      .select(
+        'id, created_by, title, description, event_type, event_date, end_date, latitude, longitude, event_image_url, route, created_at, updated_at'
+      )
+      .or(`end_date.gte.${now},and(end_date.is.null,event_date.gte.${now})`)
       .order('event_date', { ascending: true })
 
     if (eventsError) {
@@ -63,14 +67,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Filter out events that have already ended
-    const now = new Date()
-    const activeEvents =
-      events?.filter(event => {
-        // Use end_date if available, otherwise use event_date
-        const endDate = event.end_date ? new Date(event.end_date) : new Date(event.event_date)
-        return endDate >= now
-      }) || []
+    const activeEvents = events || []
 
     // Get attendee counts for each event
     if (activeEvents && activeEvents.length > 0) {
@@ -92,17 +89,26 @@ export async function GET(request: NextRequest) {
         attendee_count: attendeeCounts.get(event.id) || 0,
       }))
 
-      return createSecureResponse({ events: eventsWithCounts })
+      const response = createSecureResponse({ events: eventsWithCounts })
+      
+      // Add caching headers - cache for 2 minutes, stale-while-revalidate for 5 minutes
+      response.headers.set(
+        'Cache-Control',
+        'private, max-age=120, stale-while-revalidate=300'
+      )
+      
+      return response
     }
 
-    return createSecureResponse({ events: [] })
-  } catch (error) {
-    console.error('Error fetching events:', error)
+    const response = createSecureResponse({ events: [] })
+    response.headers.set(
+      'Cache-Control',
+      'private, max-age=120, stale-while-revalidate=300'
+    )
+    return response
+  } catch {
     return createSecureResponse(
-      {
-        error: 'Failed to fetch events',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to fetch events' },
       500
     )
   }
@@ -236,13 +242,9 @@ export async function POST(request: NextRequest) {
     }
 
     return createSecureResponse({ event }, 201)
-  } catch (error) {
-    console.error('Error creating event:', error)
+  } catch {
     return createSecureResponse(
-      {
-        error: 'Failed to create event',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to create event' },
       500
     )
   }

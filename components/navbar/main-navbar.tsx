@@ -145,7 +145,15 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
           <div className='relative' ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className='flex items-center space-x-2 text-foreground hover:text-foreground/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring rounded-md p-2 cursor-pointer'
+              onKeyDown={e => {
+                if (e.key === 'Escape' && isDropdownOpen) {
+                  setIsDropdownOpen(false)
+                }
+              }}
+              aria-expanded={isDropdownOpen}
+              aria-haspopup='true'
+              aria-label='User menu'
+              className='flex items-center space-x-2 text-foreground hover:text-foreground/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring rounded-md p-2 cursor-pointer transition-colors'
             >
               <div className='w-8 h-8 bg-primary rounded-full flex items-center justify-center'>
                 {profile?.avatar_url ? (
@@ -168,7 +176,11 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
             </button>
 
             {isDropdownOpen && (
-              <div className='absolute right-0 mt-2 w-56 bg-popover rounded-md shadow-lg ring-1 ring-border z-50'>
+              <div
+                className='absolute right-0 mt-2 w-56 bg-popover rounded-md shadow-lg ring-1 ring-border z-50 animate-in fade-in-0 zoom-in-95 duration-200'
+                role='menu'
+                aria-orientation='vertical'
+              >
                 <div className='py-1'>
                   <div className='px-4 py-2 border-b border-border'>
                     <p className='text-sm font-medium text-popover-foreground flex items-center gap-2'>
@@ -187,9 +199,10 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
 
                   <button
                     onClick={() => handleOptionClick('dashboard')}
-                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                    role='menuitem'
+                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                   >
-                    <LayoutDashboard className='w-4 h-4 mr-3' />
+                    <LayoutDashboard className='w-4 h-4 mr-3' aria-hidden='true' />
                     Dashboard
                   </button>
 
@@ -199,27 +212,30 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                         setIsDropdownOpen(false)
                         router.push('/analytics')
                       }}
-                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                      role='menuitem'
+                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                     >
-                      <BarChart3 className='w-4 h-4 mr-3' />
+                      <BarChart3 className='w-4 h-4 mr-3' aria-hidden='true' />
                       Analytics
                     </button>
                   )}
 
                   <button
                     onClick={() => handleOptionClick('profile')}
-                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                    role='menuitem'
+                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                   >
-                    <Settings className='w-4 h-4 mr-3' />
+                    <Settings className='w-4 h-4 mr-3' aria-hidden='true' />
                     Edit Profile
                   </button>
 
                   {canCreateCar ? (
                     <button
                       onClick={() => handleOptionClick('create')}
-                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                      role='menuitem'
+                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                     >
-                      <Plus className='w-4 h-4 mr-3' />
+                      <Plus className='w-4 h-4 mr-3' aria-hidden='true' />
                       Add New Car
                     </button>
                   ) : (
@@ -229,31 +245,34 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                           setIsDropdownOpen(false)
                           router.push('/buy-car-slot')
                         }}
-                        className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 cursor-pointer'
+                        role='menuitem'
+                        className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 cursor-pointer transition-colors focus:outline-none focus:bg-orange-100 dark:focus:bg-orange-900'
                       >
-                        <AlertCircle className='w-4 h-4 mr-3' />
+                        <AlertCircle className='w-4 h-4 mr-3' aria-hidden='true' />
                         Car Limit Reached
                       </button>
                     </div>
                   )}
 
-                  <div className='border-t border-border my-1'></div>
+                  <div className='border-t border-border my-1' role='separator' />
 
                   {!profile?.is_premium && (
                     <button
                       onClick={() => handleOptionClick('premium')}
-                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                      role='menuitem'
+                      className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                     >
-                      <Crown className='w-4 h-4 mr-3 text-yellow-500' />
+                      <Crown className='w-4 h-4 mr-3 text-yellow-500' aria-hidden='true' />
                       Buy Premium
                     </button>
                   )}
 
                   <button
                     onClick={() => handleOptionClick('payments')}
-                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer'
+                    role='menuitem'
+                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                   >
-                    <CreditCard className='w-4 h-4 mr-3' />
+                    <CreditCard className='w-4 h-4 mr-3' aria-hidden='true' />
                     Payment History
                   </button>
 
@@ -261,9 +280,10 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
 
                   <button
                     onClick={handleSignOut}
-                    className='flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-destructive/10 cursor-pointer'
+                    role='menuitem'
+                    className='flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-destructive/10 cursor-pointer transition-colors focus:outline-none focus:bg-destructive/10'
                   >
-                    <LogOut className='w-4 h-4 mr-3' />
+                    <LogOut className='w-4 h-4 mr-3' aria-hidden='true' />
                     Sign Out
                   </button>
                 </div>

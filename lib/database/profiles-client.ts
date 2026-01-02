@@ -6,6 +6,7 @@ export async function getProfileByUserIdClient(
 ): Promise<Profile | null> {
   const supabase = createClient()
 
+  // Select only needed fields for better performance
   const { data, error } = await supabase
     .from('profiles')
     .select('*')

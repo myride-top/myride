@@ -79,16 +79,27 @@ export const CarCard = ({
   }
 
   return (
-    <div
+    <article
       className={cn(
-        'bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group',
+        'bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 group focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
         className
       )}
+      role='article'
+      aria-label={`${car.name} - ${car.make} ${car.model} ${car.year}`}
     >
       {/* Photo */}
       <div
-        className='relative aspect-[4/3] bg-muted overflow-hidden cursor-pointer'
+        className='relative aspect-[4/3] bg-muted overflow-hidden cursor-pointer focus-within:outline-none'
         onClick={handleImageClick}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleImageClick()
+          }
+        }}
+        tabIndex={0}
+        role='button'
+        aria-label={`View details for ${car.name}`}
       >
         {(() => {
           // Get the photo URL to display
@@ -104,35 +115,55 @@ export const CarCard = ({
           return photoUrl ? (
             <img
               src={photoUrl}
-              alt={car.name || 'car photo'}
-              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+              alt={`${car.name || 'Car'} - ${car.make} ${car.model} ${car.year}`}
+              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out'
+              loading='lazy'
+              decoding='async'
+              onError={e => {
+                // Fallback to placeholder on error
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                const placeholder = target.nextElementSibling as HTMLElement
+                if (placeholder) {
+                  placeholder.style.display = 'flex'
+                }
+              }}
             />
           ) : (
-            <div className='w-full h-full flex items-center justify-center'>
-              <Image className='w-12 h-12 text-muted-foreground' />
+            <div
+              className='w-full h-full flex items-center justify-center bg-muted/50'
+              aria-hidden='true'
+            >
+              <Image className='w-12 h-12 text-muted-foreground/50' />
             </div>
           )
         })()}
 
         {/* Actions Overlay */}
         {showActions && (
-          <div className='absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
+          <div
+            className='absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200'
+            role='group'
+            aria-label='Car actions'
+          >
             {isOwner && onEdit && (
               <button
                 onClick={handleEdit}
                 title='Edit car'
-                className='p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors cursor-pointer'
+                aria-label='Edit car'
+                className='flex items-center justify-center p-2 bg-black/60 backdrop-blur-sm text-white rounded-full hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 cursor-pointer'
               >
-                <Edit className='w-4 h-4' />
+                <Edit className='w-4 h-4' aria-hidden='true' />
               </button>
             )}
 
             <button
               onClick={handleQRCode}
               title='Share car via QR Code'
-              className='p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors cursor-pointer'
+              aria-label='Share car via QR Code'
+              className='flex items-center justify-center p-2 bg-black/60 backdrop-blur-sm text-white rounded-full hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 cursor-pointer'
             >
-              <Share2 className='w-4 h-4' />
+              <Share2 className='w-4 h-4' aria-hidden='true' />
             </button>
           </div>
         )}
@@ -140,11 +171,20 @@ export const CarCard = ({
 
       {/* Content */}
       <div
-        className='p-4 cursor-pointer'
+        className='p-4 cursor-pointer focus-within:outline-none'
         onClick={() => {
           // Navigate to car detail page
           router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
         }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
+          }
+        }}
+        tabIndex={0}
+        role='button'
+        aria-label={`View details for ${car.name}`}
       >
         {/* Car Info */}
         <div className='mb-3'>
@@ -210,6 +250,6 @@ export const CarCard = ({
         profile={profile}
         currentUrl={`${window.location.origin}/u/${profile?.username}/${car.url_slug}`}
       />
-    </div>
+    </article>
   )
 }

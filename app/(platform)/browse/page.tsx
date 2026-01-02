@@ -400,6 +400,7 @@ export default function BrowsePage() {
     try {
       setLoading(true)
       setError(null)
+      // Load all cars (no pagination limit for browse page to show all)
       const allCars = await getAllCarsClient()
       setCars(allCars || [])
     } catch {
@@ -477,26 +478,27 @@ export default function BrowsePage() {
       />
 
       {/* Filters and Sorting */}
-      <div className='mb-8 space-y-4'>
+      <div className='mb-6 md:mb-8 space-y-4'>
         {/* Search and Sort Bar */}
-        <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
-          <div className='flex-1 max-w-md'>
+        <div className='flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between'>
+          <div className='flex-1 w-full sm:max-w-md'>
             <Input
-              placeholder='Search cars by name, make, model, or year...'
+              placeholder='Search cars...'
               value={filters.search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange('search', e.target.value)
               }
               className='w-full'
+              aria-label='Search cars by name, make, model, or year'
             />
           </div>
 
-          <div className='flex gap-2 items-center'>
+          <div className='flex gap-2 items-center flex-shrink-0'>
             <Select
               value={sortBy}
               onValueChange={(value: SortOption) => setSortBy(value)}
             >
-              <SelectTrigger className='w-48 cursor-pointer'>
+              <SelectTrigger className='w-full sm:w-48 cursor-pointer min-h-[44px]'>
                 <SelectValue placeholder='Sort by...' />
               </SelectTrigger>
               <SelectContent>
@@ -536,10 +538,13 @@ export default function BrowsePage() {
             <Button
               variant='outline'
               onClick={() => setShowFilters(!showFilters)}
-              className='flex items-center gap-2 cursor-pointer'
+              className='flex items-center gap-2 cursor-pointer min-h-[44px]'
+              aria-expanded={showFilters}
+              aria-label={`${showFilters ? 'Hide' : 'Show'} filters`}
             >
-              <Filter className='w-4 h-4' />
-              Filters
+              <Filter className='w-4 h-4' aria-hidden='true' />
+              <span className='hidden sm:inline'>Filters</span>
+              <span className='sm:hidden'>Filter</span>
               {getActiveFiltersCount() > 0 && (
                 <Badge variant='secondary' className='ml-1'>
                   {getActiveFiltersCount()}
@@ -551,21 +556,29 @@ export default function BrowsePage() {
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className='bg-muted/50 rounded-lg p-6 space-y-4'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-lg font-semibold'>Advanced Filters</h3>
+          <div
+            className='bg-muted/50 rounded-lg p-4 sm:p-6 space-y-4 animate-in fade-in-0 slide-in-from-top-2 duration-200'
+            role='region'
+            aria-label='Advanced filters'
+          >
+            <div className='flex items-center justify-between flex-wrap gap-2'>
+              <h3 className='text-base sm:text-lg font-semibold'>
+                Advanced Filters
+              </h3>
               <Button
                 variant='ghost'
                 size='sm'
                 onClick={clearFilters}
-                className='cursor-pointer'
+                className='cursor-pointer min-h-[44px]'
+                aria-label='Clear all filters'
               >
-                <X className='w-4 h-4 mr-2' />
-                Clear All
+                <X className='w-4 h-4 mr-2' aria-hidden='true' />
+                <span className='hidden sm:inline'>Clear All</span>
+                <span className='sm:hidden'>Clear</span>
               </Button>
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
               {/* Make */}
               <div>
                 <label className='text-sm font-medium mb-2 block'>Make</label>
@@ -932,10 +945,13 @@ export default function BrowsePage() {
         )}
 
         {/* Results Count */}
-        <div className='flex items-center justify-between text-sm text-muted-foreground'>
-          <span>
-            Showing {filteredAndSortedCars.length} of {cars.length} cars
-            {getActiveFiltersCount() > 0 && ' (filtered)'}
+        <div className='flex items-center justify-between text-xs sm:text-sm text-muted-foreground'>
+          <span aria-live='polite' aria-atomic='true'>
+            Showing <strong className='text-foreground'>{filteredAndSortedCars.length}</strong> of{' '}
+            <strong className='text-foreground'>{cars.length}</strong> cars
+            {getActiveFiltersCount() > 0 && (
+              <span className='hidden sm:inline'> (filtered)</span>
+            )}
           </span>
         </div>
       </div>
@@ -955,7 +971,7 @@ export default function BrowsePage() {
           }
         />
       ) : (
-        <Grid cols={3} gap='md'>
+        <Grid cols={3} mobileCols={1} gap='md' mobileGap='sm'>
           {filteredAndSortedCars.map(car => {
             // Extract profile from the joined data
             const carWithProfile = car as Car & { profiles?: Profile | null }

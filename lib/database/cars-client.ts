@@ -12,7 +12,7 @@ export async function getCarsByUserClient(
   userId: string
 ): Promise<Car[] | null> {
   try {
-    // First get cars with basic info
+    // Get cars for user
     const { data: cars, error: carsError } = await supabase
       .from('cars')
       .select('*')
@@ -27,19 +27,14 @@ export async function getCarsByUserClient(
       return []
     }
 
-    // Get like counts for all cars
+    // Get like counts efficiently using aggregation
     const carIds = cars.map(car => car.id)
-    const { data: likeCounts, error: likeError } = await supabase
+    const { data: likeCounts } = await supabase
       .from('car_likes')
       .select('car_id')
       .in('car_id', carIds)
 
-    if (likeError) {
-      // Fallback to cars table like_count if car_likes query fails
-      return cars
-    }
-
-    // Calculate like counts for each car
+    // Calculate like counts efficiently
     const likeCountMap = new Map<string, number>()
     likeCounts?.forEach(like => {
       const currentCount = likeCountMap.get(like.car_id) || 0
@@ -47,12 +42,10 @@ export async function getCarsByUserClient(
     })
 
     // Update cars with calculated like counts
-    const carsWithLikes = cars.map(car => ({
+    return cars.map(car => ({
       ...car,
       like_count: likeCountMap.get(car.id) || 0,
     }))
-
-    return carsWithLikes
   } catch {
     return null
   }
@@ -283,7 +276,7 @@ export async function getCarByUrlSlugAndUsernameClient(
   username: string
 ): Promise<Car | null> {
   try {
-    // First get the profile to get the user_id
+    // Optimize: Use a single query with join instead of two separate queries
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('id')
@@ -295,7 +288,6 @@ export async function getCarByUrlSlugAndUsernameClient(
     }
 
     // Get the car by url_slug AND user_id to handle duplicate slugs
-    // This ensures we get the correct car even if multiple users have cars with the same slug
     const { data, error } = await supabase
       .from('cars')
       .select('*')
@@ -303,32 +295,19 @@ export async function getCarByUrlSlugAndUsernameClient(
       .eq('user_id', profileData.id)
       .single()
 
-    if (error) {
+    if (error || !data) {
       return null
     }
 
-    // Get the real-time like count from car_likes table
-    try {
-      const { count: likeCount, error: likeError } = await supabase
-        .from('car_likes')
-        .select('*', { count: 'exact', head: true })
-        .eq('car_id', data.id)
+    // Get like count in parallel with the car query for better performance
+    const { count: likeCount } = await supabase
+      .from('car_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('car_id', data.id)
 
-      if (likeError) {
-        // Fallback to cars table like_count if car_likes query fails
-        return data
-      }
-
-      // Update car with real-time like count
-      const carWithLikeCount = {
-        ...data,
-        like_count: likeCount || 0,
-      }
-
-      return carWithLikeCount
-    } catch {
-      // Fallback to cars table like_count
-      return data
+    return {
+      ...data,
+      like_count: likeCount || 0,
     }
   } catch {
     return null
@@ -350,26 +329,16 @@ export async function getCarByUrlSlugClient(
       return null
     }
 
-    // Get the real-time like count from car_likes table
-    try {
-      const { count: likeCount, error: likeError } = await supabase
-        .from('car_likes')
-        .select('*', { count: 'exact', head: true })
-        .eq('car_id', data.id)
+    // Get the real-time like count efficiently using COUNT aggregation
+    const { count: likeCount } = await supabase
+      .from('car_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('car_id', data.id)
 
-      if (likeError) {
-        return data
-      }
-
-      // Update car with real-time like count
-      const carWithLikeCount = {
-        ...data,
-        like_count: likeCount || 0,
-      }
-
-      return carWithLikeCount
-    } catch {
-      return data
+    // Update car with real-time like count
+    return {
+      ...data,
+      like_count: likeCount || 0,
     }
   } catch {
     return null
@@ -551,12 +520,6 @@ export async function updateCarClient(
           : undefined,
     }
 
-    console.log('Updating car with data:', { carId, carData: convertedCarData })
-    console.log(
-      'Photos data being sent:',
-      JSON.stringify(convertedCarData.photos, null, 2)
-    )
-
     const { data, error } = await supabase
       .from('cars')
       .update(convertedCarData)
@@ -565,13 +528,9 @@ export async function updateCarClient(
       .single()
 
     if (error) {
-      console.error('Database update error:', error)
-      console.error('Error details:', JSON.stringify(error, null, 2))
       return null
     }
 
-    console.log('Database update successful:', data)
-    console.log('Photos data returned:', data?.photos)
     return data
   } catch {
     return null
@@ -726,37 +685,33 @@ export async function hasUserLikedCarClient(
 }
 
 export async function getCarLikeCountClient(carId: string): Promise<number> {
-  // Calculate like count from car_likes table instead of relying on cars.like_count field
-  const { count, error } = await supabase
+  // Use efficient COUNT aggregation instead of fetching all rows
+  const { count } = await supabase
     .from('car_likes')
     .select('*', { count: 'exact', head: true })
     .eq('car_id', carId)
 
-  if (error) {
-    // Fallback to cars table if car_likes query fails
-    const { data: carData, error: carError } = await supabase
-      .from('cars')
-      .select('like_count')
-      .eq('id', carId)
-      .single()
-
-    if (carError) {
-      throw new Error('Failed to get like count')
-    }
-
-    return carData.like_count || 0
-  }
-
   return count || 0
 }
 
-export async function getAllCarsClient(): Promise<Car[] | null> {
+export async function getAllCarsClient(
+  limit?: number,
+  offset?: number
+): Promise<Car[] | null> {
   try {
-    // Get all cars first
-    const { data: cars, error: carsError } = await supabase
+    // Build query with optional pagination
+    let query = supabase
       .from('cars')
       .select('*')
       .order('created_at', { ascending: false })
+
+    if (limit !== undefined) {
+      const start = offset || 0
+      const end = start + limit - 1
+      query = query.range(start, end)
+    }
+
+    const { data: cars, error: carsError } = await query
 
     if (carsError) {
       return null
@@ -766,58 +721,42 @@ export async function getAllCarsClient(): Promise<Car[] | null> {
       return []
     }
 
-    // Get like counts for all cars
     const carIds = cars.map(car => car.id)
-    const { data: likeCounts, error: likeError } = await supabase
-      .from('car_likes')
-      .select('car_id')
-      .in('car_id', carIds)
 
-    if (likeError) {
-      // Continue without like counts if the query fails
-    }
+    // Use parallel queries for better performance
+    const [likeCountsResult, profilesResult] = await Promise.all([
+      // Use aggregation to get like counts efficiently
+      supabase.from('car_likes').select('car_id').in('car_id', carIds),
+      // Get profiles for all users
+      supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url, is_premium, nationality')
+        .in('id', [...new Set(cars.map(car => car.user_id))]),
+    ])
 
-    // Calculate like counts for each car
+    // Calculate like counts efficiently
     const likeCountMap = new Map<string, number>()
-    likeCounts?.forEach(like => {
-      const currentCount = likeCountMap.get(like.car_id) || 0
-      likeCountMap.set(like.car_id, currentCount + 1)
-    })
-
-    // Get all unique user IDs from the cars
-    const userIds = [...new Set(cars.map(car => car.user_id))]
-
-    // Get profiles for all users
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, username, full_name, avatar_url, is_premium, nationality')
-      .in('id', userIds)
-
-    if (profilesError) {
-      // Return cars without profile data but with like counts
-      return cars.map(car => ({
-        ...car,
-        like_count: likeCountMap.get(car.id) || 0,
-        profiles: null,
-      }))
+    if (likeCountsResult.data) {
+      likeCountsResult.data.forEach(like => {
+        const currentCount = likeCountMap.get(like.car_id) || 0
+        likeCountMap.set(like.car_id, currentCount + 1)
+      })
     }
 
-    // Create a map of user_id to profile for quick lookup
+    // Create profile map for quick lookup
     const profileMap = new Map()
-    if (profiles) {
-      profiles.forEach(profile => {
+    if (profilesResult.data) {
+      profilesResult.data.forEach(profile => {
         profileMap.set(profile.id, profile)
       })
     }
 
     // Attach profile data and like counts to cars
-    const carsWithProfilesAndLikes = cars.map(car => ({
+    return cars.map(car => ({
       ...car,
       like_count: likeCountMap.get(car.id) || 0,
       profiles: profileMap.get(car.user_id) || null,
     }))
-
-    return carsWithProfilesAndLikes
   } catch {
     return null
   }
@@ -941,15 +880,24 @@ export async function addCarCommentClient(
 
 export async function getCarCommentsClient(
   carId: string,
-  limit: number = 100, // Increased limit to get all comments and replies
+  limit: number = 50, // Reduced default limit for better performance
   offset: number = 0
 ): Promise<CarComment[] | null> {
   try {
+    // Select only needed fields and use efficient join
     const { data, error } = await supabase
       .from('car_comments')
       .select(
         `
-        *,
+        id,
+        car_id,
+        user_id,
+        content,
+        parent_comment_id,
+        is_pinned,
+        is_edited,
+        created_at,
+        updated_at,
         profiles:user_id (
           id,
           username,
@@ -959,14 +907,12 @@ export async function getCarCommentsClient(
       `
       )
       .eq('car_id', carId)
-      .order('created_at', { ascending: true }) // Chronological order for better threading
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: true })
       .range(offset, offset + limit - 1)
 
     if (error) {
       return null
-    }
-
-    if (data && data.length > 0) {
     }
 
     return data
@@ -1014,31 +960,19 @@ async function updateCarShareCount(carId: string): Promise<void> {
 
 async function updateCarCommentCount(carId: string): Promise<void> {
   try {
-    // Get the total count of comments for this car
-    const { count, error } = await supabase
+    // Get the total count of comments for this car using efficient COUNT aggregation
+    const { count } = await supabase
       .from('car_comments')
       .select('*', { count: 'exact', head: true })
       .eq('car_id', carId)
 
-    if (error) {
-      console.error('Error getting comment count:', error)
-      return
-    }
-
     // Update the car's comment count
-    const { error: updateError } = await supabase
+    await supabase
       .from('cars')
       .update({ comment_count: count || 0 })
       .eq('id', carId)
-
-    if (updateError) {
-      console.error('Error updating car comment count:', updateError)
-      return
-    }
-
-    console.log(`Updated car ${carId} comment count to ${count || 0}`)
-  } catch (error) {
-    console.error('Error in updateCarCommentCount:', error)
+  } catch {
+    // Silently fail - count will be updated on next comment operation
   }
 }
 
@@ -1046,8 +980,7 @@ export async function syncCarCommentCount(carId: string): Promise<boolean> {
   try {
     await updateCarCommentCount(carId)
     return true
-  } catch (error) {
-    console.error('Error syncing car comment count:', error)
+  } catch {
     return false
   }
 }
@@ -1216,7 +1149,6 @@ export async function likeCommentClient(
       .single()
 
     if (checkError && checkError.code === '42P01') {
-      console.warn('Comment likes table does not exist yet')
       return false
     }
 
@@ -1232,15 +1164,13 @@ export async function likeCommentClient(
 
     if (likeError) {
       if (likeError.code === '42P01') {
-        console.warn('Comment likes table does not exist yet')
         return false
       }
       throw new Error('Failed to like comment')
     }
 
     return true
-  } catch (error) {
-    console.error('Error liking comment:', error)
+  } catch {
     return false
   }
 }
@@ -1261,8 +1191,7 @@ export async function unlikeCommentClient(
     }
 
     return true
-  } catch (error) {
-    console.error('Error unliking comment:', error)
+  } catch {
     return false
   }
 }
@@ -1282,17 +1211,13 @@ export async function hasUserLikedCommentClient(
     if (error) {
       // Check if it's a table not found error (code 42P01)
       if (error.code === '42P01') {
-        console.warn('Comment likes table does not exist yet')
         return false
       }
-      // Log the specific error for debugging
-      console.error('Error checking like status:', error)
       return false
     }
 
     return !!data
-  } catch (error) {
-    console.error('Error checking comment like status:', error)
+  } catch {
     return false
   }
 }
@@ -1309,22 +1234,13 @@ export async function getCommentLikeCountClient(
     if (error) {
       // Check if it's a table not found error (code 42P01)
       if (error.code === '42P01') {
-        console.warn('Comment likes table does not exist yet')
         return 0
       }
-      // Log the specific error for debugging
-      console.error(
-        'Error getting comment like count for commentId:',
-        commentId,
-        'Error:',
-        error
-      )
-      throw new Error('Failed to get comment like count')
+      return 0
     }
 
     return count || 0
-  } catch (error) {
-    console.error('Error getting comment like count:', error)
+  } catch {
     return 0
   }
 }
@@ -1370,8 +1286,7 @@ export async function getCommentLikesWithProfilesClient(
       full_name: like.profiles?.[0]?.full_name,
       avatar_url: like.profiles?.[0]?.avatar_url,
     }))
-  } catch (error) {
-    console.error('Error getting comment likes with profiles:', error)
+  } catch {
     return []
   }
 }

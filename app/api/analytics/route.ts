@@ -56,14 +56,18 @@ export async function GET(request: NextRequest) {
       ]
     )
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       data: analyticsData,
       carPerformance,
       eventPerformance,
       timeRange,
     })
-  } catch (error) {
-    console.error('Error fetching analytics:', error)
+
+    // Add caching headers for analytics data (5 minutes cache)
+    response.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600')
+
+    return response
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -131,8 +131,10 @@ export const LikeButton = ({
     <button
       onClick={handleLike}
       disabled={isLoading || disabled}
+      aria-label={isLiked ? 'Unlike car' : 'Like car'}
+      aria-pressed={isLiked}
       className={cn(
-        'flex items-center space-x-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+        'flex items-center space-x-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95',
         variantClasses[variant],
         sizeClasses[size],
         className
@@ -142,14 +144,23 @@ export const LikeButton = ({
       <Heart
         className={cn(
           iconSizes[size],
-          isLiked ? 'fill-current text-red-500' : ''
+          'transition-all duration-200',
+          isLiked
+            ? 'fill-current text-red-500 scale-110'
+            : 'hover:scale-110'
         )}
+        aria-hidden='true'
       />
       {showCount && (
-        <span>
+        <span className='transition-colors duration-200'>
           {likeCount > 0
             ? `${likeCount} like${likeCount !== 1 ? 's' : ''}`
             : 'Like'}
+        </span>
+      )}
+      {isLoading && (
+        <span className='sr-only' aria-live='polite'>
+          {isLiked ? 'Unliking...' : 'Liking...'}
         </span>
       )}
     </button>

@@ -22,9 +22,8 @@ export default function MapPage() {
         if (data) {
           setEvents(data)
         }
-      } catch (error) {
+      } catch {
         toast.error('Failed to load events')
-        console.error('Error loading events:', error)
       } finally {
         setLoading(false)
       }

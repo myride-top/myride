@@ -4,22 +4,53 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { AlertCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export const LoginForm = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const { signIn } = useAuth()
   const router = useRouter()
 
+  const validateForm = () => {
+    const newErrors: { email?: string; password?: string } = {}
+
+    if (!email) {
+      newErrors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email address'
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required'
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
     setLoading(true)
+    setErrors({})
 
     const { error } = await signIn(email, password)
 
     if (error) {
-      toast.error(error.message)
+      toast.error(error.message || 'Failed to sign in. Please check your credentials.')
       setLoading(false)
     } else {
       toast.success('Signed in successfully!')
@@ -29,48 +60,91 @@ export const LoginForm = () => {
 
   return (
     <div className='w-full max-w-md mx-auto'>
-      <form onSubmit={handleSubmit} className='space-y-4'>
-        <div>
-          <label
-            htmlFor='email'
-            className='block text-sm font-medium text-foreground'
-          >
+      <form onSubmit={handleSubmit} className='space-y-5' noValidate>
+        <div className='space-y-2'>
+          <Label htmlFor='email' className='text-foreground'>
             Email
-          </label>
-          <input
-            id='email'
-            type='email'
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
+          </Label>
+          <div className='space-y-1'>
+            <Input
+              id='email'
+              type='email'
+              value={email}
+              onChange={e => {
+                setEmail(e.target.value)
+                if (errors.email) {
+                  setErrors(prev => ({ ...prev, email: undefined }))
+                }
+              }}
+              required
+              autoComplete='email'
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              className={cn(
+                'transition-all',
+                errors.email && 'border-destructive focus-visible:ring-destructive/20'
+              )}
+              placeholder='you@example.com'
+            />
+            {errors.email && (
+              <div
+                id='email-error'
+                className='flex items-center gap-1.5 text-sm text-destructive'
+                role='alert'
+              >
+                <AlertCircle className='h-3.5 w-3.5' aria-hidden='true' />
+                <span>{errors.email}</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div>
-          <label
-            htmlFor='password'
-            className='block text-sm font-medium text-foreground'
-          >
+        <div className='space-y-2'>
+          <Label htmlFor='password' className='text-foreground'>
             Password
-          </label>
-          <input
-            id='password'
-            type='password'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            className='mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring bg-background text-foreground'
-          />
+          </Label>
+          <div className='space-y-1'>
+            <Input
+              id='password'
+              type='password'
+              value={password}
+              onChange={e => {
+                setPassword(e.target.value)
+                if (errors.password) {
+                  setErrors(prev => ({ ...prev, password: undefined }))
+                }
+              }}
+              required
+              autoComplete='current-password'
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? 'password-error' : undefined}
+              className={cn(
+                'transition-all',
+                errors.password && 'border-destructive focus-visible:ring-destructive/20'
+              )}
+              placeholder='Enter your password'
+            />
+            {errors.password && (
+              <div
+                id='password-error'
+                className='flex items-center gap-1.5 text-sm text-destructive'
+                role='alert'
+              >
+                <AlertCircle className='h-3.5 w-3.5' aria-hidden='true' />
+                <span>{errors.password}</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <button
+        <Button
           type='submit'
           disabled={loading}
-          className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 cursor-pointer'
+          className='w-full'
+          loading={loading}
         >
           {loading ? 'Signing in...' : 'Sign In'}
-        </button>
+        </Button>
       </form>
     </div>
   )

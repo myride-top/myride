@@ -495,3 +495,60 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+
+/* Shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    to right,
+    var(--muted) 0%,
+    color-mix(in oklch, var(--muted) 50%, transparent) 50%,
+    var(--muted) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(
+    to right,
+    var(--muted) 0%,
+    color-mix(in oklch, var(--muted) 30%, transparent) 50%,
+    var(--muted) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* Smooth focus transitions */
+*:focus-visible {
+  transition: outline-offset 0.15s ease-in-out;
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 640px) {
+  button,
+  a,
+  [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/context/auth-context'
 import {
   EventWithAttendeeCount,
   getAllEventsClient,
+  clearEventsCache,
 } from '@/lib/database/events-client'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Profile } from '@/lib/types/database'
@@ -447,29 +448,33 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   }, [])
 
   const handleEventCreated = (newEvent: EventWithAttendeeCount) => {
+    clearEventsCache() // Clear cache when new event is created
     onEventsChange([...events, newEvent])
     setIsCreateDialogOpen(false)
     toast.success('Event created successfully!')
   }
 
   const handleEventUpdated = (updatedEvent: EventWithAttendeeCount) => {
+    clearEventsCache() // Clear cache when event is updated
     onEventsChange(
       events.map(e => (e.id === updatedEvent.id ? updatedEvent : e))
     )
   }
 
   const handleEventDeleted = (eventId: string) => {
+    clearEventsCache() // Clear cache when event is deleted
     onEventsChange(events.filter(e => e.id !== eventId))
   }
 
   const reloadEvents = async () => {
     try {
-      const updatedEvents = await getAllEventsClient()
+      // Force refresh to get latest data
+      const updatedEvents = await getAllEventsClient(true)
       if (updatedEvents) {
         onEventsChange(updatedEvents)
       }
-    } catch (error) {
-      console.error('Error reloading events:', error)
+    } catch {
+      // Silently fail - events will refresh on next page load
     }
   }
 
@@ -565,7 +570,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
             </Popup>
           </Marker>
         )}
-        {/* Event markers */}
+        {/* Event markers - optimized to prevent unnecessary re-renders */}
         {leafletLoaded &&
           defaultEventIcons.size > 0 &&
           events.map(event => {
@@ -585,18 +590,24 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                 key={event.id}
                 position={[event.latitude, event.longitude]}
                 icon={iconToUse}
+                eventHandlers={{
+                  // Prevent marker click from triggering map events
+                  click: (e) => {
+                    e.originalEvent.stopPropagation()
+                  },
+                }}
               >
-              <Popup maxWidth={320} className='event-popup'>
-                <EventPopup
-                  event={event}
-                  onAttendanceChange={reloadEvents}
-                  onEventUpdated={handleEventUpdated}
-                  onEventDeleted={handleEventDeleted}
-                />
-              </Popup>
-            </Marker>
-          )
-        })}
+                <Popup maxWidth={320} className='event-popup'>
+                  <EventPopup
+                    event={event}
+                    onAttendanceChange={reloadEvents}
+                    onEventUpdated={handleEventUpdated}
+                    onEventDeleted={handleEventDeleted}
+                  />
+                </Popup>
+              </Marker>
+            )
+          })}
       </MapContainer>
 
       {user && (
