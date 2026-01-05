@@ -421,12 +421,10 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
           ]
           setUserLocation(location)
           setMapCenter(location)
-          
+
           // Load address for user location
           setLoadingUserAddress(true)
-          fetch(
-            `/api/geocode?lat=${location[0]}&lng=${location[1]}`
-          )
+          fetch(`/api/geocode?lat=${location[0]}&lng=${location[1]}`)
             .then(response => response.json())
             .then(data => {
               if (data.address) {
@@ -490,10 +488,11 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
         center={mapCenter}
         zoom={6}
         style={{ height: '100%', width: '100%', zIndex: 0 }}
+        attributionControl={false}
       >
         <TileLayer
           key={isDarkMode ? 'dark' : 'light'}
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution=''
           url={
             isDarkMode
               ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -531,11 +530,12 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                     <h3 className='font-semibold text-sm truncate'>
                       {profile?.full_name || profile?.username || 'You'}
                     </h3>
-                    {profile?.username && profile.username !== profile?.full_name && (
-                      <p className='text-xs text-muted-foreground truncate'>
-                        @{profile.username}
-                      </p>
-                    )}
+                    {profile?.username &&
+                      profile.username !== profile?.full_name && (
+                        <p className='text-xs text-muted-foreground truncate'>
+                          @{profile.username}
+                        </p>
+                      )}
                   </div>
                 </div>
                 <div className='space-y-1.5 text-xs'>
@@ -546,11 +546,15 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                         ? 'Loading...'
                         : userLocationAddress
                         ? userLocationAddress
-                        : `${userLocation[0].toFixed(4)}, ${userLocation[1].toFixed(4)}`}
+                        : `${userLocation[0].toFixed(
+                            4
+                          )}, ${userLocation[1].toFixed(4)}`}
                     </span>
                   </div>
                   <div className='flex items-start gap-2 text-muted-foreground'>
-                    <span className='font-medium min-w-[60px]'>Coordinates:</span>
+                    <span className='font-medium min-w-[60px]'>
+                      Coordinates:
+                    </span>
                     <span className='font-mono text-[10px]'>
                       {userLocation[0].toFixed(6)}, {userLocation[1].toFixed(6)}
                     </span>
@@ -592,7 +596,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                 icon={iconToUse}
                 eventHandlers={{
                   // Prevent marker click from triggering map events
-                  click: (e) => {
+                  click: e => {
                     e.originalEvent.stopPropagation()
                   },
                 }}
@@ -624,7 +628,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
           ) : (
             <PremiumButton
               featureName='Create Events'
-              featureDescription='Create and manage car meets, shows, and gatherings on the map. See who&apos;s coming and connect with fellow car enthusiasts.'
+              featureDescription="Create and manage car meets, shows, and gatherings on the map. See who's coming and connect with fellow car enthusiasts."
               variant='outline'
               size='md'
             >

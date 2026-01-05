@@ -262,6 +262,26 @@ body {
   overflow: hidden;
 }
 
+/* Leaflet zoom control - make smaller */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--shadow-md) !important;
+  top: 8px !important;
+}
+
+.leaflet-control-zoom a {
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  font-size: 18px !important;
+}
+
 /* React Day Picker styles */
 .rdp {
   --rdp-cell-size: 40px;
