@@ -170,6 +170,7 @@ function RouteMap({
       zoom={10}
       style={{ height: '100%', width: '100%' }}
       zoomControl={false}
+      attributionControl={false}
     >
       <TileLayer
         key={isDarkMode ? 'dark' : 'light'}
@@ -448,7 +449,7 @@ export function EventPopup({
         </div>
 
         {/* Bottom buttons */}
-        <div className='pt-3 pb-3 px-2 sm:px-3 border-t flex flex-col gap-2'>
+        <div className='pt-3 pb-2 px-2 sm:px-3 border-t flex flex-col gap-2'>
           <div className='flex flex-nowrap gap-2 sm:gap-2.5'>
             {user && (
               <Button

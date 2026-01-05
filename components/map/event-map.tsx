@@ -483,7 +483,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   }
 
   return (
-    <div className='relative w-full h-full'>
+    <div className='relative w-full h-full event-map-container'>
       <MapContainer
         center={mapCenter}
         zoom={6}

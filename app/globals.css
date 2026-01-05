@@ -266,7 +266,27 @@ body {
 .leaflet-control-zoom {
   border: none !important;
   box-shadow: var(--shadow-md) !important;
+}
+
+/* Add top padding only for main event map */
+.event-map-container .leaflet-control-zoom {
   top: 8px !important;
+}
+
+/* Remove top padding for zoom controls in popups/dialogs */
+.event-popup .leaflet-control-zoom,
+.leaflet-popup-content .leaflet-control-zoom {
+  top: 10px !important;
+}
+
+/* Hide zoom controls in popups/dialogs on mobile */
+@media (max-width: 640px) {
+  .event-popup .leaflet-control-zoom,
+  .leaflet-popup-content .leaflet-control-zoom,
+  [role='dialog'] .leaflet-control-zoom,
+  [data-radix-dialog-content] .leaflet-control-zoom {
+    display: none !important;
+  }
 }
 
 .leaflet-control-zoom a {
