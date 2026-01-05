@@ -113,7 +113,11 @@ export const BaseNavbar = ({
               href={logoHref}
               className='flex items-center hover:scale-105 transition-transform flex-shrink-0'
             >
-              <img src='/logo.svg' alt='MyRide' className='h-7 md:h-8 w-auto' />
+              <img
+                src='/logo.webp'
+                alt='MyRide'
+                className='h-7 md:h-8 w-auto'
+              />
             </Link>
           )}
 
@@ -215,7 +219,7 @@ export const BaseNavbar = ({
                 onClick={() => setIsMobileMenuOpen(false)}
                 className='flex items-center'
               >
-                <img src='/logo.svg' alt='MyRide' className='h-7 w-auto' />
+                <img src='/logo.webp' alt='MyRide' className='h-7 w-auto' />
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}

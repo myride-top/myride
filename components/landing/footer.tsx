@@ -24,7 +24,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className='lg:col-span-2'>
             <div className='flex items-center mb-4'>
-              <img src='/logo.svg' alt='MyRide' className='h-8 w-auto' />
+              <img src='/logo.webp' alt='MyRide' className='h-8 w-auto' />
             </div>
             <p className='text-muted-foreground mb-4 max-w-sm'>
               The ultimate platform for car enthusiasts to showcase their rides
