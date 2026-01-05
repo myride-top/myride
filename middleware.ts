@@ -30,9 +30,18 @@ export async function middleware(request: NextRequest) {
   )
 
   // Refresh session if expired - required for Server Components
+  // Try to get session first (more lenient than getUser)
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  
+  // Also try getUser as a fallback
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  
+  // Use user from session or getUser
+  const authenticatedUser = user || session?.user || null
 
   const pathname = request.nextUrl.pathname
 
@@ -74,7 +83,7 @@ export async function middleware(request: NextRequest) {
 
   // Handle root path redirects
   if (pathname === '/') {
-    if (user) {
+    if (authenticatedUser) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     } else {
       return NextResponse.redirect(new URL('/browse', request.url))
@@ -83,26 +92,33 @@ export async function middleware(request: NextRequest) {
 
   // If user is authenticated and trying to access auth pages, redirect to dashboard
   if (
-    user &&
+    authenticatedUser &&
     (request.nextUrl.pathname === '/login' ||
       request.nextUrl.pathname === '/register')
   ) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // If user is not authenticated and trying to access protected pages, redirect to login
-  // But allow public access to car detail pages ([username]/[car])
-  if (
-    !user &&
-    (request.nextUrl.pathname.startsWith('/create') ||
-      request.nextUrl.pathname.startsWith('/profile') ||
-      request.nextUrl.pathname.startsWith('/dashboard') ||
-      request.nextUrl.pathname.startsWith('/map') ||
-      request.nextUrl.pathname.startsWith('/analytics'))
-  ) {
-    // Redirect to login for protected routes
+  // For client-side routes that use ProtectedRoute, let the client handle authentication
+  // This prevents race conditions where middleware doesn't see the session but client does
+  const isClientSideProtectedRoute = 
+    request.nextUrl.pathname.startsWith('/map') ||
+    request.nextUrl.pathname.startsWith('/analytics')
+  
+  const isServerSideProtectedRoute =
+    request.nextUrl.pathname.startsWith('/create') ||
+    request.nextUrl.pathname.startsWith('/profile') ||
+    request.nextUrl.pathname.startsWith('/dashboard')
+
+  // For server-side routes, redirect immediately if not authenticated
+  if (!authenticatedUser && isServerSideProtectedRoute) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
+
+  // For client-side routes, always let them through and let ProtectedRoute handle redirects
+  // This fixes the issue where middleware redirects even when user is authenticated
+  // The client-side ProtectedRoute component will handle the redirect if needed
+  // This prevents race conditions with cookie/session timing in middleware
 
   return supabaseResponse
 }
