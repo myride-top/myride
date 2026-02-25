@@ -1,32 +1,22 @@
-'use client'
-
-import { useEffect } from 'react'
-
 interface StructuredDataProps {
-  data: Record<string, string | number | boolean | object | null>
+  data: Record<string, JsonValue>
+  id?: string
 }
 
-export const StructuredData = ({ data }: StructuredDataProps) => {
-  useEffect(() => {
-    // Remove any existing structured data
-    const existingScripts = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    )
-    existingScripts.forEach(script => script.remove())
+type JsonPrimitive = string | number | boolean | null
+type JsonValue = JsonPrimitive | JsonObject | JsonValue[]
+interface JsonObject {
+  [key: string]: JsonValue
+}
 
-    // Add new structured data
-    const script = document.createElement('script')
-    script.type = 'application/ld+json'
-    script.text = JSON.stringify(data)
-    document.head.appendChild(script)
-
-    return () => {
-      // Cleanup on unmount
-      script.remove()
-    }
-  }, [data])
-
-  return null
+export const StructuredData = ({ data, id }: StructuredDataProps) => {
+  return (
+    <script
+      id={id}
+      type='application/ld+json'
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  )
 }
 
 // Predefined structured data schemas

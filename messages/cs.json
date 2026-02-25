@@ -1,0 +1,675 @@
+{
+  "nav": {
+    "browseCars": "Procházet auta",
+    "map": "Mapa",
+    "dashboard": "Nástěnka",
+    "analytics": "Analytika",
+    "editProfile": "Upravit profil",
+    "addNewCar": "Přidat nové auto",
+    "carLimitReached": "Dosažen limit aut",
+    "buyPremium": "Koupit Premium",
+    "paymentHistory": "Historie plateb",
+    "signOut": "Odhlásit se",
+    "signIn": "Přihlásit se",
+    "signUp": "Registrovat se"
+  },
+  "lang": {
+    "label": "Jazyk",
+    "en": "Angličtina",
+    "cs": "Čeština",
+    "es": "Španělština",
+    "de": "Němčina"
+  },
+  "dashboard": {
+    "title": "Nástěnka",
+    "description": "Spravujte svá auta a sledujte výkon",
+    "shareGarage": "Sdílet garáž",
+    "error": {
+      "loadFailed": "Načtení nástěnky se nezdařilo",
+      "usernameMissing": "Uživatelské jméno nebylo nalezeno",
+      "qrFailed": "Generování QR kódu se nezdařilo"
+    },
+    "loading": "Načítám nástěnku...",
+    "stats": {
+      "totalLikes": "Celkem lajků",
+      "totalViews": "Celkem zobrazení",
+      "totalShares": "Celkem sdílení",
+      "totalComments": "Celkem komentářů"
+    },
+    "performanceOverview": "Přehled výkonu",
+    "yourCars": "Vaše auta",
+    "shareGarageDescription": "Sdílejte celou svou garáž pomocí vlastní URL a QR kódu. Učiňte svůj profil veřejný a sdílitelný.",
+    "empty": {
+      "title": "Zatím žádná auta",
+      "description": "Začněte přidáním svého prvního auta.",
+      "action": "Přidat první auto"
+    }
+  },
+  "browse": {
+    "title": "Procházet auta",
+    "description": "Objevujte úžasná auta od komunity",
+    "error": {
+      "loadFailed": "Načtení aut se nezdařilo. Zkuste to prosím později."
+    },
+    "loading": "Načítám auta...",
+    "search": {
+      "placeholder": "Hledat auta...",
+      "ariaLabel": "Hledat auta podle názvu, značky, modelu nebo roku"
+    },
+    "sort": {
+      "placeholder": "Seřadit podle...",
+      "newest": "Nejnovější",
+      "oldest": "Nejstarší",
+      "mostLiked": "Nejvíce lajků",
+      "mostViewed": "Nejvíce zobrazení",
+      "mostShared": "Nejvíce sdílení",
+      "mostCommented": "Nejvíce komentářů",
+      "yearAsc": "Rok (nejstarší)",
+      "yearDesc": "Rok (nejnovější)",
+      "horsepowerAsc": "Výkon (nižší)",
+      "horsepowerDesc": "Výkon (vyšší)"
+    },
+    "filters": {
+      "hideAria": "Skrýt filtry",
+      "showAria": "Zobrazit filtry",
+      "label": "Filtry",
+      "labelSingle": "Filtr",
+      "advancedAria": "Pokročilé filtry",
+      "advancedTitle": "Pokročilé filtry",
+      "clearAllAria": "Vyčistit všechny filtry",
+      "clearAll": "Vyčistit vše",
+      "clear": "Vyčistit",
+      "make": "Značka",
+      "allMakes": "Všechny značky",
+      "model": "Model",
+      "allModels": "Všechny modely",
+      "yearRange": "Rozsah roku",
+      "from": "Od",
+      "to": "Do",
+      "drivetrain": "Pohon",
+      "allDrivetrains": "Všechny pohony",
+      "transmission": "Převodovka",
+      "allTransmissions": "Všechny převodovky",
+      "fuelType": "Palivo",
+      "allFuelTypes": "Všechna paliva",
+      "horsepowerRange": "Rozsah výkonu",
+      "minHp": "Min HP",
+      "maxHp": "Max HP",
+      "engineCylinders": "Počet válců",
+      "allCylinders": "Všechny válce",
+      "cylinders": "válců",
+      "engineDisplacement": "Objem motoru (L)",
+      "minLiters": "Min L",
+      "maxLiters": "Max L",
+      "min": "Min",
+      "max": "Max",
+      "zeroToHundred": "0-100 km/h",
+      "zeroToSixty": "0-60 mph",
+      "seconds": "(sekundy)",
+      "engineType": "Typ motoru",
+      "allEngineTypes": "Všechny typy motoru"
+    },
+    "results": {
+      "showing": "Zobrazeno",
+      "of": "z",
+      "cars": "aut",
+      "filtered": "(filtrováno)",
+      "page": "Strana"
+    },
+    "empty": {
+      "none": "Žádná auta nenalezena",
+      "filteredTitle": "Žádná auta neodpovídají filtrům",
+      "noneDescription": "Buďte první, kdo přidá auto do komunity!",
+      "filteredDescription": "Zkuste upravit kritéria vyhledávání"
+    },
+    "pagination": {
+      "previous": "Předchozí",
+      "next": "Další"
+    }
+  },
+  "map": {
+    "title": "Mapa",
+    "createEvent": "Vytvořit událost",
+    "delete": {
+      "title": "Smazat událost",
+      "description": "Opravdu chcete tuto událost smazat? Tato akce je nevratná a odstraní všechny záznamy o účasti.",
+      "deleting": "Mažu...",
+      "action": "Smazat událost"
+    },
+    "qr": {
+      "shareEvent": "Sdílejte tuto událost jednoduše",
+      "opensEvent": "Otevře stránku události přímo v zařízení"
+    },
+    "toast": {
+      "qrFailed": "Generování QR kódu se nezdařilo",
+      "eventDeleted": "Událost byla smazána",
+      "eventDeleteFailed": "Smazání události se nezdařilo",
+      "eventCreated": "Událost byla vytvořena!",
+      "eventUpdated": "Událost byla aktualizována",
+      "loadFailed": "Načtení událostí se nezdařilo"
+    },
+    "attendees": {
+      "attendingShort": "účastníků",
+      "title": "Účastníci",
+      "person": "osoba",
+      "people": "lidí",
+      "attendingThisEvent": "účastní se této události",
+      "loading": "Načítám účastníky...",
+      "empty": "Zatím žádní účastníci",
+      "kw": "kW"
+    },
+    "route": {
+      "startTitle": "Začátek trasy",
+      "startDescription": "Startovní bod",
+      "endTitle": "Konec trasy",
+      "endDescription": "Cílový bod",
+      "label": "Trasa"
+    },
+    "attendance": {
+      "attending": "Účastním se",
+      "attend": "Zúčastnit se",
+      "toast": {
+        "attendingSaved": "Nyní se účastníte této události!",
+        "updateFailed": "Aktualizace účasti se nezdařila",
+        "removed": "Účast byla odebrána",
+        "removeFailed": "Odebrání účasti se nezdařilo"
+      },
+      "title": "Účast na události",
+      "selectCar": "Vyberte své auto:",
+      "noCarSelected": "Není vybráno žádné auto",
+      "description": "Potvrďte svou účast a vyberte auto",
+      "imAttending": "Budu se účastnit"
+    },
+    "yourLocation": "Vaše poloha",
+    "youInitial": "U",
+    "you": "Vy",
+    "location": "Poloha",
+    "coordinates": "Souřadnice",
+    "viewProfile": "Zobrazit profil",
+    "premium": {
+      "createEvents": "Vytvářet události",
+      "createEventsDescription": "Vytvářejte a spravujte autosrazy, show a setkání na mapě. Uvidíte, kdo přijde, a spojíte se s dalšími nadšenci."
+    },
+    "dialog": {
+      "imageInvalidType": "Vyberte prosím soubor obrázku",
+      "imageTooLarge": "Velikost obrázku musí být menší než 5 MB",
+      "requiredFields": "Vyplňte prosím všechna povinná pole",
+      "endAfterStart": "Čas konce musí být po času začátku",
+      "updatedImageFailed": "Událost aktualizována, ale nahrání obrázku selhalo",
+      "updateFailed": "Aktualizace události se nezdařila",
+      "editTitle": "Upravit událost",
+      "editDescription": "Aktualizujte detaily události",
+      "eventTitle": "Název události",
+      "eventTitlePlaceholder": "např. Praha Car Meet",
+      "description": "Popis",
+      "descriptionPlaceholder": "Popis události...",
+      "eventType": "Typ události",
+      "selectEventType": "Vyberte typ události",
+      "eventImage": "Obrázek/ikona události",
+      "preview": "Náhled",
+      "clickUpload": "Klikněte pro nahrání",
+      "orDragDrop": "nebo přetáhněte",
+      "imageFormats": "PNG, JPG, GIF do 5 MB",
+      "startDateTime": "Datum a čas začátku",
+      "endDateTime": "Datum a čas konce",
+      "routeHint": "Trasa (klikáním do mapy přidejte body)",
+      "locationHint": "Poloha (kliknutím do mapy nastavíte)",
+      "stopDrawing": "Ukončit kreslení",
+      "startDrawing": "Začít kreslit trasu",
+      "removeLast": "Odebrat poslední",
+      "clearRoute": "Vyčistit trasu",
+      "points": "body",
+      "point": "bod",
+      "pointLabel": "Bod",
+      "routeLabel": "Trasa",
+      "coordinates": "Souřadnice",
+      "updating": "Aktualizuji...",
+      "updateAction": "Aktualizovat událost",
+      "createdImageFailed": "Událost vytvořena, ale nahrání obrázku selhalo",
+      "createFailed": "Vytvoření události se nezdařilo",
+      "createTitle": "Vytvořit novou událost",
+      "createDescription": "Vytvořte novou automobilovou událost, která se zobrazí na mapě",
+      "creating": "Vytvářím...",
+      "createAction": "Vytvořit událost"
+    },
+    "eventType": {
+      "meetup": "Sraz",
+      "race": "Závod",
+      "show": "Show",
+      "cruise": "Vyjížďka",
+      "trackDay": "Track day",
+      "other": "Ostatní"
+    }
+  },
+  "profile": {
+    "title": "Upravit profil",
+    "description": "Spravujte profilové informace a přizpůsobení garáže",
+    "error": {
+      "notAuthenticated": "Uživatel není přihlášen",
+      "usernameExists": "Uživatelské jméno už existuje. Zvolte jiné.",
+      "updateFailed": "Aktualizace profilu se nezdařila",
+      "unexpected": "Došlo k neočekávané chybě",
+      "avatarFailed": "Aktualizace avatara se nezdařila"
+    },
+    "toast": {
+      "updated": "Profil byl úspěšně aktualizován!"
+    },
+    "loading": "Načítám profil...",
+    "accountInfo": "Informace o účtu",
+    "email": "E-mail",
+    "memberSince": "Člen od",
+    "avatarSection": "Profilový avatar",
+    "basicInfo": "Základní informace",
+    "placeholder": {
+      "username": "Zadejte uživatelské jméno",
+      "fullName": "Zadejte celé jméno",
+      "nationality": "Vyberte národnost",
+      "garageDescription": "Popište svou kolekci aut...",
+      "bio": "Představte se návštěvníkům...",
+      "location": "Město, země",
+      "instagram": "uzivatel",
+      "youtube": "Název kanálu nebo URL"
+    },
+    "usernameHelp": "Toto bude vaše veřejné uživatelské jméno na MyRide",
+    "fullName": "Celé jméno",
+    "unitSystem": "Systém jednotek",
+    "units": {
+      "metric": "Metrické (km/h, Nm, bar, kg)",
+      "imperial": "Imperiální (mph, lb-ft, PSI, lbs)",
+      "help": "Vyberte preferovaný systém jednotek pro specifikace auta"
+    },
+    "nationality": "Národnost",
+    "nationalityHelp": "Vaše národnost nebo země původu",
+    "garageCustomization": "Přizpůsobení garáže",
+    "premiumFeature": "Premium funkce",
+    "garageCustomizationHelp": "Upravte vzhled své garáže pro návštěvníky. Tyto možnosti jsou dostupné pouze pro premium uživatele.",
+    "garageDescription": "Popis garáže",
+    "garageDescriptionHelp": "Krátký popis, který se zobrazí v horní části vaší garáže",
+    "bio": "Bio",
+    "bioHelp": "Delší představení vás a vaší vášně pro auta",
+    "locationHelp": "Vaše poloha (např. \"Praha, CZ\")",
+    "instagramHandle": "Instagram",
+    "youtubeChannel": "YouTube kanál",
+    "websiteUrl": "Webová stránka",
+    "websiteHelp": "Váš osobní web nebo portfolio",
+    "saveChanges": "Uložit změny"
+  },
+  "auth": {
+    "login": {
+      "failed": "Přihlášení se nezdařilo. Zkuste to prosím znovu.",
+      "success": "Úspěšně přihlášeno!",
+      "signingIn": "Přihlašuji...",
+      "submit": "Přihlásit se",
+      "pageTitle": "Přihlaste se ke svému účtu",
+      "or": "Nebo",
+      "createAccount": "vytvořit nový účet"
+    },
+    "register": {
+      "usernameTaken": "Uživatelské jméno je již obsazené",
+      "failed": "Vytvoření účtu se nezdařilo. Zkuste to prosím znovu.",
+      "success": "Účet byl úspěšně vytvořen!",
+      "creating": "Vytvářím účet...",
+      "submit": "Vytvořit účet",
+      "pageTitle": "Vytvořte si účet",
+      "or": "Nebo",
+      "signInExisting": "přihlásit se k existujícímu účtu"
+    },
+    "validation": {
+      "emailRequired": "E-mail je povinný",
+      "emailInvalid": "Zadejte platný e-mail",
+      "passwordRequired": "Heslo je povinné",
+      "passwordMin": "Heslo musí mít alespoň 6 znaků",
+      "usernameRequired": "Uživatelské jméno je povinné",
+      "usernameMin": "Uživatelské jméno musí mít alespoň 3 znaky",
+      "usernameInvalid": "Uživatelské jméno může obsahovat jen písmena, čísla a _",
+      "confirmPasswordRequired": "Potvrzení hesla je povinné",
+      "passwordMismatch": "Hesla se neshodují",
+      "usernameTaken": "Uživatelské jméno je již obsazené",
+      "usernameTakenAlt": "Toto uživatelské jméno už používá jiný uživatel",
+      "usernameAvailable": "Uživatelské jméno je dostupné"
+    },
+    "fields": {
+      "email": "E-mail",
+      "emailPlaceholder": "vy@priklad.cz",
+      "password": "Heslo",
+      "passwordPlaceholder": "Zadejte heslo",
+      "username": "Uživatelské jméno",
+      "usernamePlaceholder": "vaše_jméno",
+      "passwordMinPlaceholder": "Alespoň 6 znaků",
+      "confirmPassword": "Potvrzení hesla",
+      "confirmPasswordPlaceholder": "Potvrďte své heslo"
+    }
+  },
+  "analytics": {
+    "error": {
+      "fetchFailed": "Načtení analytiky se nezdařilo",
+      "generic": "Došlo k chybě",
+      "title": "Chyba při načítání analytiky"
+    },
+    "timeRange": {
+      "7d": "Posledních 7 dní",
+      "30d": "Posledních 30 dní",
+      "3m": "Poslední 3 měsíce",
+      "6m": "Posledních 6 měsíců",
+      "1y": "Poslední rok"
+    },
+    "loading": "Načítám analytiku...",
+    "tryAgain": "Zkusit znovu",
+    "empty": {
+      "title": "Žádná analytická data",
+      "description": "Začněte přidáním aut nebo událostí, aby se zobrazila analytická data."
+    },
+    "title": "Analytická nástěnka",
+    "description": "Sledujte výkon vašich aut a událostí",
+    "refresh": "Obnovit",
+    "yourCars": "Vaše auta",
+    "performanceForCars": "Výkon vašich aut za",
+    "yourEvents": "Vaše události",
+    "performanceForEvents": "Výkon vašich událostí za",
+    "premiumRequired": {
+      "title": "Vyžadováno Premium",
+      "description": "Analytická nástěnka je dostupná pouze pro premium uživatele",
+      "unlockTitle": "Odemkněte pokročilou analytiku",
+      "unlockDescription": "Získejte detailní přehled o výkonu aut a událostí v premium analytice.",
+      "benefitViews": "Sledujte zobrazení, lajky, sdílení a komentáře",
+      "benefitAttendance": "Monitorujte účast a zapojení na událostech",
+      "benefitTimeline": "Analyzujte výkon v čase",
+      "benefitExport": "Exportujte data pro další analýzu"
+    },
+    "backToDashboard": "Zpět na nástěnku"
+  },
+  "common": {
+    "loading": "Načítám...",
+    "cancel": "Zrušit",
+    "generating": "Generuji...",
+    "share": "Sdílet",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "saving": "Ukládám...",
+    "save": "Uložit",
+    "notAvailable": "N/A",
+    "tip": "Tip",
+    "unknown": "Neznámý",
+    "unknownUser": "Neznámý uživatel"
+  },
+  "garage": {
+    "private": {
+      "upgrade": "Upgradovat na Premium",
+      "title": "Profil není dostupný",
+      "owner": "Tento profil je soukromý. Upgradujte na premium, aby byl profil veřejný a sdílitelný.",
+      "visitor": "Tento profil je dostupný jen premium členům. Uživatel musí upgradovat na premium, aby byl profil veřejný."
+    },
+    "error": {
+      "profileNotFound": "Profil nenalezen",
+      "loadFailed": "Načtení profilu se nezdařilo"
+    },
+    "toast": {
+      "premiumRequired": "Premium funkce: upgradujte pro sdílení celé garáže"
+    },
+    "loading": "Načítám garáž...",
+    "profileNotFound": "Profil nenalezen",
+    "profileNotFoundDescription": "Požadovaný profil nebyl nalezen.",
+    "carSingular": "auto",
+    "carPlural": "auta",
+    "social": {
+      "youtube": "YouTube",
+      "website": "Web"
+    },
+    "empty": {
+      "title": "Zatím žádná auta",
+      "description": "Tento uživatel zatím nepřidal do garáže žádná auta."
+    }
+  },
+  "qr": {
+    "downloaded": "QR kód stažen!",
+    "linkCopied": "Odkaz zkopírován do schránky!",
+    "title": "QR kód",
+    "scanDescription": "Naskenujte tento QR kód fotoaparátem telefonu",
+    "downloadPng": "Stáhnout PNG",
+    "copyLink": "Kopírovat odkaz",
+    "shareCar": "Sdílejte toto auto jednoduše",
+    "opensCarPage": "Otevře stránku auta přímo v zařízení",
+    "profile": "Profil"
+  },
+  "payments": {
+    "error": {
+      "loadFailed": "Načtení plateb se nezdařilo",
+      "invalidAmount": "Neplatná částka refundace",
+      "refundFailed": "Zpracování refundace se nezdařilo"
+    },
+    "toast": {
+      "refundSuccess": "Refundace byla úspěšně zpracována"
+    },
+    "type": {
+      "premium": "Premium přístup",
+      "carSlot": "Slot pro auto"
+    },
+    "title": "Historie plateb",
+    "description": "Prohlížejte a spravujte historii plateb a refundací",
+    "empty": {
+      "title": "Nenalezeny žádné platby",
+      "description": "Zatím jste neprovedli žádné platby."
+    },
+    "refunded": "Refundováno",
+    "refunds": "Refundace",
+    "requestRefund": "Požádat o refundaci",
+    "dialog": {
+      "requestFor": "Požádat o refundaci pro",
+      "requestHelp": "platbu. Můžete požádat o plnou nebo částečnou refundaci.",
+      "originalAmount": "Původní částka",
+      "alreadyRefunded": "Již refundováno",
+      "remainingAmount": "Zbývající částka",
+      "refundAmount": "Částka refundace (nechte prázdné pro plnou refundaci)",
+      "refundAmountHelp": "Nechte prázdné pro refundaci celé zbývající částky",
+      "refundReason": "Důvod refundace"
+    },
+    "reason": {
+      "requestedByCustomer": "Požadavek zákazníka",
+      "duplicate": "Duplicitní platba",
+      "fraudulent": "Podvodná platba"
+    },
+    "processing": "Zpracovávám..."
+  },
+  "carCard": {
+    "viewDetailsAria": "Zobrazit detail auta",
+    "actions": "Akce auta",
+    "edit": "Upravit auto",
+    "shareQr": "Sdílet auto přes QR kód",
+    "viewDetails": "Zobrazit detail"
+  },
+  "carDetail": {
+    "error": {
+      "notFound": "Auto nenalezeno",
+      "loadFailed": "Načtení dat auta se nezdařilo",
+      "pageTitle": "Auto nenalezeno",
+      "generic": "Při načítání detailu auta došlo k chybě.",
+      "goDashboard": "Přejít na nástěnku",
+      "goHome": "Přejít na domů",
+      "notFoundDescription": "Hledané auto jsme nenašli. Mohlo být přesunuto, smazáno nebo je URL chybná.",
+      "tip": "Zkontrolujte URL a ověřte, že auto nebylo smazáno majitelem."
+    },
+    "toast": {
+      "likeOwn": "Nemůžete lajknout vlastní auto",
+      "unliked": "Like byl odebrán",
+      "liked": "Auto bylo lajknuto!",
+      "likeUpdateFailed": "Aktualizace lajku selhala"
+    },
+    "loading": "Načítám detail auta...",
+    "by": "od",
+    "viewGarage": "Zobrazit garáž",
+    "unlikeCar": "Odebrat like",
+    "likeCar": "Dát like",
+    "shareQrTitle": "Sdílet auto přes QR kód",
+    "editCar": "Upravit auto",
+    "likesPlural": "lajků",
+    "likeSingular": "lajk",
+    "like": "To se mi líbí",
+    "photos": {
+      "title": "Fotky",
+      "all": "Vše",
+      "corrupted": "Fotky jsou poškozené",
+      "none": "Zatím žádné fotky",
+      "corruptedDescription": "Existující fotky vypadají poškozeně. Nahrajte je prosím znovu v editaci.",
+      "noneDescription": "K tomuto autu zatím nebyly nahrány žádné fotky.",
+      "noneCategory": "V této kategorii nejsou žádné fotky.",
+      "reuploadAction": "Upravit auto a nahrát fotky znovu"
+    },
+    "specs": {
+      "title": "Specifikace",
+      "buildGoals": "Cíle projektu",
+      "sections": {
+        "basicInformation": "Základní informace",
+        "buildStory": "Příběh stavby a info o projektu",
+        "enginePerformance": "Motor a výkon",
+        "wheelsAndTires": "Kola a pneumatiky",
+        "brakeSystem": "Brzdový systém",
+        "suspension": "Podvozek",
+        "exterior": "Exteriér",
+        "interior": "Interiér",
+        "additionalDetails": "Další detaily",
+        "socialLinks": "Sociální sítě a odkazy"
+      },
+      "fields": {
+        "make": "Značka",
+        "model": "Model",
+        "year": "Rok",
+        "description": "Popis",
+        "engine_displacement": "Objem motoru",
+        "engine_cylinders": "Počet válců",
+        "engine_code": "Kód motoru",
+        "horsepower": "Výkon",
+        "torque": "Točivý moment",
+        "engine_type": "Typ motoru",
+        "fuel_type": "Typ paliva",
+        "transmission": "Převodovka",
+        "drivetrain": "Pohon",
+        "zero_to_sixty_metric": "0-100 km/h",
+        "zero_to_sixty_imperial": "0-60 mph",
+        "top_speed": "Maximální rychlost",
+        "quarter_mile": "0-400 m",
+        "weight": "Hmotnost",
+        "power_to_weight": "Poměr výkon/hmotnost",
+        "wheel_size": "Velikost kol",
+        "wheel_brand": "Značka kol",
+        "wheel_material": "Materiál kol",
+        "wheel_offset": "ET kol",
+        "front_tire_size": "Rozměr předních pneu",
+        "front_tire_brand": "Značka předních pneu",
+        "front_tire_model": "Model předních pneu",
+        "front_tire_pressure": "Tlak předních pneu",
+        "rear_tire_size": "Rozměr zadních pneu",
+        "rear_tire_brand": "Značka zadních pneu",
+        "rear_tire_model": "Model zadních pneu",
+        "rear_tire_pressure": "Tlak zadních pneu",
+        "front_brakes": "Přední brzdy",
+        "rear_brakes": "Zadní brzdy",
+        "brake_rotors": "Kotouče",
+        "brake_caliper_brand": "Značka třmenů",
+        "brake_lines": "Brzdové hadice",
+        "front_suspension": "Přední podvozek",
+        "rear_suspension": "Zadní podvozek",
+        "suspension_type": "Typ podvozku",
+        "ride_height": "Světlá výška",
+        "coilovers": "Coilovers",
+        "sway_bars": "Stabilizátory",
+        "body_kit": "Body kit",
+        "paint_color": "Barva laku",
+        "paint_type": "Typ laku",
+        "wrap_color": "Barva fólie",
+        "carbon_fiber_parts": "Karbonové díly",
+        "lighting": "Osvětlení",
+        "interior_color": "Barva interiéru",
+        "interior_material": "Materiál interiéru",
+        "seats": "Sedadla",
+        "steering_wheel": "Volant",
+        "shift_knob": "Řadicí hlavice",
+        "gauges": "Budíky",
+        "mileage": "Nájezd",
+        "fuel_economy": "Spotřeba",
+        "vin": "VIN",
+        "maintenance_history": "Servisní historie",
+        "modifications": "Úpravy",
+        "dyno_results": "Výsledky z brzdy",
+        "build_story": "Příběh stavby",
+        "build_start_date": "Začátek stavby",
+        "total_build_cost": "Celková cena stavby",
+        "inspiration": "Inspirace",
+        "instagram_handle": "Instagram",
+        "youtube_channel": "YouTube",
+        "build_thread_url": "Build thread",
+        "website_url": "Web"
+      }
+    }
+  },
+  "comments": {
+    "title": "Komentáře",
+    "loading": "Načítám komentáře...",
+    "empty": "Zatím žádné komentáře. Buďte první!",
+    "addPlaceholder": "Přidat komentář...",
+    "replyPlaceholder": "Napsat odpověď...",
+    "reply": "Odpovědět",
+    "replySingular": "odpověď",
+    "replyPlural": "odpovědí",
+    "show": "Zobrazit",
+    "hide": "Skrýt",
+    "pinned": "PŘIPNUTÝ KOMENTÁŘ",
+    "pin": "Připnout komentář",
+    "unpin": "Odepnout komentář",
+    "delete": "Smazat komentář",
+    "like": "To se mi líbí",
+    "unlike": "Už se mi to nelíbí",
+    "ownerBadge": "Majitel",
+    "ownerHint": "💡 Toto bude váš jediný hlavní komentář. Níže můžete odpovídat ostatním.",
+    "ownerSingleTopLevel": "Majitel může vytvořit pouze jeden hlavní komentář. Místo toho můžete odpovídat ostatním.",
+    "databaseError": "Dočasná chyba komentářů",
+    "migrationHint": "Pro zapnutí lajků komentářů spusťte SQL migraci v Supabase dashboardu:",
+    "error": {
+      "load": "Načtení komentářů se nezdařilo",
+      "add": "Přidání komentáře se nezdařilo",
+      "replyAdd": "Přidání odpovědi se nezdařilo",
+      "delete": "Smazání komentáře se nezdařilo",
+      "pin": "Připnutí komentáře se nezdařilo",
+      "unpin": "Odepnnutí komentáře se nezdařilo",
+      "like": "Lajknutí komentáře se nezdařilo",
+      "unlike": "Odebrání lajku komentáře se nezdařilo"
+    },
+    "toast": {
+      "added": "Komentář byl přidán",
+      "replyAdded": "Odpověď byla přidána",
+      "deleted": "Komentář byl smazán",
+      "pinned": "Komentář byl připnut",
+      "unpinned": "Komentář byl odepnut",
+      "liked": "Komentář byl lajknut",
+      "unliked": "Like komentáře byl odebrán"
+    }
+  },
+  "timeline": {
+    "title": "Časová osa úprav",
+    "guide": "Průvodce",
+    "view": "Zobrazit",
+    "readMore": "Zobrazit více",
+    "showLess": "Zobrazit méně"
+  },
+  "photo": {
+    "photo": "Fotka",
+    "of": "z",
+    "alt": "Fotka auta",
+    "main": "Hlavní",
+    "dragReorder": "Přetáhněte pro změnu pořadí",
+    "closeViewer": "Zavřít prohlížeč",
+    "previous": "Předchozí fotka",
+    "next": "Další fotka",
+    "shortcuts": "← → Navigace • ESC Zavřít • Z Přiblížení • R Otočení",
+    "category": {
+      "exterior": "Exteriér",
+      "interior": "Interiér",
+      "engine": "Motor",
+      "wheels": "Kola",
+      "brakes": "Brzdy",
+      "suspension": "Podvozek",
+      "underbody": "Spodek",
+      "dyno": "Dyno",
+      "other": "Ostatní"
+    }
+  }
+}

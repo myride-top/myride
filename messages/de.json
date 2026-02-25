@@ -1,0 +1,675 @@
+{
+  "nav": {
+    "browseCars": "Autos entdecken",
+    "map": "Karte",
+    "dashboard": "Dashboard",
+    "analytics": "Analytik",
+    "editProfile": "Profil bearbeiten",
+    "addNewCar": "Neues Auto hinzufügen",
+    "carLimitReached": "Autolimit erreicht",
+    "buyPremium": "Premium kaufen",
+    "paymentHistory": "Zahlungsverlauf",
+    "signOut": "Abmelden",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren"
+  },
+  "lang": {
+    "label": "Sprache",
+    "en": "English",
+    "cs": "Czech",
+    "es": "Spanish",
+    "de": "German"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Verwalte deine Autos und verfolge ihre Performance",
+    "shareGarage": "Garage teilen",
+    "error": {
+      "loadFailed": "Dashboard-Daten konnten nicht geladen werden",
+      "usernameMissing": "Benutzername nicht gefunden",
+      "qrFailed": "QR-Code konnte nicht erstellt werden"
+    },
+    "loading": "Dashboard wird geladen...",
+    "stats": {
+      "totalLikes": "Likes gesamt",
+      "totalViews": "Aufrufe gesamt",
+      "totalShares": "Shares gesamt",
+      "totalComments": "Kommentare gesamt"
+    },
+    "performanceOverview": "Performance-Übersicht",
+    "yourCars": "Deine Autos",
+    "shareGarageDescription": "Teile deine komplette Garage mit einer eigenen URL und einem QR-Code. Mache dein Profil öffentlich und teilbar.",
+    "empty": {
+      "title": "Noch keine Autos",
+      "description": "Starte mit dem Hinzufügen deines ersten Autos.",
+      "action": "Erstes Auto hinzufügen"
+    }
+  },
+  "browse": {
+    "title": "Autos entdecken",
+    "description": "Entdecke großartige Autos aus der Community",
+    "error": {
+      "loadFailed": "Autos konnten nicht geladen werden. Bitte später erneut versuchen."
+    },
+    "loading": "Autos werden geladen...",
+    "search": {
+      "placeholder": "Autos suchen...",
+      "ariaLabel": "Autos nach Name, Marke, Modell oder Jahr suchen"
+    },
+    "sort": {
+      "placeholder": "Sortieren nach...",
+      "newest": "Neueste zuerst",
+      "oldest": "Älteste zuerst",
+      "mostLiked": "Meiste Likes",
+      "mostViewed": "Meiste Aufrufe",
+      "mostShared": "Am meisten geteilt",
+      "mostCommented": "Meiste Kommentare",
+      "yearAsc": "Baujahr (älteste)",
+      "yearDesc": "Baujahr (neueste)",
+      "horsepowerAsc": "Leistung (niedrig)",
+      "horsepowerDesc": "Leistung (hoch)"
+    },
+    "filters": {
+      "hideAria": "Filter ausblenden",
+      "showAria": "Filter anzeigen",
+      "label": "Filter",
+      "labelSingle": "Filter",
+      "advancedAria": "Erweiterte Filter",
+      "advancedTitle": "Erweiterte Filter",
+      "clearAllAria": "Alle Filter zurücksetzen",
+      "clearAll": "Alle löschen",
+      "clear": "Zurücksetzen",
+      "make": "Marke",
+      "allMakes": "Alle Marken",
+      "model": "Modell",
+      "allModels": "Alle Modelle",
+      "yearRange": "Baujahrbereich",
+      "from": "Von",
+      "to": "Bis",
+      "drivetrain": "Antrieb",
+      "allDrivetrains": "Alle Antriebe",
+      "transmission": "Getriebe",
+      "allTransmissions": "Alle Getriebe",
+      "fuelType": "Kraftstoffart",
+      "allFuelTypes": "Alle Kraftstoffarten",
+      "horsepowerRange": "Leistungsbereich",
+      "minHp": "Min. PS",
+      "maxHp": "Max. PS",
+      "engineCylinders": "Motorzylinder",
+      "allCylinders": "Alle Zylinder",
+      "cylinders": "Zylinder",
+      "engineDisplacement": "Hubraum (L)",
+      "minLiters": "Min. L",
+      "maxLiters": "Max. L",
+      "min": "Min.",
+      "max": "Max.",
+      "zeroToHundred": "0-100 km/h",
+      "zeroToSixty": "0-60 mph",
+      "seconds": "(Sekunden)",
+      "engineType": "Motortyp",
+      "allEngineTypes": "Alle Motortypen"
+    },
+    "results": {
+      "showing": "Zeige",
+      "of": "von",
+      "cars": "Autos",
+      "filtered": "(gefiltert)",
+      "page": "Seite"
+    },
+    "empty": {
+      "none": "Keine Autos gefunden",
+      "filteredTitle": "Keine Autos passen zu deinen Filtern",
+      "noneDescription": "Sei der Erste und füge ein Auto zur Community hinzu!",
+      "filteredDescription": "Versuche, deine Suchkriterien anzupassen"
+    },
+    "pagination": {
+      "previous": "Zurück",
+      "next": "Weiter"
+    }
+  },
+  "map": {
+    "title": "Karte",
+    "createEvent": "Event erstellen",
+    "delete": {
+      "title": "Event löschen",
+      "description": "Möchtest du \"${eventTitle}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden und entfernt alle Teilnahmedaten dieses Events.",
+      "deleting": "Wird gelöscht...",
+      "action": "Event löschen"
+    },
+    "qr": {
+      "shareEvent": "Teile dieses Event einfach",
+      "opensEvent": "Öffnet die Event-Seite direkt auf deinem Gerät"
+    },
+    "toast": {
+      "qrFailed": "QR-Code konnte nicht erstellt werden",
+      "eventDeleted": "Event erfolgreich gelöscht",
+      "eventDeleteFailed": "Event konnte nicht gelöscht werden",
+      "eventCreated": "Event erfolgreich erstellt!",
+      "eventUpdated": "Event erfolgreich aktualisiert",
+      "loadFailed": "Events konnten nicht geladen werden"
+    },
+    "attendees": {
+      "attendingShort": "nehmen teil",
+      "title": "Teilnehmer",
+      "person": "Person",
+      "people": "Personen",
+      "attendingThisEvent": "nehmen an diesem Event teil",
+      "loading": "Teilnehmer werden geladen...",
+      "empty": "Noch keine Teilnehmer",
+      "kw": "kW"
+    },
+    "route": {
+      "label": "Route",
+      "startTitle": "Routenstart",
+      "startDescription": "Startpunkt",
+      "endTitle": "Routenende",
+      "endDescription": "Zielpunkt"
+    },
+    "attendance": {
+      "attending": "Nehme teil",
+      "attend": "Teilnehmen",
+      "description": "Bestätige deine Teilnahme am Event",
+      "imAttending": "Ich nehme teil",
+      "toast": {
+        "attendingSaved": "Du nimmst jetzt an diesem Event teil!",
+        "updateFailed": "Teilnahme konnte nicht aktualisiert werden",
+        "removed": "Teilnahme entfernt",
+        "removeFailed": "Teilnahme konnte nicht entfernt werden"
+      },
+      "title": "Event-Teilnahme",
+      "selectCar": "Wähle dein Auto:",
+      "noCarSelected": "Kein Auto ausgewählt"
+    },
+    "yourLocation": "Dein Standort",
+    "youInitial": "D",
+    "you": "Du",
+    "location": "Standort",
+    "coordinates": "Koordinaten",
+    "viewProfile": "Profil ansehen",
+    "premium": {
+      "createEvents": "Events erstellen",
+      "createEventsDescription": "Nur Premium-Nutzer können Events auf der Karte erstellen."
+    },
+    "dialog": {
+      "imageInvalidType": "Bitte wähle eine Bilddatei aus",
+      "imageTooLarge": "Die Bildgröße muss unter 5MB liegen",
+      "requiredFields": "Bitte alle Pflichtfelder ausfüllen",
+      "endAfterStart": "Endzeit muss nach der Startzeit liegen",
+      "updatedImageFailed": "Event aktualisiert, aber Bild-Upload fehlgeschlagen",
+      "updateFailed": "Event konnte nicht aktualisiert werden",
+      "editTitle": "Event bearbeiten",
+      "editDescription": "Aktualisiere die Event-Details",
+      "eventTitle": "Eventtitel",
+      "eventTitlePlaceholder": "z. B. Prague Car Meet",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Eventbeschreibung...",
+      "eventType": "Eventtyp",
+      "selectEventType": "Eventtyp auswählen",
+      "eventImage": "Eventbild/Icon",
+      "preview": "Vorschau",
+      "clickUpload": "Klicken zum Hochladen",
+      "orDragDrop": "oder per Drag & Drop",
+      "imageFormats": "PNG, JPG, GIF bis 5MB",
+      "startDateTime": "Startdatum & Uhrzeit",
+      "endDateTime": "Enddatum & Uhrzeit",
+      "routeHint": "Route (zum Hinzufügen von Punkten auf die Karte klicken)",
+      "locationHint": "Standort (zum Setzen auf die Karte klicken)",
+      "stopDrawing": "Zeichnen stoppen",
+      "startDrawing": "Route zeichnen starten",
+      "removeLast": "Letzten entfernen",
+      "clearRoute": "Route löschen",
+      "points": "Punkte",
+      "point": "Punkt",
+      "pointLabel": "Punkt",
+      "routeLabel": "Route",
+      "coordinates": "Koordinaten",
+      "updating": "Wird aktualisiert...",
+      "updateAction": "Event aktualisieren",
+      "createdImageFailed": "Event erstellt, aber Bild-Upload fehlgeschlagen",
+      "createFailed": "Event konnte nicht erstellt werden",
+      "createTitle": "Neues Event erstellen",
+      "createDescription": "Erstelle ein neues Auto-Event, das auf der Karte erscheint",
+      "creating": "Wird erstellt...",
+      "createAction": "Event erstellen"
+    },
+    "eventType": {
+      "meetup": "Treffen",
+      "race": "Rennen",
+      "show": "Show",
+      "cruise": "Ausfahrt",
+      "trackDay": "Trackday",
+      "other": "Sonstiges"
+    }
+  },
+  "profile": {
+    "title": "Profil bearbeiten",
+    "description": "Verwalte deine Profilinformationen und Garagen-Anpassungen",
+    "error": {
+      "notAuthenticated": "Benutzer nicht authentifiziert",
+      "usernameExists": "Benutzername existiert bereits. Bitte wähle einen anderen.",
+      "updateFailed": "Profil konnte nicht aktualisiert werden",
+      "unexpected": "Ein unerwarteter Fehler ist aufgetreten",
+      "avatarFailed": "Avatar konnte nicht aktualisiert werden"
+    },
+    "toast": {
+      "updated": "Profil erfolgreich aktualisiert!"
+    },
+    "loading": "Profil wird geladen...",
+    "accountInfo": "Kontoinformationen",
+    "email": "E-Mail",
+    "memberSince": "Mitglied seit",
+    "avatarSection": "Profilbild",
+    "basicInfo": "Grundinformationen",
+    "placeholder": {
+      "username": "Benutzernamen eingeben",
+      "fullName": "Vollständigen Namen eingeben",
+      "nationality": "Nationalität auswählen",
+      "garageDescription": "Beschreibe deine Autosammlung...",
+      "bio": "Erzähle Besuchern etwas über dich...",
+      "location": "Stadt, Land",
+      "instagram": "benutzername",
+      "youtube": "Kanalname oder URL"
+    },
+    "usernameHelp": "Das ist dein öffentlicher Benutzername auf MyRide",
+    "fullName": "Vollständiger Name",
+    "unitSystem": "Einheitensystem",
+    "units": {
+      "metric": "Metrisch (km/h, Nm, bar, kg)",
+      "imperial": "Imperial (mph, lb-ft, PSI, lbs)",
+      "help": "Wähle dein bevorzugtes Einheitensystem für Fahrzeugspezifikationen"
+    },
+    "nationality": "Nationalität",
+    "nationalityHelp": "Deine Nationalität oder dein Herkunftsland",
+    "garageCustomization": "Garage anpassen",
+    "premiumFeature": "Premium-Funktion",
+    "garageCustomizationHelp": "Passe an, wie deine Garage-Seite für Besucher angezeigt wird. Diese Optionen sind nur für Premium-Nutzer verfügbar.",
+    "garageDescription": "Garagenbeschreibung",
+    "garageDescriptionHelp": "Eine kurze Beschreibung, die oben auf deiner Garagen-Seite erscheint",
+    "bio": "Bio",
+    "bioHelp": "Eine längere Bio über dich und deine Leidenschaft für Autos",
+    "locationHelp": "Dein Standort (z. B. \"Los Angeles, CA\" oder \"London, UK\")",
+    "instagramHandle": "Instagram-Name",
+    "youtubeChannel": "YouTube-Kanal",
+    "websiteUrl": "Website-URL",
+    "websiteHelp": "Deine persönliche Website oder Portfolio",
+    "saveChanges": "Änderungen speichern"
+  },
+  "auth": {
+    "login": {
+      "failed": "Anmeldung fehlgeschlagen. Bitte prüfe deine Zugangsdaten.",
+      "success": "Erfolgreich angemeldet!",
+      "signingIn": "Anmeldung läuft...",
+      "submit": "Anmelden",
+      "pageTitle": "Melde dich in deinem Konto an",
+      "or": "Oder",
+      "createAccount": "ein neues Konto erstellen"
+    },
+    "register": {
+      "usernameTaken": "Benutzername ist bereits vergeben. Bitte wähle einen anderen.",
+      "failed": "Konto konnte nicht erstellt werden. Bitte erneut versuchen.",
+      "success": "Konto erfolgreich erstellt!",
+      "creating": "Konto wird erstellt...",
+      "submit": "Konto erstellen",
+      "pageTitle": "Erstelle dein Konto",
+      "or": "Oder",
+      "signInExisting": "mit deinem bestehenden Konto anmelden"
+    },
+    "validation": {
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Bitte gib eine gültige E-Mail-Adresse ein",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordMin": "Passwort muss mindestens 6 Zeichen lang sein",
+      "usernameRequired": "Benutzername ist erforderlich",
+      "usernameMin": "Benutzername muss mindestens 3 Zeichen lang sein",
+      "usernameInvalid": "Benutzername darf nur Buchstaben, Zahlen und Unterstriche enthalten",
+      "confirmPasswordRequired": "Bitte bestätige dein Passwort",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "usernameTaken": "Benutzername ist bereits vergeben",
+      "usernameTakenAlt": "Benutzername ist bereits vergeben. Bitte wähle einen anderen.",
+      "usernameAvailable": "Benutzername ist verfügbar"
+    },
+    "fields": {
+      "email": "E-Mail",
+      "emailPlaceholder": "du@beispiel.com",
+      "password": "Passwort",
+      "passwordPlaceholder": "Passwort eingeben",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Wähle einen eindeutigen Benutzernamen",
+      "passwordMinPlaceholder": "Mindestens 6 Zeichen",
+      "confirmPassword": "Passwort bestätigen",
+      "confirmPasswordPlaceholder": "Bestätige dein Passwort"
+    }
+  },
+  "analytics": {
+    "error": {
+      "fetchFailed": "Analysedaten konnten nicht geladen werden",
+      "generic": "Ein Fehler ist aufgetreten",
+      "title": "Fehler beim Laden der Analytik"
+    },
+    "timeRange": {
+      "7d": "Letzte 7 Tage",
+      "30d": "Letzte 30 Tage",
+      "3m": "Letzte 3 Monate",
+      "6m": "Letzte 6 Monate",
+      "1y": "Letztes Jahr"
+    },
+    "loading": "Analytik wird geladen...",
+    "tryAgain": "Erneut versuchen",
+    "empty": {
+      "title": "Keine Analysedaten",
+      "description": "Füge zuerst Autos oder Events hinzu, um Analysedaten zu sehen."
+    },
+    "title": "Analytics-Dashboard",
+    "description": "Verfolge die Performance deiner Autos und Events",
+    "refresh": "Aktualisieren",
+    "yourCars": "Deine Autos",
+    "performanceForCars": "Performance deiner Autos für",
+    "yourEvents": "Deine Events",
+    "performanceForEvents": "Performance deiner Events für",
+    "premiumRequired": {
+      "title": "Premium erforderlich",
+      "description": "Das Analytics-Dashboard ist nur für Premium-Nutzer verfügbar",
+      "unlockTitle": "Erweiterte Analytik freischalten",
+      "unlockDescription": "Erhalte detaillierte Einblicke in die Performance deiner Autos und Events mit unserem Premium-Analytics-Dashboard.",
+      "benefitViews": "Verfolge Aufrufe, Likes, Shares und Kommentare",
+      "benefitAttendance": "Überwache Event-Teilnahme und Engagement",
+      "benefitTimeline": "Analysiere die Performance im Zeitverlauf",
+      "benefitExport": "Exportiere Daten für weitere Analysen"
+    },
+    "backToDashboard": "Zurück zum Dashboard"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "cancel": "Abbrechen",
+    "generating": "Wird generiert...",
+    "share": "Teilen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "saving": "Wird gespeichert...",
+    "save": "Speichern",
+    "notAvailable": "N/V",
+    "tip": "Tipp",
+    "unknown": "Unbekannt",
+    "unknownUser": "Unbekannter Benutzer"
+  },
+  "garage": {
+    "private": {
+      "upgrade": "Auf Premium upgraden",
+      "title": "Profil nicht verfügbar",
+      "owner": "Dieses Profil ist privat. Upgrade auf Premium, um dein Profil öffentlich und teilbar zu machen.",
+      "visitor": "Dieses Profil ist nur für Premium-Mitglieder verfügbar. Dieser Nutzer muss auf Premium upgraden, um sein Profil öffentlich zu machen."
+    },
+    "error": {
+      "profileNotFound": "Profil nicht gefunden",
+      "loadFailed": "Profil konnte nicht geladen werden"
+    },
+    "toast": {
+      "premiumRequired": "Premium-Funktion: Upgrade, um deine komplette Garage zu teilen"
+    },
+    "loading": "Garage wird geladen...",
+    "profileNotFound": "Profil nicht gefunden",
+    "profileNotFoundDescription": "Das angeforderte Profil wurde nicht gefunden.",
+    "carSingular": "Auto",
+    "carPlural": "Autos",
+    "social": {
+      "youtube": "YouTube",
+      "website": "Website"
+    },
+    "empty": {
+      "title": "Noch keine Autos",
+      "description": "${profile.full_name || profile.username} hat seiner Garage noch keine Autos hinzugefügt."
+    }
+  },
+  "qr": {
+    "downloaded": "QR-Code heruntergeladen!",
+    "linkCopied": "Link in die Zwischenablage kopiert!",
+    "title": "QR-Code",
+    "scanDescription": "Scanne diesen QR-Code mit deiner Handykamera",
+    "downloadPng": "PNG herunterladen",
+    "copyLink": "Link kopieren",
+    "shareCar": "Teile dieses Auto ganz einfach",
+    "opensCarPage": "Öffnet die Auto-Seite direkt auf deinem Gerät",
+    "profile": "Profil"
+  },
+  "payments": {
+    "error": {
+      "loadFailed": "Zahlungen konnten nicht geladen werden",
+      "invalidAmount": "Ungültiger Erstattungsbetrag",
+      "refundFailed": "Erstattung konnte nicht verarbeitet werden"
+    },
+    "toast": {
+      "refundSuccess": "Erstattung erfolgreich verarbeitet"
+    },
+    "type": {
+      "premium": "Premium-Zugang",
+      "carSlot": "Auto-Slot"
+    },
+    "title": "Zahlungsverlauf",
+    "description": "Verwalte deinen Zahlungsverlauf und Erstattungen",
+    "empty": {
+      "title": "Keine Zahlungen gefunden",
+      "description": "Du hast bisher keine Zahlungen durchgeführt."
+    },
+    "refunded": "Erstattet",
+    "refunds": "Erstattungen",
+    "requestRefund": "Erstattung anfordern",
+    "dialog": {
+      "requestFor": "Erstattung anfordern für",
+      "requestHelp": "die Zahlung. Du kannst eine vollständige oder teilweise Erstattung anfordern.",
+      "originalAmount": "Originalbetrag",
+      "alreadyRefunded": "Bereits erstattet",
+      "remainingAmount": "Verbleibender Betrag",
+      "refundAmount": "Erstattungsbetrag (leer lassen für volle Erstattung)",
+      "refundAmountHelp": "Leer lassen, um den gesamten Restbetrag zu erstatten",
+      "refundReason": "Erstattungsgrund"
+    },
+    "reason": {
+      "requestedByCustomer": "Vom Kunden angefordert",
+      "duplicate": "Doppelte Zahlung",
+      "fraudulent": "Betrügerisch"
+    },
+    "processing": "Wird verarbeitet..."
+  },
+  "carCard": {
+    "viewDetailsAria": "Details für ${car.name} anzeigen",
+    "actions": "Auto-Aktionen",
+    "edit": "Auto bearbeiten",
+    "shareQr": "Auto per QR-Code teilen",
+    "viewDetails": "Details anzeigen"
+  },
+  "carDetail": {
+    "error": {
+      "notFound": "Auto nicht gefunden",
+      "loadFailed": "Autodaten konnten nicht geladen werden",
+      "pageTitle": "Auto nicht gefunden",
+      "generic": "Beim Laden der Autodetails ist ein Fehler aufgetreten.",
+      "goDashboard": "Zum Dashboard",
+      "goHome": "Zur Startseite",
+      "notFoundDescription": "Das gesuchte Auto konnte nicht gefunden werden. Es wurde möglicherweise verschoben, gelöscht oder die URL ist falsch.",
+      "tip": "Prüfe, ob die URL korrekt ist und ob der Besitzer das Auto nicht gelöscht hat."
+    },
+    "toast": {
+      "likeOwn": "Du kannst dein eigenes Auto nicht liken",
+      "unliked": "Like entfernt",
+      "liked": "Auto geliked!",
+      "likeUpdateFailed": "Like-Status konnte nicht aktualisiert werden"
+    },
+    "loading": "Autodetails werden geladen...",
+    "by": "von",
+    "viewGarage": "Garage von ${profile.full_name || profile.username} ansehen",
+    "unlikeCar": "Like entfernen",
+    "likeCar": "Liken",
+    "shareQrTitle": "${car.name} per QR-Code teilen",
+    "editCar": "Auto bearbeiten",
+    "likesPlural": "Likes",
+    "likeSingular": "Like",
+    "like": "Like",
+    "photos": {
+      "title": "Fotos",
+      "all": "Alle",
+      "corrupted": "Fotos beschädigt",
+      "none": "Noch keine Fotos",
+      "corruptedDescription": "Die vorhandenen Fotos scheinen beschädigt zu sein. Bitte lade sie auf der Bearbeitungsseite erneut hoch.",
+      "noneDescription": "Für dieses Auto wurden noch keine Fotos hochgeladen.",
+      "noneCategory": "Keine Fotos in dieser Kategorie.",
+      "reuploadAction": "Auto bearbeiten & Fotos neu hochladen"
+    },
+    "specs": {
+      "title": "Spezifikationen",
+      "buildGoals": "Projektziele",
+      "sections": {
+        "basicInformation": "Grundinformationen",
+        "buildStory": "Build-Story & Projektinfo",
+        "enginePerformance": "Motor & Leistung",
+        "wheelsAndTires": "Räder & Reifen",
+        "brakeSystem": "Bremssystem",
+        "suspension": "Fahrwerk",
+        "exterior": "Exterieur",
+        "interior": "Interieur",
+        "additionalDetails": "Weitere Details",
+        "socialLinks": "Social & Links"
+      },
+      "fields": {
+        "make": "Marke",
+        "model": "Modell",
+        "year": "Baujahr",
+        "description": "Beschreibung",
+        "engine_displacement": "Hubraum",
+        "engine_cylinders": "Zylinder",
+        "engine_code": "Motorcode",
+        "horsepower": "Leistung",
+        "torque": "Drehmoment",
+        "engine_type": "Motortyp",
+        "fuel_type": "Kraftstoffart",
+        "transmission": "Getriebe",
+        "drivetrain": "Antrieb",
+        "zero_to_sixty_metric": "0-100 km/h",
+        "zero_to_sixty_imperial": "0-60 mph",
+        "top_speed": "Höchstgeschwindigkeit",
+        "quarter_mile": "0-400 m",
+        "weight": "Gewicht",
+        "power_to_weight": "Leistungsgewicht",
+        "wheel_size": "Felgengröße",
+        "wheel_brand": "Felgenmarke",
+        "wheel_material": "Felgenmaterial",
+        "wheel_offset": "Felgenoffset",
+        "front_tire_size": "Vorderreifen-Größe",
+        "front_tire_brand": "Vorderreifen-Marke",
+        "front_tire_model": "Vorderreifen-Modell",
+        "front_tire_pressure": "Vorderreifen-Druck",
+        "rear_tire_size": "Hinterreifen-Größe",
+        "rear_tire_brand": "Hinterreifen-Marke",
+        "rear_tire_model": "Hinterreifen-Modell",
+        "rear_tire_pressure": "Hinterreifen-Druck",
+        "front_brakes": "Vordere Bremsen",
+        "rear_brakes": "Hintere Bremsen",
+        "brake_rotors": "Bremsscheiben",
+        "brake_caliper_brand": "Bremssattel-Marke",
+        "brake_lines": "Bremsleitungen",
+        "front_suspension": "Vorderes Fahrwerk",
+        "rear_suspension": "Hinteres Fahrwerk",
+        "suspension_type": "Fahrwerkstyp",
+        "ride_height": "Fahrhöhe",
+        "coilovers": "Gewindefahrwerk",
+        "sway_bars": "Stabilisatoren",
+        "body_kit": "Bodykit",
+        "paint_color": "Lackfarbe",
+        "paint_type": "Lackart",
+        "wrap_color": "Folienfarbe",
+        "carbon_fiber_parts": "Carbon-Teile",
+        "lighting": "Beleuchtung",
+        "interior_color": "Innenraumfarbe",
+        "interior_material": "Innenraummaterial",
+        "seats": "Sitze",
+        "steering_wheel": "Lenkrad",
+        "shift_knob": "Schaltknauf",
+        "gauges": "Instrumente",
+        "mileage": "Laufleistung",
+        "fuel_economy": "Verbrauch",
+        "vin": "FIN",
+        "maintenance_history": "Wartungshistorie",
+        "modifications": "Modifikationen",
+        "dyno_results": "Dyno-Ergebnisse",
+        "build_story": "Build-Story",
+        "build_start_date": "Build-Start",
+        "total_build_cost": "Gesamtkosten Build",
+        "inspiration": "Inspiration",
+        "instagram_handle": "Instagram",
+        "youtube_channel": "YouTube",
+        "build_thread_url": "Build-Thread",
+        "website_url": "Website"
+      }
+    }
+  },
+  "comments": {
+    "title": "Kommentare",
+    "loading": "Kommentare werden geladen...",
+    "empty": "Noch keine Kommentare. Sei der Erste!",
+    "addPlaceholder": "Kommentar hinzufügen...",
+    "replyPlaceholder": "Antwort schreiben...",
+    "reply": "Antworten",
+    "replySingular": "Antwort",
+    "replyPlural": "Antworten",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "pinned": "ANGEHEFTETER KOMMENTAR",
+    "pin": "Kommentar anheften",
+    "unpin": "Anheftung lösen",
+    "delete": "Kommentar löschen",
+    "like": "Gefällt mir",
+    "unlike": "Gefällt mir nicht mehr",
+    "ownerBadge": "Besitzer",
+    "ownerHint": "💡 Das wird dein einziger Hauptkommentar sein. Unten kannst du anderen antworten.",
+    "ownerSingleTopLevel": "Der Besitzer kann nur einen Hauptkommentar erstellen. Du kannst stattdessen anderen antworten.",
+    "databaseError": "Temporärer Kommentarfehler",
+    "migrationHint": "Um Kommentar-Likes zu aktivieren, führe die SQL-Migration im Supabase-Dashboard aus:",
+    "error": {
+      "load": "Kommentare konnten nicht geladen werden",
+      "add": "Kommentar konnte nicht hinzugefügt werden",
+      "replyAdd": "Antwort konnte nicht hinzugefügt werden",
+      "delete": "Kommentar konnte nicht gelöscht werden",
+      "pin": "Kommentar konnte nicht angeheftet werden",
+      "unpin": "Anheftung konnte nicht gelöst werden",
+      "like": "Kommentar konnte nicht geliked werden",
+      "unlike": "Kommentar-Like konnte nicht entfernt werden"
+    },
+    "toast": {
+      "added": "Kommentar hinzugefügt",
+      "replyAdded": "Antwort hinzugefügt",
+      "deleted": "Kommentar gelöscht",
+      "pinned": "Kommentar angeheftet",
+      "unpinned": "Anheftung gelöst",
+      "liked": "Kommentar geliked",
+      "unliked": "Kommentar-Like entfernt"
+    }
+  },
+  "timeline": {
+    "title": "Build-Timeline",
+    "guide": "Guide",
+    "view": "Ansehen",
+    "readMore": "Mehr lesen",
+    "showLess": "Weniger anzeigen"
+  },
+  "photo": {
+    "photo": "Foto",
+    "of": "von",
+    "alt": "Autofoto",
+    "main": "Hauptfoto",
+    "dragReorder": "Zum Neuordnen ziehen",
+    "closeViewer": "Viewer schließen",
+    "previous": "Vorheriges Foto",
+    "next": "Nächstes Foto",
+    "shortcuts": "← → Navigieren • ESC Schließen • Z Zoom • R Drehen",
+    "category": {
+      "exterior": "Exterieur",
+      "interior": "Interieur",
+      "engine": "Motor",
+      "wheels": "Räder",
+      "brakes": "Bremsen",
+      "suspension": "Fahrwerk",
+      "underbody": "Unterboden",
+      "dyno": "Dyno",
+      "other": "Sonstiges"
+    }
+  }
+}

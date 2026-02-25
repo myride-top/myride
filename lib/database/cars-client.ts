@@ -1,5 +1,11 @@
 import { createBrowserClient } from '@supabase/ssr'
-import { Car, CarPhoto, CarComment, PhotoCategory } from '@/lib/types/database'
+import {
+  Car,
+  CarPhoto,
+  CarComment,
+  PhotoCategory,
+  Profile,
+} from '@/lib/types/database'
 import { unitConversions } from '@/lib/utils'
 import { deleteAllCarPhotos } from '@/lib/storage/photos'
 
@@ -55,7 +61,7 @@ export async function getUserCarCountClient(userId: string): Promise<number> {
   try {
     const { count, error } = await supabase
       .from('cars')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
 
     if (error) {
@@ -96,7 +102,7 @@ export async function canUserCreateCarClient(userId: string): Promise<boolean> {
     // If not premium, check car count
     const { count, error: carError } = await supabase
       .from('cars')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
 
     if (carError) {
@@ -143,7 +149,7 @@ export async function canUserCreateCarSimpleClient(
     // Check car count
     const { count, error } = await supabase
       .from('cars')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
 
     if (error) {
@@ -302,7 +308,7 @@ export async function getCarByUrlSlugAndUsernameClient(
     // Get like count in parallel with the car query for better performance
     const { count: likeCount } = await supabase
       .from('car_likes')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('car_id', data.id)
 
     return {
@@ -332,7 +338,7 @@ export async function getCarByUrlSlugClient(
     // Get the real-time like count efficiently using COUNT aggregation
     const { count: likeCount } = await supabase
       .from('car_likes')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('car_id', data.id)
 
     // Update car with real-time like count
@@ -688,75 +694,113 @@ export async function getCarLikeCountClient(carId: string): Promise<number> {
   // Use efficient COUNT aggregation instead of fetching all rows
   const { count } = await supabase
     .from('car_likes')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('car_id', carId)
 
   return count || 0
 }
 
-export async function getAllCarsClient(
-  limit?: number,
-  offset?: number
-): Promise<Car[] | null> {
-  try {
-    // Build query with optional pagination
-    let query = supabase
-      .from('cars')
-      .select('*')
-      .order('created_at', { ascending: false })
+export type BrowseSortOption =
+  | 'newest'
+  | 'oldest'
+  | 'most_liked'
+  | 'most_viewed'
+  | 'most_shared'
+  | 'most_commented'
+  | 'year_asc'
+  | 'year_desc'
+  | 'horsepower_asc'
+  | 'horsepower_desc'
 
-    if (limit !== undefined) {
-      const start = offset || 0
-      const end = start + limit - 1
-      query = query.range(start, end)
+export interface BrowseCarsFilters {
+  search?: string
+  make?: string
+  model?: string
+  yearFrom?: string
+  yearTo?: string
+  drivetrain?: string
+  transmission?: string
+  fuelType?: string
+  minHorsepower?: string
+  maxHorsepower?: string
+  engineCylinders?: string
+  minDisplacement?: string
+  maxDisplacement?: string
+  minTorque?: string
+  maxTorque?: string
+  minZeroToSixty?: string
+  maxZeroToSixty?: string
+  minTopSpeed?: string
+  maxTopSpeed?: string
+  minWeight?: string
+  maxWeight?: string
+  engineType?: string
+}
+
+export interface BrowseCarsQuery {
+  page?: number
+  pageSize?: number
+  sortBy?: BrowseSortOption
+  filters?: BrowseCarsFilters
+}
+
+type BrowseProfile = Pick<
+  Profile,
+  'id' | 'username' | 'full_name' | 'avatar_url' | 'is_premium' | 'nationality'
+>
+
+export type BrowseCar = Car & {
+  profiles?: BrowseProfile | null
+}
+
+export interface BrowseCarsResult {
+  cars: BrowseCar[]
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
+}
+
+export async function getAllCarsClient(
+  query: BrowseCarsQuery = {}
+): Promise<BrowseCarsResult | null> {
+  try {
+    const searchParams = new URLSearchParams()
+    const page = query.page && query.page > 0 ? query.page : 1
+    const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 24
+    const sortBy = query.sortBy || 'newest'
+
+    searchParams.set('page', String(page))
+    searchParams.set('pageSize', String(pageSize))
+    searchParams.set('sortBy', sortBy)
+
+    if (query.filters) {
+      Object.entries(query.filters).forEach(([key, value]) => {
+        if (!value || value === 'all') {
+          return
+        }
+
+        searchParams.set(key, value)
+      })
     }
 
-    const { data: cars, error: carsError } = await query
+    const response = await fetch(`/api/cars?${searchParams.toString()}`, {
+      cache: 'no-store',
+    })
 
-    if (carsError) {
+    if (!response.ok) {
       return null
     }
 
-    if (!cars || cars.length === 0) {
-      return []
+    const data = (await response.json()) as BrowseCarsResult
+
+    return {
+      cars: data.cars || [],
+      total: data.total || 0,
+      page: data.page || page,
+      pageSize: data.pageSize || pageSize,
+      hasMore: Boolean(data.hasMore),
     }
-
-    const carIds = cars.map(car => car.id)
-
-    // Use parallel queries for better performance
-    const [likeCountsResult, profilesResult] = await Promise.all([
-      // Use aggregation to get like counts efficiently
-      supabase.from('car_likes').select('car_id').in('car_id', carIds),
-      // Get profiles for all users
-      supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url, is_premium, nationality')
-        .in('id', [...new Set(cars.map(car => car.user_id))]),
-    ])
-
-    // Calculate like counts efficiently
-    const likeCountMap = new Map<string, number>()
-    if (likeCountsResult.data) {
-      likeCountsResult.data.forEach(like => {
-        const currentCount = likeCountMap.get(like.car_id) || 0
-        likeCountMap.set(like.car_id, currentCount + 1)
-      })
-    }
-
-    // Create profile map for quick lookup
-    const profileMap = new Map()
-    if (profilesResult.data) {
-      profilesResult.data.forEach(profile => {
-        profileMap.set(profile.id, profile)
-      })
-    }
-
-    // Attach profile data and like counts to cars
-    return cars.map(car => ({
-      ...car,
-      like_count: likeCountMap.get(car.id) || 0,
-      profiles: profileMap.get(car.user_id) || null,
-    }))
   } catch {
     return null
   }
@@ -786,8 +830,7 @@ export async function trackCarViewClient(
       return false
     }
 
-    // Update the car's view count
-    await updateCarViewCount(carId)
+    // Count synchronization is handled by database triggers.
     return true
   } catch {
     return false
@@ -825,8 +868,7 @@ export async function trackCarShareClient(
       return false
     }
 
-    // Update the car's share count
-    await updateCarShareCount(carId)
+    // Count synchronization is handled by database triggers.
     return true
   } catch {
     return false
@@ -870,8 +912,7 @@ export async function addCarCommentClient(
       return null
     }
 
-    // Update the car's comment count
-    await updateCarCommentCount(carId)
+    // Count synchronization is handled by database triggers.
     return data
   } catch {
     return null
@@ -921,64 +962,27 @@ export async function getCarCommentsClient(
   }
 }
 
-// Helper functions to update car counts
-async function updateCarViewCount(carId: string): Promise<void> {
+export async function syncCarCommentCount(carId: string): Promise<boolean> {
   try {
-    const { count, error } = await supabase
-      .from('car_views')
-      .select('*', { count: 'exact', head: true })
-      .eq('car_id', carId)
-
-    if (error) {
-      return
-    }
-
-    await supabase
-      .from('cars')
-      .update({ view_count: count || 0 })
-      .eq('id', carId)
-  } catch {}
-}
-
-async function updateCarShareCount(carId: string): Promise<void> {
-  try {
-    const { count, error } = await supabase
-      .from('car_shares')
-      .select('*', { count: 'exact', head: true })
-      .eq('car_id', carId)
-
-    if (error) {
-      return
-    }
-
-    await supabase
-      .from('cars')
-      .update({ share_count: count || 0 })
-      .eq('id', carId)
-  } catch {}
-}
-
-async function updateCarCommentCount(carId: string): Promise<void> {
-  try {
-    // Get the total count of comments for this car using efficient COUNT aggregation
-    const { count } = await supabase
+    // Explicit repair path for legacy data if needed.
+    const { count, error: countError } = await supabase
       .from('car_comments')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('car_id', carId)
 
-    // Update the car's comment count
-    await supabase
+    if (countError) {
+      return false
+    }
+
+    const { error: updateError } = await supabase
       .from('cars')
       .update({ comment_count: count || 0 })
       .eq('id', carId)
-  } catch {
-    // Silently fail - count will be updated on next comment operation
-  }
-}
 
-export async function syncCarCommentCount(carId: string): Promise<boolean> {
-  try {
-    await updateCarCommentCount(carId)
+    if (updateError) {
+      return false
+    }
+
     return true
   } catch {
     return false
@@ -1010,9 +1014,6 @@ export async function deleteCarCommentClient(
     if (error) {
       return false
     }
-
-    // Update the car's comment count
-    await updateCarCommentCount(comment.car_id)
 
     return true
   } catch {
@@ -1047,9 +1048,6 @@ export async function deleteCarCommentAsOwnerClient(
     if (error) {
       return false
     }
-
-    // Update the car's comment count
-    await updateCarCommentCount(carId)
 
     return true
   } catch {
@@ -1228,7 +1226,7 @@ export async function getCommentLikeCountClient(
   try {
     const { count, error } = await supabase
       .from('comment_likes')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('comment_id', commentId)
 
     if (error) {

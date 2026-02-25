@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import type { CarTimeline as CarTimelineType } from '@/lib/types/database'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface CarTimelineProps {
   timeline: CarTimelineType[]
@@ -25,6 +27,7 @@ interface TimelineYear {
 }
 
 export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
+  const { t, locale } = useI18n()
   const [isExpanded, setIsExpanded] = useState(false)
   const [selectedPhoto, setSelectedPhoto] = useState<{
     url: string
@@ -36,6 +39,9 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
   const contentRef = useRef<HTMLDivElement | null>(null)
   const [contentHeight, setContentHeight] = useState<number | null>(null)
 
+  const localeCode =
+    locale === 'cs' ? 'cs-CZ' : locale === 'de' ? 'de-DE' : locale === 'es' ? 'es-ES' : 'en-US'
+
   // Group timeline by year and month
   const timelinePeriods = useMemo(() => {
     if (!timeline || timeline.length === 0) return []
@@ -46,7 +52,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
       const date = new Date(entry.date)
       const year = date.getFullYear()
       const month = date.getMonth()
-      const monthName = date.toLocaleDateString('en-US', { month: 'long' })
+      const monthName = date.toLocaleDateString(localeCode, { month: 'long' })
       const key = `${year}-${month}`
 
       if (!periodsMap.has(key)) {
@@ -81,7 +87,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
     })
 
     return periods
-  }, [timeline])
+  }, [localeCode, timeline])
 
   // Group periods by year
   const timelineYears = useMemo(() => {
@@ -217,14 +223,14 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
   return (
     <div className='mt-12'>
       <h2 className='text-2xl font-semibold mb-6 text-foreground'>
-        Build Timeline
+        {t('timeline.title', 'Build Timeline')}
       </h2>
       <div className='flex gap-4'>
         {/* Left sidebar navigation */}
         <div className='hidden lg:block w-20 flex-shrink-0'>
           <div className='sticky top-24'>
             <h3 className='text-xs font-medium text-muted-foreground/60 uppercase tracking-wider mb-3'>
-              Guide
+              {t('timeline.guide', 'Guide')}
             </h3>
             <div className='space-y-1 max-h-[600px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
               {timelineYears.map(yearData => {
@@ -329,7 +335,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                     {/* Date */}
                     <div className='flex items-center gap-1.5 text-xs text-muted-foreground mb-1'>
                       <time dateTime={entry.date}>
-                        {new Date(entry.date).toLocaleDateString('en-US', {
+                        {new Date(entry.date).toLocaleDateString(localeCode, {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
@@ -368,22 +374,18 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                               className='block w-full group/photo1 cursor-pointer'
                             >
                               <div className='relative overflow-hidden rounded-lg flex items-center justify-center'>
-                                <img
+                                <Image
                                   src={entry.photo_url}
                                   alt={`${entry.title} - ${carName}`}
+                                  width={1200}
+                                  height={800}
                                   className={cn(
                                     'rounded-lg transition-transform duration-200 group-hover/photo1:scale-[1.02]',
                                     // Better handling for both horizontal and vertical images
                                     'max-w-full max-h-[500px] object-contain'
                                   )}
                                   loading={index < 5 ? 'eager' : 'lazy'}
-                                  fetchPriority={
-                                    index < 2
-                                      ? 'high'
-                                      : index < 5
-                                      ? 'auto'
-                                      : 'low'
-                                  }
+                                  unoptimized
                                   style={{
                                     // Dynamically adjust based on aspect ratio
                                     width: 'auto',
@@ -393,7 +395,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                 {/* Overlay hint on hover */}
                                 <div className='absolute inset-0 rounded-lg flex items-center justify-center pointer-events-none'>
                                   <div className='opacity-0 group-hover/photo1:opacity-100 transition-opacity duration-200 text-white text-xs font-medium bg-black/60 px-2 py-1 rounded backdrop-blur-sm'>
-                                    View
+                                    {t('timeline.view', 'View')}
                                   </div>
                                 </div>
                               </div>
@@ -412,22 +414,18 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                               className='block w-full group/photo2 cursor-pointer'
                             >
                               <div className='relative overflow-hidden rounded-lg flex items-center justify-center'>
-                                <img
+                                <Image
                                   src={entry.photo_url_2}
                                   alt={`${entry.title} - ${carName} - Photo 2`}
+                                  width={1200}
+                                  height={800}
                                   className={cn(
                                     'rounded-lg transition-transform duration-200 group-hover/photo2:scale-[1.02]',
                                     // Better handling for both horizontal and vertical images
                                     'max-w-full max-h-[500px] object-contain'
                                   )}
                                   loading={index < 5 ? 'eager' : 'lazy'}
-                                  fetchPriority={
-                                    index < 2
-                                      ? 'high'
-                                      : index < 5
-                                      ? 'auto'
-                                      : 'low'
-                                  }
+                                  unoptimized
                                   style={{
                                     // Dynamically adjust based on aspect ratio
                                     width: 'auto',
@@ -437,7 +435,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                                 {/* Overlay hint on hover */}
                                 <div className='absolute inset-0 rounded-lg flex items-center justify-center pointer-events-none'>
                                   <div className='opacity-0 group-hover/photo2:opacity-100 transition-opacity duration-200 text-white text-xs font-medium bg-black/60 px-2 py-1 rounded backdrop-blur-sm'>
-                                    View
+                                    {t('timeline.view', 'View')}
                                   </div>
                                 </div>
                               </div>
@@ -466,7 +464,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                     <div className='flex items-center gap-1.5 text-xs text-muted-foreground mb-1'>
                       <time dateTime={previewEntry.date}>
                         {new Date(previewEntry.date).toLocaleDateString(
-                          'en-US',
+                          localeCode,
                           {
                             year: 'numeric',
                             month: 'short',
@@ -499,12 +497,12 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
                 {isExpanded ? (
                   <>
                     <ChevronUp className='w-3.5 h-3.5' />
-                    Show Less
+                    {t('timeline.showLess', 'Show Less')}
                   </>
                 ) : (
                   <>
                     <ChevronDown className='w-3.5 h-3.5' />
-                    Read more
+                    {t('timeline.readMore', 'Read more')}
                   </>
                 )}
               </Button>

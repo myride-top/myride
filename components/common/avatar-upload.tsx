@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import Image from 'next/image'
 import { uploadProfileAvatar, deleteProfileAvatar } from '@/lib/storage/photos'
 import { toast } from 'sonner'
 import { Camera, X, Loader2, User } from 'lucide-react'
@@ -124,16 +125,19 @@ export const AvatarUpload = ({
         <div
           className={`${
             sizeClasses[size]
-          } rounded-full overflow-hidden border-2 border-border bg-muted cursor-pointer transition-all duration-200 group-hover:border-primary/50 ${
+          } relative rounded-full overflow-hidden border-2 border-border bg-muted cursor-pointer transition-all duration-200 group-hover:border-primary/50 ${
             uploading ? 'opacity-50' : ''
           }`}
           onClick={handleClick}
         >
           {previewUrl ? (
-            <img
+            <Image
               src={previewUrl}
               alt='Profile avatar'
-              className='w-full h-full object-cover'
+              fill
+              className='object-cover'
+              sizes={size === 'sm' ? '64px' : size === 'md' ? '96px' : '128px'}
+              unoptimized
             />
           ) : (
             <div className='w-full h-full flex items-center justify-center'>

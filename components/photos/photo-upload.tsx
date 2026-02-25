@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import Image from 'next/image'
 import { uploadCarPhoto } from '@/lib/storage/photos'
 import { CarPhoto } from '@/lib/types/database'
 import { toast } from 'sonner'
@@ -214,7 +215,7 @@ export const PhotoUpload = ({
         fileInput.value = ''
       }
     },
-    [carId, onBatchUploadComplete]
+    [carId]
   )
 
   const handleDrop = useCallback(
@@ -289,11 +290,16 @@ export const PhotoUpload = ({
           <div className='space-y-3'>
             {Object.entries(photoDescriptions).map(([photoUrl]) => (
               <div key={photoUrl} className='flex items-center gap-3'>
-                <img
-                  src={photoUrl}
-                  alt='Photo preview'
-                  className='w-16 h-16 object-cover rounded-md'
-                />
+                <div className='relative w-16 h-16 rounded-md overflow-hidden'>
+                  <Image
+                    src={photoUrl}
+                    alt='Photo preview'
+                    fill
+                    sizes='64px'
+                    className='object-cover'
+                    unoptimized
+                  />
+                </div>
               </div>
             ))}
           </div>

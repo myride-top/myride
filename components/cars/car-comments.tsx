@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { useAuth } from '@/lib/context/auth-context'
 import {
   addCarCommentClient,
@@ -27,6 +28,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Profile } from '@/lib/types/database'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface CommentWithProfile extends CarComment {
   profiles: Profile | null
@@ -46,6 +48,7 @@ export const CarComments = ({
   carOwnerId,
   ownerProfile,
 }: CarCommentsProps) => {
+  const { t, locale } = useI18n()
   const { user } = useAuth()
   const [comments, setComments] = useState<CommentWithProfile[]>([])
   const [newComment, setNewComment] = useState('')
@@ -59,7 +62,10 @@ export const CarComments = ({
   const [likingComment, setLikingComment] = useState<string | null>(null)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
 
-  const loadComments = async () => {
+  const localeCode =
+    locale === 'cs' ? 'cs-CZ' : locale === 'de' ? 'de-DE' : locale === 'es' ? 'es-ES' : 'en-US'
+
+  const loadComments = useCallback(async () => {
     setLoading(true)
     try {
       const commentsData = await getCarCommentsClient(carId)
@@ -87,7 +93,7 @@ export const CarComments = ({
                 ...comment,
                 profiles: {
                   id: comment.user_id,
-                  username: 'Unknown User',
+                  username: t('common.unknownUser', 'Unknown User'),
                   full_name: null,
                   avatar_url: null,
                 },
@@ -189,20 +195,20 @@ export const CarComments = ({
         setComments(topLevelComments)
       } else {
         setComments([]) // Set empty array on error
-        setDatabaseError('error')
+        setDatabaseError(t('comments.databaseError', 'error'))
       }
     } catch {
-      toast.error('Failed to load comments')
+      toast.error(t('comments.error.load', 'Failed to load comments'))
       setComments([]) // Set empty array on error
-      setDatabaseError('error')
+      setDatabaseError(t('comments.databaseError', 'error'))
     } finally {
       setLoading(false)
     }
-  }
+  }, [carId, user, carOwnerId, ownerProfile, t])
 
   useEffect(() => {
-    loadComments()
-  }, [carId])
+    void loadComments()
+  }, [loadComments])
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -215,7 +221,10 @@ export const CarComments = ({
       )
       if (existingTopLevelComment) {
         toast.error(
-          'Car owners can only create one top-level comment. You can reply to others instead.'
+          t(
+            'comments.ownerSingleTopLevel',
+            'Car owners can only create one top-level comment. You can reply to others instead.'
+          )
         )
         return
       }
@@ -231,12 +240,14 @@ export const CarComments = ({
       if (comment) {
         setNewComment('')
         await loadComments() // Refresh comments
-        toast.success('Comment added successfully!')
+        toast.success(
+          t('comments.toast.added', 'Comment added successfully!')
+        )
       } else {
-        toast.error('Failed to add comment')
+        toast.error(t('comments.error.add', 'Failed to add comment'))
       }
     } catch {
-      toast.error('Failed to add comment')
+      toast.error(t('comments.error.add', 'Failed to add comment'))
     } finally {
       setSubmitting(false)
     }
@@ -280,12 +291,12 @@ export const CarComments = ({
           await loadComments() // Refresh comments
         }, 500)
 
-        toast.success('Reply added successfully!')
+        toast.success(t('comments.toast.replyAdded', 'Reply added successfully!'))
       } else {
-        toast.error('Failed to add reply')
+        toast.error(t('comments.error.replyAdd', 'Failed to add reply'))
       }
     } catch {
-      toast.error('Failed to add reply')
+      toast.error(t('comments.error.replyAdd', 'Failed to add reply'))
     } finally {
       setSubmitting(false)
     }
@@ -311,12 +322,14 @@ export const CarComments = ({
 
       if (success) {
         await loadComments() // Refresh comments
-        toast.success('Comment deleted successfully!')
+        toast.success(
+          t('comments.toast.deleted', 'Comment deleted successfully!')
+        )
       } else {
-        toast.error('Failed to delete comment')
+        toast.error(t('comments.error.delete', 'Failed to delete comment'))
       }
     } catch {
-      toast.error('Failed to delete comment')
+      toast.error(t('comments.error.delete', 'Failed to delete comment'))
     } finally {
       setDeletingComment(null)
     }
@@ -343,12 +356,14 @@ export const CarComments = ({
           await loadComments()
         }, 100)
 
-        toast.success('Comment pinned successfully!')
+        toast.success(
+          t('comments.toast.pinned', 'Comment pinned successfully!')
+        )
       } else {
-        toast.error('Failed to pin comment')
+        toast.error(t('comments.error.pin', 'Failed to pin comment'))
       }
     } catch {
-      toast.error('Failed to pin comment')
+      toast.error(t('comments.error.pin', 'Failed to pin comment'))
     } finally {
       setPinningComment(null)
     }
@@ -364,12 +379,14 @@ export const CarComments = ({
       if (success) {
         // Refresh comments immediately to get the updated state
         await loadComments()
-        toast.success('Comment unpinned successfully!')
+        toast.success(
+          t('comments.toast.unpinned', 'Comment unpinned successfully!')
+        )
       } else {
-        toast.error('Failed to unpin comment')
+        toast.error(t('comments.error.unpin', 'Failed to unpin comment'))
       }
     } catch {
-      toast.error('Failed to unpin comment')
+      toast.error(t('comments.error.unpin', 'Failed to unpin comment'))
     } finally {
       setPinningComment(null)
     }
@@ -383,22 +400,12 @@ export const CarComments = ({
       const success = await likeCommentClient(commentId, user.id)
 
       if (success) {
-        console.log(
-          'Like successful, updating local state for comment:',
-          commentId
-        )
-
         // Update local state immediately for better UX
         setComments(prevComments => {
           const newComments = prevComments.map(comment => {
             // Check if this is the main comment being liked
             if (comment.id === commentId) {
               const newLikeCount = (comment.like_count || 0) + 1
-              console.log(
-                `Updating main comment ${commentId}: ${
-                  comment.like_count || 0
-                } -> ${newLikeCount}`
-              )
               return {
                 ...comment,
                 like_count: newLikeCount,
@@ -410,11 +417,6 @@ export const CarComments = ({
               const updatedReplies = comment.replies.map(reply => {
                 if (reply.id === commentId) {
                   const newLikeCount = (reply.like_count || 0) + 1
-                  console.log(
-                    `Updating reply ${commentId}: ${
-                      reply.like_count || 0
-                    } -> ${newLikeCount}`
-                  )
                   return {
                     ...reply,
                     like_count: newLikeCount,
@@ -430,17 +432,15 @@ export const CarComments = ({
             }
             return comment
           })
-
-          console.log('New comments state:', newComments)
           return newComments
         })
 
-        toast.success('Comment liked!')
+        toast.success(t('comments.toast.liked', 'Comment liked!'))
       } else {
-        toast.error('Failed to like comment')
+        toast.error(t('comments.error.like', 'Failed to like comment'))
       }
     } catch {
-      toast.error('Failed to like comment')
+      toast.error(t('comments.error.like', 'Failed to like comment'))
     } finally {
       setLikingComment(null)
     }
@@ -454,22 +454,12 @@ export const CarComments = ({
       const success = await unlikeCommentClient(commentId, user.id)
 
       if (success) {
-        console.log(
-          'Unlike successful, updating local state for comment:',
-          commentId
-        )
-
         // Update local state immediately for better UX
         setComments(prevComments => {
           const newComments = prevComments.map(comment => {
             // Check if this is the main comment being unliked
             if (comment.id === commentId) {
               const newLikeCount = Math.max(0, (comment.like_count || 0) - 1)
-              console.log(
-                `Updating main comment ${commentId}: ${
-                  comment.like_count || 0
-                } -> ${newLikeCount}`
-              )
               return {
                 ...comment,
                 like_count: newLikeCount,
@@ -481,11 +471,6 @@ export const CarComments = ({
               const updatedReplies = comment.replies.map(reply => {
                 if (reply.id === commentId) {
                   const newLikeCount = Math.max(0, (reply.like_count || 0) - 1)
-                  console.log(
-                    `Updating reply ${commentId}: ${
-                      reply.like_count || 0
-                    } -> ${newLikeCount}`
-                  )
                   return {
                     ...reply,
                     like_count: newLikeCount,
@@ -501,17 +486,15 @@ export const CarComments = ({
             }
             return comment
           })
-
-          console.log('New comments state after unlike:', newComments)
           return newComments
         })
 
-        toast.success('Comment unliked')
+        toast.success(t('comments.toast.unliked', 'Comment unliked'))
       } else {
-        toast.error('Failed to unlike comment')
+        toast.error(t('comments.error.unlike', 'Failed to unlike comment'))
       }
     } catch {
-      toast.error('Failed to unlike comment')
+      toast.error(t('comments.error.unlike', 'Failed to unlike comment'))
     } finally {
       setLikingComment(null)
     }
@@ -602,18 +585,25 @@ export const CarComments = ({
         {comment.is_pinned && (
           <div className='flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400'>
             <Pin className='w-4 h-4' />
-            <span className='text-xs font-medium'>PINNED COMMENT</span>
+            <span className='text-xs font-medium'>
+              {t('comments.pinned', 'PINNED COMMENT')}
+            </span>
           </div>
         )}
 
         <div className='flex gap-3'>
           <div className='flex-shrink-0'>
             {comment.profiles?.avatar_url ? (
-              <img
-                src={comment.profiles.avatar_url}
-                alt={comment.profiles?.username || 'User'}
-                className='w-8 h-8 rounded-full object-cover'
-              />
+              <div className='relative w-8 h-8 rounded-full overflow-hidden'>
+                <Image
+                  src={comment.profiles.avatar_url}
+                  alt={comment.profiles?.username || 'User'}
+                  fill
+                  className='object-cover'
+                  sizes='32px'
+                  unoptimized
+                />
+              </div>
             ) : (
               <div className='w-8 h-8 bg-primary rounded-full flex items-center justify-center'>
                 <User className='w-4 h-4 text-primary-foreground' />
@@ -626,15 +616,15 @@ export const CarComments = ({
                 <span className='font-medium text-sm'>
                   {comment.profiles?.full_name ||
                     comment.profiles?.username ||
-                    'Unknown User'}
+                    t('common.unknownUser', 'Unknown User')}
                 </span>
                 {comment.user_id === carOwnerId && (
                   <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'>
-                    Owner
+                    {t('comments.ownerBadge', 'Owner')}
                   </span>
                 )}
                 <span className='text-xs text-muted-foreground'>
-                  {new Date(comment.created_at).toLocaleDateString()}
+                  {new Date(comment.created_at).toLocaleDateString(localeCode)}
                 </span>
               </div>
 
@@ -651,7 +641,7 @@ export const CarComments = ({
                           onClick={() => handleUnpinComment()}
                           disabled={pinningComment === 'unpin'}
                           className='p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors disabled:opacity-50 cursor-pointer'
-                          title='Unpin comment'
+                          title={t('comments.unpin', 'Unpin comment')}
                         >
                           {pinningComment === 'unpin' ? (
                             <div className='animate-spin rounded-full h-3 w-3 border-b-2 border-current'></div>
@@ -667,7 +657,7 @@ export const CarComments = ({
                             handlePinComment(comment.id)
                           }}
                           disabled={pinningComment === comment.id}
-                          title='Pin comment'
+                          title={t('comments.pin', 'Pin comment')}
                           data-comment-id={comment.id}
                           data-testid={`pin-button-${comment.id}`}
                           className='p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors disabled:opacity-50 cursor-pointer'
@@ -696,7 +686,7 @@ export const CarComments = ({
                           handleDeleteComment(comment.id, comment.user_id)
                         }
                         disabled={deletingComment === comment.id}
-                        title='Delete comment'
+                        title={t('comments.delete', 'Delete comment')}
                         className='p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors disabled:opacity-50 cursor-pointer'
                       >
                         {deletingComment === comment.id ? (
@@ -728,8 +718,8 @@ export const CarComments = ({
                     className='flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 cursor-pointer'
                     title={
                       comment.is_liked_by_user
-                        ? 'Unlike comment'
-                        : 'Like comment'
+                        ? t('comments.unlike', 'Unlike comment')
+                        : t('comments.like', 'Like comment')
                     }
                   >
                     {likingComment === comment.id ? (
@@ -773,14 +763,14 @@ export const CarComments = ({
                         replyingTo === comment.id ? null : comment.id
                       )
                       setReplyContent(
-                        `@${comment.profiles?.username || 'Unknown'} `
+                        `@${comment.profiles?.username || t('common.unknown', 'Unknown')} `
                       )
                     }
                   }}
                   className='flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer'
                 >
                   <Reply className='w-3 h-3' />
-                  Reply
+                  {t('comments.reply', 'Reply')}
                 </button>
               )}
             </div>
@@ -795,7 +785,7 @@ export const CarComments = ({
                   <textarea
                     value={replyContent}
                     onChange={e => setReplyContent(e.target.value)}
-                    placeholder='Write a reply...'
+                    placeholder={t('comments.replyPlaceholder', 'Write a reply...')}
                     className='flex-1 px-3 py-2 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm'
                     rows={2}
                     maxLength={500}
@@ -837,11 +827,15 @@ export const CarComments = ({
             </div>
             <span>
               {expandedReplies.has(comment.id)
-                ? `Hide ${comment.replies.length} repl${
-                    comment.replies.length === 1 ? 'y' : 'ies'
+                ? `${t('comments.hide', 'Hide')} ${comment.replies.length} ${
+                    comment.replies.length === 1
+                      ? t('comments.replySingular', 'reply')
+                      : t('comments.replyPlural', 'replies')
                   }`
-                : `Show ${comment.replies.length} repl${
-                    comment.replies.length === 1 ? 'y' : 'ies'
+                : `${t('comments.show', 'Show')} ${comment.replies.length} ${
+                    comment.replies.length === 1
+                      ? t('comments.replySingular', 'reply')
+                      : t('comments.replyPlural', 'replies')
                   }`}
             </span>
           </button>
@@ -864,11 +858,15 @@ export const CarComments = ({
       <div className='bg-card rounded-lg border border-border p-6'>
         <div className='flex items-center gap-2 mb-4'>
           <MessageCircle className='w-5 h-5 text-muted-foreground' />
-          <h3 className='text-lg font-semibold'>Comments</h3>
+          <h3 className='text-lg font-semibold'>
+            {t('comments.title', 'Comments')}
+          </h3>
         </div>
         <div className='text-center py-8'>
           <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto'></div>
-          <p className='text-muted-foreground mt-2'>Loading comments...</p>
+          <p className='text-muted-foreground mt-2'>
+            {t('comments.loading', 'Loading comments...')}
+          </p>
         </div>
       </div>
     )
@@ -879,7 +877,7 @@ export const CarComments = ({
       <div className='flex items-center gap-2 mb-4'>
         <MessageCircle className='w-5 h-5 text-muted-foreground' />
         <h3 className='text-lg font-semibold'>
-          Comments ({getTotalCommentCount()})
+          {t('comments.title', 'Comments')} ({getTotalCommentCount()})
         </h3>
       </div>
 
@@ -893,8 +891,10 @@ export const CarComments = ({
             </p>
           </div>
           <div className='mt-2 text-xs text-yellow-700 dark:text-yellow-300'>
-            To enable comment likes, run the SQL migration in your Supabase
-            dashboard:
+            {t(
+              'comments.migrationHint',
+              'To enable comment likes, run the SQL migration in your Supabase dashboard:'
+            )}
             <br />
             <code className='bg-yellow-100 dark:bg-yellow-900/50 px-2 py-1 rounded mt-1 inline-block'>
               migrations/create_comment_likes_table.sql
@@ -910,7 +910,7 @@ export const CarComments = ({
             <textarea
               value={newComment}
               onChange={e => setNewComment(e.target.value)}
-              placeholder={'Add a comment...'}
+              placeholder={t('comments.addPlaceholder', 'Add a comment...')}
               className='w-full px-3 py-2 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary'
               rows={3}
               maxLength={500}
@@ -918,8 +918,10 @@ export const CarComments = ({
             <div className='flex justify-between gap-2'>
               {user.id === carOwnerId ? (
                 <p className='text-xs text-muted-foreground text-right'>
-                  💡 This will be your only top-level comment. You can reply to
-                  others below.
+                  {t(
+                    'comments.ownerHint',
+                    '💡 This will be your only top-level comment. You can reply to others below.'
+                  )}
                 </p>
               ) : (
                 <div />
@@ -945,7 +947,9 @@ export const CarComments = ({
         user?.id === carOwnerId ? null : (
           <div className='text-center py-8 text-muted-foreground'>
             <MessageCircle className='w-12 h-12 mx-auto mb-3 opacity-50' />
-            <p>No comments yet. Be the first to comment!</p>
+            <p>
+              {t('comments.empty', 'No comments yet. Be the first to comment!')}
+            </p>
           </div>
         )
       ) : (

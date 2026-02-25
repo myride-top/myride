@@ -16,6 +16,7 @@ import {
   removeEventAttendanceClient,
   getUserEventAttendanceClient,
 } from '@/lib/database/events-client'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface AttendanceDialogProps {
   open: boolean
@@ -34,6 +35,7 @@ export function AttendanceDialog({
   cars,
   onAttendanceChanged,
 }: AttendanceDialogProps) {
+  const { t } = useI18n()
   const [attending, setAttending] = useState(false)
   const [selectedCarId, setSelectedCarId] = useState<string>('')
   const [loading, setLoading] = useState(false)
@@ -52,7 +54,9 @@ export function AttendanceDialog({
             setSelectedCarId(userAttendance.car_id || '')
           }
         } catch (error) {
-          console.error('Error loading attendance:', error)
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('Error loading attendance:', error)
+          }
         } finally {
           setInitialLoading(false)
         }
@@ -73,24 +77,34 @@ export function AttendanceDialog({
           selectedCarId && selectedCarId !== 'none' ? selectedCarId : null
         )
         if (result.success) {
-          toast.success('You are now attending this event!')
+          toast.success(
+            t('map.attendance.toast.attendingSaved', 'You are now attending this event!')
+          )
           onAttendanceChanged()
           onOpenChange(false)
         } else {
-          toast.error(result.error || 'Failed to update attendance')
+          toast.error(
+            result.error ||
+              t('map.attendance.toast.updateFailed', 'Failed to update attendance')
+          )
         }
       } else {
         const result = await removeEventAttendanceClient(eventId)
         if (result.success) {
-          toast.success('Attendance removed')
+          toast.success(t('map.attendance.toast.removed', 'Attendance removed'))
           onAttendanceChanged()
           onOpenChange(false)
         } else {
-          toast.error(result.error || 'Failed to remove attendance')
+          toast.error(
+            result.error ||
+              t('map.attendance.toast.removeFailed', 'Failed to remove attendance')
+          )
         }
       }
     } catch (error) {
-      toast.error(`Failed to update attendance: ${error}`)
+      toast.error(
+        `${t('map.attendance.toast.updateFailed', 'Failed to update attendance')}: ${error}`
+      )
     } finally {
       setLoading(false)
     }
@@ -100,14 +114,17 @@ export function AttendanceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-md'>
         <DialogHeader>
-          <DialogTitle>Event Attendance</DialogTitle>
+          <DialogTitle>{t('map.attendance.title', 'Event Attendance')}</DialogTitle>
           <DialogDescription>
-            Manage your attendance and select which car you&apos;ll be bringing.
+            {t(
+              'map.attendance.description',
+              "Manage your attendance and select which car you'll be bringing."
+            )}
           </DialogDescription>
         </DialogHeader>
         {initialLoading ? (
           <div className='py-8 text-center text-sm text-muted-foreground'>
-            Loading...
+            {t('common.loading', 'Loading...')}
           </div>
         ) : (
           <div className='space-y-4'>
@@ -124,14 +141,14 @@ export function AttendanceDialog({
                 htmlFor='attending-checkbox'
                 className='text-sm font-medium cursor-pointer'
               >
-                I&apos;m attending
+                {t("map.attendance.imAttending", "I'm attending")}
               </label>
             </div>
 
             {attending && cars.length > 0 && (
               <div>
                 <label className='text-sm font-medium mb-2 block'>
-                  Select your car:
+                  {t('map.attendance.selectCar', 'Select your car:')}
                 </label>
                 <select
                   value={selectedCarId || 'none'}
@@ -139,7 +156,9 @@ export function AttendanceDialog({
                   disabled={loading}
                   className='w-full px-3 py-2 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                 >
-                  <option value='none'>No car selected</option>
+                  <option value='none'>
+                    {t('map.attendance.noCarSelected', 'No car selected')}
+                  </option>
                   {cars.map(car => (
                     <option key={car.id} value={car.id}>
                       {car.name}
@@ -156,14 +175,16 @@ export function AttendanceDialog({
                 disabled={loading}
                 className='flex-1'
               >
-                Cancel
+                {t('common.cancel', 'Cancel')}
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={loading}
                 className='flex-1'
               >
-                {loading ? 'Saving...' : 'Save'}
+                {loading
+                  ? t('common.saving', 'Saving...')
+                  : t('common.save', 'Save')}
               </Button>
             </div>
           </div>
@@ -172,4 +193,3 @@ export function AttendanceDialog({
     </Dialog>
   )
 }
-

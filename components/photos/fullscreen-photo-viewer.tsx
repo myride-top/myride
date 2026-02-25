@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import Image from 'next/image'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface FullscreenPhotoViewerProps {
   isOpen: boolean
@@ -21,6 +23,7 @@ export const FullscreenPhotoViewer = ({
   initialIndex,
   carName,
 }: FullscreenPhotoViewerProps) => {
+  const { t } = useI18n()
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isLoading, setIsLoading] = useState(true)
   const imageRef = useRef<HTMLImageElement>(null)
@@ -145,7 +148,8 @@ export const FullscreenPhotoViewer = ({
         }}
       >
         <DialogTitle className='sr-only'>
-          {carName} - Photo {currentIndex + 1} of {photos.length}
+          {carName} - {t('photo.photo', 'Photo')} {currentIndex + 1}{' '}
+          {t('photo.of', 'of')} {photos.length}
         </DialogTitle>
         <div
           ref={containerRef}
@@ -172,7 +176,7 @@ export const FullscreenPhotoViewer = ({
             <button
               onClick={onClose}
               className='p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer backdrop-blur-sm'
-              aria-label='Close viewer'
+              aria-label={t('photo.closeViewer', 'Close viewer')}
             >
               <X className='w-6 h-6' />
             </button>
@@ -184,14 +188,14 @@ export const FullscreenPhotoViewer = ({
               <button
                 onClick={() => navigatePhoto('prev')}
                 className='absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer backdrop-blur-sm'
-                aria-label='Previous photo'
+                aria-label={t('photo.previous', 'Previous photo')}
               >
                 <ChevronLeft className='size-6' />
               </button>
               <button
                 onClick={() => navigatePhoto('next')}
                 className='absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer backdrop-blur-sm'
-                aria-label='Next photo'
+                aria-label={t('photo.next', 'Next photo')}
               >
                 <ChevronRight className='size-6' />
               </button>
@@ -208,17 +212,20 @@ export const FullscreenPhotoViewer = ({
               transition={{ duration: 0.1 }}
               className='relative w-full h-full flex items-center justify-center'
             >
-              <img
+              <Image
                 ref={imageRef}
                 src={currentPhoto.url}
                 alt={`${carName} - ${currentPhoto.category || 'photo'} ${
                   currentIndex + 1
                 }`}
+                fill
                 className={cn(
                   'max-w-full max-h-full object-contain transition-all duration-300'
                 )}
+                sizes='100vw'
                 onLoad={() => setIsLoading(false)}
                 onError={() => setIsLoading(false)}
+                unoptimized
               />
 
               {/* Loading State */}
@@ -233,7 +240,12 @@ export const FullscreenPhotoViewer = ({
           {/* Keyboard Shortcuts Help */}
           <div className='absolute bottom-20 left-1/2 -translate-x-1/2 z-10 px-4 py-2 bg-black/30 text-white/70 text-xs rounded-lg backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity duration-300'>
             <div className='text-center'>
-              <div>← → Navigate • ESC Close • Z Zoom • R Rotate</div>
+              <div>
+                {t(
+                  'photo.shortcuts',
+                  '← → Navigate • ESC Close • Z Zoom • R Rotate'
+                )}
+              </div>
             </div>
           </div>
         </div>

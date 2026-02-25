@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/lib/context/auth-context'
 import {
@@ -17,6 +18,7 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import type { DivIcon } from 'leaflet'
+import { useI18n } from '@/lib/i18n/provider'
 
 // Dynamically import Leaflet to avoid SSR issues
 const MapContainer = dynamic(
@@ -42,6 +44,7 @@ interface EventMapProps {
 }
 
 export function EventMap({ events, onEventsChange }: EventMapProps) {
+  const { t } = useI18n()
   const { user } = useAuth()
   const { theme, resolvedTheme } = useTheme()
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -62,6 +65,9 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   )
   const [loadingUserAddress, setLoadingUserAddress] = useState(false)
   const [leafletLoaded, setLeafletLoaded] = useState(false)
+  const [activePopupEventId, setActivePopupEventId] = useState<string | null>(
+    null
+  )
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -342,7 +348,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
           ">
             ${
               avatarUrl
-                ? `<img src="${avatarUrl}" alt="Your location" style="width: 100%; height: 100%; object-fit: cover;" />`
+                ? `<img src="${avatarUrl}" alt="${t('map.yourLocation', 'Your location')}" style="width: 100%; height: 100%; object-fit: cover;" />`
                 : `<div style="color: white; font-weight: bold; font-size: 16px;">${initials}</div>`
             }
           </div>
@@ -355,7 +361,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     }
 
     createUserIcon()
-  }, [profile])
+  }, [profile, t])
 
   // Create custom icons for events with images
   useEffect(() => {
@@ -449,7 +455,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
     clearEventsCache() // Clear cache when new event is created
     onEventsChange([...events, newEvent])
     setIsCreateDialogOpen(false)
-    toast.success('Event created successfully!')
+    toast.success(t('map.toast.eventCreated', 'Event created successfully!'))
   }
 
   const handleEventUpdated = (updatedEvent: EventWithAttendeeCount) => {
@@ -508,11 +514,16 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
               <div className='p-2 min-w-[200px]'>
                 <div className='flex items-center gap-2 mb-2'>
                   {profile?.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.username}
-                      className='w-10 h-10 rounded-full object-cover border-2 border-primary'
-                    />
+                    <div className='relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary'>
+                      <Image
+                        src={profile.avatar_url}
+                        alt={profile.username}
+                        fill
+                        className='object-cover'
+                        sizes='40px'
+                        unoptimized
+                      />
+                    </div>
                   ) : (
                     <div className='w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-semibold text-sm border-2 border-primary'>
                       {profile?.full_name
@@ -523,12 +534,14 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                             .join('')
                             .toUpperCase()
                             .slice(0, 2)
-                        : profile?.username?.charAt(0).toUpperCase() || 'U'}
+                        : profile?.username?.charAt(0).toUpperCase() || t('map.youInitial', 'U')}
                     </div>
                   )}
                   <div className='flex-1 min-w-0'>
                     <h3 className='font-semibold text-sm truncate'>
-                      {profile?.full_name || profile?.username || 'You'}
+                      {profile?.full_name ||
+                        profile?.username ||
+                        t('map.you', 'You')}
                     </h3>
                     {profile?.username &&
                       profile.username !== profile?.full_name && (
@@ -540,10 +553,12 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                 </div>
                 <div className='space-y-1.5 text-xs'>
                   <div className='flex items-start gap-2 text-muted-foreground'>
-                    <span className='font-medium min-w-[60px]'>Location:</span>
+                    <span className='font-medium min-w-[60px]'>
+                      {t('map.location', 'Location')}:
+                    </span>
                     <span className='break-words'>
                       {loadingUserAddress
-                        ? 'Loading...'
+                        ? t('common.loading', 'Loading...')
                         : userLocationAddress
                         ? userLocationAddress
                         : `${userLocation[0].toFixed(
@@ -553,7 +568,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                   </div>
                   <div className='flex items-start gap-2 text-muted-foreground'>
                     <span className='font-medium min-w-[60px]'>
-                      Coordinates:
+                      {t('map.coordinates', 'Coordinates')}:
                     </span>
                     <span className='font-mono text-[10px]'>
                       {userLocation[0].toFixed(6)}, {userLocation[1].toFixed(6)}
@@ -566,7 +581,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                       href={`/u/${profile.username}`}
                       className='text-xs text-primary hover:underline'
                     >
-                      View Profile →
+                      {t('map.viewProfile', 'View Profile')} →
                     </a>
                   </div>
                 )}
@@ -599,11 +614,20 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                   click: e => {
                     e.originalEvent.stopPropagation()
                   },
+                  popupopen: () => {
+                    setActivePopupEventId(event.id)
+                  },
+                  popupclose: () => {
+                    setActivePopupEventId(current =>
+                      current === event.id ? null : current
+                    )
+                  },
                 }}
               >
                 <Popup maxWidth={320} className='event-popup'>
                   <EventPopup
                     event={event}
+                    isActive={activePopupEventId === event.id}
                     onAttendanceChange={reloadEvents}
                     onEventUpdated={handleEventUpdated}
                     onEventDeleted={handleEventDeleted}
@@ -623,16 +647,19 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
               variant='default'
             >
               <Plus className='w-4 h-4 mr-2' />
-              Create Event
+              {t('map.createEvent', 'Create Event')}
             </Button>
           ) : (
             <PremiumButton
-              featureName='Create Events'
-              featureDescription="Create and manage car meets, shows, and gatherings on the map. See who's coming and connect with fellow car enthusiasts."
+              featureName={t('map.premium.createEvents', 'Create Events')}
+              featureDescription={t(
+                'map.premium.createEventsDescription',
+                "Create and manage car meets, shows, and gatherings on the map. See who's coming and connect with fellow car enthusiasts."
+              )}
               variant='outline'
               size='md'
             >
-              Create Event
+              {t('map.createEvent', 'Create Event')}
             </PremiumButton>
           )}
         </div>

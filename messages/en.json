@@ -1,0 +1,510 @@
+{
+  "nav": {
+    "browseCars": "Browse Cars",
+    "map": "Map",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "editProfile": "Edit Profile",
+    "addNewCar": "Add New Car",
+    "carLimitReached": "Car Limit Reached",
+    "buyPremium": "Buy Premium",
+    "paymentHistory": "Payment History",
+    "signOut": "Sign Out",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "lang": {
+    "label": "Language",
+    "en": "English",
+    "cs": "Czech",
+    "es": "Spanish",
+    "de": "German"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Manage your cars and track your performance",
+    "shareGarage": "Share garage",
+    "error": {
+      "loadFailed": "Failed to load dashboard data",
+      "usernameMissing": "Username not found",
+      "qrFailed": "Failed to generate QR code"
+    },
+    "loading": "Loading dashboard...",
+    "stats": {
+      "totalLikes": "Total Likes",
+      "totalViews": "Total Views",
+      "totalShares": "Total Shares",
+      "totalComments": "Total Comments"
+    },
+    "performanceOverview": "Performance Overview",
+    "yourCars": "Your Cars",
+    "shareGarageDescription": "Share your entire garage with a custom URL and QR code. Make your profile public and shareable.",
+    "empty": {
+      "title": "No cars yet",
+      "description": "Get started by adding your first car.",
+      "action": "Add Your First Car"
+    }
+  },
+  "browse": {
+    "title": "Browse Cars",
+    "description": "Discover amazing cars from the community",
+    "error": {
+      "loadFailed": "Failed to load cars. Please try again later."
+    },
+    "loading": "Loading cars...",
+    "search": {
+      "placeholder": "Search cars...",
+      "ariaLabel": "Search cars by name, make, model, or year"
+    },
+    "sort": {
+      "placeholder": "Sort by...",
+      "newest": "Newest First",
+      "oldest": "Oldest First",
+      "mostLiked": "Most Liked",
+      "mostViewed": "Most Viewed",
+      "mostShared": "Most Shared",
+      "mostCommented": "Most Commented",
+      "yearAsc": "Year (Oldest)",
+      "yearDesc": "Year (Newest)",
+      "horsepowerAsc": "Horsepower (Low)",
+      "horsepowerDesc": "Horsepower (High)"
+    },
+    "filters": {
+      "hideAria": "Hide filters",
+      "showAria": "Show filters",
+      "label": "Filters",
+      "labelSingle": "Filter",
+      "advancedAria": "Advanced filters",
+      "advancedTitle": "Advanced Filters",
+      "clearAllAria": "Clear all filters",
+      "clearAll": "Clear All",
+      "clear": "Clear",
+      "make": "Make",
+      "allMakes": "All Makes",
+      "model": "Model",
+      "allModels": "All Models",
+      "yearRange": "Year Range",
+      "from": "From",
+      "to": "To",
+      "drivetrain": "Drivetrain",
+      "allDrivetrains": "All Drivetrains",
+      "transmission": "Transmission",
+      "allTransmissions": "All Transmissions",
+      "fuelType": "Fuel Type",
+      "allFuelTypes": "All Fuel Types",
+      "horsepowerRange": "Horsepower Range",
+      "minHp": "Min HP",
+      "maxHp": "Max HP",
+      "engineCylinders": "Engine Cylinders",
+      "allCylinders": "All Cylinders",
+      "cylinders": "Cylinders",
+      "engineDisplacement": "Engine Displacement (L)",
+      "minLiters": "Min L",
+      "maxLiters": "Max L",
+      "min": "Min",
+      "max": "Max",
+      "zeroToHundred": "0-100 km/h",
+      "zeroToSixty": "0-60 mph",
+      "seconds": "(seconds)",
+      "engineType": "Engine Type",
+      "allEngineTypes": "All Engine Types"
+    },
+    "results": {
+      "showing": "Showing",
+      "of": "of",
+      "cars": "cars",
+      "filtered": "(filtered)",
+      "page": "Page"
+    },
+    "empty": {
+      "none": "No cars found",
+      "filteredTitle": "No cars match your filters",
+      "noneDescription": "Be the first to add a car to the community!",
+      "filteredDescription": "Try adjusting your search criteria"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "map": {
+    "title": "Map",
+    "createEvent": "Create Event",
+    "delete": {
+      "title": "Delete Event",
+      "description": "Are you sure you want to delete \"${eventTitle}\"? This action cannot be undone and will remove all attendance records for this event.",
+      "deleting": "Deleting...",
+      "action": "Delete Event"
+    },
+    "qr": {
+      "shareEvent": "Share this event easily",
+      "opensEvent": "Opens the event page directly on your device"
+    },
+    "toast": {
+      "qrFailed": "Failed to generate QR code",
+      "eventDeleted": "Event deleted successfully",
+      "eventDeleteFailed": "Failed to delete event",
+      "eventCreated": "Event created successfully!",
+      "eventUpdated": "Event updated successfully",
+      "loadFailed": "Failed to load events"
+    },
+    "attendees": {
+      "attendingShort": "attending",
+      "title": "Attendees",
+      "person": "person",
+      "people": "people",
+      "attendingThisEvent": "attending this event",
+      "loading": "Loading attendees...",
+      "empty": "No attendees yet",
+      "kw": "kW"
+    },
+    "route": {
+      "startTitle": "Start of Route",
+      "startDescription": "Starting point",
+      "endTitle": "End of Route",
+      "endDescription": "Final destination"
+    },
+    "attendance": {
+      "attending": "Attending",
+      "attend": "Attend",
+      "toast": {
+        "attendingSaved": "You are now attending this event!",
+        "updateFailed": "Failed to update attendance",
+        "removed": "Attendance removed",
+        "removeFailed": "Failed to remove attendance"
+      },
+      "title": "Event Attendance",
+      "selectCar": "Select your car:",
+      "noCarSelected": "No car selected"
+    },
+    "yourLocation": "Your location",
+    "youInitial": "U",
+    "you": "You",
+    "location": "Location",
+    "coordinates": "Coordinates",
+    "viewProfile": "View Profile",
+    "premium": {
+      "createEvents": "Create Events"
+    },
+    "dialog": {
+      "imageInvalidType": "Please select an image file",
+      "imageTooLarge": "Image size must be less than 5MB",
+      "requiredFields": "Please fill in all required fields",
+      "endAfterStart": "End time must be after start time",
+      "updatedImageFailed": "Event updated but image upload failed",
+      "updateFailed": "Failed to update event",
+      "editTitle": "Edit Event",
+      "editDescription": "Update the event details",
+      "eventTitle": "Event Title",
+      "eventTitlePlaceholder": "e.g., Prague Car Meet",
+      "description": "Description",
+      "descriptionPlaceholder": "Event description...",
+      "eventType": "Event Type",
+      "selectEventType": "Select event type",
+      "eventImage": "Event Image/Icon",
+      "preview": "Preview",
+      "clickUpload": "Click to upload",
+      "orDragDrop": "or drag and drop",
+      "imageFormats": "PNG, JPG, GIF up to 5MB",
+      "startDateTime": "Start Date & Time",
+      "endDateTime": "End Date & Time",
+      "routeHint": "Route (click on map to add points)",
+      "locationHint": "Location (click on map to set)",
+      "stopDrawing": "Stop Drawing",
+      "startDrawing": "Start Drawing Route",
+      "removeLast": "Remove Last",
+      "clearRoute": "Clear Route",
+      "points": "points",
+      "point": "point",
+      "pointLabel": "Point",
+      "routeLabel": "Route",
+      "coordinates": "Coordinates",
+      "updating": "Updating...",
+      "updateAction": "Update Event",
+      "createdImageFailed": "Event created but image upload failed",
+      "createFailed": "Failed to create event",
+      "createTitle": "Create New Event",
+      "createDescription": "Create a new car event that will appear on the map",
+      "creating": "Creating...",
+      "createAction": "Create Event"
+    },
+    "eventType": {
+      "meetup": "Meetup",
+      "race": "Race",
+      "show": "Show",
+      "cruise": "Cruise",
+      "trackDay": "Track Day",
+      "other": "Other"
+    }
+  },
+  "profile": {
+    "title": "Edit Profile",
+    "description": "Manage your profile information and garage customization",
+    "error": {
+      "notAuthenticated": "User not authenticated",
+      "usernameExists": "Username already exists. Please choose a different username.",
+      "updateFailed": "Failed to update profile",
+      "unexpected": "An unexpected error occurred",
+      "avatarFailed": "Failed to update avatar"
+    },
+    "toast": {
+      "updated": "Profile updated successfully!"
+    },
+    "loading": "Loading profile...",
+    "accountInfo": "Account Information",
+    "email": "Email",
+    "memberSince": "Member since",
+    "avatarSection": "Profile Avatar",
+    "basicInfo": "Basic Information",
+    "placeholder": {
+      "username": "Enter your username",
+      "fullName": "Enter your full name",
+      "nationality": "Select your nationality",
+      "garageDescription": "Describe your car collection...",
+      "bio": "Tell visitors about yourself...",
+      "location": "City, Country",
+      "instagram": "username",
+      "youtube": "Channel name or URL"
+    },
+    "usernameHelp": "This will be your public username on MyRide",
+    "fullName": "Full Name",
+    "unitSystem": "Unit System",
+    "units": {
+      "metric": "Metric (km/h, Nm, bar, kg)",
+      "imperial": "Imperial (mph, lb-ft, PSI, lbs)",
+      "help": "Choose your preferred unit system for car specifications"
+    },
+    "nationality": "Nationality",
+    "nationalityHelp": "Your nationality or country of origin",
+    "garageCustomization": "Garage Customization",
+    "premiumFeature": "Premium Feature",
+    "garageCustomizationHelp": "Customize how your garage page appears to visitors. These options are only available to premium users.",
+    "garageDescription": "Garage Description",
+    "garageDescriptionHelp": "A brief description that appears at the top of your garage page",
+    "bio": "Bio",
+    "bioHelp": "A longer bio about yourself and your passion for cars",
+    "locationHelp": "Your location (e.g., \"Los Angeles, CA\" or \"London, UK\")",
+    "instagramHandle": "Instagram Handle",
+    "youtubeChannel": "YouTube Channel",
+    "websiteUrl": "Website URL",
+    "websiteHelp": "Your personal website or portfolio",
+    "saveChanges": "Save Changes"
+  },
+  "auth": {
+    "login": {
+      "failed": "Failed to sign in. Please check your credentials.",
+      "success": "Signed in successfully!",
+      "signingIn": "Signing in...",
+      "submit": "Sign In",
+      "pageTitle": "Sign in to your account",
+      "or": "Or",
+      "createAccount": "create a new account"
+    },
+    "register": {
+      "usernameTaken": "Username is already taken. Please choose a different username.",
+      "failed": "Failed to create account. Please try again.",
+      "success": "Account created successfully!",
+      "creating": "Creating account...",
+      "submit": "Create Account",
+      "pageTitle": "Create your account",
+      "or": "Or",
+      "signInExisting": "sign in to your existing account"
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 6 characters",
+      "usernameRequired": "Username is required",
+      "usernameMin": "Username must be at least 3 characters",
+      "usernameInvalid": "Username can only contain letters, numbers, and underscores",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "usernameTaken": "Username is already taken",
+      "usernameTakenAlt": "Username is already taken. Please choose another.",
+      "usernameAvailable": "Username is available"
+    },
+    "fields": {
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "username": "Username",
+      "usernamePlaceholder": "Choose a unique username",
+      "passwordMinPlaceholder": "At least 6 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password"
+    }
+  },
+  "analytics": {
+    "error": {
+      "fetchFailed": "Failed to fetch analytics data",
+      "generic": "An error occurred",
+      "title": "Error Loading Analytics"
+    },
+    "timeRange": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "3m": "Last 3 months",
+      "6m": "Last 6 months",
+      "1y": "Last year"
+    },
+    "loading": "Loading analytics...",
+    "tryAgain": "Try Again",
+    "empty": {
+      "title": "No Analytics Data",
+      "description": "Start by adding some cars or events to see analytics data."
+    },
+    "title": "Analytics Dashboard",
+    "description": "Track performance of your cars and events",
+    "refresh": "Refresh",
+    "yourCars": "Your Cars",
+    "performanceForCars": "Your cars performance for",
+    "yourEvents": "Your Events",
+    "performanceForEvents": "Your events performance for",
+    "premiumRequired": {
+      "title": "Premium Required",
+      "description": "Analytics dashboard is available for premium users only",
+      "unlockTitle": "Unlock Advanced Analytics",
+      "unlockDescription": "Get detailed insights into your cars and events performance with our premium analytics dashboard.",
+      "benefitViews": "Track views, likes, shares, and comments",
+      "benefitAttendance": "Monitor event attendance and engagement",
+      "benefitTimeline": "Analyze performance over time",
+      "benefitExport": "Export data for further analysis"
+    },
+    "backToDashboard": "Back to Dashboard"
+  },
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "generating": "Generating...",
+    "share": "Share",
+    "edit": "Edit",
+    "delete": "Delete",
+    "saving": "Saving...",
+    "save": "Save",
+    "notAvailable": "N/A",
+    "tip": "Tip",
+    "unknown": "Unknown"
+  },
+  "garage": {
+    "private": {
+      "upgrade": "Upgrade to Premium",
+      "title": "Profile Not Available",
+      "owner": "This profile is private. Upgrade to premium to make your profile public and shareable.",
+      "visitor": "This profile is only available to premium members. This user needs to upgrade to premium to make their profile public."
+    },
+    "error": {
+      "profileNotFound": "Profile not found",
+      "loadFailed": "Failed to load profile"
+    },
+    "toast": {
+      "premiumRequired": "Premium feature: Upgrade to share your entire garage"
+    },
+    "loading": "Loading garage...",
+    "profileNotFound": "Profile not found",
+    "profileNotFoundDescription": "The requested profile could not be found.",
+    "carSingular": "car",
+    "carPlural": "cars",
+    "social": {
+      "youtube": "YouTube",
+      "website": "Website"
+    },
+    "empty": {
+      "title": "No cars yet",
+      "description": "${profile.full_name || profile.username} hasn't added any cars to their garage yet."
+    }
+  },
+  "qr": {
+    "downloaded": "QR Code downloaded!",
+    "linkCopied": "Link copied to clipboard!",
+    "title": "QR Code",
+    "scanDescription": "Scan this QR code with your phone camera",
+    "downloadPng": "Download PNG",
+    "copyLink": "Copy Link",
+    "shareCar": "Share this car easily",
+    "opensCarPage": "Opens the car page directly on your device",
+    "profile": "Profile"
+  },
+  "payments": {
+    "error": {
+      "loadFailed": "Failed to load payments",
+      "invalidAmount": "Invalid refund amount",
+      "refundFailed": "Failed to process refund"
+    },
+    "toast": {
+      "refundSuccess": "Refund processed successfully"
+    },
+    "type": {
+      "premium": "Premium Access",
+      "carSlot": "Car Slot"
+    },
+    "title": "Payment History",
+    "description": "View and manage your payment history and refunds",
+    "empty": {
+      "title": "No payments found"
+    },
+    "refunded": "Refunded",
+    "refunds": "Refunds",
+    "requestRefund": "Request Refund",
+    "dialog": {
+      "requestFor": "Request a refund for",
+      "requestHelp": "payment. You can request a full or partial refund.",
+      "originalAmount": "Original Amount",
+      "alreadyRefunded": "Already Refunded",
+      "remainingAmount": "Remaining Amount",
+      "refundAmount": "Refund Amount (leave empty for full refund)",
+      "refundAmountHelp": "Leave empty to refund the full remaining amount",
+      "refundReason": "Refund Reason"
+    },
+    "reason": {
+      "requestedByCustomer": "Requested by Customer",
+      "duplicate": "Duplicate Payment",
+      "fraudulent": "Fraudulent"
+    },
+    "processing": "Processing..."
+  },
+  "carCard": {
+    "viewDetailsAria": "View details for ${car.name}",
+    "actions": "Car actions",
+    "edit": "Edit car",
+    "shareQr": "Share car via QR Code",
+    "viewDetails": "View Details"
+  },
+  "carDetail": {
+    "error": {
+      "notFound": "Car not found",
+      "loadFailed": "Failed to load car data",
+      "pageTitle": "Car Not Found",
+      "generic": "Something went wrong while loading the car details.",
+      "goDashboard": "Go to Dashboard",
+      "goHome": "Go Home"
+    },
+    "toast": {
+      "likeOwn": "You cannot like your own car",
+      "unliked": "Car unliked",
+      "liked": "Car liked!",
+      "likeUpdateFailed": "Failed to update like status"
+    },
+    "loading": "Loading car details...",
+    "by": "by",
+    "viewGarage": "View ${profile.full_name || profile.username}'s garage",
+    "unlikeCar": "Unlike car",
+    "likeCar": "Like car",
+    "shareQrTitle": "Share ${car.name} via QR Code",
+    "editCar": "Edit car",
+    "likesPlural": "likes",
+    "likeSingular": "like",
+    "like": "Like",
+    "photos": {
+      "title": "Photos",
+      "all": "All",
+      "corrupted": "Photos Corrupted",
+      "none": "No photos yet",
+      "corruptedDescription": "The existing photos appear to be corrupted. Please re-upload them in the edit page.",
+      "noneDescription": "No photos have been uploaded for this car.",
+      "noneCategory": "No photos in this category.",
+      "reuploadAction": "Edit Car & Re-upload Photos"
+    }
+  }
+}

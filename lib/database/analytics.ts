@@ -1,6 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import type { SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/server'
 
 export interface AnalyticsData {
   views: number
@@ -34,315 +32,59 @@ export interface EventPerformance {
   description?: string
 }
 
-export interface TimeRangeData {
-  current: AnalyticsData
-  previous: AnalyticsData
+interface AnalyticsSummaryRow {
+  views: number | string | null
+  likes: number | string | null
+  shares: number | string | null
+  comments: number | string | null
 }
 
-export async function getAnalyticsData(
-  userId: string,
-  timeRange: string = '6m'
-): Promise<AnalyticsData> {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  )
-
-  try {
-    // Get current period data
-    const currentPeriod = getTimeRangeDates(timeRange)
-    console.log(`Analytics: Fetching data for timeRange: ${timeRange}`, {
-      start: currentPeriod.start.toISOString(),
-      end: currentPeriod.end.toISOString(),
-    })
-
-    // Get cars for this user
-    const { data: cars, error: carsError } = await supabase
-      .from('cars')
-      .select('id')
-      .eq('user_id', userId)
-
-    if (carsError || !cars) {
-      return {
-        views: 0,
-        likes: 0,
-        shares: 0,
-        comments: 0,
-        viewsChange: 0,
-        likesChange: 0,
-        sharesChange: 0,
-        commentsChange: 0,
-      }
-    }
-
-    const carIds = cars.map(car => car.id)
-
-    // Get current period stats (include events)
-    const currentStats = await getStatsForPeriod(
-      supabase,
-      carIds,
-      currentPeriod.start,
-      currentPeriod.end,
-      userId
-    )
-
-    // Get previous period stats for comparison (include events)
-    const previousPeriod = getPreviousPeriod(
-      currentPeriod.start,
-      currentPeriod.end
-    )
-    const previousStats = await getStatsForPeriod(
-      supabase,
-      carIds,
-      previousPeriod.start,
-      previousPeriod.end,
-      userId
-    )
-
-    // Calculate changes
-    const viewsChange = calculateChange(currentStats.views, previousStats.views)
-    const likesChange = calculateChange(currentStats.likes, previousStats.likes)
-    const sharesChange = calculateChange(
-      currentStats.shares,
-      previousStats.shares
-    )
-    const commentsChange = calculateChange(
-      currentStats.comments,
-      previousStats.comments
-    )
-
-    return {
-      views: currentStats.views,
-      likes: currentStats.likes,
-      shares: currentStats.shares,
-      comments: currentStats.comments,
-      viewsChange,
-      likesChange,
-      sharesChange,
-      commentsChange,
-    }
-  } catch (error) {
-    console.error('Error fetching analytics data:', error)
-    return {
-      views: 0,
-      likes: 0,
-      shares: 0,
-      comments: 0,
-      viewsChange: 0,
-      likesChange: 0,
-      sharesChange: 0,
-      commentsChange: 0,
-    }
-  }
+interface CarPerformanceRow {
+  id: string
+  name: string
+  views: number | string | null
+  likes: number | string | null
+  shares: number | string | null
+  comments: number | string | null
+  engagement: number | string | null
+  image: string | null
 }
 
-export async function getCarPerformance(
-  userId: string,
-  timeRange: string = '6m'
-): Promise<CarPerformance[]> {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  )
-
-  try {
-    const currentPeriod = getTimeRangeDates(timeRange)
-
-    // Get cars with their current stats
-    const { data: cars, error: carsError } = await supabase
-      .from('cars')
-      .select(
-        'id, name, main_photo_url, like_count, view_count, share_count, comment_count'
-      )
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-
-    if (carsError || !cars) {
-      return []
-    }
-
-    // Get detailed stats for the time period
-    const carPerformance: CarPerformance[] = []
-
-    for (const car of cars) {
-      const carIds = [car.id]
-
-      const periodStats = await getStatsForPeriod(
-        supabase,
-        carIds,
-        currentPeriod.start,
-        currentPeriod.end
-      )
-
-      // Calculate engagement rate (likes + shares + comments) / views * 100
-      const engagement =
-        periodStats.views > 0
-          ? ((periodStats.likes + periodStats.shares + periodStats.comments) /
-              periodStats.views) *
-            100
-          : 0
-
-      carPerformance.push({
-        id: car.id,
-        name: car.name,
-        views: periodStats.views,
-        likes: periodStats.likes,
-        shares: periodStats.shares,
-        comments: periodStats.comments,
-        engagement: Math.round(engagement * 100) / 100, // Round to 2 decimal places
-        image: car.main_photo_url || undefined,
-      })
-    }
-
-    // Sort by engagement (highest first)
-    return carPerformance.sort((a, b) => b.engagement - a.engagement)
-  } catch (error) {
-    console.error('Error fetching car performance:', error)
-    return []
-  }
+interface EventPerformanceRow {
+  id: string
+  title: string
+  views: number | string | null
+  attendees: number | string | null
+  shares: number | string | null
+  event_date: string
+  description: string | null
 }
 
-async function getStatsForPeriod(
-  supabase: SupabaseClient,
-  carIds: string[],
-  startDate: Date,
-  endDate: Date,
-  userId?: string
-): Promise<{ views: number; likes: number; shares: number; comments: number }> {
-  const startISO = startDate.toISOString()
-  const endISO = endDate.toISOString()
-
-  console.log(`getStatsForPeriod: Querying for carIds: ${carIds.join(', ')}`, {
-    start: startISO,
-    end: endISO,
-  })
-
-  // Get car views
-  const { count: carViews } = await supabase
-    .from('car_views')
-    .select('*', { count: 'exact', head: true })
-    .in('car_id', carIds)
-    .gte('created_at', startISO)
-    .lte('created_at', endISO)
-
-  // Get event views (if userId is provided)
-  let eventViews = 0
-  if (userId) {
-    const { data: userEvents } = await supabase
-      .from('events')
-      .select('id')
-      .eq('created_by', userId)
-
-    if (userEvents && userEvents.length > 0) {
-      const eventIds = userEvents.map(e => e.id)
-      const { count } = await supabase
-        .from('event_views')
-        .select('*', { count: 'exact', head: true })
-        .in('event_id', eventIds)
-        .gte('created_at', startISO)
-        .lte('created_at', endISO)
-      eventViews = count || 0
-    }
-  }
-
-  const views = (carViews || 0) + eventViews
-
-  // Get likes
-  const { count: likes } = await supabase
-    .from('car_likes')
-    .select('*', { count: 'exact', head: true })
-    .in('car_id', carIds)
-    .gte('created_at', startISO)
-    .lte('created_at', endISO)
-
-  // Get car shares
-  const { count: carShares } = await supabase
-    .from('car_shares')
-    .select('*', { count: 'exact', head: true })
-    .in('car_id', carIds)
-    .gte('created_at', startISO)
-    .lte('created_at', endISO)
-
-  // Get event shares (if userId is provided)
-  let eventShares = 0
-  if (userId) {
-    const { data: userEvents } = await supabase
-      .from('events')
-      .select('id')
-      .eq('created_by', userId)
-
-    if (userEvents && userEvents.length > 0) {
-      const eventIds = userEvents.map(e => e.id)
-      const { count } = await supabase
-        .from('event_shares')
-        .select('*', { count: 'exact', head: true })
-        .in('event_id', eventIds)
-        .gte('created_at', startISO)
-        .lte('created_at', endISO)
-      eventShares = count || 0
-    }
-  }
-
-  const shares = (carShares || 0) + eventShares
-
-  // Get comments
-  const { count: comments } = await supabase
-    .from('car_comments')
-    .select('*', { count: 'exact', head: true })
-    .in('car_id', carIds)
-    .gte('created_at', startISO)
-    .lte('created_at', endISO)
-
-  const result = {
-    views,
-    likes: likes || 0,
-    shares,
-    comments: comments || 0,
-  }
-
-  console.log(`getStatsForPeriod: Returning stats:`, result)
-  return result
+const ZERO_ANALYTICS: AnalyticsData = {
+  views: 0,
+  likes: 0,
+  shares: 0,
+  comments: 0,
+  viewsChange: 0,
+  likesChange: 0,
+  sharesChange: 0,
+  commentsChange: 0,
 }
 
-function getTimeRangeDates(timeRange: string): { start: Date; end: Date } {
+const toNumber = (value: number | string | null | undefined): number => {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+
+  return 0
+}
+
+const getTimeRangeDates = (timeRange: string): { start: Date; end: Date } => {
   const end = new Date()
   const start = new Date()
 
@@ -363,13 +105,16 @@ function getTimeRangeDates(timeRange: string): { start: Date; end: Date } {
       start.setFullYear(end.getFullYear() - 1)
       break
     default:
-      start.setMonth(end.getMonth() - 6) // Default to 6 months
+      start.setMonth(end.getMonth() - 6)
   }
 
   return { start, end }
 }
 
-function getPreviousPeriod(start: Date, end: Date): { start: Date; end: Date } {
+const getPreviousPeriod = (
+  start: Date,
+  end: Date
+): { start: Date; end: Date } => {
   const duration = end.getTime() - start.getTime()
   const previousEnd = new Date(start.getTime())
   const previousStart = new Date(start.getTime() - duration)
@@ -377,104 +122,137 @@ function getPreviousPeriod(start: Date, end: Date): { start: Date; end: Date } {
   return { start: previousStart, end: previousEnd }
 }
 
-function calculateChange(current: number, previous: number): number {
+const calculateChange = (current: number, previous: number): number => {
   if (previous === 0) {
     return current > 0 ? 100 : 0
   }
+
   return Math.round(((current - previous) / previous) * 100 * 10) / 10
+}
+
+const getSummaryForPeriod = async (
+  userId: string,
+  start: Date,
+  end: Date
+): Promise<AnalyticsSummaryRow> => {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('get_user_analytics_summary', {
+    p_user_id: userId,
+    p_start: start.toISOString(),
+    p_end: end.toISOString(),
+  })
+
+  if (error) {
+    throw error
+  }
+
+  const rows = (data as AnalyticsSummaryRow[] | null) ?? []
+  return rows[0] ?? { views: 0, likes: 0, shares: 0, comments: 0 }
+}
+
+export async function getAnalyticsData(
+  userId: string,
+  timeRange: string = '6m'
+): Promise<AnalyticsData> {
+  try {
+    const currentPeriod = getTimeRangeDates(timeRange)
+    const previousPeriod = getPreviousPeriod(currentPeriod.start, currentPeriod.end)
+
+    const [currentSummary, previousSummary] = await Promise.all([
+      getSummaryForPeriod(userId, currentPeriod.start, currentPeriod.end),
+      getSummaryForPeriod(userId, previousPeriod.start, previousPeriod.end),
+    ])
+
+    const currentViews = toNumber(currentSummary.views)
+    const currentLikes = toNumber(currentSummary.likes)
+    const currentShares = toNumber(currentSummary.shares)
+    const currentComments = toNumber(currentSummary.comments)
+
+    const previousViews = toNumber(previousSummary.views)
+    const previousLikes = toNumber(previousSummary.likes)
+    const previousShares = toNumber(previousSummary.shares)
+    const previousComments = toNumber(previousSummary.comments)
+
+    return {
+      views: currentViews,
+      likes: currentLikes,
+      shares: currentShares,
+      comments: currentComments,
+      viewsChange: calculateChange(currentViews, previousViews),
+      likesChange: calculateChange(currentLikes, previousLikes),
+      sharesChange: calculateChange(currentShares, previousShares),
+      commentsChange: calculateChange(currentComments, previousComments),
+    }
+  } catch {
+    return ZERO_ANALYTICS
+  }
+}
+
+export async function getCarPerformance(
+  userId: string,
+  timeRange: string = '6m'
+): Promise<CarPerformance[]> {
+  try {
+    const { start, end } = getTimeRangeDates(timeRange)
+    const supabase = await createClient()
+
+    const { data, error } = await supabase.rpc('get_user_car_performance', {
+      p_user_id: userId,
+      p_start: start.toISOString(),
+      p_end: end.toISOString(),
+    })
+
+    if (error) {
+      throw error
+    }
+
+    const rows = (data as CarPerformanceRow[] | null) ?? []
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      views: toNumber(row.views),
+      likes: toNumber(row.likes),
+      shares: toNumber(row.shares),
+      comments: toNumber(row.comments),
+      engagement: toNumber(row.engagement),
+      image: row.image ?? undefined,
+    }))
+  } catch {
+    return []
+  }
 }
 
 export async function getEventPerformance(
   userId: string,
   timeRange: string = '6m'
 ): Promise<EventPerformance[]> {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  )
-
   try {
-    const currentPeriod = getTimeRangeDates(timeRange)
+    const { start, end } = getTimeRangeDates(timeRange)
+    const supabase = await createClient()
 
-    // Get all events created by this user (we'll filter stats by time range)
-    const { data: events, error: eventsError } = await supabase
-      .from('events')
-      .select('id, title, description, event_date')
-      .eq('created_by', userId)
-      .order('event_date', { ascending: false })
-
-    if (eventsError || !events) {
-      return []
-    }
-
-    // Get detailed stats for each event
-    const eventPerformance: EventPerformance[] = []
-
-    for (const event of events) {
-      // Get attendees count
-      const { count: attendees } = await supabase
-        .from('event_attendees')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_id', event.id)
-        .eq('attending', true)
-        .gte('created_at', currentPeriod.start.toISOString())
-        .lte('created_at', currentPeriod.end.toISOString())
-
-      // Get views count
-      const { count: views } = await supabase
-        .from('event_views')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_id', event.id)
-        .gte('created_at', currentPeriod.start.toISOString())
-        .lte('created_at', currentPeriod.end.toISOString())
-
-      // Get shares count
-      const { count: shares } = await supabase
-        .from('event_shares')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_id', event.id)
-        .gte('created_at', currentPeriod.start.toISOString())
-        .lte('created_at', currentPeriod.end.toISOString())
-
-      eventPerformance.push({
-        id: event.id,
-        title: event.title,
-        views: views || 0,
-        attendees: attendees || 0,
-        shares: shares || 0,
-        event_date: event.event_date,
-        description: event.description || undefined,
-      })
-    }
-
-    // Sort by attendees (highest first), then by event date
-    return eventPerformance.sort((a, b) => {
-      if (b.attendees !== a.attendees) {
-        return b.attendees - a.attendees
-      }
-      return new Date(b.event_date).getTime() - new Date(a.event_date).getTime()
+    const { data, error } = await supabase.rpc('get_user_event_performance', {
+      p_user_id: userId,
+      p_start: start.toISOString(),
+      p_end: end.toISOString(),
     })
-  } catch (error) {
-    console.error('Error fetching event performance:', error)
+
+    if (error) {
+      throw error
+    }
+
+    const rows = (data as EventPerformanceRow[] | null) ?? []
+
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      views: toNumber(row.views),
+      attendees: toNumber(row.attendees),
+      shares: toNumber(row.shares),
+      event_date: row.event_date,
+      description: row.description ?? undefined,
+    }))
+  } catch {
     return []
   }
 }

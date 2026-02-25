@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { AlertCircle, Loader2, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/lib/i18n/provider'
 
 export const RegisterForm = () => {
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -32,29 +34,53 @@ export const RegisterForm = () => {
     const newErrors: typeof errors = {}
 
     if (!username) {
-      newErrors.username = 'Username is required'
+      newErrors.username = t(
+        'auth.validation.usernameRequired',
+        'Username is required'
+      )
     } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters'
+      newErrors.username = t(
+        'auth.validation.usernameMin',
+        'Username must be at least 3 characters'
+      )
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores'
+      newErrors.username = t(
+        'auth.validation.usernameInvalid',
+        'Username can only contain letters, numbers, and underscores'
+      )
     }
 
     if (!email) {
-      newErrors.email = 'Email is required'
+      newErrors.email = t('auth.validation.emailRequired', 'Email is required')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address'
+      newErrors.email = t(
+        'auth.validation.emailInvalid',
+        'Please enter a valid email address'
+      )
     }
 
     if (!password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = t(
+        'auth.validation.passwordRequired',
+        'Password is required'
+      )
     } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      newErrors.password = t(
+        'auth.validation.passwordMin',
+        'Password must be at least 6 characters'
+      )
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password'
+      newErrors.confirmPassword = t(
+        'auth.validation.confirmPasswordRequired',
+        'Please confirm your password'
+      )
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+      newErrors.confirmPassword = t(
+        'auth.validation.passwordMismatch',
+        'Passwords do not match'
+      )
     }
 
     setErrors(newErrors)
@@ -91,7 +117,12 @@ export const RegisterForm = () => {
     }
 
     if (usernameAvailable === false) {
-      toast.error('Username is already taken. Please choose a different username.')
+      toast.error(
+        t(
+          'auth.register.usernameTaken',
+          'Username is already taken. Please choose a different username.'
+        )
+      )
       return
     }
 
@@ -101,8 +132,16 @@ export const RegisterForm = () => {
     // Double-check username availability
     const existingProfile = await getProfileByUsernameClient(username)
     if (existingProfile) {
-      toast.error('Username is already taken. Please choose a different username.')
-      setErrors(prev => ({ ...prev, username: 'Username is already taken' }))
+      toast.error(
+        t(
+          'auth.register.usernameTaken',
+          'Username is already taken. Please choose a different username.'
+        )
+      )
+      setErrors(prev => ({
+        ...prev,
+        username: t('auth.validation.usernameTaken', 'Username is already taken'),
+      }))
       setLoading(false)
       return
     }
@@ -110,10 +149,13 @@ export const RegisterForm = () => {
     const { error } = await signUp(email, password, username)
 
     if (error) {
-      toast.error(error.message || 'Failed to create account. Please try again.')
+      toast.error(
+        error.message ||
+          t('auth.register.failed', 'Failed to create account. Please try again.')
+      )
       setLoading(false)
     } else {
-      toast.success('Account created successfully!')
+      toast.success(t('auth.register.success', 'Account created successfully!'))
       router.push('/dashboard')
     }
   }
@@ -123,7 +165,7 @@ export const RegisterForm = () => {
       <form onSubmit={handleSubmit} className='space-y-5' noValidate>
         <div className='space-y-2'>
           <Label htmlFor='username' className='text-foreground'>
-            Username
+            {t('auth.fields.username', 'Username')}
           </Label>
           <div className='space-y-1'>
             <div className='relative'>
@@ -156,7 +198,10 @@ export const RegisterForm = () => {
                     ? 'border-green-500 focus-visible:ring-green-500/20'
                     : ''
                 )}
-                placeholder='Choose a unique username'
+                placeholder={t(
+                  'auth.fields.usernamePlaceholder',
+                  'Choose a unique username'
+                )}
               />
               {checkingUsername && (
                 <div className='absolute right-3 top-1/2 -translate-y-1/2'>
@@ -178,14 +223,17 @@ export const RegisterForm = () => {
                 <AlertCircle className='h-3.5 w-3.5' aria-hidden='true' />
                 <span>
                   {errors.username ||
-                    'Username is already taken. Please choose another.'}
+                    t(
+                      'auth.validation.usernameTakenAlt',
+                      'Username is already taken. Please choose another.'
+                    )}
                 </span>
               </div>
             )}
             {usernameAvailable === true && !errors.username && (
               <div className='flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400'>
                 <CheckCircle2 className='h-3.5 w-3.5' aria-hidden='true' />
-                <span>Username is available</span>
+                <span>{t('auth.validation.usernameAvailable', 'Username is available')}</span>
               </div>
             )}
           </div>
@@ -193,7 +241,7 @@ export const RegisterForm = () => {
 
         <div className='space-y-2'>
           <Label htmlFor='email' className='text-foreground'>
-            Email
+            {t('auth.fields.email', 'Email')}
           </Label>
           <div className='space-y-1'>
             <Input
@@ -214,7 +262,7 @@ export const RegisterForm = () => {
                 'transition-all',
                 errors.email && 'border-destructive focus-visible:ring-destructive/20'
               )}
-              placeholder='you@example.com'
+              placeholder={t('auth.fields.emailPlaceholder', 'you@example.com')}
             />
             {errors.email && (
               <div
@@ -231,7 +279,7 @@ export const RegisterForm = () => {
 
         <div className='space-y-2'>
           <Label htmlFor='password' className='text-foreground'>
-            Password
+            {t('auth.fields.password', 'Password')}
           </Label>
           <div className='space-y-1'>
             <Input
@@ -248,7 +296,10 @@ export const RegisterForm = () => {
                     ...prev,
                     confirmPassword:
                       e.target.value !== confirmPassword
-                        ? 'Passwords do not match'
+                        ? t(
+                            'auth.validation.passwordMismatch',
+                            'Passwords do not match'
+                          )
                         : undefined,
                   }))
                 }
@@ -262,7 +313,10 @@ export const RegisterForm = () => {
                 'transition-all',
                 errors.password && 'border-destructive focus-visible:ring-destructive/20'
               )}
-              placeholder='At least 6 characters'
+              placeholder={t(
+                'auth.fields.passwordMinPlaceholder',
+                'At least 6 characters'
+              )}
             />
             {errors.password && (
               <div
@@ -279,7 +333,7 @@ export const RegisterForm = () => {
 
         <div className='space-y-2'>
           <Label htmlFor='confirmPassword' className='text-foreground'>
-            Confirm Password
+            {t('auth.fields.confirmPassword', 'Confirm Password')}
           </Label>
           <div className='space-y-1'>
             <Input
@@ -293,7 +347,10 @@ export const RegisterForm = () => {
                     ...prev,
                     confirmPassword:
                       e.target.value !== password
-                        ? 'Passwords do not match'
+                        ? t(
+                            'auth.validation.passwordMismatch',
+                            'Passwords do not match'
+                          )
                         : undefined,
                   }))
                 }
@@ -310,7 +367,10 @@ export const RegisterForm = () => {
                 errors.confirmPassword &&
                   'border-destructive focus-visible:ring-destructive/20'
               )}
-              placeholder='Confirm your password'
+              placeholder={t(
+                'auth.fields.confirmPasswordPlaceholder',
+                'Confirm your password'
+              )}
             />
             {errors.confirmPassword && (
               <div
@@ -331,7 +391,9 @@ export const RegisterForm = () => {
           className='w-full'
           loading={loading}
         >
-          {loading ? 'Creating account...' : 'Create Account'}
+          {loading
+            ? t('auth.register.creating', 'Creating account...')
+            : t('auth.register.submit', 'Create Account')}
         </Button>
       </form>
     </div>

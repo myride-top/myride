@@ -2,6 +2,7 @@ import { Car } from '@/lib/types/database'
 import { SpecificationSection } from './specification-section'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { unitConversions } from '@/lib/utils'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface CarSpecificationsProps {
   car: Car
@@ -21,223 +22,371 @@ export const CarSpecifications = ({
   className,
 }: CarSpecificationsProps) => {
   const { unitPreference } = useUnitPreference()
+  const { t } = useI18n()
+
+  const getSpecLabel = (key: string, fallback: string) =>
+    t(`carDetail.specs.fields.${key}`, fallback)
+
+  const getSectionLabel = (key: string, fallback: string) =>
+    t(`carDetail.specs.sections.${key}`, fallback)
 
   const basicInfo: SpecificationItem[] = [
-    { key: 'make', label: 'Make', value: car.make },
-    { key: 'model', label: 'Model', value: car.model },
-    { key: 'year', label: 'Year', value: car.year },
-    { key: 'description', label: 'Description', value: car.description },
+    { key: 'make', label: getSpecLabel('make', 'Make'), value: car.make },
+    { key: 'model', label: getSpecLabel('model', 'Model'), value: car.model },
+    { key: 'year', label: getSpecLabel('year', 'Year'), value: car.year },
+    {
+      key: 'description',
+      label: getSpecLabel('description', 'Description'),
+      value: car.description,
+    },
   ]
 
   const engineSpecs: SpecificationItem[] = [
     {
       key: 'engine_displacement',
-      label: 'Engine Displacement',
+      label: getSpecLabel('engine_displacement', 'Engine Displacement'),
       value: car.engine_displacement,
       unit: 'L',
     },
     {
       key: 'engine_cylinders',
-      label: 'Cylinders',
+      label: getSpecLabel('engine_cylinders', 'Cylinders'),
       value: car.engine_cylinders,
     },
-    { key: 'engine_code', label: 'Engine Code', value: car.engine_code },
+    {
+      key: 'engine_code',
+      label: getSpecLabel('engine_code', 'Engine Code'),
+      value: car.engine_code,
+    },
     {
       key: 'horsepower',
-      label: 'Horsepower',
+      label: getSpecLabel('horsepower', 'Horsepower'),
       value: car.horsepower,
       unit: 'HP',
     },
-    { 
-      key: 'torque', 
-      label: 'Torque', 
-      value: unitPreference === 'metric' 
-        ? (car.torque_metric ?? (car.torque ? unitConversions.torque.imperialToMetric(car.torque) : null))
-        : (car.torque ?? (car.torque_metric ? unitConversions.torque.metricToImperial(car.torque_metric) : null)),
-      unitType: 'torque' 
+    {
+      key: 'torque',
+      label: getSpecLabel('torque', 'Torque'),
+      value:
+        unitPreference === 'metric'
+          ? car.torque_metric ??
+            (car.torque
+              ? unitConversions.torque.imperialToMetric(car.torque)
+              : null)
+          : car.torque ??
+            (car.torque_metric
+              ? unitConversions.torque.metricToImperial(car.torque_metric)
+              : null),
+      unitType: 'torque',
     },
-    { key: 'engine_type', label: 'Engine Type', value: car.engine_type },
-    { key: 'fuel_type', label: 'Fuel Type', value: car.fuel_type },
-    { key: 'transmission', label: 'Transmission', value: car.transmission },
-    { key: 'drivetrain', label: 'Drivetrain', value: car.drivetrain },
+    {
+      key: 'engine_type',
+      label: getSpecLabel('engine_type', 'Engine Type'),
+      value: car.engine_type,
+    },
+    {
+      key: 'fuel_type',
+      label: getSpecLabel('fuel_type', 'Fuel Type'),
+      value: car.fuel_type,
+    },
+    {
+      key: 'transmission',
+      label: getSpecLabel('transmission', 'Transmission'),
+      value: car.transmission,
+    },
+    {
+      key: 'drivetrain',
+      label: getSpecLabel('drivetrain', 'Drivetrain'),
+      value: car.drivetrain,
+    },
     {
       key: 'zero_to_sixty',
-      label: unitPreference === 'metric' ? '0-100 km/h' : '0-60 mph',
+      label:
+        unitPreference === 'metric'
+          ? getSpecLabel('zero_to_sixty_metric', '0-100 km/h')
+          : getSpecLabel('zero_to_sixty_imperial', '0-60 mph'),
       value: car.zero_to_sixty,
       unit: 's',
     },
     {
       key: 'top_speed',
-      label: 'Top Speed',
-      value: unitPreference === 'metric'
-        ? (car.top_speed_metric ?? (car.top_speed ? unitConversions.speed.imperialToMetric(car.top_speed) : null))
-        : (car.top_speed ?? (car.top_speed_metric ? unitConversions.speed.metricToImperial(car.top_speed_metric) : null)),
+      label: getSpecLabel('top_speed', 'Top Speed'),
+      value:
+        unitPreference === 'metric'
+          ? car.top_speed_metric ??
+            (car.top_speed
+              ? unitConversions.speed.imperialToMetric(car.top_speed)
+              : null)
+          : car.top_speed ??
+            (car.top_speed_metric
+              ? unitConversions.speed.metricToImperial(car.top_speed_metric)
+              : null),
       unitType: 'speed',
     },
     {
       key: 'quarter_mile',
-      label: '0-400m',
+      label: getSpecLabel('quarter_mile', '0-400m'),
       value: car.quarter_mile,
       unit: 's',
     },
-    { 
-      key: 'weight', 
-      label: 'Weight', 
-      value: unitPreference === 'metric'
-        ? (car.weight_metric ?? (car.weight ? unitConversions.weight.imperialToMetric(car.weight) : null))
-        : (car.weight ?? (car.weight_metric ? unitConversions.weight.metricToImperial(car.weight_metric) : null)),
-      unitType: 'weight' 
+    {
+      key: 'weight',
+      label: getSpecLabel('weight', 'Weight'),
+      value:
+        unitPreference === 'metric'
+          ? car.weight_metric ??
+            (car.weight
+              ? unitConversions.weight.imperialToMetric(car.weight)
+              : null)
+          : car.weight ??
+            (car.weight_metric
+              ? unitConversions.weight.metricToImperial(car.weight_metric)
+              : null),
+      unitType: 'weight',
     },
     {
       key: 'power_to_weight',
-      label: 'Power to Weight Ratio',
+      label: getSpecLabel('power_to_weight', 'Power to Weight Ratio'),
       value: car.power_to_weight,
     },
   ]
 
   const wheelsAndTires: SpecificationItem[] = [
-    { key: 'wheel_size', label: 'Wheel Size', value: car.wheel_size },
-    { key: 'wheel_brand', label: 'Wheel Brand', value: car.wheel_brand },
+    {
+      key: 'wheel_size',
+      label: getSpecLabel('wheel_size', 'Wheel Size'),
+      value: car.wheel_size,
+    },
+    {
+      key: 'wheel_brand',
+      label: getSpecLabel('wheel_brand', 'Wheel Brand'),
+      value: car.wheel_brand,
+    },
     {
       key: 'wheel_material',
-      label: 'Wheel Material',
+      label: getSpecLabel('wheel_material', 'Wheel Material'),
       value: car.wheel_material,
     },
-    { key: 'wheel_offset', label: 'Wheel Offset', value: car.wheel_offset },
+    {
+      key: 'wheel_offset',
+      label: getSpecLabel('wheel_offset', 'Wheel Offset'),
+      value: car.wheel_offset,
+    },
     {
       key: 'front_tire_size',
-      label: 'Front Tire Size',
+      label: getSpecLabel('front_tire_size', 'Front Tire Size'),
       value: car.front_tire_size,
     },
     {
       key: 'front_tire_brand',
-      label: 'Front Tire Brand',
+      label: getSpecLabel('front_tire_brand', 'Front Tire Brand'),
       value: car.front_tire_brand,
     },
     {
       key: 'front_tire_model',
-      label: 'Front Tire Model',
+      label: getSpecLabel('front_tire_model', 'Front Tire Model'),
       value: car.front_tire_model,
     },
     {
       key: 'front_tire_pressure',
-      label: 'Front Tire Pressure',
-      value: unitPreference === 'metric'
-        ? (car.front_tire_pressure_metric ?? (car.front_tire_pressure ? unitConversions.pressure.imperialToMetric(car.front_tire_pressure) : null))
-        : (car.front_tire_pressure ?? (car.front_tire_pressure_metric ? unitConversions.pressure.metricToImperial(car.front_tire_pressure_metric) : null)),
+      label: getSpecLabel('front_tire_pressure', 'Front Tire Pressure'),
+      value:
+        unitPreference === 'metric'
+          ? car.front_tire_pressure_metric ??
+            (car.front_tire_pressure
+              ? unitConversions.pressure.imperialToMetric(car.front_tire_pressure)
+              : null)
+          : car.front_tire_pressure ??
+            (car.front_tire_pressure_metric
+              ? unitConversions.pressure.metricToImperial(car.front_tire_pressure_metric)
+              : null),
       unitType: 'pressure',
     },
     {
       key: 'rear_tire_size',
-      label: 'Rear Tire Size',
+      label: getSpecLabel('rear_tire_size', 'Rear Tire Size'),
       value: car.rear_tire_size,
     },
     {
       key: 'rear_tire_brand',
-      label: 'Rear Tire Brand',
+      label: getSpecLabel('rear_tire_brand', 'Rear Tire Brand'),
       value: car.rear_tire_brand,
     },
     {
       key: 'rear_tire_model',
-      label: 'Rear Tire Model',
+      label: getSpecLabel('rear_tire_model', 'Rear Tire Model'),
       value: car.rear_tire_model,
     },
     {
       key: 'rear_tire_pressure',
-      label: 'Rear Tire Pressure',
-      value: unitPreference === 'metric'
-        ? (car.rear_tire_pressure_metric ?? (car.rear_tire_pressure ? unitConversions.pressure.imperialToMetric(car.rear_tire_pressure) : null))
-        : (car.rear_tire_pressure ?? (car.rear_tire_pressure_metric ? unitConversions.pressure.metricToImperial(car.rear_tire_pressure_metric) : null)),
+      label: getSpecLabel('rear_tire_pressure', 'Rear Tire Pressure'),
+      value:
+        unitPreference === 'metric'
+          ? car.rear_tire_pressure_metric ??
+            (car.rear_tire_pressure
+              ? unitConversions.pressure.imperialToMetric(car.rear_tire_pressure)
+              : null)
+          : car.rear_tire_pressure ??
+            (car.rear_tire_pressure_metric
+              ? unitConversions.pressure.metricToImperial(car.rear_tire_pressure_metric)
+              : null),
       unitType: 'pressure',
     },
   ]
 
   const brakes: SpecificationItem[] = [
-    { key: 'front_brakes', label: 'Front Brakes', value: car.front_brakes },
-    { key: 'rear_brakes', label: 'Rear Brakes', value: car.rear_brakes },
-    { key: 'brake_rotors', label: 'Rotors', value: car.brake_rotors },
+    {
+      key: 'front_brakes',
+      label: getSpecLabel('front_brakes', 'Front Brakes'),
+      value: car.front_brakes,
+    },
+    {
+      key: 'rear_brakes',
+      label: getSpecLabel('rear_brakes', 'Rear Brakes'),
+      value: car.rear_brakes,
+    },
+    {
+      key: 'brake_rotors',
+      label: getSpecLabel('brake_rotors', 'Rotors'),
+      value: car.brake_rotors,
+    },
     {
       key: 'brake_caliper_brand',
-      label: 'Caliper Brand',
+      label: getSpecLabel('brake_caliper_brand', 'Caliper Brand'),
       value: car.brake_caliper_brand,
     },
-    { key: 'brake_lines', label: 'Brake Lines', value: car.brake_lines },
+    {
+      key: 'brake_lines',
+      label: getSpecLabel('brake_lines', 'Brake Lines'),
+      value: car.brake_lines,
+    },
   ]
 
   const suspension: SpecificationItem[] = [
     {
       key: 'front_suspension',
-      label: 'Front Suspension',
+      label: getSpecLabel('front_suspension', 'Front Suspension'),
       value: car.front_suspension,
     },
     {
       key: 'rear_suspension',
-      label: 'Rear Suspension',
+      label: getSpecLabel('rear_suspension', 'Rear Suspension'),
       value: car.rear_suspension,
     },
     {
       key: 'suspension_type',
-      label: 'Suspension Type',
+      label: getSpecLabel('suspension_type', 'Suspension Type'),
       value: car.suspension_type,
     },
-    { key: 'ride_height', label: 'Ride Height', value: car.ride_height },
-    { key: 'coilovers', label: 'Coilovers', value: car.coilovers },
-    { key: 'sway_bars', label: 'Sway Bars', value: car.sway_bars },
+    {
+      key: 'ride_height',
+      label: getSpecLabel('ride_height', 'Ride Height'),
+      value: car.ride_height,
+    },
+    {
+      key: 'coilovers',
+      label: getSpecLabel('coilovers', 'Coilovers'),
+      value: car.coilovers,
+    },
+    {
+      key: 'sway_bars',
+      label: getSpecLabel('sway_bars', 'Sway Bars'),
+      value: car.sway_bars,
+    },
   ]
 
   const exterior: SpecificationItem[] = [
-    { key: 'body_kit', label: 'Body Kit', value: car.body_kit },
-    { key: 'paint_color', label: 'Paint Color', value: car.paint_color },
-    { key: 'paint_type', label: 'Paint Type', value: car.paint_type },
-    { key: 'wrap_color', label: 'Wrap Color', value: car.wrap_color },
+    {
+      key: 'body_kit',
+      label: getSpecLabel('body_kit', 'Body Kit'),
+      value: car.body_kit,
+    },
+    {
+      key: 'paint_color',
+      label: getSpecLabel('paint_color', 'Paint Color'),
+      value: car.paint_color,
+    },
+    {
+      key: 'paint_type',
+      label: getSpecLabel('paint_type', 'Paint Type'),
+      value: car.paint_type,
+    },
+    {
+      key: 'wrap_color',
+      label: getSpecLabel('wrap_color', 'Wrap Color'),
+      value: car.wrap_color,
+    },
     {
       key: 'carbon_fiber_parts',
-      label: 'Carbon Fiber Parts',
+      label: getSpecLabel('carbon_fiber_parts', 'Carbon Fiber Parts'),
       value: car.carbon_fiber_parts,
     },
-    { key: 'lighting', label: 'Lighting', value: car.lighting },
+    {
+      key: 'lighting',
+      label: getSpecLabel('lighting', 'Lighting'),
+      value: car.lighting,
+    },
   ]
 
   const interior: SpecificationItem[] = [
     {
       key: 'interior_color',
-      label: 'Interior Color',
+      label: getSpecLabel('interior_color', 'Interior Color'),
       value: car.interior_color,
     },
     {
       key: 'interior_material',
-      label: 'Interior Material',
+      label: getSpecLabel('interior_material', 'Interior Material'),
       value: car.interior_material,
     },
-    { key: 'seats', label: 'Seats', value: car.seats },
+    { key: 'seats', label: getSpecLabel('seats', 'Seats'), value: car.seats },
     {
       key: 'steering_wheel',
-      label: 'Steering Wheel',
+      label: getSpecLabel('steering_wheel', 'Steering Wheel'),
       value: car.steering_wheel,
     },
-    { key: 'shift_knob', label: 'Shift Knob', value: car.shift_knob },
-    { key: 'gauges', label: 'Gauges', value: car.gauges },
+    {
+      key: 'shift_knob',
+      label: getSpecLabel('shift_knob', 'Shift Knob'),
+      value: car.shift_knob,
+    },
+    {
+      key: 'gauges',
+      label: getSpecLabel('gauges', 'Gauges'),
+      value: car.gauges,
+    },
   ]
 
   const additionalDetails: SpecificationItem[] = [
     {
       key: 'mileage',
-      label: 'Mileage',
-      value: unitPreference === 'metric'
-        ? (car.mileage_metric ?? (car.mileage ? unitConversions.distance.imperialToMetric(car.mileage) : null))
-        : (car.mileage ?? (car.mileage_metric ? unitConversions.distance.metricToImperial(car.mileage_metric) : null)),
+      label: getSpecLabel('mileage', 'Mileage'),
+      value:
+        unitPreference === 'metric'
+          ? car.mileage_metric ??
+            (car.mileage
+              ? unitConversions.distance.imperialToMetric(car.mileage)
+              : null)
+          : car.mileage ??
+            (car.mileage_metric
+              ? unitConversions.distance.metricToImperial(car.mileage_metric)
+              : null),
       unitType: 'distance',
     },
-    { key: 'fuel_economy', label: 'Fuel Economy', value: car.fuel_economy },
-    { key: 'vin', label: 'VIN', value: car.vin },
+    {
+      key: 'fuel_economy',
+      label: getSpecLabel('fuel_economy', 'Fuel Economy'),
+      value: car.fuel_economy,
+    },
+    { key: 'vin', label: getSpecLabel('vin', 'VIN'), value: car.vin },
     {
       key: 'maintenance_history',
-      label: 'Maintenance History',
+      label: getSpecLabel('maintenance_history', 'Maintenance History'),
       value: car.maintenance_history,
     },
     {
       key: 'modifications',
-      label: 'Modifications',
+      label: getSpecLabel('modifications', 'Modifications'),
       value:
         car.modifications && car.modifications.length > 0
           ? car.modifications.join(', ')
@@ -245,49 +394,57 @@ export const CarSpecifications = ({
     },
     {
       key: 'dyno_results',
-      label: 'Dyno Results',
+      label: getSpecLabel('dyno_results', 'Dyno Results'),
       value: car.dyno_results,
     },
   ]
 
   const buildStory: SpecificationItem[] = [
-    { key: 'build_story', label: 'Build Story', value: car.build_story },
+    {
+      key: 'build_story',
+      label: getSpecLabel('build_story', 'Build Story'),
+      value: car.build_story,
+    },
     {
       key: 'build_start_date',
-      label: 'Build Start Date',
+      label: getSpecLabel('build_start_date', 'Build Start Date'),
       value: car.build_start_date,
     },
     {
       key: 'total_build_cost',
-      label: 'Total Build Cost',
+      label: getSpecLabel('total_build_cost', 'Total Build Cost'),
       value: car.total_build_cost
         ? `$${car.total_build_cost.toLocaleString()}`
         : null,
     },
-    { key: 'inspiration', label: 'Inspiration', value: car.inspiration },
+    {
+      key: 'inspiration',
+      label: getSpecLabel('inspiration', 'Inspiration'),
+      value: car.inspiration,
+    },
   ]
 
   const socialLinks: SpecificationItem[] = [
     {
       key: 'instagram_handle',
-      label: 'Instagram',
+      label: getSpecLabel('instagram_handle', 'Instagram'),
       value: car.instagram_handle
         ? `@${car.instagram_handle.replace('@', '')}`
         : null,
     },
     {
       key: 'youtube_channel',
-      label: 'YouTube',
+      label: getSpecLabel('youtube_channel', 'YouTube'),
       value: car.youtube_channel,
     },
     {
       key: 'build_thread_url',
-      label: 'Build Thread',
+      label: getSpecLabel('build_thread_url', 'Build Thread'),
       value: car.build_thread_url,
     },
     {
       key: 'website_url',
-      label: 'Website',
+      label: getSpecLabel('website_url', 'Website'),
       value: car.website_url,
     },
   ]
@@ -295,107 +452,102 @@ export const CarSpecifications = ({
   return (
     <div className={className}>
       <h2 className='text-2xl font-bold text-foreground mb-6'>
-        Specifications
+        {t('carDetail.specs.title', 'Specifications')}
       </h2>
 
       <div className='bg-card shadow rounded-lg divide-y divide-border'>
-        {/* Basic Information - Always show since it has required fields */}
         <div className='p-6'>
           <SpecificationSection
-            title='Basic Information'
+            title={getSectionLabel('basicInformation', 'Basic Information')}
             specifications={basicInfo}
           />
         </div>
 
-        {/* Build Story Section - Only show if there's content */}
         {buildStory.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Build Story & Project Info'
+              title={getSectionLabel('buildStory', 'Build Story & Project Info')}
               specifications={buildStory}
             />
           </div>
         )}
 
-        {/* Engine & Performance - Only show if there's content */}
         {engineSpecs.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Engine & Performance'
+              title={getSectionLabel('enginePerformance', 'Engine & Performance')}
               specifications={engineSpecs}
             />
           </div>
         )}
 
-        {/* Wheels & Tires - Only show if there's content */}
         {wheelsAndTires.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Wheels & Tires'
+              title={getSectionLabel('wheelsAndTires', 'Wheels & Tires')}
               specifications={wheelsAndTires}
             />
           </div>
         )}
 
-        {/* Brake System - Only show if there's content */}
         {brakes.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Brake System'
+              title={getSectionLabel('brakeSystem', 'Brake System')}
               specifications={brakes}
             />
           </div>
         )}
 
-        {/* Suspension - Only show if there's content */}
         {suspension.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Suspension'
+              title={getSectionLabel('suspension', 'Suspension')}
               specifications={suspension}
             />
           </div>
         )}
 
-        {/* Exterior - Only show if there's content */}
         {exterior.some(spec => spec.value) && (
           <div className='p-6'>
-            <SpecificationSection title='Exterior' specifications={exterior} />
+            <SpecificationSection
+              title={getSectionLabel('exterior', 'Exterior')}
+              specifications={exterior}
+            />
           </div>
         )}
 
-        {/* Interior - Only show if there's content */}
         {interior.some(spec => spec.value) && (
           <div className='p-6'>
-            <SpecificationSection title='Interior' specifications={interior} />
+            <SpecificationSection
+              title={getSectionLabel('interior', 'Interior')}
+              specifications={interior}
+            />
           </div>
         )}
 
-        {/* Additional Details - Only show if there's content */}
         {additionalDetails.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Additional Details'
+              title={getSectionLabel('additionalDetails', 'Additional Details')}
               specifications={additionalDetails}
             />
           </div>
         )}
 
-        {/* Social Links Section - Only show if there's content */}
         {socialLinks.some(spec => spec.value) && (
           <div className='p-6'>
             <SpecificationSection
-              title='Social & Links'
+              title={getSectionLabel('socialLinks', 'Social & Links')}
               specifications={socialLinks}
             />
           </div>
         )}
 
-        {/* Build Goals Section - Only show if there are goals */}
         {car.build_goals && car.build_goals.length > 0 && (
           <div className='p-6'>
             <h3 className='text-lg font-medium text-foreground mb-4'>
-              Build Goals
+              {t('carDetail.specs.buildGoals', 'Build Goals')}
             </h3>
             <ul className='space-y-2'>
               {car.build_goals.map((goal, index) => (

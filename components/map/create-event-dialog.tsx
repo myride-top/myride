@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useTheme } from 'next-themes'
 import {
   createEventClient,
@@ -31,6 +32,7 @@ import { EventType } from '@/lib/types/database'
 import { uploadEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
 import type { DivIcon } from 'leaflet'
+import { useI18n } from '@/lib/i18n/provider'
 
 // Dynamically import map components
 const MapContainer = dynamic(
@@ -90,6 +92,7 @@ export function CreateEventDialog({
   onEventCreated,
   initialCenter,
 }: CreateEventDialogProps) {
+  const { t } = useI18n()
   const { theme, resolvedTheme } = useTheme()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -192,13 +195,15 @@ export function CreateEventDialog({
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file')
+      toast.error(t('map.dialog.imageInvalidType', 'Please select an image file'))
       return
     }
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB')
+      toast.error(
+        t('map.dialog.imageTooLarge', 'Image size must be less than 5MB')
+      )
       return
     }
 
@@ -240,13 +245,17 @@ export function CreateEventDialog({
     e.preventDefault()
 
     if (!title || !eventDate) {
-      toast.error('Please fill in all required fields')
+      toast.error(
+        t('map.dialog.requiredFields', 'Please fill in all required fields')
+      )
       return
     }
 
     // Validate that end date is after start date if provided
     if (endDate && endDate <= eventDate) {
-      toast.error('End time must be after start time')
+      toast.error(
+        t('map.dialog.endAfterStart', 'End time must be after start time')
+      )
       setLoading(false)
       return
     }
@@ -285,7 +294,12 @@ export function CreateEventDialog({
             }
           } catch (error) {
             console.error('Failed to upload image:', error)
-            toast.error('Event created but image upload failed')
+            toast.error(
+              t(
+                'map.dialog.createdImageFailed',
+                'Event created but image upload failed'
+              )
+            )
           } finally {
             setUploadingImage(false)
           }
@@ -299,10 +313,14 @@ export function CreateEventDialog({
         onEventCreated(newEvent)
         onOpenChange(false)
       } else {
-        toast.error(result.error || 'Failed to create event')
+        toast.error(
+          result.error || t('map.dialog.createFailed', 'Failed to create event')
+        )
       }
     } catch (error) {
-      toast.error(`Failed to create event: ${error}`)
+      toast.error(
+        `${t('map.dialog.createFailed', 'Failed to create event')}: ${error}`
+      )
     } finally {
       setLoading(false)
     }
@@ -312,33 +330,44 @@ export function CreateEventDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle>Create New Event</DialogTitle>
+          <DialogTitle>
+            {t('map.dialog.createTitle', 'Create New Event')}
+          </DialogTitle>
           <DialogDescription>
-            Create a new car event that will appear on the map
+            {t(
+              'map.dialog.createDescription',
+              'Create a new car event that will appear on the map'
+            )}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className='space-y-4'>
           <div>
             <label className='text-sm font-medium mb-1 block'>
-              Event Title *
+              {t('map.dialog.eventTitle', 'Event Title')} *
             </label>
             <Input
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder='e.g., Prague Car Meet'
+              placeholder={t(
+                'map.dialog.eventTitlePlaceholder',
+                'e.g., Prague Car Meet'
+              )}
               required
             />
           </div>
 
           <div>
             <label className='text-sm font-medium mb-1 block'>
-              Description
+              {t('map.dialog.description', 'Description')}
             </label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder='Event description...'
+              placeholder={t(
+                'map.dialog.descriptionPlaceholder',
+                'Event description...'
+              )}
               className='w-full px-3 py-2 border rounded-md min-h-[80px]'
               rows={3}
             />
@@ -346,37 +375,57 @@ export function CreateEventDialog({
 
           <div>
             <label className='text-sm font-medium mb-1 block'>
-              Event Type *
+              {t('map.dialog.eventType', 'Event Type')} *
             </label>
             <Select
               value={eventType}
               onValueChange={value => setEventType(value as EventType)}
             >
               <SelectTrigger>
-                <SelectValue placeholder='Select event type' />
+                <SelectValue
+                  placeholder={t(
+                    'map.dialog.selectEventType',
+                    'Select event type'
+                  )}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='meetup'>Meetup</SelectItem>
-                <SelectItem value='race'>Race</SelectItem>
-                <SelectItem value='show'>Show</SelectItem>
-                <SelectItem value='cruise'>Cruise</SelectItem>
-                <SelectItem value='track_day'>Track Day</SelectItem>
-                <SelectItem value='other'>Other</SelectItem>
+                <SelectItem value='meetup'>
+                  {t('map.eventType.meetup', 'Meetup')}
+                </SelectItem>
+                <SelectItem value='race'>
+                  {t('map.eventType.race', 'Race')}
+                </SelectItem>
+                <SelectItem value='show'>
+                  {t('map.eventType.show', 'Show')}
+                </SelectItem>
+                <SelectItem value='cruise'>
+                  {t('map.eventType.cruise', 'Cruise')}
+                </SelectItem>
+                <SelectItem value='track_day'>
+                  {t('map.eventType.trackDay', 'Track Day')}
+                </SelectItem>
+                <SelectItem value='other'>
+                  {t('map.eventType.other', 'Other')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
             <label className='text-sm font-medium mb-1 block'>
-              Event Image/Icon
+              {t('map.dialog.eventImage', 'Event Image/Icon')}
             </label>
             <div className='space-y-2'>
               {imagePreview ? (
                 <div className='relative inline-block'>
-                  <img
+                  <Image
                     src={imagePreview}
-                    alt='Preview'
+                    alt={t('map.dialog.preview', 'Preview')}
+                    width={128}
+                    height={128}
                     className='w-32 h-32 object-cover rounded-lg border'
+                    unoptimized
                   />
                   <button
                     type='button'
@@ -391,11 +440,13 @@ export function CreateEventDialog({
                   <div className='flex flex-col items-center justify-center pt-5 pb-6'>
                     <Upload className='w-8 h-8 mb-2 text-muted-foreground' />
                     <p className='mb-2 text-sm text-muted-foreground'>
-                      <span className='font-semibold'>Click to upload</span> or
-                      drag and drop
+                      <span className='font-semibold'>
+                        {t('map.dialog.clickUpload', 'Click to upload')}
+                      </span>{' '}
+                      {t('map.dialog.orDragDrop', 'or drag and drop')}
                     </p>
                     <p className='text-xs text-muted-foreground'>
-                      PNG, JPG, GIF up to 5MB
+                      {t('map.dialog.imageFormats', 'PNG, JPG, GIF up to 5MB')}
                     </p>
                   </div>
                   <input
@@ -413,13 +464,13 @@ export function CreateEventDialog({
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <div>
               <label className='text-sm font-medium mb-1 block'>
-                Start Date & Time *
+                {t('map.dialog.startDateTime', 'Start Date & Time')} *
               </label>
               <DateTimePicker date={eventDate} onDateChange={setEventDate} />
             </div>
             <div>
               <label className='text-sm font-medium mb-1 block'>
-                End Date & Time
+                {t('map.dialog.endDateTime', 'End Date & Time')}
               </label>
               <DateTimePicker
                 date={endDate}
@@ -432,8 +483,14 @@ export function CreateEventDialog({
           <div>
             <label className='text-sm font-medium mb-1 block'>
               {eventType === 'cruise'
-                ? 'Route (click on map to add points)'
-                : 'Location (click on map to set)'}
+                ? t(
+                    'map.dialog.routeHint',
+                    'Route (click on map to add points)'
+                  )
+                : t(
+                    'map.dialog.locationHint',
+                    'Location (click on map to set)'
+                  )}
             </label>
             {eventType === 'cruise' && (
               <div className='mb-2 flex gap-2 flex-wrap'>
@@ -444,7 +501,9 @@ export function CreateEventDialog({
                   onClick={() => setIsDrawingRoute(!isDrawingRoute)}
                 >
                   <MapPin className='w-4 h-4 mr-2' />
-                  {isDrawingRoute ? 'Stop Drawing' : 'Start Drawing Route'}
+                  {isDrawingRoute
+                    ? t('map.dialog.stopDrawing', 'Stop Drawing')
+                    : t('map.dialog.startDrawing', 'Start Drawing Route')}
                 </Button>
                 {route.length > 0 && (
                   <>
@@ -456,7 +515,7 @@ export function CreateEventDialog({
                       disabled={route.length === 0}
                     >
                       <Undo2 className='w-4 h-4 mr-2' />
-                      Remove Last
+                      {t('map.dialog.removeLast', 'Remove Last')}
                     </Button>
                     <Button
                       type='button'
@@ -465,13 +524,16 @@ export function CreateEventDialog({
                       onClick={clearRoute}
                     >
                       <Trash2 className='w-4 h-4 mr-2' />
-                      Clear Route
+                      {t('map.dialog.clearRoute', 'Clear Route')}
                     </Button>
                   </>
                 )}
                 {route.length > 0 && (
                   <span className='text-sm text-muted-foreground self-center'>
-                    {route.length} point{route.length !== 1 ? 's' : ''}
+                    {route.length}{' '}
+                    {route.length !== 1
+                      ? t('map.dialog.points', 'points')
+                      : t('map.dialog.point', 'point')}
                   </span>
                 )}
               </div>
@@ -507,7 +569,7 @@ export function CreateEventDialog({
                 {route.map((point, index) => (
                   <Marker key={index} position={point}>
                     <Popup>
-                      Point {index + 1}
+                      {t('map.dialog.pointLabel', 'Point')} {index + 1}
                       <br />
                       {point[0].toFixed(6)}, {point[1].toFixed(6)}
                     </Popup>
@@ -517,8 +579,12 @@ export function CreateEventDialog({
             </div>
             <p className='text-xs text-muted-foreground mt-1'>
               {eventType === 'cruise' && route.length > 0
-                ? `Route: ${route.length} point${route.length !== 1 ? 's' : ''}`
-                : `Coordinates: ${position[0].toFixed(
+                ? `${t('map.dialog.routeLabel', 'Route')}: ${route.length} ${
+                    route.length !== 1
+                      ? t('map.dialog.points', 'points')
+                      : t('map.dialog.point', 'point')
+                  }`
+                : `${t('map.dialog.coordinates', 'Coordinates')}: ${position[0].toFixed(
                     6
                   )}, ${position[1].toFixed(6)}`}
             </p>
@@ -531,10 +597,12 @@ export function CreateEventDialog({
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button type='submit' disabled={loading}>
-              {loading ? 'Creating...' : 'Create Event'}
+              {loading
+                ? t('map.dialog.creating', 'Creating...')
+                : t('map.dialog.createAction', 'Create Event')}
             </Button>
           </DialogFooter>
         </form>

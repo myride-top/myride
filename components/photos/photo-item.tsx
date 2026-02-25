@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +14,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Trash2, Star, MoreVertical } from 'lucide-react'
 import { PhotoDescriptionInput } from './photo-description-input'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface PhotoItemProps {
   photo: CarPhoto
@@ -24,18 +26,6 @@ interface PhotoItemProps {
   isUpdating?: boolean
 }
 
-const categoryLabels: Record<PhotoCategory, string> = {
-  exterior: 'Exterior',
-  interior: 'Interior',
-  engine: 'Engine',
-  wheels: 'Wheels',
-  brakes: 'Brakes',
-  suspension: 'Suspension',
-  underbody: 'Underbody',
-  dyno: 'Dyno',
-  other: 'Other',
-}
-
 export const PhotoItem = ({
   photo,
   isMain,
@@ -45,6 +35,7 @@ export const PhotoItem = ({
   onUpdateCategory,
   isUpdating = false,
 }: PhotoItemProps) => {
+  const { t } = useI18n()
   const {
     attributes,
     listeners,
@@ -59,6 +50,18 @@ export const PhotoItem = ({
     transition,
   }
 
+  const categoryLabels: Record<PhotoCategory, string> = {
+    exterior: t('photo.category.exterior', 'Exterior'),
+    interior: t('photo.category.interior', 'Interior'),
+    engine: t('photo.category.engine', 'Engine'),
+    wheels: t('photo.category.wheels', 'Wheels'),
+    brakes: t('photo.category.brakes', 'Brakes'),
+    suspension: t('photo.category.suspension', 'Suspension'),
+    underbody: t('photo.category.underbody', 'Underbody'),
+    dyno: t('photo.category.dyno', 'Dyno'),
+    other: t('photo.category.other', 'Other'),
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -70,10 +73,13 @@ export const PhotoItem = ({
     >
       {/* Photo */}
       <div className='aspect-square relative'>
-        <img
+        <Image
           src={photo.url}
-          alt={photo.description || 'Car photo'}
-          className='w-full h-full object-cover'
+          alt={photo.description || t('photo.alt', 'Car photo')}
+          fill
+          className='object-cover'
+          sizes='(max-width: 768px) 50vw, 25vw'
+          unoptimized
         />
 
         {/* Main photo badge */}
@@ -81,7 +87,7 @@ export const PhotoItem = ({
           <div className='absolute top-2 left-2'>
             <Badge variant='default' className='bg-blue-600'>
               <Star className='w-3 h-3 mr-1' />
-              Main
+              {t('photo.main', 'Main')}
             </Badge>
           </div>
         )}
@@ -112,7 +118,7 @@ export const PhotoItem = ({
         <div
           {...listeners}
           className='absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity'
-          title='Drag to reorder'
+          title={t('photo.dragReorder', 'Drag to reorder')}
         >
           <svg
             className='w-4 h-4'

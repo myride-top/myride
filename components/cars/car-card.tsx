@@ -1,15 +1,17 @@
 import { Car, Profile } from '@/lib/types/database'
-import { Share2, Image, Edit, Crown } from 'lucide-react'
+import { Share2, Image as ImageIcon, Edit, Crown } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { LikeButton } from '@/components/common/like-button'
 import { UserAvatar } from '@/components/common/user-avatar'
 import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { NationalityFlag } from '@/components/common/nationality-flag'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface CarCardProps {
   car: Car
@@ -32,10 +34,12 @@ export const CarCard = ({
   showActions = true,
   isOwner = false,
 }: CarCardProps) => {
+  const { t } = useI18n()
   const router = useRouter()
   const [likeCount, setLikeCount] = useState(car.like_count || 0)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [showQRCode, setShowQRCode] = useState(false)
+  const [imageFailed, setImageFailed] = useState(false)
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -65,7 +69,7 @@ export const CarCard = ({
         // Track share analytics when QR code modal opens
         onShare?.(car)
       } catch {
-        toast.error('Failed to generate QR code')
+        toast.error(t('map.toast.qrFailed', 'Failed to generate QR code'))
       }
     } else {
       setShowQRCode(true)
@@ -99,7 +103,7 @@ export const CarCard = ({
         }}
         tabIndex={0}
         role='button'
-        aria-label={`View details for ${car.name}`}
+        aria-label={t('carCard.viewDetailsAria', `View details for ${car.name}`)}
       >
         {(() => {
           // Get the photo URL to display
@@ -112,29 +116,24 @@ export const CarCard = ({
               ? car.photos[0]
               : null)
 
-          return photoUrl ? (
-            <img
+          return photoUrl && !imageFailed ? (
+            <Image
               src={photoUrl}
               alt={`${car.name || 'Car'} - ${car.make} ${car.model} ${car.year}`}
-              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out'
-              loading='lazy'
-              decoding='async'
-              onError={e => {
-                // Fallback to placeholder on error
-                const target = e.target as HTMLImageElement
-                target.style.display = 'none'
-                const placeholder = target.nextElementSibling as HTMLElement
-                if (placeholder) {
-                  placeholder.style.display = 'flex'
-                }
+              fill
+              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+              className='object-cover group-hover:scale-105 transition-transform duration-500 ease-out'
+              onError={() => {
+                setImageFailed(true)
               }}
+              unoptimized
             />
           ) : (
             <div
               className='w-full h-full flex items-center justify-center bg-muted/50'
               aria-hidden='true'
             >
-              <Image className='w-12 h-12 text-muted-foreground/50' />
+              <ImageIcon className='w-12 h-12 text-muted-foreground/50' />
             </div>
           )
         })()}
@@ -144,13 +143,13 @@ export const CarCard = ({
           <div
             className='absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200'
             role='group'
-            aria-label='Car actions'
+            aria-label={t('carCard.actions', 'Car actions')}
           >
             {isOwner && onEdit && (
               <button
                 onClick={handleEdit}
-                title='Edit car'
-                aria-label='Edit car'
+                title={t('carCard.edit', 'Edit car')}
+                aria-label={t('carCard.edit', 'Edit car')}
                 className='flex items-center justify-center p-2 bg-black/60 backdrop-blur-sm text-white rounded-full hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 cursor-pointer'
               >
                 <Edit className='w-4 h-4' aria-hidden='true' />
@@ -159,8 +158,8 @@ export const CarCard = ({
 
             <button
               onClick={handleQRCode}
-              title='Share car via QR Code'
-              aria-label='Share car via QR Code'
+              title={t('carCard.shareQr', 'Share car via QR Code')}
+              aria-label={t('carCard.shareQr', 'Share car via QR Code')}
               className='flex items-center justify-center p-2 bg-black/60 backdrop-blur-sm text-white rounded-full hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200 cursor-pointer'
             >
               <Share2 className='w-4 h-4' aria-hidden='true' />
@@ -184,7 +183,7 @@ export const CarCard = ({
         }}
         tabIndex={0}
         role='button'
-        aria-label={`View details for ${car.name}`}
+        aria-label={t('carCard.viewDetailsAria', `View details for ${car.name}`)}
       >
         {/* Car Info */}
         <div className='mb-3'>
@@ -235,7 +234,7 @@ export const CarCard = ({
               href={`/u/${profile?.username || 'user'}/${car.url_slug}`}
               className='text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer ml-auto'
             >
-              View Details →
+              {t('carCard.viewDetails', 'View Details')} →
             </Link>
           </div>
         )}

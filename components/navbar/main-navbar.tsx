@@ -6,7 +6,10 @@ import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { canUserCreateCarSimpleClient } from '@/lib/database/cars-client'
 import { Profile } from '@/lib/types/database'
 import { ThemeToggle } from '../theme/theme-toggle'
+import { LanguageSwitcher } from '@/components/common/language-switcher'
+import { useI18n } from '@/lib/i18n/provider'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   User,
@@ -24,22 +27,23 @@ import { BaseNavbar } from './base-navbar'
 
 import type { NavItem } from '@/lib/types/navbar'
 
-const navItems: NavItem[] = [
-  { name: 'Browse Cars', href: '/browse' },
-  { name: 'Map', href: '/map' },
-]
-
 interface MainNavbarProps {
   showCreateButton?: boolean
 }
 
 export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
   const { user, loading, signOut } = useAuth()
+  const { t } = useI18n()
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [canCreateCar, setCanCreateCar] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const navItems: NavItem[] = [
+    { name: t('nav.browseCars', 'Browse Cars'), href: '/browse' },
+    { name: t('nav.map', 'Map'), href: '/map' },
+  ]
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -138,7 +142,12 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
       logoHref={user ? '/dashboard' : '/'}
       layout='right-aligned'
       renderNavItem={renderNavItem}
-      rightNavContent={<ThemeToggle />}
+      rightNavContent={
+        <div className='flex items-center gap-2'>
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
+      }
     >
       <div className='flex items-center space-x-2'>
         {user ? (
@@ -157,10 +166,13 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
             >
               <div className='w-8 h-8 bg-primary rounded-full flex items-center justify-center'>
                 {profile?.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     alt={profile.username || user.email || 'User'}
+                    width={32}
+                    height={32}
                     className='w-8 h-8 rounded-full object-cover'
+                    unoptimized
                   />
                 ) : (
                   <User className='w-4 h-4 text-primary-foreground' />
@@ -203,7 +215,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                     className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                   >
                     <LayoutDashboard className='w-4 h-4 mr-3' aria-hidden='true' />
-                    Dashboard
+                    {t('nav.dashboard', 'Dashboard')}
                   </button>
 
                   {profile?.is_premium && (
@@ -216,7 +228,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                       className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                     >
                       <BarChart3 className='w-4 h-4 mr-3' aria-hidden='true' />
-                      Analytics
+                      {t('nav.analytics', 'Analytics')}
                     </button>
                   )}
 
@@ -226,7 +238,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                     className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                   >
                     <Settings className='w-4 h-4 mr-3' aria-hidden='true' />
-                    Edit Profile
+                    {t('nav.editProfile', 'Edit Profile')}
                   </button>
 
                   {canCreateCar ? (
@@ -236,7 +248,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                       className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                     >
                       <Plus className='w-4 h-4 mr-3' aria-hidden='true' />
-                      Add New Car
+                      {t('nav.addNewCar', 'Add New Car')}
                     </button>
                   ) : (
                     <div className='space-y-1'>
@@ -249,7 +261,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                         className='flex items-center w-full px-4 py-2 text-sm text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950 hover:bg-orange-100 dark:hover:bg-orange-900 cursor-pointer transition-colors focus:outline-none focus:bg-orange-100 dark:focus:bg-orange-900'
                       >
                         <AlertCircle className='w-4 h-4 mr-3' aria-hidden='true' />
-                        Car Limit Reached
+                        {t('nav.carLimitReached', 'Car Limit Reached')}
                       </button>
                     </div>
                   )}
@@ -263,7 +275,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                       className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                     >
                       <Crown className='w-4 h-4 mr-3 text-yellow-500' aria-hidden='true' />
-                      Buy Premium
+                      {t('nav.buyPremium', 'Buy Premium')}
                     </button>
                   )}
 
@@ -273,7 +285,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                     className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
                   >
                     <CreditCard className='w-4 h-4 mr-3' aria-hidden='true' />
-                    Payment History
+                    {t('nav.paymentHistory', 'Payment History')}
                   </button>
 
                   <div className='border-t border-border my-1'></div>
@@ -284,7 +296,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                     className='flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-destructive/10 cursor-pointer transition-colors focus:outline-none focus:bg-destructive/10'
                   >
                     <LogOut className='w-4 h-4 mr-3' aria-hidden='true' />
-                    Sign Out
+                    {t('nav.signOut', 'Sign Out')}
                   </button>
                 </div>
               </div>
@@ -296,13 +308,13 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
               href='/login'
               className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium px-2 py-1.5 md:px-0 md:py-0 rounded-lg md:rounded-none hover:bg-accent md:hover:bg-transparent active:scale-[0.98] whitespace-nowrap text-sm md:text-base'
             >
-              Sign In
+              {t('nav.signIn', 'Sign In')}
             </Link>
             <Link
               href='/register'
               className='bg-primary text-primary-foreground px-3 py-1.5 md:px-4 md:py-2 rounded-md text-sm md:text-base font-medium hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0'
             >
-              Sign Up
+              {t('nav.signUp', 'Sign Up')}
             </Link>
           </div>
         )}

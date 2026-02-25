@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {
@@ -33,6 +33,7 @@ import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { useTheme } from 'next-themes'
 import type * as Leaflet from 'leaflet'
 import type { DivIcon } from 'leaflet'
+import { useI18n } from '@/lib/i18n/provider'
 
 // Dynamically import map components for route display
 const MapContainer = dynamic(
@@ -83,10 +84,18 @@ function RouteMap({
   route,
   center,
   isDarkMode,
+  startTitle,
+  startDescription,
+  endTitle,
+  endDescription,
 }: {
   route: [number, number][]
   center: [number, number]
   isDarkMode: boolean
+  startTitle: string
+  startDescription: string
+  endTitle: string
+  endDescription: string
 }) {
   const [startMarkerIcon, setStartMarkerIcon] = useState<DivIcon | null>(null)
   const [endMarkerIcon, setEndMarkerIcon] = useState<DivIcon | null>(null)
@@ -197,9 +206,9 @@ function RouteMap({
             <Marker position={route[0]} icon={startMarkerIcon}>
               <Popup>
                 <div className='text-center'>
-                  <strong>Start of Route</strong>
+                  <strong>{startTitle}</strong>
                   <br />
-                  Starting point
+                  {startDescription}
                 </div>
               </Popup>
             </Marker>
@@ -209,9 +218,9 @@ function RouteMap({
             <Marker position={route[route.length - 1]} icon={endMarkerIcon}>
               <Popup>
                 <div className='text-center'>
-                  <strong>End of Route</strong>
+                  <strong>{endTitle}</strong>
                   <br />
-                  Final destination
+                  {endDescription}
                 </div>
               </Popup>
             </Marker>
@@ -224,6 +233,7 @@ function RouteMap({
 
 interface EventPopupProps {
   event: EventWithAttendeeCount
+  isActive: boolean
   onAttendanceChange: () => void
   onEventUpdated?: (event: EventWithAttendeeCount) => void
   onEventDeleted?: (eventId: string) => void
@@ -231,13 +241,16 @@ interface EventPopupProps {
 
 export function EventPopup({
   event,
+  isActive,
   onAttendanceChange,
   onEventUpdated,
   onEventDeleted,
 }: EventPopupProps) {
+  const { t } = useI18n()
   const { user } = useAuth()
   const [cars, setCars] = useState<Car[]>([])
   const [attendees, setAttendees] = useState<EventAttendeeWithDetails[]>([])
+  const [loadingAttendees, setLoadingAttendees] = useState(false)
   const [attending, setAttending] = useState(false)
   const [isAttendeesDialogOpen, setIsAttendeesDialogOpen] = useState(false)
   const [address, setAddress] = useState<string | null>(null)
@@ -259,6 +272,20 @@ export function EventPopup({
   // Track event analytics
   const { trackShare } = useEventAnalytics(event.id, event.created_by)
 
+  const loadAttendees = useCallback(async () => {
+    try {
+      setLoadingAttendees(true)
+      const attendeesData = await getEventAttendeesWithDetailsClient(event.id)
+      if (attendeesData) {
+        setAttendees(attendeesData)
+      }
+    } catch {
+      setAttendees([])
+    } finally {
+      setLoadingAttendees(false)
+    }
+  }, [event.id])
+
   const handleShare = async () => {
     if (!qrCodeDataUrl) {
       setIsGeneratingQR(true)
@@ -274,7 +301,7 @@ export function EventPopup({
         setQrCodeDataUrl(dataUrl)
         setShowQRCode(true)
       } catch {
-        toast.error('Failed to generate QR code')
+        toast.error(t('map.toast.qrFailed', 'Failed to generate QR code'))
       } finally {
         setIsGeneratingQR(false)
       }
@@ -295,8 +322,13 @@ export function EventPopup({
   }
 
   useEffect(() => {
+    if (!isActive) {
+      return
+    }
+
     const loadData = async () => {
       // Load address first
+      setLoadingAddress(true)
       try {
         const response = await fetch(
           `/api/geocode?lat=${event.latitude}&lng=${event.longitude}`
@@ -305,49 +337,45 @@ export function EventPopup({
           const data = await response.json()
           setAddress(data.address || null)
         }
-      } catch (error) {
-        console.error('Error loading address:', error)
+      } catch {
+        setAddress(null)
       } finally {
         setLoadingAddress(false)
       }
 
       if (user) {
         try {
-          const [userCars, userAttendance, attendeesData] = await Promise.all([
+          const [userCars, userAttendance] = await Promise.all([
             getCarsByUserClient(user.id),
             getUserEventAttendanceClient(event.id, user.id),
-            getEventAttendeesWithDetailsClient(event.id),
           ])
           if (userCars) {
             setCars(userCars)
           }
           if (userAttendance) {
             setAttending(userAttendance.attending)
+          } else {
+            setAttending(false)
           }
-          if (attendeesData) {
-            setAttendees(attendeesData)
-          }
-        } catch (error) {
-          console.error('Error loading data:', error)
-        } finally {
+        } catch {
+          setCars([])
+          setAttending(false)
         }
       } else {
-        // Load attendees even if user is not logged in
-        try {
-          const attendeesData = await getEventAttendeesWithDetailsClient(
-            event.id
-          )
-          if (attendeesData) {
-            setAttendees(attendeesData)
-          }
-        } catch (error) {
-          console.error('Error loading attendees:', error)
-        } finally {
-        }
+        setCars([])
+        setAttending(false)
       }
     }
-    loadData()
-  }, [user, event.id, event.latitude, event.longitude])
+    void loadData()
+  }, [isActive, user, event.id, event.latitude, event.longitude])
+
+  useEffect(() => {
+    if (!isActive || !isAttendeesDialogOpen) {
+      return
+    }
+
+    void loadAttendees()
+  }, [isActive, isAttendeesDialogOpen, loadAttendees])
 
   const handleEventUpdated = (updatedEvent: EventWithAttendeeCount) => {
     if (onEventUpdated) {
@@ -361,16 +389,21 @@ export function EventPopup({
     try {
       const result = await deleteEventClient(event.id)
       if (result.success) {
-        toast.success('Event deleted successfully')
+        toast.success(t('map.toast.eventDeleted', 'Event deleted successfully'))
         if (onEventDeleted) {
           onEventDeleted(event.id)
         }
         setIsDeleteDialogOpen(false)
       } else {
-        toast.error(result.error || 'Failed to delete event')
+        toast.error(
+          result.error ||
+            t('map.toast.eventDeleteFailed', 'Failed to delete event')
+        )
       }
     } catch (error) {
-      toast.error(`Failed to delete event: ${error}`)
+      toast.error(
+        `${t('map.toast.eventDeleteFailed', 'Failed to delete event')}: ${error}`
+      )
     } finally {
       setDeleting(false)
     }
@@ -413,7 +446,7 @@ export function EventPopup({
               <MapPin className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5' />
               <span className='break-words leading-tight text-[11px] sm:text-sm'>
                 {loadingAddress
-                  ? 'Loading...'
+                  ? t('common.loading', 'Loading...')
                   : address
                   ? address
                   : `${event.latitude.toFixed(4)}, ${event.longitude.toFixed(
@@ -427,20 +460,33 @@ export function EventPopup({
             >
               <Users className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
               <span className='font-medium'>
-                {event.attendee_count} attending
+                {event.attendee_count}{' '}
+                {t('map.attendees.attendingShort', 'attending')}
               </span>
             </button>
             {isCruiseWithRoute && (
               <div className='pt-1 sm:pt-2'>
                 <div className='flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm text-muted-foreground mb-1.5 sm:mb-2'>
                   <Route className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
-                  <span className='font-medium'>Route</span>
+                  <span className='font-medium'>
+                    {t('map.route.label', 'Route')}
+                  </span>
                 </div>
                 <div className='h-24 sm:h-48 w-full border rounded-md overflow-hidden [&_.leaflet-control-attribution]:hidden'>
                   <RouteMap
                     route={event.route || []}
                     center={[event.latitude, event.longitude]}
                     isDarkMode={isDarkMode}
+                    startTitle={t('map.route.startTitle', 'Start of Route')}
+                    startDescription={t(
+                      'map.route.startDescription',
+                      'Starting point'
+                    )}
+                    endTitle={t('map.route.endTitle', 'End of Route')}
+                    endDescription={t(
+                      'map.route.endDescription',
+                      'Final destination'
+                    )}
                   />
                 </div>
               </div>
@@ -458,7 +504,9 @@ export function EventPopup({
                 onClick={() => setIsAttendanceDialogOpen(true)}
                 className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
               >
-                {attending ? 'Attending' : 'Attend'}
+                {attending
+                  ? t('map.attendance.attending', 'Attending')
+                  : t('map.attendance.attend', 'Attend')}
               </Button>
             )}
             <Button
@@ -472,13 +520,15 @@ export function EventPopup({
                 <>
                   <div className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 animate-spin rounded-full border-2 border-current border-t-transparent' />
                   <span className='hidden sm:inline text-[11px] sm:text-sm'>
-                    Generating...
+                    {t('common.generating', 'Generating...')}
                   </span>
                 </>
               ) : (
                 <>
                   <Share2 className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5' />
-                  <span className='text-[11px] sm:text-sm truncate'>Share</span>
+                  <span className='text-[11px] sm:text-sm truncate'>
+                    {t('common.share', 'Share')}
+                  </span>
                 </>
               )}
             </Button>
@@ -492,7 +542,9 @@ export function EventPopup({
                 className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
               >
                 <Edit className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5' />
-                <span className='text-[11px] sm:text-sm truncate'>Edit</span>
+                <span className='text-[11px] sm:text-sm truncate'>
+                  {t('common.edit', 'Edit')}
+                </span>
               </Button>
               <Button
                 variant='destructive'
@@ -501,7 +553,9 @@ export function EventPopup({
                 className='flex-1 min-w-0 text-[11px] sm:text-sm cursor-pointer gap-1'
               >
                 <Trash2 className='w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 flex-shrink-0' />
-                <span className='text-[11px] sm:text-sm truncate'>Delete</span>
+                <span className='text-[11px] sm:text-sm truncate'>
+                  {t('common.delete', 'Delete')}
+                </span>
               </Button>
             </div>
           )}
@@ -513,6 +567,7 @@ export function EventPopup({
           open={isAttendeesDialogOpen}
           onOpenChange={setIsAttendeesDialogOpen}
           attendees={attendees}
+          loading={loadingAttendees}
           eventTitle={event.title}
         />
 
@@ -524,21 +579,22 @@ export function EventPopup({
             userId={user.id}
             cars={cars}
             onAttendanceChanged={async () => {
-              // Reload attendance status and attendees
               try {
-                const [userAttendance, attendeesData] = await Promise.all([
-                  getUserEventAttendanceClient(event.id, user.id),
-                  getEventAttendeesWithDetailsClient(event.id),
-                ])
+                const userAttendance = await getUserEventAttendanceClient(
+                  event.id,
+                  user.id
+                )
                 if (userAttendance) {
                   setAttending(userAttendance.attending)
+                } else {
+                  setAttending(false)
                 }
-                if (attendeesData) {
-                  setAttendees(attendeesData)
+                if (isAttendeesDialogOpen) {
+                  await loadAttendees()
                 }
                 onAttendanceChange()
-              } catch (error) {
-                console.error('Error reloading attendance:', error)
+              } catch {
+                // Leave current state as-is on transient errors.
               }
             }}
           />

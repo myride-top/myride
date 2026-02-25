@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { Github, Instagram, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { TikTokIcon } from '../icons/social-media-icon'
@@ -24,7 +25,14 @@ export const Footer = () => {
           {/* Brand */}
           <div className='lg:col-span-2'>
             <div className='flex items-center mb-4'>
-              <img src='/logo.webp' alt='MyRide' className='h-8 w-auto' />
+              <Image
+                src='/logo.webp'
+                alt='MyRide'
+                width={120}
+                height={32}
+                className='h-8 w-auto'
+                priority
+              />
             </div>
             <p className='text-muted-foreground mb-4 max-w-sm'>
               The ultimate platform for car enthusiasts to showcase their rides

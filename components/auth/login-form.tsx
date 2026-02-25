@@ -9,8 +9,10 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/lib/i18n/provider'
 
 export const LoginForm = () => {
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,15 +24,24 @@ export const LoginForm = () => {
     const newErrors: { email?: string; password?: string } = {}
 
     if (!email) {
-      newErrors.email = 'Email is required'
+      newErrors.email = t('auth.validation.emailRequired', 'Email is required')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address'
+      newErrors.email = t(
+        'auth.validation.emailInvalid',
+        'Please enter a valid email address'
+      )
     }
 
     if (!password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = t(
+        'auth.validation.passwordRequired',
+        'Password is required'
+      )
     } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      newErrors.password = t(
+        'auth.validation.passwordMin',
+        'Password must be at least 6 characters'
+      )
     }
 
     setErrors(newErrors)
@@ -50,10 +61,16 @@ export const LoginForm = () => {
     const { error } = await signIn(email, password)
 
     if (error) {
-      toast.error(error.message || 'Failed to sign in. Please check your credentials.')
+      toast.error(
+        error.message ||
+          t(
+            'auth.login.failed',
+            'Failed to sign in. Please check your credentials.'
+          )
+      )
       setLoading(false)
     } else {
-      toast.success('Signed in successfully!')
+      toast.success(t('auth.login.success', 'Signed in successfully!'))
       router.push('/dashboard')
     }
   }
@@ -63,7 +80,7 @@ export const LoginForm = () => {
       <form onSubmit={handleSubmit} className='space-y-5' noValidate>
         <div className='space-y-2'>
           <Label htmlFor='email' className='text-foreground'>
-            Email
+            {t('auth.fields.email', 'Email')}
           </Label>
           <div className='space-y-1'>
             <Input
@@ -84,7 +101,7 @@ export const LoginForm = () => {
                 'transition-all',
                 errors.email && 'border-destructive focus-visible:ring-destructive/20'
               )}
-              placeholder='you@example.com'
+              placeholder={t('auth.fields.emailPlaceholder', 'you@example.com')}
             />
             {errors.email && (
               <div
@@ -101,7 +118,7 @@ export const LoginForm = () => {
 
         <div className='space-y-2'>
           <Label htmlFor='password' className='text-foreground'>
-            Password
+            {t('auth.fields.password', 'Password')}
           </Label>
           <div className='space-y-1'>
             <Input
@@ -122,7 +139,10 @@ export const LoginForm = () => {
                 'transition-all',
                 errors.password && 'border-destructive focus-visible:ring-destructive/20'
               )}
-              placeholder='Enter your password'
+              placeholder={t(
+                'auth.fields.passwordPlaceholder',
+                'Enter your password'
+              )}
             />
             {errors.password && (
               <div
@@ -143,7 +163,9 @@ export const LoginForm = () => {
           className='w-full'
           loading={loading}
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {loading
+            ? t('auth.login.signingIn', 'Signing in...')
+            : t('auth.login.submit', 'Sign In')}
         </Button>
       </form>
     </div>

@@ -4,6 +4,8 @@ import { QrCode, X, Download, Share2, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import Image from 'next/image'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface EventQRCodeModalProps {
   isOpen: boolean
@@ -27,6 +29,8 @@ export const EventQRCodeModal = ({
   currentUrl,
   onShare,
 }: EventQRCodeModalProps) => {
+  const { t } = useI18n()
+
   // Track share analytics when modal opens
   useEffect(() => {
     if (isOpen && onShare) {
@@ -44,13 +48,13 @@ export const EventQRCodeModal = ({
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    toast.success('QR Code downloaded!')
+    toast.success(t('qr.downloaded', 'QR Code downloaded!'))
   }
 
   const handleCopyLink = () => {
     const urlToCopy = currentUrl || window.location.href
     navigator.clipboard.writeText(urlToCopy)
-    toast.success('Link copied to clipboard!')
+    toast.success(t('qr.linkCopied', 'Link copied to clipboard!'))
   }
 
   const formatDateTime = (dateString: string): string => {
@@ -84,8 +88,12 @@ export const EventQRCodeModal = ({
                 <QrCode className='w-5 h-5 text-white' />
               </div>
               <div>
-                <h3 className='text-lg font-semibold'>QR Code</h3>
-                <p className='text-blue-100 text-sm'>Share this event easily</p>
+                <h3 className='text-lg font-semibold'>
+                  {t('qr.title', 'QR Code')}
+                </h3>
+                <p className='text-blue-100 text-sm'>
+                  {t('map.qr.shareEvent', 'Share this event easily')}
+                </p>
               </div>
             </div>
             <button
@@ -123,16 +131,25 @@ export const EventQRCodeModal = ({
 
             {/* QR Code */}
             <div className='text-center'>
-              <img
+              <Image
                 src={qrCodeDataUrl}
-                alt='QR Code'
+                alt={t('qr.title', 'QR Code')}
+                width={256}
+                height={256}
                 className='w-64 h-64 mx-auto drop-shadow-lg mb-3'
+                unoptimized
               />
               <p className='text-gray-600 dark:text-gray-300 text-sm mb-1'>
-                Scan this QR code with your phone camera
+                {t(
+                  'qr.scanDescription',
+                  'Scan this QR code with your phone camera'
+                )}
               </p>
               <p className='text-gray-500 dark:text-gray-400 text-xs'>
-                Opens the event page directly on your device
+                {t(
+                  'map.qr.opensEvent',
+                  'Opens the event page directly on your device'
+                )}
               </p>
             </div>
 
@@ -143,14 +160,14 @@ export const EventQRCodeModal = ({
                 className='flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer'
               >
                 <Download className='w-4 h-4' />
-                Download PNG
+                {t('qr.downloadPng', 'Download PNG')}
               </button>
               <button
                 onClick={handleCopyLink}
                 className='flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer'
               >
                 <Share2 className='w-4 h-4' />
-                Copy Link
+                {t('qr.copyLink', 'Copy Link')}
               </button>
             </div>
           </div>

@@ -183,14 +183,7 @@ export async function GET(
       ) || []
 
     return createSecureResponse({ attendees: formattedAttendees || [] })
-  } catch (error) {
-    console.error('Error fetching attendees:', error)
-    return createSecureResponse(
-      {
-        error: 'Failed to fetch attendees',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      500
-    )
+  } catch {
+    return createSecureResponse({ error: 'Failed to fetch attendees' }, 500)
   }
 }

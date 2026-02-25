@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
 import { Commissioner, Atkinson_Hyperlegible } from 'next/font/google'
+import { cookies, headers } from 'next/headers'
 import { AuthProvider } from '@/lib/context/auth-context'
 import { UnitProvider } from '@/lib/context/unit-context'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { CookieConsent } from '@/components/common/cookie-consent'
+import { I18nProvider } from '@/lib/i18n/provider'
+import { getDictionary } from '@/lib/i18n/dictionaries'
+import {
+  DEFAULT_LOCALE,
+  LOCALE_HEADER_NAME,
+  LOCALE_COOKIE_NAME,
+  isLocale,
+  type Locale,
+} from '@/lib/i18n/config'
 import {
   StructuredData,
   websiteSchema,
@@ -43,6 +53,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://myride.top'),
   alternates: {
     canonical: '/',
+    languages: {
+      en: '/en',
+      cs: '/cs',
+      es: '/es',
+      de: '/de',
+    },
   },
   openGraph: {
     type: 'website',
@@ -79,13 +95,24 @@ export const metadata: Metadata = {
   classification: 'car showcase platform',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const headerStore = await headers()
+  const cookieStore = await cookies()
+  const localeFromHeader = headerStore.get(LOCALE_HEADER_NAME)
+  const localeFromCookie = cookieStore.get(LOCALE_COOKIE_NAME)?.value
+  const locale: Locale = isLocale(localeFromHeader)
+    ? localeFromHeader
+    : isLocale(localeFromCookie)
+    ? localeFromCookie
+    : DEFAULT_LOCALE
+  const messages = await getDictionary(locale)
+
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <link rel='icon' href='/icon.svg' type='image/svg+xml' />
         <link rel='alternate icon' href='/favicon.ico' />
@@ -99,20 +126,25 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <UnitProvider>
-              {children}
-              <Toaster
-                position='bottom-right'
-                richColors
-                closeButton
-                duration={4000}
-              />
-              <CookieConsent />
-              <StructuredData data={websiteSchema} />
-              <StructuredData data={organizationSchema} />
-            </UnitProvider>
-          </AuthProvider>
+          <I18nProvider locale={locale} messages={messages}>
+            <AuthProvider>
+              <UnitProvider>
+                {children}
+                <Toaster
+                  position='bottom-right'
+                  richColors
+                  closeButton
+                  duration={4000}
+                />
+                <CookieConsent />
+                <StructuredData id='schema-website' data={websiteSchema} />
+                <StructuredData
+                  id='schema-organization'
+                  data={organizationSchema}
+                />
+              </UnitProvider>
+            </AuthProvider>
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

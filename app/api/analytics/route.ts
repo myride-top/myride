@@ -1,37 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import {
   getAnalyticsData,
   getCarPerformance,
   getEventPerformance,
 } from '@/lib/database/analytics'
 
+const ALLOWED_TIME_RANGES = new Set(['7d', '30d', '3m', '6m', '1y'])
+
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {
-              // The `setAll` method was called from a Server Component.
-              // This can be ignored if you have middleware refreshing
-              // user sessions.
-            }
-          },
-        },
-      }
-    )
+    const supabase = await createClient()
 
     // Get the current user
     const {
@@ -45,7 +24,10 @@ export async function GET(request: NextRequest) {
 
     // Get query parameters
     const { searchParams } = new URL(request.url)
-    const timeRange = searchParams.get('timeRange') || '6m'
+    const requestedTimeRange = searchParams.get('timeRange') || '6m'
+    const timeRange = ALLOWED_TIME_RANGES.has(requestedTimeRange)
+      ? requestedTimeRange
+      : '6m'
 
     // Fetch analytics data
     const [analyticsData, carPerformance, eventPerformance] = await Promise.all(

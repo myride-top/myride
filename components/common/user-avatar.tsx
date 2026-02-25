@@ -1,4 +1,5 @@
 import { User } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 interface UserAvatarProps {
@@ -22,6 +23,12 @@ export const UserAvatar = ({
     lg: 'w-12 h-12',
     xl: 'w-16 h-16',
   }
+  const sizePixels = {
+    sm: 24,
+    md: 32,
+    lg: 48,
+    xl: 64,
+  } as const
 
   const iconSizes = {
     sm: 'w-3 h-3',
@@ -32,14 +39,17 @@ export const UserAvatar = ({
 
   if (avatarUrl) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt={`${username}'s avatar`}
+        width={sizePixels[size]}
+        height={sizePixels[size]}
         className={cn(
           'rounded-full object-cover',
           sizeClasses[size],
           className
         )}
+        unoptimized
       />
     )
   }
@@ -80,6 +90,12 @@ export function UserAvatarWithInitials({
     lg: 'w-12 h-12',
     xl: 'w-16 h-16',
   }
+  const sizePixels = {
+    sm: 24,
+    md: 32,
+    lg: 48,
+    xl: 64,
+  } as const
 
   const textSizes = {
     sm: 'text-xs',
@@ -90,14 +106,17 @@ export function UserAvatarWithInitials({
 
   if (avatarUrl) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt={`${username}'s avatar`}
+        width={sizePixels[size]}
+        height={sizePixels[size]}
         className={cn(
           'rounded-full object-cover',
           sizeClasses[size],
           className
         )}
+        unoptimized
       />
     )
   }

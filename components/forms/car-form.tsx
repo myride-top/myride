@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { Car, CarPhoto, PhotoCategory, CarTimeline } from '@/lib/types/database'
 import { getUnitLabel } from '@/lib/utils'
 import { SortablePhotoGallery } from '@/components/photos/sortable-photo-gallery'
@@ -1678,10 +1679,13 @@ function TimelineStep({
                     </label>
                     {entry.photo_url ? (
                       <div className='relative'>
-                        <img
+                        <Image
                           src={entry.photo_url}
                           alt={`${entry.title} - Photo 1`}
+                          width={1200}
+                          height={800}
                           className='w-full rounded-lg object-cover max-h-64 mb-2'
+                          unoptimized
                         />
                         <button
                           type='button'
@@ -1738,10 +1742,13 @@ function TimelineStep({
                     </label>
                     {entry.photo_url_2 ? (
                       <div className='relative'>
-                        <img
+                        <Image
                           src={entry.photo_url_2}
                           alt={`${entry.title} - Photo 2`}
+                          width={1200}
+                          height={800}
                           className='w-full rounded-lg object-cover max-h-64 mb-2'
+                          unoptimized
                         />
                         <button
                           type='button'

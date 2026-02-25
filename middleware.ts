@@ -1,9 +1,89 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import {
+  buildLocalePath,
+  DEFAULT_LOCALE,
+  LOCALE_HEADER_NAME,
+  LOCALE_COOKIE_NAME,
+  isLocale,
+  type Locale,
+} from '@/lib/i18n/config'
+
+const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365
+
+const withLocaleCookie = (
+  response: NextResponse,
+  locale: Locale
+): NextResponse => {
+  response.cookies.set(LOCALE_COOKIE_NAME, locale, {
+    path: '/',
+    sameSite: 'lax',
+    maxAge: ONE_YEAR_SECONDS,
+  })
+
+  return response
+}
+
+const getRoutingContext = (request: NextRequest) => {
+  const pathname = request.nextUrl.pathname
+  const pathSegments = pathname.split('/').filter(Boolean)
+
+  const localeFromPath = isLocale(pathSegments[0]) ? pathSegments[0] : null
+  const normalizedSegments = localeFromPath ? pathSegments.slice(1) : pathSegments
+  const normalizedPathname =
+    normalizedSegments.length > 0 ? `/${normalizedSegments.join('/')}` : '/'
+
+  const localeFromCookie = request.cookies.get(LOCALE_COOKIE_NAME)?.value
+  const resolvedLocale: Locale = isLocale(localeFromPath)
+    ? localeFromPath
+    : isLocale(localeFromCookie)
+    ? localeFromCookie
+    : DEFAULT_LOCALE
+
+  const localePrefix = localeFromPath ? `/${localeFromPath}` : ''
+
+  return {
+    normalizedPathname,
+    resolvedLocale,
+    localePrefix,
+  }
+}
+
+const shouldBypassLocaleRedirect = (pathname: string): boolean => {
+  if (pathname.startsWith('/api')) {
+    return true
+  }
+
+  // Skip metadata and file-like routes.
+  if (
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/manifest.webmanifest'
+  ) {
+    return true
+  }
+
+  return /\.[^/]+$/.test(pathname)
+}
 
 export async function middleware(request: NextRequest) {
+  const { normalizedPathname, resolvedLocale, localePrefix } =
+    getRoutingContext(request)
+
+  if (!localePrefix && !shouldBypassLocaleRedirect(normalizedPathname)) {
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.pathname = buildLocalePath(resolvedLocale, normalizedPathname)
+    const redirectResponse = NextResponse.redirect(redirectUrl)
+    return withLocaleCookie(redirectResponse, resolvedLocale)
+  }
+
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set(LOCALE_HEADER_NAME, resolvedLocale)
+
   let supabaseResponse = NextResponse.next({
-    request,
+    request: {
+      headers: requestHeaders,
+    },
   })
 
   const supabase = createServerClient(
@@ -15,11 +95,12 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+
           supabaseResponse = NextResponse.next({
-            request,
+            request: {
+              headers: requestHeaders,
+            },
           })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -29,109 +110,51 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired - required for Server Components
-  // Try to get session first (more lenient than getUser)
   const {
     data: { session },
   } = await supabase.auth.getSession()
-  
-  // Also try getUser as a fallback
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  
-  // Use user from session or getUser
+
   const authenticatedUser = user || session?.user || null
 
-  const pathname = request.nextUrl.pathname
-
-  // Allow public access to profile/garage pages (/u/[username]) and car detail pages (/u/[username]/[car])
-  // Pattern: /u/username (2 path segments) or /u/username/car-slug (3 path segments)
-  const pathSegments = pathname.split('/').filter(Boolean)
-  const knownRoutes = [
-    'browse',
-    'create',
-    'profile',
-    'dashboard',
-    'login',
-    'register',
-    'analytics',
-    'premium',
-    'buy-car-slot',
-    'map',
-    'legal',
-    'api',
-    '_next',
-  ]
-  const isProfilePage =
-    pathSegments.length === 2 &&
-    pathSegments[0] === 'u' &&
-    !knownRoutes.includes(pathSegments[1]) &&
-    !pathSegments[1].startsWith('_') &&
-    !pathSegments[1].startsWith('api')
-  const isCarDetailPage =
-    pathSegments.length === 3 &&
-    pathSegments[0] === 'u' &&
-    !knownRoutes.includes(pathSegments[1]) &&
-    !pathSegments[1].startsWith('_') &&
-    !pathSegments[1].startsWith('api')
-
-  // If it's a profile/garage page or car detail page, allow public access
-  if (isProfilePage || isCarDetailPage) {
-    return supabaseResponse
+  if (normalizedPathname === '/') {
+    const target = authenticatedUser ? '/dashboard' : '/browse'
+    const redirectResponse = NextResponse.redirect(
+      new URL(`${localePrefix}${target}`, request.url)
+    )
+    return withLocaleCookie(redirectResponse, resolvedLocale)
   }
 
-  // Handle root path redirects
-  if (pathname === '/') {
-    if (authenticatedUser) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    } else {
-      return NextResponse.redirect(new URL('/browse', request.url))
-    }
-  }
-
-  // If user is authenticated and trying to access auth pages, redirect to dashboard
   if (
     authenticatedUser &&
-    (request.nextUrl.pathname === '/login' ||
-      request.nextUrl.pathname === '/register')
+    (normalizedPathname === '/login' || normalizedPathname === '/register')
   ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    const redirectResponse = NextResponse.redirect(
+      new URL(`${localePrefix}/dashboard`, request.url)
+    )
+    return withLocaleCookie(redirectResponse, resolvedLocale)
   }
 
-  // For client-side routes that use ProtectedRoute, let the client handle authentication
-  // This prevents race conditions where middleware doesn't see the session but client does
-  const isClientSideProtectedRoute = 
-    request.nextUrl.pathname.startsWith('/map') ||
-    request.nextUrl.pathname.startsWith('/analytics')
-  
   const isServerSideProtectedRoute =
-    request.nextUrl.pathname.startsWith('/create') ||
-    request.nextUrl.pathname.startsWith('/profile') ||
-    request.nextUrl.pathname.startsWith('/dashboard')
+    normalizedPathname.startsWith('/create') ||
+    normalizedPathname.startsWith('/profile') ||
+    normalizedPathname.startsWith('/dashboard')
 
-  // For server-side routes, redirect immediately if not authenticated
   if (!authenticatedUser && isServerSideProtectedRoute) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    const redirectResponse = NextResponse.redirect(
+      new URL(`${localePrefix}/login`, request.url)
+    )
+    return withLocaleCookie(redirectResponse, resolvedLocale)
   }
 
-  // For client-side routes, always let them through and let ProtectedRoute handle redirects
-  // This fixes the issue where middleware redirects even when user is authenticated
-  // The client-side ProtectedRoute component will handle the redirect if needed
-  // This prevents race conditions with cookie/session timing in middleware
-
-  return supabaseResponse
+  return withLocaleCookie(supabaseResponse, resolvedLocale)
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

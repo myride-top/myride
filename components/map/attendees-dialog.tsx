@@ -11,11 +11,13 @@ import { EventAttendeeWithDetails } from '@/lib/database/events-client'
 import { UserAvatar } from '@/components/common/user-avatar'
 import { Car as CarIcon } from 'lucide-react'
 import Link from 'next/link'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface AttendeesDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   attendees: EventAttendeeWithDetails[]
+  loading?: boolean
   eventTitle: string
 }
 
@@ -23,23 +25,35 @@ export function AttendeesDialog({
   open,
   onOpenChange,
   attendees,
+  loading = false,
   eventTitle,
 }: AttendeesDialogProps) {
+  const { t } = useI18n()
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-2xl max-h-[80vh] flex flex-col'>
         <DialogHeader>
-          <DialogTitle>Attendees - {eventTitle}</DialogTitle>
+          <DialogTitle>
+            {t('map.attendees.title', 'Attendees')} - {eventTitle}
+          </DialogTitle>
           <DialogDescription>
-            {attendees.length} {attendees.length === 1 ? 'person' : 'people'}{' '}
-            attending this event
+            {attendees.length}{' '}
+            {attendees.length === 1
+              ? t('map.attendees.person', 'person')
+              : t('map.attendees.people', 'people')}{' '}
+            {t('map.attendees.attendingThisEvent', 'attending this event')}
           </DialogDescription>
         </DialogHeader>
         <div className='flex-1 overflow-y-auto mt-4'>
           <div className='space-y-2'>
-            {attendees.length === 0 ? (
+            {loading ? (
               <p className='text-sm text-muted-foreground text-center py-8'>
-                No attendees yet
+                {t('map.attendees.loading', 'Loading attendees...')}
+              </p>
+            ) : attendees.length === 0 ? (
+              <p className='text-sm text-muted-foreground text-center py-8'>
+                {t('map.attendees.empty', 'No attendees yet')}
               </p>
             ) : (
               attendees.map(attendee => (
@@ -65,14 +79,14 @@ export function AttendeesDialog({
                         onClick={e => e.stopPropagation()}
                       >
                         <CarIcon className='w-3.5 h-3.5 flex-shrink-0' />
-                        <span className='truncate'>
-                          {attendee.car.name}
-                          {attendee.car.year && ` (${attendee.car.year})`}
-                          {attendee.car.horsepower &&
-                            ` • ${Math.round(attendee.car.horsepower * 0.7457)} kW`}
-                        </span>
-                      </Link>
-                    )}
+                      <span className='truncate'>
+                        {attendee.car.name}
+                        {attendee.car.year && ` (${attendee.car.year})`}
+                        {attendee.car.horsepower &&
+                            ` • ${Math.round(attendee.car.horsepower * 0.7457)} ${t('map.attendees.kw', 'kW')}`}
+                      </span>
+                    </Link>
+                  )}
                   </div>
                 </div>
               ))
@@ -83,4 +97,3 @@ export function AttendeesDialog({
     </Dialog>
   )
 }
-

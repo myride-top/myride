@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { NavItem } from '@/lib/types/navbar'
 
 export interface BaseNavbarProps {
@@ -113,10 +114,13 @@ export const BaseNavbar = ({
               href={logoHref}
               className='flex items-center hover:scale-105 transition-transform flex-shrink-0'
             >
-              <img
+              <Image
                 src='/logo.webp'
                 alt='MyRide'
+                width={120}
+                height={32}
                 className='h-7 md:h-8 w-auto'
+                priority
               />
             </Link>
           )}
@@ -219,7 +223,14 @@ export const BaseNavbar = ({
                 onClick={() => setIsMobileMenuOpen(false)}
                 className='flex items-center'
               >
-                <img src='/logo.webp' alt='MyRide' className='h-7 w-auto' />
+                <Image
+                  src='/logo.webp'
+                  alt='MyRide'
+                  width={120}
+                  height={32}
+                  className='h-7 w-auto'
+                  priority
+                />
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import {
   Card,
   CardContent,
@@ -26,6 +27,7 @@ import {
   Users,
   BarChart3,
 } from 'lucide-react'
+import { useI18n } from '@/lib/i18n/provider'
 
 export interface CarPerformance {
   id: string
@@ -55,6 +57,7 @@ interface AnalyticsDashboardProps {
 export const AnalyticsDashboard = ({
   className = '',
 }: AnalyticsDashboardProps) => {
+  const { t, locale } = useI18n()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [carPerformance, setCarPerformance] = useState<CarPerformance[]>([])
@@ -76,7 +79,9 @@ export const AnalyticsDashboard = ({
         )
 
         if (!response.ok) {
-          throw new Error('Failed to fetch analytics data')
+          throw new Error(
+            t('analytics.error.fetchFailed', 'Failed to fetch analytics data')
+          )
         }
 
         const result = await response.json()
@@ -86,13 +91,17 @@ export const AnalyticsDashboard = ({
           setTimeRange(range)
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('analytics.error.generic', 'An error occurred')
+        )
         console.error('Error fetching analytics:', err)
       } finally {
         setIsLoading(false)
       }
     },
-    [timeRange]
+    [t, timeRange]
   )
 
   // Initial data fetch
@@ -110,11 +119,11 @@ export const AnalyticsDashboard = ({
 
   const getTimeRangeLabel = (range: string) => {
     const labels: Record<string, string> = {
-      '7d': 'Last 7 days',
-      '30d': 'Last 30 days',
-      '3m': 'Last 3 months',
-      '6m': 'Last 6 months',
-      '1y': 'Last year',
+      '7d': t('analytics.timeRange.7d', 'Last 7 days'),
+      '30d': t('analytics.timeRange.30d', 'Last 30 days'),
+      '3m': t('analytics.timeRange.3m', 'Last 3 months'),
+      '6m': t('analytics.timeRange.6m', 'Last 6 months'),
+      '1y': t('analytics.timeRange.1y', 'Last year'),
     }
     return labels[range] || range
   }
@@ -124,7 +133,9 @@ export const AnalyticsDashboard = ({
       <div className='flex items-center justify-center min-h-[400px]'>
         <div className='text-center'>
           <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4'></div>
-          <p className='text-muted-foreground'>Loading analytics...</p>
+          <p className='text-muted-foreground'>
+            {t('analytics.loading', 'Loading analytics...')}
+          </p>
         </div>
       </div>
     )
@@ -150,12 +161,12 @@ export const AnalyticsDashboard = ({
             </svg>
           </div>
           <h3 className='text-lg font-semibold mb-2'>
-            Error Loading Analytics
+            {t('analytics.error.title', 'Error Loading Analytics')}
           </h3>
           <p className='text-muted-foreground mb-4'>{error}</p>
           <Button onClick={handleRefresh} variant='outline'>
             <RefreshCw className='h-4 w-4 mr-2' />
-            Try Again
+            {t('analytics.tryAgain', 'Try Again')}
           </Button>
         </div>
       </div>
@@ -181,9 +192,14 @@ export const AnalyticsDashboard = ({
               />
             </svg>
           </div>
-          <h3 className='text-lg font-semibold mb-2'>No Analytics Data</h3>
+          <h3 className='text-lg font-semibold mb-2'>
+            {t('analytics.empty.title', 'No Analytics Data')}
+          </h3>
           <p className='text-muted-foreground'>
-            Start by adding some cars or events to see analytics data.
+            {t(
+              'analytics.empty.description',
+              'Start by adding some cars or events to see analytics data.'
+            )}
           </p>
         </div>
       </div>
@@ -203,10 +219,13 @@ export const AnalyticsDashboard = ({
                 </div>
                 <div>
                   <h1 className='text-2xl md:text-4xl font-bold tracking-tight'>
-                    Analytics Dashboard
+                    {t('analytics.title', 'Analytics Dashboard')}
                   </h1>
                   <p className='text-muted-foreground text-sm md:text-lg'>
-                    Track performance of your cars and events
+                    {t(
+                      'analytics.description',
+                      'Track performance of your cars and events'
+                    )}
                   </p>
                 </div>
               </div>
@@ -218,11 +237,21 @@ export const AnalyticsDashboard = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='7d'>Last 7 days</SelectItem>
-                  <SelectItem value='30d'>Last 30 days</SelectItem>
-                  <SelectItem value='3m'>Last 3 months</SelectItem>
-                  <SelectItem value='6m'>Last 6 months</SelectItem>
-                  <SelectItem value='1y'>Last year</SelectItem>
+                  <SelectItem value='7d'>
+                    {t('analytics.timeRange.7d', 'Last 7 days')}
+                  </SelectItem>
+                  <SelectItem value='30d'>
+                    {t('analytics.timeRange.30d', 'Last 30 days')}
+                  </SelectItem>
+                  <SelectItem value='3m'>
+                    {t('analytics.timeRange.3m', 'Last 3 months')}
+                  </SelectItem>
+                  <SelectItem value='6m'>
+                    {t('analytics.timeRange.6m', 'Last 6 months')}
+                  </SelectItem>
+                  <SelectItem value='1y'>
+                    {t('analytics.timeRange.1y', 'Last year')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -232,7 +261,7 @@ export const AnalyticsDashboard = ({
                 className='bg-background/80 backdrop-blur-sm w-full sm:w-auto'
               >
                 <RefreshCw className='h-4 w-4 mr-2' />
-                Refresh
+                {t('analytics.refresh', 'Refresh')}
               </Button>
             </div>
           </div>
@@ -247,10 +276,10 @@ export const AnalyticsDashboard = ({
           <CardHeader className='p-4 md:p-6'>
             <CardTitle className='text-xl md:text-2xl flex items-center gap-2'>
               <Eye className='h-5 w-5 md:h-6 md:w-6 text-primary' />
-              Your Cars
+              {t('analytics.yourCars', 'Your Cars')}
             </CardTitle>
             <CardDescription className='mt-1 md:mt-2 text-sm'>
-              Your cars performance for{' '}
+              {t('analytics.performanceForCars', 'Your cars performance for')}{' '}
               {getTimeRangeLabel(timeRange).toLowerCase()}
             </CardDescription>
           </CardHeader>
@@ -264,10 +293,13 @@ export const AnalyticsDashboard = ({
                   {/* Car Image */}
                   {car.image && (
                     <div className='flex-shrink-0'>
-                      <img
+                      <Image
                         src={car.image}
                         alt={car.name}
+                        width={80}
+                        height={80}
                         className='w-16 h-16 md:w-20 md:h-20 rounded-lg md:rounded-xl object-cover border-2 border-border shadow-md group-hover:scale-105 transition-transform duration-200'
+                        unoptimized
                       />
                     </div>
                   )}
@@ -307,10 +339,13 @@ export const AnalyticsDashboard = ({
           <CardHeader className='p-4 md:p-6'>
             <CardTitle className='text-xl md:text-2xl flex items-center gap-2'>
               <Calendar className='h-5 w-5 md:h-6 md:w-6 text-primary' />
-              Your Events
+              {t('analytics.yourEvents', 'Your Events')}
             </CardTitle>
             <CardDescription className='mt-1 md:mt-2 text-sm'>
-              Your events performance for{' '}
+              {t(
+                'analytics.performanceForEvents',
+                'Your events performance for'
+              )}{' '}
               {getTimeRangeLabel(timeRange).toLowerCase()}
             </CardDescription>
           </CardHeader>
@@ -353,7 +388,13 @@ export const AnalyticsDashboard = ({
                         <Calendar className='h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0' />
                         <span>
                           {new Date(event.event_date).toLocaleDateString(
-                            'en-US',
+                            locale === 'cs'
+                              ? 'cs-CZ'
+                              : locale === 'de'
+                              ? 'de-DE'
+                              : locale === 'es'
+                              ? 'es-ES'
+                              : 'en-US',
                             {
                               month: 'short',
                               day: 'numeric',
