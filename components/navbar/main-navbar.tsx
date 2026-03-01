@@ -312,7 +312,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
             </Link>
             <Link
               href='/register'
-              className='bg-primary text-primary-foreground px-2.5 py-1.5 md:px-4 md:py-2 rounded-md text-xs sm:text-sm md:text-base font-medium hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0'
+              className='inline-flex h-10 items-center justify-center rounded-full bg-primary px-3 text-xs font-medium leading-none text-primary-foreground transition-colors hover:bg-primary/90 sm:text-sm md:h-auto md:rounded-md md:px-4 md:py-2 md:text-base whitespace-nowrap flex-shrink-0'
             >
               {t('nav.signUp', 'Sign Up')}
             </Link>
