@@ -104,7 +104,7 @@ export const BaseNavbar = ({
     <nav
       className={`fixed top-0 left-0 right-0 z-50 ${getVariantStyles()} ${className}`}
     >
-      <div className='max-w-7xl mx-auto px-3 md:px-4'>
+      <div className='max-w-7xl mx-auto px-2.5 md:px-4'>
         <div
           className={`flex items-center justify-between gap-2 ${getHeightStyles()}`}
         >
@@ -119,7 +119,7 @@ export const BaseNavbar = ({
                 alt='MyRide'
                 width={120}
                 height={32}
-                className='h-7 md:h-8 w-auto'
+                className='h-6 md:h-8 w-auto'
                 priority
               />
             </Link>
@@ -147,7 +147,7 @@ export const BaseNavbar = ({
           )}
 
           {/* Right side content (auth, theme toggle, etc.) */}
-          <div className='flex items-center gap-2 md:gap-4 flex-shrink-0'>
+          <div className='flex items-center gap-1.5 md:gap-4 flex-shrink-0 min-w-0'>
             {/* Desktop: Theme toggle */}
             {rightNavContent && (
               <div className='hidden md:flex items-center'>
@@ -177,7 +177,7 @@ export const BaseNavbar = ({
             )}
 
             {/* Mobile: Theme toggle and menu button */}
-            <div className='md:hidden flex items-center gap-2'>
+            <div className='md:hidden flex items-center gap-1.5'>
               {rightNavContent}
               {navItems.length > 0 && (
                 <button

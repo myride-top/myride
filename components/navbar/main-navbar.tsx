@@ -143,13 +143,13 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
       layout='right-aligned'
       renderNavItem={renderNavItem}
       rightNavContent={
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-1.5 md:gap-2'>
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
       }
     >
-      <div className='flex items-center space-x-2'>
+      <div className='flex items-center gap-1.5 md:gap-2 min-w-0'>
         {user ? (
           <div className='relative' ref={dropdownRef}>
             <button
@@ -303,16 +303,16 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
             )}
           </div>
         ) : (
-          <div className='flex items-center gap-2 md:gap-4'>
+          <div className='flex items-center gap-1.5 md:gap-4'>
             <Link
               href='/login'
-              className='text-muted-foreground hover:text-primary transition-colors duration-300 font-medium px-2 py-1.5 md:px-0 md:py-0 rounded-lg md:rounded-none hover:bg-accent md:hover:bg-transparent active:scale-[0.98] whitespace-nowrap text-sm md:text-base'
+              className='hidden sm:inline-flex text-muted-foreground hover:text-primary transition-colors duration-300 font-medium px-2 py-1.5 md:px-0 md:py-0 rounded-lg md:rounded-none hover:bg-accent md:hover:bg-transparent active:scale-[0.98] whitespace-nowrap text-sm md:text-base'
             >
               {t('nav.signIn', 'Sign In')}
             </Link>
             <Link
               href='/register'
-              className='bg-primary text-primary-foreground px-3 py-1.5 md:px-4 md:py-2 rounded-md text-sm md:text-base font-medium hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0'
+              className='bg-primary text-primary-foreground px-2.5 py-1.5 md:px-4 md:py-2 rounded-md text-xs sm:text-sm md:text-base font-medium hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0'
             >
               {t('nav.signUp', 'Sign Up')}
             </Link>

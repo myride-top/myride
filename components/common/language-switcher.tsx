@@ -64,16 +64,18 @@ export const LanguageSwitcher = () => {
   return (
     <Select value={currentLocale} onValueChange={handleLocaleChange}>
       <SelectTrigger
-        className='w-[148px] h-9 text-xs md:text-sm'
+        className='h-9 w-10 px-2 md:w-[148px] md:px-3 text-xs md:text-sm [&>svg]:hidden md:[&>svg]:block'
         aria-label={t('lang.label', 'Language')}
       >
-        <div className='flex items-center gap-2 min-w-0'>
+        <div className='flex items-center justify-center md:justify-start gap-2 min-w-0 w-full'>
           <LocaleFlag
             locale={currentLocale}
             className='shrink-0 self-center'
             title={getLocaleLabel(currentLocale)}
           />
-          <span className='truncate leading-none'>{getLocaleLabel(currentLocale)}</span>
+          <span className='hidden md:inline truncate leading-none'>
+            {getLocaleLabel(currentLocale)}
+          </span>
         </div>
       </SelectTrigger>
       <SelectContent>
