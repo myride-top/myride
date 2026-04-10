@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 // Dynamically import Leaflet to avoid SSR issues
 const MapContainer = dynamic(
@@ -44,7 +45,7 @@ interface EventMapProps {
 }
 
 export function EventMap({ events, onEventsChange }: EventMapProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { user } = useAuth()
   const { theme, resolvedTheme } = useTheme()
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -578,7 +579,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
                 {profile?.username && (
                   <div className='mt-2 pt-2 border-t'>
                     <a
-                      href={`/u/${profile.username}`}
+                      href={buildLocalePath(locale, `/u/${profile.username}`)}
                       className='text-xs text-primary hover:underline'
                     >
                       {t('map.viewProfile', 'View Profile')} →

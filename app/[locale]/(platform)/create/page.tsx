@@ -22,10 +22,13 @@ import { Container } from '@/components/common/container'
 import { unitConversions } from '@/lib/utils'
 import { upsertCarTimelineClient } from '@/lib/database/timeline-client'
 import { uploadCarPhoto } from '@/lib/storage/photos'
+import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 export default function CreateCarPage() {
   const { user } = useAuth()
   const { unitPreference, isLoading: unitLoading } = useUnitPreference()
+  const { locale } = useI18n()
   const router = useRouter()
 
   const [loading, setLoading] = useState(true)
@@ -401,7 +404,10 @@ export default function CreateCarPage() {
 
         toast.success('Car created successfully!')
         router.push(
-          `/u/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`
+          buildLocalePath(
+            locale,
+            `/u/${user.user_metadata?.username || 'user'}/${newCar.url_slug}`
+          )
         )
       } else {
         setError('Failed to create car')

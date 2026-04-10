@@ -35,10 +35,11 @@ import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { cn } from '@/lib/utils'
 import { PremiumButton } from '@/components/common/premium-button'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { user } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [cars, setCars] = useState<Car[]>([])
@@ -387,7 +388,12 @@ export default function DashboardPage() {
                   profile={profile}
                   isOwner={true}
                   onEdit={car =>
-                    router.push(`/u/${profile?.username}/${car.url_slug}/edit`)
+                    router.push(
+                      buildLocalePath(
+                        locale,
+                        `/u/${profile?.username}/${car.url_slug}/edit`
+                      )
+                    )
                   }
                   onLikeChange={handleLikeChange}
                 />

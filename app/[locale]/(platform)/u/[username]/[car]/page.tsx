@@ -46,6 +46,7 @@ import { getCarTimelineClient } from '@/lib/database/timeline-client'
 import { CarTimeline as CarTimelineType } from '@/lib/types/database'
 import { NationalityFlag } from '@/components/common/nationality-flag'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 const QRCodeModal = dynamic(
   () => import('@/components/common/qr-code-modal').then((mod) => mod.QRCodeModal),
@@ -74,7 +75,7 @@ export default function CarDetailPage() {
   const params = useParams()
   const { user } = useAuth()
   const router = useRouter()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   const [car, setCar] = useState<Car | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -91,6 +92,17 @@ export default function CarDetailPage() {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [isGeneratingQR, setIsGeneratingQR] = useState(false)
   const [timeline, setTimeline] = useState<CarTimelineType[]>([])
+
+  const pathUsername =
+    (profile?.username ?? (params.username as string | undefined)) || ''
+  const garageHref =
+    pathUsername !== ''
+      ? buildLocalePath(locale, `/u/${pathUsername}`)
+      : `/${locale}`
+  const editCarHref =
+    car && pathUsername !== ''
+      ? buildLocalePath(locale, `/u/${pathUsername}/${car.url_slug}/edit`)
+      : ''
 
   // Track car analytics (views, shares) - always call hook to maintain order
   const { trackShare } = useCarAnalytics(car?.id || '', car?.user_id || '')
@@ -567,7 +579,7 @@ export default function CarDetailPage() {
                   </span>
                   {profile?.is_premium ? (
                     <Link
-                      href={`/u/${profile.username}`}
+                      href={garageHref}
                       className='flex items-center gap-1.5 md:gap-2 hover:opacity-80 transition-opacity cursor-pointer'
                       title={t(
                         'carDetail.viewGarage',
@@ -678,7 +690,7 @@ export default function CarDetailPage() {
                   </button>
                   {user && car && user.id === car.user_id && (
                     <Link
-                      href={`/u/${profile?.username}/${car.url_slug}/edit`}
+                      href={editCarHref}
                       className='flex items-center justify-center w-9 h-9 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer flex-shrink-0 group'
                       title={t('carDetail.editCar', 'Edit car')}
                       
@@ -758,7 +770,7 @@ export default function CarDetailPage() {
             </button>
             {user && car && user.id === car.user_id && (
               <Link
-                href={`/u/${profile?.username}/${car.url_slug}/edit`}
+                href={editCarHref}
                 className='flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted border border-border/50 transition-all cursor-pointer group'
               >
                 <Edit className='w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors' />
@@ -950,9 +962,7 @@ export default function CarDetailPage() {
                   action={
                     car.photos && car.photos.length > 0 ? (
                       <Link
-                        href={`/u/${
-                          profile?.username || params.username
-                        }/${encodeURIComponent(car.name)}/edit`}
+                        href={editCarHref}
                         className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
                       >
                         {t(

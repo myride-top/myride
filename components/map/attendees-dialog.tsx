@@ -12,6 +12,7 @@ import { UserAvatar } from '@/components/common/user-avatar'
 import { Car as CarIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 interface AttendeesDialogProps {
   open: boolean
@@ -28,7 +29,7 @@ export function AttendeesDialog({
   loading = false,
   eventTitle,
 }: AttendeesDialogProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,7 +75,10 @@ export function AttendeesDialog({
                     </div>
                     {attendee.car && attendee.car.username && (
                       <Link
-                        href={`/u/${attendee.car.username}/${attendee.car.url_slug}`}
+                        href={buildLocalePath(
+                          locale,
+                          `/u/${attendee.car.username}/${attendee.car.url_slug}`
+                        )}
                         className='text-xs text-muted-foreground hover:text-primary flex items-center gap-1.5 mt-1'
                         onClick={e => e.stopPropagation()}
                       >

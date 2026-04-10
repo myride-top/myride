@@ -37,10 +37,13 @@ import {
   getCarTimelineClient,
 } from '@/lib/database/timeline-client'
 import { uploadCarPhoto } from '@/lib/storage/photos'
+import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 export default function EditCarPage() {
   const { user } = useAuth()
   const { unitPreference, isLoading: unitLoading } = useUnitPreference()
+  const { locale } = useI18n()
   const router = useRouter()
   const params = useParams()
   const carId = params.car as string
@@ -84,7 +87,10 @@ export default function EditCarPage() {
               if (fixedCar) {
                 // Redirect to the new URL
                 router.replace(
-                  `/u/${params.username}/${fixedCar.url_slug}/edit`
+                  buildLocalePath(
+                    locale,
+                    `/u/${params.username}/${fixedCar.url_slug}/edit`
+                  )
                 )
                 return
               }
@@ -157,7 +163,7 @@ export default function EditCarPage() {
     }
 
     loadCar()
-  }, [carId, user, params.username, router])
+  }, [carId, user, params.username, router, locale])
 
   const handleSubmit = async (formData: {
     name: string
@@ -381,7 +387,12 @@ export default function EditCarPage() {
         }
 
         toast.success('Car updated successfully!')
-        router.push(`/u/${params.username}/${updatedCar.url_slug}`)
+        router.push(
+          buildLocalePath(
+            locale,
+            `/u/${params.username}/${updatedCar.url_slug}`
+          )
+        )
       } else {
         setError('Failed to update car')
       }
@@ -416,7 +427,7 @@ export default function EditCarPage() {
 
       if (success) {
         toast.success('Car deleted successfully!')
-        router.push('/dashboard')
+        router.push(buildLocalePath(locale, '/dashboard'))
       } else {
         setError('Failed to delete car')
       }
@@ -476,7 +487,10 @@ export default function EditCarPage() {
         <PageHeader
           title='Edit Your Car'
           description="Update your car's information and photos"
-          backHref={`/u/${params.username}/${car.url_slug}`}
+          backHref={buildLocalePath(
+            locale,
+            `/u/${params.username}/${car.url_slug}`
+          )}
           showBackButton={true}
         />
 

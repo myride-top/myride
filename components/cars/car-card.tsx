@@ -12,6 +12,7 @@ import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { NationalityFlag } from '@/components/common/nationality-flag'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 interface CarCardProps {
   car: Car
@@ -34,8 +35,12 @@ export const CarCard = ({
   showActions = true,
   isOwner = false,
 }: CarCardProps) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const router = useRouter()
+  const carDetailPath = buildLocalePath(
+    locale,
+    `/u/${profile?.username || 'user'}/${car.url_slug}`
+  )
   const [likeCount, setLikeCount] = useState(car.like_count || 0)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [showQRCode, setShowQRCode] = useState(false)
@@ -58,7 +63,7 @@ export const CarCard = ({
 
     if (!qrCodeDataUrl) {
       try {
-        const shareUrl = `${window.location.origin}/u/${profile?.username}/${car.url_slug}`
+        const shareUrl = `${window.location.origin}${buildLocalePath(locale, `/u/${profile?.username}/${car.url_slug}`)}`
         const dataUrl = await generateQRCodeWithLogo(shareUrl, '/icon.jpg', {
           width: 200,
           margin: 1,
@@ -79,7 +84,7 @@ export const CarCard = ({
   }
 
   const handleImageClick = () => {
-    router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
+    router.push(carDetailPath)
   }
 
   return (
@@ -173,12 +178,12 @@ export const CarCard = ({
         className='p-4 cursor-pointer focus-within:outline-none'
         onClick={() => {
           // Navigate to car detail page
-          router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
+          router.push(carDetailPath)
         }}
         onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
-            router.push(`/u/${profile?.username || 'user'}/${car.url_slug}`)
+            router.push(carDetailPath)
           }
         }}
         tabIndex={0}
@@ -231,7 +236,7 @@ export const CarCard = ({
             />
 
             <Link
-              href={`/u/${profile?.username || 'user'}/${car.url_slug}`}
+              href={carDetailPath}
               className='text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer ml-auto'
             >
               {t('carCard.viewDetails', 'View Details')} →
@@ -247,7 +252,7 @@ export const CarCard = ({
         qrCodeDataUrl={qrCodeDataUrl}
         car={car}
         profile={profile}
-        currentUrl={`${window.location.origin}/u/${profile?.username}/${car.url_slug}`}
+        currentUrl={`${window.location.origin}${buildLocalePath(locale, `/u/${profile?.username}/${car.url_slug}`)}`}
       />
     </article>
   )
