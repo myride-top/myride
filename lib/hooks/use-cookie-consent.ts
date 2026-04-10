@@ -1,39 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  migrateLegacyCookieConsentKey,
+  useCookieConsentStore,
+  type CookieConsentStatus,
+} from '@/lib/stores/cookie-consent-store'
 
-const COOKIE_CONSENT_KEY = 'myride-cookie-consent'
-
-export type CookieConsentStatus = 'accepted' | null
+export type { CookieConsentStatus }
 
 export function useCookieConsent() {
-  const [consentStatus, setConsentStatus] = useState<CookieConsentStatus>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const consentStatus = useCookieConsentStore(s => s.consentStatus)
+  const acceptCookies = useCookieConsentStore(s => s.acceptCookies)
+  const declineCookies = useCookieConsentStore(s => s.declineCookies)
+  const clearConsent = useCookieConsentStore(s => s.clearConsent)
+
+  const [isLoaded, setIsLoaded] = useState(() =>
+    useCookieConsentStore.persist.hasHydrated()
+  )
 
   useEffect(() => {
-    // Get consent status from localStorage
-    const stored = localStorage.getItem(
-      COOKIE_CONSENT_KEY
-    ) as CookieConsentStatus
-    setConsentStatus(stored)
-    setIsLoaded(true)
+    const onReady = () => {
+      migrateLegacyCookieConsentKey()
+      setIsLoaded(true)
+    }
+
+    if (useCookieConsentStore.persist.hasHydrated()) {
+      onReady()
+      return
+    }
+
+    const unsub = useCookieConsentStore.persist.onFinishHydration(onReady)
+    return unsub
   }, [])
-
-  const acceptCookies = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted')
-    setConsentStatus('accepted')
-  }
-
-  const declineCookies = () => {
-    // Don't store declined status - just return to null state
-    localStorage.removeItem(COOKIE_CONSENT_KEY)
-    setConsentStatus(null)
-  }
-
-  const clearConsent = () => {
-    localStorage.removeItem(COOKIE_CONSENT_KEY)
-    setConsentStatus(null)
-  }
 
   return {
     consentStatus,
