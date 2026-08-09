@@ -2,6 +2,14 @@
 
 The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.
 
+## 🚗 Clubs
+
+- Premium users can create clubs (`/clubs/new`)
+- Public club pages at `/c/[slug]`
+- Founder + admins manage description, badge image, and members
+- Club badge images appear next to member usernames across car cards, garage, and car detail
+- Schema: `clubs`, `club_members` + `club-badges` storage bucket (see `migrations/20260809_create_clubs.sql`)
+
 ## 🏗️ Architecture Overview
 
 ### **Application Structure**

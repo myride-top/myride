@@ -11,7 +11,8 @@
     "paymentHistory": "Payment History",
     "signOut": "Sign Out",
     "signIn": "Sign In",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "clubs": "Clubs"
   },
   "lang": {
     "label": "Language",
@@ -505,6 +506,104 @@
       "noneDescription": "No photos have been uploaded for this car.",
       "noneCategory": "No photos in this category.",
       "reuploadAction": "Edit Car & Re-upload Photos"
+    }
+  },
+  "clubs": {
+    "title": "My Clubs",
+    "description": "Clubs you belong to and manage on MyRide",
+    "create": "Create club",
+    "createTitle": "Create a club",
+    "createDescription": "Start a community for enthusiasts who share your passion.",
+    "manage": "Manage",
+    "manageTitle": "Manage club",
+    "members": "Members",
+    "membersDescription": "People who belong to this club",
+    "memberCount": "{count} members",
+    "loading": "Loading clubs...",
+    "unknownMember": "Unknown member",
+    "backToClub": "Back to club",
+    "badgeUpload": "Upload badge",
+    "badgeUploading": "Uploading...",
+    "badgeDescription": "Upload a square image shown next to member usernames. Max 2 MB.",
+    "roles": {
+      "founder": "Founder",
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "empty": {
+      "title": "No clubs yet",
+      "description": "Join a club or create your own to connect with other enthusiasts."
+    },
+    "emptyMembers": {
+      "title": "No members yet",
+      "description": "This club has no members to display."
+    },
+    "sections": {
+      "details": "Club details",
+      "badge": "Club badge",
+      "addMember": "Add member",
+      "danger": "Danger zone"
+    },
+    "form": {
+      "name": "Club name",
+      "namePlaceholder": "e.g. Midnight Runners",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell others what your club is about...",
+      "username": "Username",
+      "usernamePlaceholder": "@username",
+      "role": "Role",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "saving": "Saving...",
+      "save": "Save changes",
+      "adding": "Adding...",
+      "addMember": "Add member"
+    },
+    "actions": {
+      "promote": "Promote",
+      "demote": "Demote",
+      "remove": "Remove",
+      "leave": "Leave club",
+      "delete": "Delete club"
+    },
+    "confirm": {
+      "removeMember": "Remove this member from the club?",
+      "leave": "Leave this club? You will lose admin access.",
+      "delete": "Delete this club permanently? This cannot be undone."
+    },
+    "premium": {
+      "required": "Premium required",
+      "featureName": "Create a Club",
+      "createDescription": "Premium members can create and manage car clubs with custom badges.",
+      "upgrade": "Upgrade to Premium"
+    },
+    "error": {
+      "loadFailed": "Failed to load clubs",
+      "createFailed": "Failed to create club",
+      "updateFailed": "Failed to update club",
+      "notFound": "Club not found",
+      "notFoundDescription": "This club does not exist or may have been removed.",
+      "noAccess": "Access denied",
+      "noAccessDescription": "Only club founders and admins can manage this club.",
+      "nameTooShort": "Club name must be at least 2 characters",
+      "badgeInvalidType": "Please upload an image file",
+      "badgeTooLarge": "Badge image must be smaller than 2 MB",
+      "badgeUploadFailed": "Failed to upload badge",
+      "addMemberFailed": "Failed to add member",
+      "removeMemberFailed": "Failed to remove member",
+      "roleUpdateFailed": "Failed to update member role",
+      "leaveFailed": "Failed to leave club",
+      "deleteFailed": "Failed to delete club"
+    },
+    "toast": {
+      "created": "Club created successfully",
+      "updated": "Club updated",
+      "badgeUpdated": "Badge updated",
+      "memberAdded": "Member added",
+      "memberRemoved": "Member removed",
+      "roleUpdated": "Member role updated",
+      "left": "You left the club",
+      "deleted": "Club deleted"
     }
   }
 }

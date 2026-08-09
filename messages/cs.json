@@ -11,7 +11,8 @@
     "paymentHistory": "Historie plateb",
     "signOut": "Odhlásit se",
     "signIn": "Přihlásit se",
-    "signUp": "Registrovat se"
+    "signUp": "Registrovat se",
+    "clubs": "Kluby"
   },
   "lang": {
     "label": "Jazyk",
@@ -670,6 +671,104 @@
       "underbody": "Spodek",
       "dyno": "Dyno",
       "other": "Ostatní"
+    }
+  },
+  "clubs": {
+    "title": "Moje kluby",
+    "description": "Kluby, ve kterých jste členem nebo je spravujete",
+    "create": "Vytvořit klub",
+    "createTitle": "Vytvořit klub",
+    "createDescription": "Založte komunitu pro nadšence, kteří sdílejí vaši vášeň.",
+    "manage": "Spravovat",
+    "manageTitle": "Správa klubu",
+    "members": "Členové",
+    "membersDescription": "Lidé, kteří patří do tohoto klubu",
+    "memberCount": "{count} členů",
+    "loading": "Načítám kluby...",
+    "unknownMember": "Neznámý člen",
+    "backToClub": "Zpět na klub",
+    "badgeUpload": "Nahrát odznak",
+    "badgeUploading": "Nahrávám...",
+    "badgeDescription": "Nahrajte čtvercový obrázek zobrazený u jmen členů. Max. 2 MB.",
+    "roles": {
+      "founder": "Zakladatel",
+      "admin": "Admin",
+      "member": "Člen"
+    },
+    "empty": {
+      "title": "Zatím žádné kluby",
+      "description": "Připojte se ke klubu nebo si vytvořte vlastní."
+    },
+    "emptyMembers": {
+      "title": "Zatím žádní členové",
+      "description": "Tento klub nemá žádné členy k zobrazení."
+    },
+    "sections": {
+      "details": "Detaily klubu",
+      "badge": "Odznak klubu",
+      "addMember": "Přidat člena",
+      "danger": "Nebezpečná zóna"
+    },
+    "form": {
+      "name": "Název klubu",
+      "namePlaceholder": "např. Midnight Runners",
+      "description": "Popis",
+      "descriptionPlaceholder": "Popište, o čem váš klub je...",
+      "username": "Uživatelské jméno",
+      "usernamePlaceholder": "@username",
+      "role": "Role",
+      "cancel": "Zrušit",
+      "creating": "Vytvářím...",
+      "saving": "Ukládám...",
+      "save": "Uložit změny",
+      "adding": "Přidávám...",
+      "addMember": "Přidat člena"
+    },
+    "actions": {
+      "promote": "Povýšit",
+      "demote": "Degradovat",
+      "remove": "Odebrat",
+      "leave": "Opustit klub",
+      "delete": "Smazat klub"
+    },
+    "confirm": {
+      "removeMember": "Odebrat tohoto člena z klubu?",
+      "leave": "Opustit tento klub? Ztratíte admin přístup.",
+      "delete": "Trvale smazat tento klub? Tuto akci nelze vrátit."
+    },
+    "premium": {
+      "required": "Vyžadováno Premium",
+      "featureName": "Vytvořit klub",
+      "createDescription": "Premium členové mohou vytvářet a spravovat kluby s vlastními odznaky.",
+      "upgrade": "Upgradovat na Premium"
+    },
+    "error": {
+      "loadFailed": "Načtení klubů se nezdařilo",
+      "createFailed": "Vytvoření klubu se nezdařilo",
+      "updateFailed": "Aktualizace klubu se nezdařila",
+      "notFound": "Klub nenalezen",
+      "notFoundDescription": "Tento klub neexistuje nebo byl odstraněn.",
+      "noAccess": "Přístup odepřen",
+      "noAccessDescription": "Klub mohou spravovat pouze zakladatelé a admini.",
+      "nameTooShort": "Název klubu musí mít alespoň 2 znaky",
+      "badgeInvalidType": "Nahrajte prosím obrázek",
+      "badgeTooLarge": "Odznak musí být menší než 2 MB",
+      "badgeUploadFailed": "Nahrání odznaku se nezdařilo",
+      "addMemberFailed": "Přidání člena se nezdařilo",
+      "removeMemberFailed": "Odebrání člena se nezdařilo",
+      "roleUpdateFailed": "Aktualizace role se nezdařila",
+      "leaveFailed": "Opuštění klubu se nezdařilo",
+      "deleteFailed": "Smazání klubu se nezdařilo"
+    },
+    "toast": {
+      "created": "Klub byl vytvořen",
+      "updated": "Klub byl aktualizován",
+      "badgeUpdated": "Odznak byl aktualizován",
+      "memberAdded": "Člen byl přidán",
+      "memberRemoved": "Člen byl odebrán",
+      "roleUpdated": "Role člena byla aktualizována",
+      "left": "Opustili jste klub",
+      "deleted": "Klub byl smazán"
     }
   }
 }

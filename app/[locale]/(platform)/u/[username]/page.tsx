@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { NationalityFlag } from '@/components/common/nationality-flag'
+import { UserClubBadges } from '@/components/clubs/user-club-badges'
 import { useI18n } from '@/lib/i18n/provider'
 export default function ProfileGaragePage() {
   const { t } = useI18n()
@@ -232,6 +233,7 @@ export default function ProfileGaragePage() {
                           size='lg'
                         />
                       )}
+                      <UserClubBadges userId={profile.id} size='md' maxVisible={5} />
                     </div>
                     <p className='text-muted-foreground mt-1'>
                       @{profile.username}

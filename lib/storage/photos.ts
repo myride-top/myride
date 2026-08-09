@@ -200,3 +200,66 @@ export async function deleteEventImage(imageUrl: string): Promise<boolean> {
 
   return true
 }
+
+export async function uploadClubBadge(
+  file: File,
+  clubId: string
+): Promise<string | null> {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return null
+  }
+
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${clubId}/badge.${fileExt}`
+
+  const { error } = await supabase.storage
+    .from('club-badges')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: true,
+    })
+
+  if (error) {
+    return null
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('club-badges').getPublicUrl(fileName)
+
+  return `${publicUrl}?t=${Date.now()}`
+}
+
+export async function deleteClubBadge(badgeUrl: string): Promise<boolean> {
+  const supabase = createClient()
+
+  try {
+    const cleanUrl = badgeUrl.split('?')[0]
+    const marker = '/club-badges/'
+    const markerIndex = cleanUrl.indexOf(marker)
+    const fileName =
+      markerIndex >= 0
+        ? decodeURIComponent(cleanUrl.slice(markerIndex + marker.length))
+        : (() => {
+            const urlParts = cleanUrl.split('/')
+            return `${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}`
+          })()
+
+    const { error } = await supabase.storage
+      .from('club-badges')
+      .remove([fileName])
+
+    if (error) {
+      return false
+    }
+
+    return true
+  } catch {
+    return false
+  }
+}

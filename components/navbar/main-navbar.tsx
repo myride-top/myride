@@ -22,6 +22,7 @@ import {
   LayoutDashboard,
   CreditCard,
   BarChart3,
+  Users,
 } from 'lucide-react'
 import { BaseNavbar } from './base-navbar'
 
@@ -43,6 +44,9 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
   const navItems: NavItem[] = [
     { name: t('nav.browseCars', 'Browse Cars'), href: '/browse' },
     { name: t('nav.map', 'Map'), href: '/map' },
+    ...(user
+      ? [{ name: t('nav.clubs', 'Clubs'), href: '/clubs' }]
+      : []),
   ]
 
   useEffect(() => {
@@ -99,6 +103,9 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
         break
       case 'payments':
         router.push('/payments')
+        break
+      case 'clubs':
+        router.push('/clubs')
         break
     }
   }
@@ -216,6 +223,15 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
                   >
                     <LayoutDashboard className='w-4 h-4 mr-3' aria-hidden='true' />
                     {t('nav.dashboard', 'Dashboard')}
+                  </button>
+
+                  <button
+                    onClick={() => handleOptionClick('clubs')}
+                    role='menuitem'
+                    className='flex items-center w-full px-4 py-2 text-sm text-popover-foreground hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:bg-accent'
+                  >
+                    <Users className='w-4 h-4 mr-3' aria-hidden='true' />
+                    {t('nav.clubs', 'Clubs')}
                   </button>
 
                   {profile?.is_premium && (

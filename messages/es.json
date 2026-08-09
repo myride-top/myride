@@ -11,7 +11,8 @@
     "paymentHistory": "Historial de pagos",
     "signOut": "Cerrar sesión",
     "signIn": "Iniciar sesión",
-    "signUp": "Registrarse"
+    "signUp": "Registrarse",
+    "clubs": "Clubes"
   },
   "lang": {
     "label": "Idioma",
@@ -670,6 +671,104 @@
       "underbody": "Bajos",
       "dyno": "Dyno",
       "other": "Otro"
+    }
+  },
+  "clubs": {
+    "title": "Mis clubes",
+    "description": "Clubes a los que perteneces o gestionas",
+    "create": "Crear club",
+    "createTitle": "Crear un club",
+    "createDescription": "Crea una comunidad para entusiastas que compartan tu pasión.",
+    "manage": "Gestionar",
+    "manageTitle": "Gestionar club",
+    "members": "Miembros",
+    "membersDescription": "Personas que pertenecen a este club",
+    "memberCount": "{count} miembros",
+    "loading": "Cargando clubes...",
+    "unknownMember": "Miembro desconocido",
+    "backToClub": "Volver al club",
+    "badgeUpload": "Subir insignia",
+    "badgeUploading": "Subiendo...",
+    "badgeDescription": "Sube una imagen cuadrada que se muestre junto a los nombres de usuario. Máx. 2 MB.",
+    "roles": {
+      "founder": "Fundador",
+      "admin": "Admin",
+      "member": "Miembro"
+    },
+    "empty": {
+      "title": "Aún no hay clubes",
+      "description": "Únete a un club o crea el tuyo propio."
+    },
+    "emptyMembers": {
+      "title": "Aún no hay miembros",
+      "description": "Este club no tiene miembros para mostrar."
+    },
+    "sections": {
+      "details": "Detalles del club",
+      "badge": "Insignia del club",
+      "addMember": "Añadir miembro",
+      "danger": "Zona de peligro"
+    },
+    "form": {
+      "name": "Nombre del club",
+      "namePlaceholder": "p. ej. Midnight Runners",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Cuéntales a otros de qué trata tu club...",
+      "username": "Nombre de usuario",
+      "usernamePlaceholder": "@username",
+      "role": "Rol",
+      "cancel": "Cancelar",
+      "creating": "Creando...",
+      "saving": "Guardando...",
+      "save": "Guardar cambios",
+      "adding": "Añadiendo...",
+      "addMember": "Añadir miembro"
+    },
+    "actions": {
+      "promote": "Ascender",
+      "demote": "Degradar",
+      "remove": "Eliminar",
+      "leave": "Abandonar club",
+      "delete": "Eliminar club"
+    },
+    "confirm": {
+      "removeMember": "¿Eliminar a este miembro del club?",
+      "leave": "¿Abandonar este club? Perderás el acceso de admin.",
+      "delete": "¿Eliminar este club permanentemente? Esta acción no se puede deshacer."
+    },
+    "premium": {
+      "required": "Se requiere Premium",
+      "featureName": "Crear un club",
+      "createDescription": "Los miembros Premium pueden crear y gestionar clubes con insignias personalizadas.",
+      "upgrade": "Actualizar a Premium"
+    },
+    "error": {
+      "loadFailed": "No se pudieron cargar los clubes",
+      "createFailed": "No se pudo crear el club",
+      "updateFailed": "No se pudo actualizar el club",
+      "notFound": "Club no encontrado",
+      "notFoundDescription": "Este club no existe o puede haber sido eliminado.",
+      "noAccess": "Acceso denegado",
+      "noAccessDescription": "Solo los fundadores y admins pueden gestionar este club.",
+      "nameTooShort": "El nombre del club debe tener al menos 2 caracteres",
+      "badgeInvalidType": "Sube un archivo de imagen",
+      "badgeTooLarge": "La insignia debe ser menor de 2 MB",
+      "badgeUploadFailed": "No se pudo subir la insignia",
+      "addMemberFailed": "No se pudo añadir el miembro",
+      "removeMemberFailed": "No se pudo eliminar el miembro",
+      "roleUpdateFailed": "No se pudo actualizar el rol del miembro",
+      "leaveFailed": "No se pudo abandonar el club",
+      "deleteFailed": "No se pudo eliminar el club"
+    },
+    "toast": {
+      "created": "Club creado correctamente",
+      "updated": "Club actualizado",
+      "badgeUpdated": "Insignia actualizada",
+      "memberAdded": "Miembro añadido",
+      "memberRemoved": "Miembro eliminado",
+      "roleUpdated": "Rol del miembro actualizado",
+      "left": "Has abandonado el club",
+      "deleted": "Club eliminado"
     }
   }
 }

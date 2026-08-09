@@ -11,8 +11,10 @@ import { UserAvatar } from '@/components/common/user-avatar'
 import { QRCodeModal } from '@/components/common/qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { NationalityFlag } from '@/components/common/nationality-flag'
+import { UserClubBadges } from '@/components/clubs/user-club-badges'
 import { useI18n } from '@/lib/i18n/provider'
 import { buildLocalePath } from '@/lib/i18n/config'
+import type { ClubBadgeInfo } from '@/lib/types/database'
 
 interface CarCardProps {
   car: Car
@@ -23,6 +25,7 @@ interface CarCardProps {
   className?: string
   showActions?: boolean
   isOwner?: boolean
+  clubBadges?: ClubBadgeInfo[]
 }
 
 export const CarCard = ({
@@ -34,6 +37,7 @@ export const CarCard = ({
   className,
   showActions = true,
   isOwner = false,
+  clubBadges,
 }: CarCardProps) => {
   const { t, locale } = useI18n()
   const router = useRouter()
@@ -208,7 +212,7 @@ export const CarCard = ({
               username={profile.username}
               size='sm'
             />
-            <span className='text-sm text-muted-foreground flex items-center gap-1'>
+            <span className='text-sm text-muted-foreground flex items-center gap-1 flex-wrap'>
               {profile.is_premium && (
                 <Crown className='w-3.5 h-3.5 text-yellow-500' />
               )}
@@ -219,6 +223,12 @@ export const CarCard = ({
                   size='sm'
                 />
               )}
+              <UserClubBadges
+                userId={profile.id}
+                clubs={clubBadges}
+                size='xs'
+                maxVisible={3}
+              />
             </span>
           </div>
         )}

@@ -47,6 +47,7 @@ import { BackButton } from '@/components/common/back-button'
 import { getCarTimelineClient } from '@/lib/database/timeline-client'
 import { CarTimeline as CarTimelineType } from '@/lib/types/database'
 import { NationalityFlag } from '@/components/common/nationality-flag'
+import { UserClubBadges } from '@/components/clubs/user-club-badges'
 import { useI18n } from '@/lib/i18n/provider'
 import { buildLocalePath } from '@/lib/i18n/config'
 
@@ -535,6 +536,7 @@ export default function CarDetailPage() {
                             size='sm'
                           />
                         )}
+                        <UserClubBadges userId={profile.id} size='sm' />
                       </span>
                     </Link>
                   ) : (
@@ -558,6 +560,9 @@ export default function CarDetailPage() {
                             nationality={profile.nationality}
                             size='sm'
                           />
+                        )}
+                        {profile?.id && (
+                          <UserClubBadges userId={profile.id} size='sm' />
                         )}
                       </span>
                     </>

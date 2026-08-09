@@ -61,6 +61,16 @@ export interface Database {
         Insert: Omit<CarTimeline, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<CarTimeline, 'id' | 'created_at' | 'updated_at'>>
       }
+      clubs: {
+        Row: Club
+        Insert: Omit<Club, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Club, 'id' | 'created_at' | 'updated_at'>>
+      }
+      club_members: {
+        Row: ClubMember
+        Insert: Omit<ClubMember, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<ClubMember, 'id' | 'created_at' | 'updated_at'>>
+      }
     }
     Views: {
       [_ in never]: never
@@ -374,4 +384,46 @@ export interface CarTimeline {
   order_index: number
   created_at: string
   updated_at: string
+}
+
+export type ClubMemberRole = 'founder' | 'admin' | 'member'
+
+export interface Club {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  badge_url: string | null
+  founder_id: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ClubMember {
+  id: string
+  club_id: string
+  user_id: string
+  role: ClubMemberRole
+  created_at: string
+  updated_at: string
+}
+
+export interface ClubMemberWithProfile extends ClubMember {
+  profile: Pick<
+    Profile,
+    'id' | 'username' | 'full_name' | 'avatar_url' | 'is_premium' | 'nationality'
+  > | null
+}
+
+export interface ClubWithMeta extends Club {
+  member_count?: number
+  my_role?: ClubMemberRole | null
+}
+
+/** Lightweight club badge for display next to usernames */
+export interface ClubBadgeInfo {
+  id: string
+  name: string
+  slug: string
+  badge_url: string
 }

@@ -11,7 +11,8 @@
     "paymentHistory": "Zahlungsverlauf",
     "signOut": "Abmelden",
     "signIn": "Anmelden",
-    "signUp": "Registrieren"
+    "signUp": "Registrieren",
+    "clubs": "Clubs"
   },
   "lang": {
     "label": "Sprache",
@@ -670,6 +671,104 @@
       "underbody": "Unterboden",
       "dyno": "Dyno",
       "other": "Sonstiges"
+    }
+  },
+  "clubs": {
+    "title": "Meine Clubs",
+    "description": "Clubs, denen du angehörst oder die du verwaltest",
+    "create": "Club erstellen",
+    "createTitle": "Club erstellen",
+    "createDescription": "Gründe eine Community für Enthusiasten, die deine Leidenschaft teilen.",
+    "manage": "Verwalten",
+    "manageTitle": "Club verwalten",
+    "members": "Mitglieder",
+    "membersDescription": "Personen, die diesem Club angehören",
+    "memberCount": "{count} Mitglieder",
+    "loading": "Clubs werden geladen...",
+    "unknownMember": "Unbekanntes Mitglied",
+    "backToClub": "Zurück zum Club",
+    "badgeUpload": "Abzeichen hochladen",
+    "badgeUploading": "Wird hochgeladen...",
+    "badgeDescription": "Lade ein quadratisches Bild hoch, das neben Benutzernamen angezeigt wird. Max. 2 MB.",
+    "roles": {
+      "founder": "Gründer",
+      "admin": "Admin",
+      "member": "Mitglied"
+    },
+    "empty": {
+      "title": "Noch keine Clubs",
+      "description": "Tritt einem Club bei oder erstelle deinen eigenen."
+    },
+    "emptyMembers": {
+      "title": "Noch keine Mitglieder",
+      "description": "Dieser Club hat keine Mitglieder anzuzeigen."
+    },
+    "sections": {
+      "details": "Club-Details",
+      "badge": "Club-Abzeichen",
+      "addMember": "Mitglied hinzufügen",
+      "danger": "Gefahrenzone"
+    },
+    "form": {
+      "name": "Clubname",
+      "namePlaceholder": "z. B. Midnight Runners",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Erzähle anderen, worum es in deinem Club geht...",
+      "username": "Benutzername",
+      "usernamePlaceholder": "@username",
+      "role": "Rolle",
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt...",
+      "saving": "Wird gespeichert...",
+      "save": "Änderungen speichern",
+      "adding": "Wird hinzugefügt...",
+      "addMember": "Mitglied hinzufügen"
+    },
+    "actions": {
+      "promote": "Befördern",
+      "demote": "Degradieren",
+      "remove": "Entfernen",
+      "leave": "Club verlassen",
+      "delete": "Club löschen"
+    },
+    "confirm": {
+      "removeMember": "Dieses Mitglied aus dem Club entfernen?",
+      "leave": "Diesen Club verlassen? Du verlierst den Admin-Zugang.",
+      "delete": "Diesen Club dauerhaft löschen? Dies kann nicht rückgängig gemacht werden."
+    },
+    "premium": {
+      "required": "Premium erforderlich",
+      "featureName": "Club erstellen",
+      "createDescription": "Premium-Mitglieder können Autoclubs mit eigenen Abzeichen erstellen und verwalten.",
+      "upgrade": "Auf Premium upgraden"
+    },
+    "error": {
+      "loadFailed": "Clubs konnten nicht geladen werden",
+      "createFailed": "Club konnte nicht erstellt werden",
+      "updateFailed": "Club konnte nicht aktualisiert werden",
+      "notFound": "Club nicht gefunden",
+      "notFoundDescription": "Dieser Club existiert nicht oder wurde entfernt.",
+      "noAccess": "Zugriff verweigert",
+      "noAccessDescription": "Nur Gründer und Admins können diesen Club verwalten.",
+      "nameTooShort": "Der Clubname muss mindestens 2 Zeichen haben",
+      "badgeInvalidType": "Bitte lade eine Bilddatei hoch",
+      "badgeTooLarge": "Das Abzeichen muss kleiner als 2 MB sein",
+      "badgeUploadFailed": "Abzeichen konnte nicht hochgeladen werden",
+      "addMemberFailed": "Mitglied konnte nicht hinzugefügt werden",
+      "removeMemberFailed": "Mitglied konnte nicht entfernt werden",
+      "roleUpdateFailed": "Mitgliedsrolle konnte nicht aktualisiert werden",
+      "leaveFailed": "Club konnte nicht verlassen werden",
+      "deleteFailed": "Club konnte nicht gelöscht werden"
+    },
+    "toast": {
+      "created": "Club erfolgreich erstellt",
+      "updated": "Club aktualisiert",
+      "badgeUpdated": "Abzeichen aktualisiert",
+      "memberAdded": "Mitglied hinzugefügt",
+      "memberRemoved": "Mitglied entfernt",
+      "roleUpdated": "Mitgliedsrolle aktualisiert",
+      "left": "Du hast den Club verlassen",
+      "deleted": "Club gelöscht"
     }
   }
 }
