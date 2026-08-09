@@ -37,7 +37,7 @@ export const SortablePhotoGallery = ({
 
   if (!uniquePhotos || uniquePhotos.length === 0) {
     return (
-      <div className='text-center py-12 text-gray-500'>
+      <div className='text-center py-12 text-muted-foreground'>
         <p>No photos uploaded yet</p>
       </div>
     )

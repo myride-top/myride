@@ -3,6 +3,7 @@ import { SpecificationSection } from './specification-section'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { unitConversions } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n/provider'
+import { SectionHeader } from '@/components/layout/section-header'
 
 interface CarSpecificationsProps {
   car: Car
@@ -451,11 +452,9 @@ export const CarSpecifications = ({
 
   return (
     <div className={className}>
-      <h2 className='text-2xl font-bold text-foreground mb-6'>
-        {t('carDetail.specs.title', 'Specifications')}
-      </h2>
+      <SectionHeader title={t('carDetail.specs.title', 'Specifications')} />
 
-      <div className='bg-card shadow rounded-lg divide-y divide-border'>
+      <div className='bg-card shadow rounded-lg divide-y divide-border border border-border'>
         <div className='p-6'>
           <SpecificationSection
             title={getSectionLabel('basicInformation', 'Basic Information')}

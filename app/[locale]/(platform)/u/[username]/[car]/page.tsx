@@ -34,9 +34,11 @@ import {
   hasUserLikedCarClient,
   getCarLikeCountClient,
 } from '@/lib/database/cars-client'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { PageLayout } from '@/components/layout/page-layout'
+import { SectionHeader } from '@/components/layout/section-header'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { EmptyState } from '@/components/common/empty-state'
+import { Button } from '@/components/ui/button'
 import { CarSpecifications } from '@/components/cars/car-specifications'
 import { UserAvatar } from '@/components/common/user-avatar'
 import { useRouter } from 'next/navigation'
@@ -415,149 +417,78 @@ export default function CarDetailPage() {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
-        <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
+      <PageLayout showCreateButton>
+        <div className='flex items-center justify-center min-h-[50vh]'>
           <LoadingSpinner
             message={t('carDetail.loading', 'Loading car details...')}
           />
         </div>
-      </div>
+      </PageLayout>
     )
   }
 
   if (error || !car) {
     return (
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
-
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-          <div className='flex items-center mb-6'>
-            <button
-              onClick={() => router.back()}
-              className='mr-4 text-foreground hover:text-foreground/80 cursor-pointer'
-            >
-              <svg
-                className='w-6 h-6'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M15 19l-7-7 7-7'
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className='max-w-2xl mx-auto text-center'>
-            <div className='mb-8'>
-              <div className='w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center'>
-                <svg
-                  className='w-12 h-12 text-muted-foreground'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33M15 9.75a3 3 0 11-6 0 3 3 0 016 0z'
-                  />
-                </svg>
-              </div>
-
-              <h1 className='text-4xl font-bold text-foreground mb-4'>
-                {t('carDetail.error.pageTitle', 'Car Not Found')}
-              </h1>
-
-              <p className='text-lg text-muted-foreground mb-8 max-w-md mx-auto'>
-                {error === t('carDetail.error.notFound', 'Car not found')
-                  ? t(
-                      'carDetail.error.notFoundDescription',
-                      "We couldn't find the car you're looking for. It might have been moved, deleted, or you entered the wrong URL."
-                    )
-                  : error ||
-                    t(
-                      'carDetail.error.generic',
-                      'Something went wrong while loading the car details.'
-                    )}
-              </p>
-            </div>
-
-            <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-              <Link
-                href={user ? '/dashboard' : '/'}
-                className='inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
-              >
-                <svg
-                  className='w-5 h-5 mr-2'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
-                  />
-                </svg>
-                {user
-                  ? t('carDetail.error.goDashboard', 'Go to Dashboard')
-                  : t('carDetail.error.goHome', 'Go Home')}
-              </Link>
-
-              <Link
-                href='/browse'
-                className='inline-flex items-center px-6 py-3 border border-input text-base font-medium rounded-md shadow-sm text-foreground bg-background hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer'
-              >
-                <svg
-                  className='w-5 h-5 mr-2'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-                  />
-                </svg>
-                {t('nav.browseCars', 'Browse Cars')}
-              </Link>
-            </div>
-
-            {error === t('carDetail.error.notFound', 'Car not found') && (
-              <div className='mt-8 p-4 bg-muted/50 rounded-lg'>
-                <p className='text-sm text-muted-foreground'>
-                  <strong>{t('common.tip', 'Tip')}:</strong>{' '}
-                  {t(
-                    'carDetail.error.tip',
-                    "Make sure the URL is correct and the car hasn't been deleted by its owner."
-                  )}
-                </p>
-              </div>
-            )}
-          </div>
+      <PageLayout showCreateButton>
+        <div className='flex items-center mb-6'>
+          <BackButton
+            onClick={() => router.back()}
+            variant='ghost'
+            size='sm'
+            showText={false}
+          />
         </div>
-      </div>
+
+        <EmptyState
+          size='lg'
+          title={t('carDetail.error.pageTitle', 'Car Not Found')}
+          description={
+            error === t('carDetail.error.notFound', 'Car not found')
+              ? t(
+                  'carDetail.error.notFoundDescription',
+                  "We couldn't find the car you're looking for. It might have been moved, deleted, or you entered the wrong URL."
+                )
+              : error ||
+                t(
+                  'carDetail.error.generic',
+                  'Something went wrong while loading the car details.'
+                )
+          }
+          action={
+            <div className='flex flex-col sm:flex-row gap-3 justify-center'>
+              <Button asChild size='lg'>
+                <Link href={user ? '/dashboard' : '/'}>
+                  {user
+                    ? t('carDetail.error.goDashboard', 'Go to Dashboard')
+                    : t('carDetail.error.goHome', 'Go Home')}
+                </Link>
+              </Button>
+              <Button variant='outline' asChild size='lg'>
+                <Link href='/browse'>{t('nav.browseCars', 'Browse Cars')}</Link>
+              </Button>
+            </div>
+          }
+        />
+
+        {error === t('carDetail.error.notFound', 'Car not found') && (
+          <div className='mt-4 max-w-md mx-auto p-4 bg-muted/50 rounded-lg text-center'>
+            <p className='text-sm text-muted-foreground'>
+              <strong>{t('common.tip', 'Tip')}:</strong>{' '}
+              {t(
+                'carDetail.error.tip',
+                "Make sure the URL is correct and the car hasn't been deleted by its owner."
+              )}
+            </p>
+          </div>
+        )}
+      </PageLayout>
     )
   }
 
   return (
-    <div className='min-h-screen bg-background'>
-      <MainNavbar showCreateButton={true} />
-
-      {/* Custom Header with Back Button and Actions - Matching PageHeaderWithBack Style */}
-      <div className='max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-6 pt-20 md:pt-24'>
-        <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 md:gap-0'>
-          {/* Left side: Back button, car name, and username */}
+    <PageLayout showCreateButton containerClassName='space-y-6'>
+      {/* Header with back button and actions */}
+      <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 md:gap-4'>
           <div className='flex items-start gap-3 flex-1 min-w-0'>
             <div className='flex-shrink-0 mt-1'>
               <BackButton
@@ -569,7 +500,7 @@ export default function CarDetailPage() {
             </div>
 
             <div className='flex-1 min-w-0'>
-              <h1 className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight break-words'>
+              <h1 className='text-2xl md:text-3xl lg:text-4xl font-bold text-foreground tracking-tight leading-tight break-words'>
                 {car.name}
               </h1>
               <div className='flex items-center justify-between gap-3 mt-1.5 md:mt-2'>
@@ -781,17 +712,13 @@ export default function CarDetailPage() {
             )}
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <main className='max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8'>
-        <div className='py-4 sm:py-6'>
-          <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8'>
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8'>
             {/* Photos Section */}
             <div className='lg:col-span-2 order-first'>
-              <h2 className='text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6'>
-                {t('carDetail.photos.title', 'Photos')}
-              </h2>
+              <SectionHeader
+                title={t('carDetail.photos.title', 'Photos')}
+              />
 
               {/* Category Filter */}
               {car.photos && car.photos.length > 0 && (
@@ -961,15 +888,14 @@ export default function CarDetailPage() {
                   variant='muted'
                   action={
                     car.photos && car.photos.length > 0 ? (
-                      <Link
-                        href={editCarHref}
-                        className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer'
-                      >
-                        {t(
-                          'carDetail.photos.reuploadAction',
-                          'Edit Car & Re-upload Photos'
-                        )}
-                      </Link>
+                      <Button asChild>
+                        <Link href={editCarHref}>
+                          {t(
+                            'carDetail.photos.reuploadAction',
+                            'Edit Car & Re-upload Photos'
+                          )}
+                        </Link>
+                      </Button>
                     ) : undefined
                   }
                 />
@@ -996,18 +922,16 @@ export default function CarDetailPage() {
             <div className='lg:col-span-1 order-last'>
               <CarSpecifications car={car} />
             </div>
-          </div>
+      </div>
 
-          {/* Comments Section - Mobile: Full width below everything */}
-          <div className='lg:hidden mt-8'>
-            <CarComments
-              carId={car.id}
-              carOwnerId={car.user_id}
-              ownerProfile={profile}
-            />
-          </div>
-        </div>
-      </main>
+      {/* Comments Section - Mobile: Full width below everything */}
+      <div className='lg:hidden mt-8'>
+        <CarComments
+          carId={car.id}
+          carOwnerId={car.user_id}
+          ownerProfile={profile}
+        />
+      </div>
 
       {/* Fullscreen Photo Viewer - Only render if there are photos */}
       {sortedPhotos.length > 0 && (
@@ -1027,12 +951,11 @@ export default function CarDetailPage() {
         qrCodeDataUrl={qrCodeDataUrl}
         car={car}
         profile={profile}
-        currentUrl={window.location.href}
+        currentUrl={typeof window !== 'undefined' ? window.location.href : ''}
         onShare={() => {
-          // Track share analytics when QR code modal opens
           trackShare('other')
         }}
       />
-    </div>
+    </PageLayout>
   )
 }

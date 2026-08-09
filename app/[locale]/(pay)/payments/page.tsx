@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { PageLayout } from '@/components/layout/page-layout'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { EmptyState } from '@/components/common/empty-state'
@@ -222,11 +222,8 @@ export default function PaymentsPage() {
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
-
-        <div className='max-w-4xl mx-auto px-4 py-12 pt-24'>
-          <div className='mb-8'>
+      <PageLayout showCreateButton maxWidth='4xl'>
+        <div className='mb-8'>
             <h1 className='text-3xl font-bold text-foreground mb-2'>
               {t('payments.title', 'Payment History')}
             </h1>
@@ -331,7 +328,6 @@ export default function PaymentsPage() {
               ))}
             </div>
           )}
-        </div>
 
         {/* Refund Dialog */}
         <Dialog open={refundDialogOpen} onOpenChange={setRefundDialogOpen}>
@@ -487,7 +483,7 @@ export default function PaymentsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageLayout>
     </ProtectedRoute>
   )
 }

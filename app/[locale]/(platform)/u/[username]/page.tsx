@@ -6,7 +6,7 @@ import { getProfileByUsernameClient } from '@/lib/database/profiles-client'
 import { getCarsByUserClient } from '@/lib/database/cars-client'
 import { Profile, Car } from '@/lib/types/database'
 import { useAuth } from '@/lib/context/auth-context'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { PageLayout } from '@/components/layout/page-layout'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { EmptyState } from '@/components/common/empty-state'
 import { CarCard } from '@/components/cars/car-card'
@@ -18,6 +18,7 @@ import { Crown, Share2, MapPin, Instagram, Youtube, Globe, Lock } from 'lucide-r
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 import { NationalityFlag } from '@/components/common/nationality-flag'
 import { useI18n } from '@/lib/i18n/provider'
 export default function ProfileGaragePage() {
@@ -130,94 +131,84 @@ export default function ProfileGaragePage() {
 
   if (loading) {
     return (
-      <>
-        <MainNavbar showCreateButton={false} />
-        <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
+      <PageLayout>
+        <div className='flex items-center justify-center min-h-[50vh]'>
           <LoadingSpinner message={t('garage.loading', 'Loading garage...')} />
         </div>
-      </>
+      </PageLayout>
     )
   }
 
   if (error || !profile) {
     return (
-      <>
-        <MainNavbar showCreateButton={false} />
-        <div className='min-h-screen flex items-center justify-center bg-background'>
-          <EmptyState
-            title={t('garage.profileNotFound', 'Profile not found')}
-            description={
-              error ||
-              t(
-                'garage.profileNotFoundDescription',
-                'The requested profile could not be found.'
-              )
-            }
-          />
-        </div>
-      </>
+      <PageLayout>
+        <EmptyState
+          title={t('garage.profileNotFound', 'Profile not found')}
+          description={
+            error ||
+            t(
+              'garage.profileNotFoundDescription',
+              'The requested profile could not be found.'
+            )
+          }
+        />
+      </PageLayout>
     )
   }
 
   // Block access to non-premium profiles - only premium users can have public profiles
   if (!isPremium) {
     return (
-      <>
-        <MainNavbar showCreateButton={false} />
-        <div className='min-h-screen flex items-center justify-center bg-background'>
-          <div className='max-w-md mx-auto px-4'>
-            <div className='text-center py-12'>
-              <div className='mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-6'>
-                <Lock className='h-8 w-8 text-primary' />
-              </div>
-              <h2 className='text-3xl font-bold mb-2 text-foreground'>
-                {t('garage.private.title', 'Profile Not Available')}
-              </h2>
-              <p className='text-lg text-muted-foreground mb-6'>
-                {isOwner
-                  ? t(
-                      'garage.private.owner',
-                      'This profile is private. Upgrade to premium to make your profile public and shareable.'
-                    )
-                  : t(
-                      'garage.private.visitor',
-                      'This profile is only available to premium members. This user needs to upgrade to premium to make their profile public.'
-                    )}
-              </p>
+      <PageLayout>
+        <div className='max-w-md mx-auto'>
+          <EmptyState
+            size='lg'
+            icon={Lock}
+            title={t('garage.private.title', 'Profile Not Available')}
+            description={
+              isOwner
+                ? t(
+                    'garage.private.owner',
+                    'This profile is private. Upgrade to premium to make your profile public and shareable.'
+                  )
+                : t(
+                    'garage.private.visitor',
+                    'This profile is only available to premium members. This user needs to upgrade to premium to make their profile public.'
+                  )
+            }
+            action={
               <div className='flex flex-col sm:flex-row gap-3 justify-center'>
                 {isOwner ? (
-                  <Link
-                    href='/premium'
-                    className='inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'
-                  >
-                    <Crown className='w-4 h-4 mr-2' />
-                    {t('garage.private.upgrade', 'Upgrade to Premium')}
-                  </Link>
+                  <Button asChild>
+                    <Link href='/premium'>
+                      <Crown className='w-4 h-4' />
+                      {t('garage.private.upgrade', 'Upgrade to Premium')}
+                    </Link>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
+                    variant='outline'
                     onClick={() => router.push('/browse')}
-                    className='inline-flex items-center justify-center px-4 py-2 border border-border rounded-md text-foreground bg-card hover:bg-accent transition-colors'
                   >
                     {t('nav.browseCars', 'Browse Cars')}
-                  </button>
+                  </Button>
                 )}
               </div>
-            </div>
-          </div>
+            }
+          />
         </div>
-      </>
+      </PageLayout>
     )
   }
 
   const shareUrl = `${window.location.origin}/u/${username}`
 
   return (
-    <>
-      <MainNavbar showCreateButton={false} />
+    <PageLayout bare animate={false} maxWidth='full'>
       <div className='min-h-screen bg-background'>
         {/* Profile Header */}
         <div className='bg-card border-b border-border'>
-          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28'>
+          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-8 sm:pt-10'>
             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
               <div className='flex-1'>
                 <div className='flex items-center gap-4 mb-3'>
@@ -294,7 +285,7 @@ export default function ProfileGaragePage() {
                           href={`https://instagram.com/${profile.instagram_handle.replace('@', '')}`}
                           target='_blank'
                           rel='noopener noreferrer'
-                          className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity cursor-pointer'
+          className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-chart-4 to-primary text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer'
                           title={`@${profile.instagram_handle.replace('@', '')}`}
                         >
                           <Instagram className='w-4 h-4' />
@@ -329,24 +320,25 @@ export default function ProfileGaragePage() {
                     </div>
                   )}
                   {/* Share Button */}
-                  <button
+                  <Button
                     onClick={handleShareGarage}
                     disabled={isGeneratingQR}
-                    className='inline-flex items-center px-4 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+                    variant='outline'
+                    size='sm'
                     title={t('dashboard.shareGarage', 'Share garage')}
                   >
                     {isGeneratingQR ? (
                       <>
-                        <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                        <div className='w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
                         {t('common.generating', 'Generating...')}
                       </>
                     ) : (
                       <>
-                        <Share2 className='w-4 h-4 mr-2' />
+                        <Share2 className='w-4 h-4' />
                         {t('common.share', 'Share')}
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -400,6 +392,6 @@ export default function ProfileGaragePage() {
           currentUrl={shareUrl}
         />
       )}
-    </>
+    </PageLayout>
   )
 }

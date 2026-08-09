@@ -2132,7 +2132,7 @@ export const CarForm = ({
                     currentStep === step.id
                       ? 'text-primary'
                       : hasStepData(step.id)
-                      ? 'text-purple-600'
+                      ? 'text-primary'
                       : 'text-muted-foreground'
                   }`}
                 >
@@ -2141,7 +2141,7 @@ export const CarForm = ({
                       currentStep === step.id
                         ? 'bg-primary text-primary-foreground'
                         : hasStepData(step.id)
-                        ? 'bg-purple-200 text-purple-800'
+                        ? 'bg-primary/20 text-primary'
                         : 'bg-muted text-muted-foreground'
                     }`}
                   >

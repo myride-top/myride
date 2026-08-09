@@ -67,7 +67,7 @@ export const PhotoItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`group relative bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow ${
+      className={`group relative bg-card rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow ${
         isDragging ? 'opacity-50 z-10' : ''
       }`}
     >
@@ -85,7 +85,7 @@ export const PhotoItem = ({
         {/* Main photo badge */}
         {isMain && (
           <div className='absolute top-2 left-2'>
-            <Badge variant='default' className='bg-blue-600'>
+            <Badge variant='default'>
               <Star className='w-3 h-3 mr-1' />
               {t('photo.main', 'Main')}
             </Badge>

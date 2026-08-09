@@ -116,7 +116,7 @@ export function PremiumRequiredDialog({
             </div>
           </div>
 
-          <div className='bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4'>
+          <div className='bg-primary/10 border border-primary/20 rounded-lg p-4'>
             <div className='text-center'>
               <div className='text-2xl font-bold text-foreground mb-1'>$10</div>
               <div className='text-sm text-muted-foreground'>
@@ -136,7 +136,8 @@ export function PremiumRequiredDialog({
           </Button>
           <Button
             onClick={handleUpgrade}
-            className='w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
+            variant='gradient'
+            className='w-full sm:w-auto'
           >
             <Crown className='w-4 h-4 mr-2' />
             Upgrade to Premium

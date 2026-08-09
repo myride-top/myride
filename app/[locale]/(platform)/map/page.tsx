@@ -40,10 +40,10 @@ export default function MapPage() {
     <ProtectedRoute>
       <div className='min-h-screen bg-background'>
         <MainNavbar />
-        <div className='fixed inset-0 w-full h-full pt-16'>
+        <div className='fixed inset-0 w-full h-full pt-16 sm:pt-20'>
           {loading ? (
-            <div className='flex items-center justify-center w-full h-full'>
-              <LoadingSpinner />
+            <div className='flex items-center justify-center w-full h-full bg-background'>
+              <LoadingSpinner message={t('map.loading', 'Loading map...')} />
             </div>
           ) : (
             <EventMap events={events} onEventsChange={setEvents} />

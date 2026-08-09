@@ -3,27 +3,24 @@ import { Button } from '@/components/ui/button'
 
 export default function NotFound() {
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800'>
-      <div className='text-center px-6 py-12'>
-        {/* 404 Number */}
+    <div className='min-h-screen flex items-center justify-center bg-background'>
+      <div className='text-center px-6 py-12 max-w-lg'>
         <div className='mb-8'>
-          <h1 className='text-9xl font-bold text-gray-300 dark:text-gray-700 select-none'>
+          <h1 className='text-9xl font-bold text-muted-foreground/30 select-none'>
             404
           </h1>
         </div>
 
-        {/* Main Message */}
         <div className='mb-8'>
-          <h2 className='text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-4'>
+          <h2 className='text-3xl font-bold text-foreground mb-4 tracking-tight'>
             Page Not Found
           </h2>
-          <p className='text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto'>
-            Oops! The page you&apos;re looking for doesn&apos;t exist. It might
-            have been moved, deleted, or you entered the wrong URL.
+          <p className='text-lg text-muted-foreground max-w-md mx-auto'>
+            The page you&apos;re looking for doesn&apos;t exist. It might have
+            been moved, deleted, or you entered the wrong URL.
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
           <Button asChild size='lg'>
             <Link href='/'>Go Home</Link>
@@ -33,13 +30,12 @@ export default function NotFound() {
           </Button>
         </div>
 
-        {/* Additional Help */}
-        <div className='mt-12 text-sm text-gray-500 dark:text-gray-400'>
+        <div className='mt-12 text-sm text-muted-foreground'>
           <p>
             Need help? Contact us at{' '}
             <a
               href='mailto:support@myride.top'
-              className='underline hover:text-gray-700 dark:hover:text-gray-300'
+              className='underline hover:text-foreground transition-colors'
             >
               support@myride.top
             </a>

@@ -9,7 +9,7 @@ import {
 } from '@/lib/database/cars-client'
 import { getUserCarSlots } from '@/lib/database/premium-client'
 import { ProtectedRoute } from '@/components/auth/protected-route'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { PageLayout } from '@/components/layout/page-layout'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { CarForm } from '@/components/forms/car-form'
@@ -18,7 +18,6 @@ import { CarPhoto, PhotoCategory } from '@/lib/types/database'
 import { PageHeader } from '@/components/layout/page-header'
 import { CarLimitChecker } from '@/components/create/car-limit-checker'
 import { ErrorAlert } from '@/components/common/error-alert'
-import { Container } from '@/components/common/container'
 import { unitConversions } from '@/lib/utils'
 import { upsertCarTimelineClient } from '@/lib/database/timeline-client'
 import { uploadCarPhoto } from '@/lib/storage/photos'
@@ -423,12 +422,11 @@ export default function CreateCarPage() {
   if (loading || unitLoading) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen bg-background'>
-          <MainNavbar showCreateButton={true} />
+        <PageLayout showCreateButton maxWidth='4xl'>
           <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
             <LoadingSpinner message='Loading...' />
           </div>
-        </div>
+        </PageLayout>
       </ProtectedRoute>
     )
   }
@@ -436,26 +434,21 @@ export default function CreateCarPage() {
   if (!canCreate && carSlots) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen bg-background'>
-          <MainNavbar showCreateButton={true} />
-          <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-            <CarLimitChecker
-              currentCars={carSlots.currentCars}
-              maxAllowedCars={carSlots.maxAllowedCars}
-              isPremium={carSlots.isPremium}
-              onUpgradeClick={() => router.push('/premium')}
-            />
-          </div>
-        </div>
+        <PageLayout showCreateButton maxWidth='4xl'>
+          <CarLimitChecker
+            currentCars={carSlots.currentCars}
+            maxAllowedCars={carSlots.maxAllowedCars}
+            isPremium={carSlots.isPremium}
+            onUpgradeClick={() => router.push('/premium')}
+          />
+        </PageLayout>
       </ProtectedRoute>
     )
   }
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
-
+      <PageLayout showCreateButton maxWidth='4xl'>
         <PageHeader
           backHref='/dashboard'
           title='Create Your Car'
@@ -463,35 +456,30 @@ export default function CreateCarPage() {
           showBackButton={true}
         />
 
-        {/* Main Content */}
-        <Container maxWidth='4xl' className='py-6'>
-          {/* Error Messages */}
-          {error && (
-            <ErrorAlert
-              message={error}
-              className='mb-6'
-              onDismiss={() => setError(null)}
-            />
-          )}
-
-          {/* Car Form */}
-          <CarForm
-            mode='create'
-            onSubmit={handleSubmit}
-            onPhotoUploadComplete={handlePhotoUploadComplete}
-            onBatchUploadComplete={handleBatchUploadComplete}
-            onPhotoCategoryChange={handlePhotoCategoryChange}
-            onSetMainPhoto={handleSetMainPhoto}
-            onDeletePhoto={handleDeletePhoto}
-            onPhotoDescriptionChange={handlePhotoDescriptionChange}
-            onPhotoReorder={handlePhotoReorder}
-            unitPreference={unitPreference}
-            saving={creating}
-            existingPhotos={photos}
-            mainPhotoUrl={mainPhotoUrl || undefined}
+        {error && (
+          <ErrorAlert
+            message={error}
+            className='mb-6'
+            onDismiss={() => setError(null)}
           />
-        </Container>
-      </div>
+        )}
+
+        <CarForm
+          mode='create'
+          onSubmit={handleSubmit}
+          onPhotoUploadComplete={handlePhotoUploadComplete}
+          onBatchUploadComplete={handleBatchUploadComplete}
+          onPhotoCategoryChange={handlePhotoCategoryChange}
+          onSetMainPhoto={handleSetMainPhoto}
+          onDeletePhoto={handleDeletePhoto}
+          onPhotoDescriptionChange={handlePhotoDescriptionChange}
+          onPhotoReorder={handlePhotoReorder}
+          unitPreference={unitPreference}
+          saving={creating}
+          existingPhotos={photos}
+          mainPhotoUrl={mainPhotoUrl || undefined}
+        />
+      </PageLayout>
     </ProtectedRoute>
   )
 }

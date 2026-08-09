@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/context/auth-context'
 import { useRouter } from 'next/navigation'
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { PageLayout } from '@/components/layout/page-layout'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/card'
-import { Button } from '@/components/ui/button-enhanced'
+import { Button } from '@/components/ui/button'
 import { Crown, BarChart3, ArrowRight, Lock } from 'lucide-react'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import { Profile } from '@/lib/types/database'
@@ -59,101 +59,92 @@ export default function AnalyticsPage() {
   if (!profile?.is_premium) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen bg-background'>
-          <MainNavbar showCreateButton={true} />
-          <div className='container mx-auto px-4 pb-8 pt-28'>
-            <Card className='max-w-2xl mx-auto'>
-              <CardHeader className='text-center'>
-                <div className='mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-6'>
-                  <Lock className='h-8 w-8 text-primary' />
-                </div>
-                <CardTitle className='text-3xl font-bold mb-2'>
-                  {t('analytics.premiumRequired.title', 'Premium Required')}
-                </CardTitle>
-                <CardDescription className='text-lg'>
-                  {t(
-                    'analytics.premiumRequired.description',
-                    'Analytics dashboard is available for premium users only'
-                  )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className='space-y-6'>
-                <div className='bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/20'>
-                  <div className='flex items-start gap-4'>
-                    <div className='p-3 bg-primary/20 rounded-lg'>
-                      <BarChart3 className='h-6 w-6 text-primary' />
-                    </div>
-                    <div className='flex-1'>
-                      <h3 className='font-semibold text-lg mb-2'>
+        <PageLayout showCreateButton maxWidth='7xl'>
+          <Card className='max-w-2xl mx-auto'>
+            <CardHeader className='text-center'>
+              <div className='mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-6'>
+                <Lock className='h-8 w-8 text-primary' />
+              </div>
+              <CardTitle className='text-3xl font-bold mb-2'>
+                {t('analytics.premiumRequired.title', 'Premium Required')}
+              </CardTitle>
+              <CardDescription className='text-lg'>
+                {t(
+                  'analytics.premiumRequired.description',
+                  'Analytics dashboard is available for premium users only'
+                )}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-6'>
+              <div className='bg-primary/10 rounded-xl p-6 border border-primary/20'>
+                <div className='flex items-start gap-4'>
+                  <div className='p-3 bg-primary/20 rounded-lg'>
+                    <BarChart3 className='h-6 w-6 text-primary' />
+                  </div>
+                  <div className='flex-1'>
+                    <h3 className='font-semibold text-lg mb-2'>
+                      {t(
+                        'analytics.premiumRequired.unlockTitle',
+                        'Unlock Advanced Analytics'
+                      )}
+                    </h3>
+                    <p className='text-muted-foreground mb-4'>
+                      {t(
+                        'analytics.premiumRequired.unlockDescription',
+                        'Get detailed insights into your cars and events performance with our premium analytics dashboard.'
+                      )}
+                    </p>
+                    <ul className='space-y-2 text-sm text-muted-foreground mb-4'>
+                      <li className='flex items-center gap-2'>
+                        <Crown className='h-4 w-4 text-primary' />
                         {t(
-                          'analytics.premiumRequired.unlockTitle',
-                          'Unlock Advanced Analytics'
+                          'analytics.premiumRequired.benefitViews',
+                          'Track views, likes, shares, and comments'
                         )}
-                      </h3>
-                      <p className='text-muted-foreground mb-4'>
+                      </li>
+                      <li className='flex items-center gap-2'>
+                        <Crown className='h-4 w-4 text-primary' />
                         {t(
-                          'analytics.premiumRequired.unlockDescription',
-                          'Get detailed insights into your cars and events performance with our premium analytics dashboard.'
+                          'analytics.premiumRequired.benefitAttendance',
+                          'Monitor event attendance and engagement'
                         )}
-                      </p>
-                      <ul className='space-y-2 text-sm text-muted-foreground mb-4'>
-                        <li className='flex items-center gap-2'>
-                          <Crown className='h-4 w-4 text-yellow-500' />
-                          {t(
-                            'analytics.premiumRequired.benefitViews',
-                            'Track views, likes, shares, and comments'
-                          )}
-                        </li>
-                        <li className='flex items-center gap-2'>
-                          <Crown className='h-4 w-4 text-yellow-500' />
-                          {t(
-                            'analytics.premiumRequired.benefitAttendance',
-                            'Monitor event attendance and engagement'
-                          )}
-                        </li>
-                        <li className='flex items-center gap-2'>
-                          <Crown className='h-4 w-4 text-yellow-500' />
-                          {t(
-                            'analytics.premiumRequired.benefitTimeline',
-                            'Analyze performance over time'
-                          )}
-                        </li>
-                        <li className='flex items-center gap-2'>
-                          <Crown className='h-4 w-4 text-yellow-500' />
-                          {t(
-                            'analytics.premiumRequired.benefitExport',
-                            'Export data for further analysis'
-                          )}
-                        </li>
-                      </ul>
-                    </div>
+                      </li>
+                      <li className='flex items-center gap-2'>
+                        <Crown className='h-4 w-4 text-primary' />
+                        {t(
+                          'analytics.premiumRequired.benefitTimeline',
+                          'Analyze performance over time'
+                        )}
+                      </li>
+                      <li className='flex items-center gap-2'>
+                        <Crown className='h-4 w-4 text-primary' />
+                        {t(
+                          'analytics.premiumRequired.benefitExport',
+                          'Export data for further analysis'
+                        )}
+                      </li>
+                    </ul>
                   </div>
                 </div>
+              </div>
 
-                <div className='flex flex-col sm:flex-row gap-3 justify-center'>
-                  <Button
-                    asChild
-                    className='bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white'
-                  >
-                    <Link href='/premium' className='flex items-center gap-2'>
-                      <Crown className='h-4 w-4' />
-                      {t('garage.private.upgrade', 'Upgrade to Premium')}
-                      <ArrowRight className='h-4 w-4' />
-                    </Link>
-                  </Button>
-                  <Button
-                    variant='outline'
-                    asChild
-                  >
-                    <Link href='/dashboard'>
-                      {t('analytics.backToDashboard', 'Back to Dashboard')}
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              <div className='flex flex-col sm:flex-row gap-3 justify-center'>
+                <Button asChild variant='gradient'>
+                  <Link href='/premium' className='flex items-center gap-2'>
+                    <Crown className='h-4 w-4' />
+                    {t('garage.private.upgrade', 'Upgrade to Premium')}
+                    <ArrowRight className='h-4 w-4' />
+                  </Link>
+                </Button>
+                <Button variant='outline' asChild>
+                  <Link href='/dashboard'>
+                    {t('analytics.backToDashboard', 'Back to Dashboard')}
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </PageLayout>
       </ProtectedRoute>
     )
   }
@@ -161,10 +152,9 @@ export default function AnalyticsPage() {
   // Show analytics dashboard for premium users
   return (
     <ProtectedRoute>
-      <MainNavbar showCreateButton={true} />
-      <div className='container mx-auto px-3 md:px-4 pb-6 md:pb-8 pt-20 md:pt-28'>
+      <PageLayout showCreateButton maxWidth='7xl'>
         <AnalyticsDashboard />
-      </div>
+      </PageLayout>
     </ProtectedRoute>
   )
 }

@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { useI18n } from '@/lib/i18n/provider'
+import { Button } from '@/components/ui/button'
 
 interface QRCodeModalProps {
   isOpen: boolean
@@ -37,7 +38,6 @@ export const QRCodeModal = ({
 }: QRCodeModalProps) => {
   const { t } = useI18n()
 
-  // Track share analytics when modal opens
   useEffect(() => {
     if (isOpen && onShare) {
       onShare()
@@ -70,37 +70,39 @@ export const QRCodeModal = ({
     <div
       className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200'
       onClick={onClose}
+      role='dialog'
+      aria-modal='true'
+      aria-label={t('qr.title', 'QR Code')}
     >
       <div
-        className='bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-200'
+        className='bg-card text-card-foreground border border-border rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-200'
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className='bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 text-white'>
+        <div className='bg-primary px-6 py-4 text-primary-foreground'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
-              <div className='w-10 h-10 bg-white/20 rounded-full flex items-center justify-center'>
-                <QrCode className='w-5 h-5 text-white' />
+              <div className='w-10 h-10 bg-primary-foreground/20 rounded-full flex items-center justify-center'>
+                <QrCode className='w-5 h-5' />
               </div>
               <div>
                 <h3 className='text-lg font-semibold'>
                   {t('qr.title', 'QR Code')}
                 </h3>
-                <p className='text-blue-100 text-sm'>
+                <p className='text-primary-foreground/80 text-sm'>
                   {t('qr.shareCar', 'Share this car easily')}
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className='w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors duration-200 cursor-pointer'
+              className='w-8 h-8 bg-primary-foreground/20 hover:bg-primary-foreground/30 rounded-full flex items-center justify-center transition-colors duration-200 cursor-pointer'
+              aria-label={t('common.close', 'Close')}
             >
-              <X className='w-4 h-4 text-white' />
+              <X className='w-4 h-4' />
             </button>
           </div>
         </div>
 
-        {/* Content */}
         <div className='p-6'>
           <div className='text-center mb-6'>
             <Image
@@ -108,19 +110,18 @@ export const QRCodeModal = ({
               alt={t('qr.title', 'QR Code')}
               width={192}
               height={192}
-              className='w-48 h-48 mx-auto drop-shadow-lg mb-6'
+              className='w-48 h-48 mx-auto drop-shadow-lg mb-6 rounded-lg bg-white p-2'
               unoptimized
             />
-            <p className='text-gray-600 dark:text-gray-300 text-sm mb-2'>
+            <p className='text-muted-foreground text-sm mb-2'>
               {t('qr.scanDescription', 'Scan this QR code with your phone camera')}
             </p>
-            <p className='text-gray-500 dark:text-gray-400 text-xs'>
+            <p className='text-muted-foreground/80 text-xs'>
               {t('qr.opensCarPage', 'Opens the car page directly on your device')}
             </p>
           </div>
 
-          {/* Car/Garage Info */}
-          <div className='bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6'>
+          <div className='bg-muted/50 border border-border rounded-lg p-4 mb-6'>
             <div className='flex items-center gap-3'>
               {profile?.avatar_url ? (
                 <Image
@@ -145,37 +146,35 @@ export const QRCodeModal = ({
                   unoptimized
                 />
               ) : (
-                <div className='w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center'>
-                  <User className='w-6 h-6 text-gray-400' />
+                <div className='w-12 h-12 bg-muted rounded-lg flex items-center justify-center'>
+                  <User className='w-6 h-6 text-muted-foreground' />
                 </div>
               )}
               <div className='flex-1 min-w-0'>
-                <h4 className='font-semibold text-gray-900 dark:text-white truncate'>
+                <h4 className='font-semibold text-foreground truncate'>
                   {car.name}
                 </h4>
-                <p className='text-sm text-gray-600 dark:text-gray-300'>
+                <p className='text-sm text-muted-foreground'>
                   {car.make} {car.model} ({car.year})
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Actions */}
           <div className='flex gap-3'>
-            <button
-              onClick={handleDownload}
-              className='flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer'
-            >
+            <Button onClick={handleDownload} className='flex-1' size='lg'>
               <Download className='w-4 h-4' />
               {t('qr.downloadPng', 'Download PNG')}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleCopyLink}
-              className='flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer'
+              variant='secondary'
+              className='flex-1'
+              size='lg'
             >
               <Share2 className='w-4 h-4' />
               {t('qr.copyLink', 'Copy Link')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

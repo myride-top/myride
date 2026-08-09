@@ -4,6 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import type { CarTimeline as CarTimelineType } from '@/lib/types/database'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { SectionHeader } from '@/components/layout/section-header'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { FullscreenPhotoViewer } from '@/components/photos/fullscreen-photo-viewer'
@@ -222,9 +223,7 @@ export const CarTimeline = ({ timeline, carName }: CarTimelineProps) => {
 
   return (
     <div className='mt-12'>
-      <h2 className='text-2xl font-semibold mb-6 text-foreground'>
-        {t('timeline.title', 'Build Timeline')}
-      </h2>
+      <SectionHeader title={t('timeline.title', 'Build Timeline')} />
       <div className='flex gap-4'>
         {/* Left sidebar navigation */}
         <div className='hidden lg:block w-20 flex-shrink-0'>

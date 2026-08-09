@@ -33,33 +33,30 @@ export const PageHeader = ({
       title: 'text-2xl md:text-3xl',
       description: 'text-base',
       spacing: 'mb-4',
-      padding: 'py-4',
     },
     md: {
       title: 'text-3xl md:text-4xl',
       description: 'text-lg',
       spacing: 'mb-6',
-      padding: 'py-6',
     },
     lg: {
       title: 'text-4xl md:text-5xl',
       description: 'text-xl',
       spacing: 'mb-8',
-      padding: 'py-8',
     },
   }
 
   const currentSize = sizeClasses[size]
 
-  // If showBackButton is true, use the layout with back button
+  // Back-button mode: content only (no outer container/padding).
+  // Use inside PageLayout, or wrap yourself when outside the shared shell.
   if (showBackButton) {
     return (
       <div
         className={cn(
-          'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-          currentSize.padding,
-          'pt-24',
-          containerClassName
+          currentSize.spacing,
+          containerClassName,
+          className
         )}
       >
         <div className='flex items-center'>
@@ -73,10 +70,10 @@ export const PageHeader = ({
             />
           </div>
 
-          <div className='flex-1'>
+          <div className='flex-1 min-w-0'>
             <h1
               className={cn(
-                'font-bold text-foreground',
+                'font-bold text-foreground tracking-tight',
                 currentSize.title,
                 titleClassName
               )}

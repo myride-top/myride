@@ -22,9 +22,9 @@ const buttonVariants = cva(
         gradient:
           'bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xs hover:from-primary/90 hover:to-secondary/90',
         support:
-          'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl',
+          'bg-gradient-to-r from-primary to-chart-4 hover:from-primary/90 hover:to-chart-4/90 text-primary-foreground shadow-lg hover:shadow-xl',
         orange:
-          'bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900',
+          'bg-chart-3/10 border border-chart-3/30 text-foreground hover:bg-chart-3/20',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

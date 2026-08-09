@@ -56,39 +56,24 @@ lib/                   # Utility libraries
 - **Compound Components** for complex UI patterns
 - **Custom Hooks** for reusable logic
 
+### **Layout Patterns**
+
+- **PageLayout** — shared shell for platform pages (`MainNavbar` + consistent max-width, padding, entrance animation). Supports `maxWidth`, `bare` (full-bleed), and `animate`.
+- **PageHeader** — page titles; back-button mode is content-only and must sit inside `PageLayout`
+- **SectionHeader** — consistent section titles (`text-xl sm:text-2xl font-bold`) on car detail, specs, timeline
+- **MinimalFooter** — internal pages via route layouts
+- **MainNavbar** — authenticated / platform navigation (also used alone for full-bleed map)
+- Auth and legal routes keep their dedicated navbar/footer shells
+
 ### **Styling Patterns**
 
-- **188 instances** of `cn()` utility for conditional classes
+- Prefer semantic tokens (`bg-background`, `text-foreground`, `bg-primary`, `bg-muted`, `border-border`) over raw `gray-*` / `purple-*` utilities
+- Use the shared `Button` component for CTAs; avoid hand-rolled gradient buttons except established variants (`gradient`, `support`)
 - **Consistent spacing** using Tailwind's spacing scale
 - **Responsive design** with mobile-first approach
 - **Dark/Light theme** support with next-themes
 - **Custom CSS variables** for theming
-
-### **Key UI Components**
-
-```typescript
-// Button variants with CVA
-const buttonVariants = cva('inline-flex items-center justify-center...', {
-  variants: {
-    variant: {
-      default: 'bg-primary text-primary-foreground',
-      destructive: 'bg-destructive text-white',
-      outline: 'border bg-background',
-      gradient: 'bg-gradient-to-r from-primary to-secondary',
-      support: 'bg-gradient-to-r from-pink-500 to-purple-600',
-    },
-  },
-})
-```
-
-### **Layout Patterns**
-
-- **PageLayout** component for consistent page structure
-- **MinimalFooter** for internal pages
-- **MainNavbar** for authenticated users
-- **LandingNavbar** for public pages
-- **ProtectedRoute** wrapper for auth-required pages
-
+- Use the `cn()` utility for conditional classes
 ## 🗄️ Database & Data Models
 
 ### **Core Entities**

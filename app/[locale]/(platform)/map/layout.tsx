@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { MinimalFooter } from '@/components/common/minimal-footer'
 
 export const metadata: Metadata = {
   title: 'Events Map',
@@ -41,11 +40,5 @@ export default function MapLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <div className='min-h-screen flex flex-col'>
-      <main className='flex-1'>{children}</main>
-      <MinimalFooter />
-    </div>
-  )
+  return children
 }
-

@@ -29,6 +29,7 @@ import {
 import { toast } from 'sonner'
 import { Profile } from '@/lib/types/database'
 import { useI18n } from '@/lib/i18n/provider'
+import { LoadingSpinner } from '@/components/common/loading-spinner'
 
 interface CommentWithProfile extends CarComment {
   profiles: Profile | null
@@ -858,15 +859,15 @@ export const CarComments = ({
       <div className='bg-card rounded-lg border border-border p-6'>
         <div className='flex items-center gap-2 mb-4'>
           <MessageCircle className='w-5 h-5 text-muted-foreground' />
-          <h3 className='text-lg font-semibold'>
+          <h3 className='text-xl sm:text-2xl font-bold tracking-tight'>
             {t('comments.title', 'Comments')}
           </h3>
         </div>
         <div className='text-center py-8'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto'></div>
-          <p className='text-muted-foreground mt-2'>
-            {t('comments.loading', 'Loading comments...')}
-          </p>
+          <LoadingSpinner
+            size='sm'
+            message={t('comments.loading', 'Loading comments...')}
+          />
         </div>
       </div>
     )
@@ -876,17 +877,17 @@ export const CarComments = ({
     <div className='bg-card rounded-lg border border-border p-6'>
       <div className='flex items-center gap-2 mb-4'>
         <MessageCircle className='w-5 h-5 text-muted-foreground' />
-        <h3 className='text-lg font-semibold'>
+        <h3 className='text-xl sm:text-2xl font-bold tracking-tight'>
           {t('comments.title', 'Comments')} ({getTotalCommentCount()})
         </h3>
       </div>
 
       {/* Database Error Display */}
       {databaseError && (
-        <div className='mb-4 p-3 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg'>
+        <div className='mb-4 p-3 bg-chart-3/10 border border-chart-3/30 rounded-lg'>
           <div className='flex items-center gap-2'>
-            <div className='w-4 h-4 bg-yellow-500 rounded-full'></div>
-            <p className='text-sm text-yellow-800 dark:text-yellow-200'>
+            <div className='w-4 h-4 bg-chart-3 rounded-full'></div>
+            <p className='text-sm text-foreground'>
               {databaseError}
             </p>
           </div>

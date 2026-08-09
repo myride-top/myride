@@ -15,13 +15,12 @@ import { toast } from 'sonner'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { deleteCarPhoto } from '@/lib/storage/photos'
 import { Loader2, AlertTriangle } from 'lucide-react'
-import { MainNavbar } from '@/components/navbar/main-navbar'
+import { PageLayout } from '@/components/layout/page-layout'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
 import { CarForm } from '@/components/forms/car-form'
 import { PageHeader } from '@/components/layout/page-header'
 import { ErrorAlert } from '@/components/common/error-alert'
-import { Container } from '@/components/common/container'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -443,12 +442,11 @@ export default function EditCarPage() {
   if (loading || unitLoading) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen bg-background'>
-          <MainNavbar showCreateButton={true} />
+        <PageLayout showCreateButton maxWidth='4xl'>
           <div className='flex items-center justify-center min-h-[calc(100vh-6rem)]'>
             <LoadingSpinner message='Loading car...' />
           </div>
-        </div>
+        </PageLayout>
       </ProtectedRoute>
     )
   }
@@ -456,12 +454,9 @@ export default function EditCarPage() {
   if (error && !car) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen bg-background'>
-          <MainNavbar showCreateButton={true} />
-          <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-            <ErrorAlert message={error} className='text-center' />
-          </div>
-        </div>
+        <PageLayout showCreateButton maxWidth='4xl'>
+          <ErrorAlert message={error} className='text-center' />
+        </PageLayout>
       </ProtectedRoute>
     )
   }
@@ -469,21 +464,16 @@ export default function EditCarPage() {
   if (!car) {
     return (
       <ProtectedRoute>
-        <div className='min-h-screen bg-background'>
-          <MainNavbar showCreateButton={true} />
-          <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24'>
-            <ErrorAlert message='Car not found' className='text-center' />
-          </div>
-        </div>
+        <PageLayout showCreateButton maxWidth='4xl'>
+          <ErrorAlert message='Car not found' className='text-center' />
+        </PageLayout>
       </ProtectedRoute>
     )
   }
 
   return (
     <ProtectedRoute>
-      <div className='min-h-screen bg-background'>
-        <MainNavbar showCreateButton={true} />
-
+      <PageLayout showCreateButton maxWidth='4xl'>
         <PageHeader
           title='Edit Your Car'
           description="Update your car's information and photos"
@@ -494,19 +484,15 @@ export default function EditCarPage() {
           showBackButton={true}
         />
 
-        {/* Main Content */}
-        <Container maxWidth='4xl' className='py-6'>
-          {/* Error Messages */}
-          {error && (
-            <ErrorAlert
-              message={error}
-              className='mb-6'
-              onDismiss={() => setError(null)}
-            />
-          )}
+        {error && (
+          <ErrorAlert
+            message={error}
+            className='mb-6'
+            onDismiss={() => setError(null)}
+          />
+        )}
 
-          {/* Car Form */}
-          <CarForm
+        <CarForm
             key={`edit-${car.id}-${unitPreference}`}
             mode='edit'
             initialData={
@@ -759,10 +745,9 @@ export default function EditCarPage() {
               </Button>
             </div>
           </div>
-        </Container>
+      </PageLayout>
 
-        {/* Delete Confirmation Dialog */}
-        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Are you absolutely sure?</DialogTitle>
@@ -796,7 +781,6 @@ export default function EditCarPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
     </ProtectedRoute>
   )
 }
