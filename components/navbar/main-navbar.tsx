@@ -44,6 +44,7 @@ export const MainNavbar = ({ showCreateButton = false }: MainNavbarProps) => {
   const navItems: NavItem[] = [
     { name: t('nav.browseCars', 'Browse Cars'), href: '/browse' },
     { name: t('nav.map', 'Map'), href: '/map' },
+    { name: t('nav.exploreClubs', 'Explore clubs'), href: '/clubs/explore' },
     ...(user
       ? [{ name: t('nav.clubs', 'Clubs'), href: '/clubs' }]
       : []),

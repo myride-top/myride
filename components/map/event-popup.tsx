@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '@/lib/context/auth-context'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {
@@ -34,6 +36,7 @@ import { useTheme } from 'next-themes'
 import type * as Leaflet from 'leaflet'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
 
 // Dynamically import map components for route display
 const MapContainer = dynamic(
@@ -246,7 +249,7 @@ export function EventPopup({
   onEventUpdated,
   onEventDeleted,
 }: EventPopupProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { user } = useAuth()
   const [cars, setCars] = useState<Car[]>([])
   const [attendees, setAttendees] = useState<EventAttendeeWithDetails[]>([])
@@ -428,6 +431,24 @@ export function EventPopup({
               <p className='text-[10px] sm:text-sm text-muted-foreground mb-1 sm:mb-2 break-words leading-snug'>
                 {event.description}
               </p>
+            )}
+            {event.club && (
+              <Link
+                href={buildLocalePath(locale, `/c/${event.club.slug}`)}
+                className='inline-flex items-center gap-1.5 text-[10px] sm:text-xs text-primary hover:underline mb-1'
+              >
+                {event.club.badge_url ? (
+                  <Image
+                    src={event.club.badge_url}
+                    alt={event.club.name}
+                    width={16}
+                    height={16}
+                    className='h-4 w-4 rounded-full object-cover ring-1 ring-border'
+                    unoptimized
+                  />
+                ) : null}
+                {event.club.name}
+              </Link>
             )}
           </div>
 

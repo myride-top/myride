@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { LoadingSpinner } from '@/components/common/loading-spinner'
@@ -14,6 +15,9 @@ import { useI18n } from '@/lib/i18n/provider'
 export default function MapPage() {
   const { t } = useI18n()
   const { user } = useAuth()
+  const searchParams = useSearchParams()
+  const clubSlugFilter = searchParams.get('club')
+  const highlightEventId = searchParams.get('event')
   const [events, setEvents] = useState<EventWithAttendeeCount[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -46,7 +50,12 @@ export default function MapPage() {
               <LoadingSpinner message={t('map.loading', 'Loading map...')} />
             </div>
           ) : (
-            <EventMap events={events} onEventsChange={setEvents} />
+            <EventMap
+              events={events}
+              onEventsChange={setEvents}
+              clubSlugFilter={clubSlugFilter}
+              highlightEventId={highlightEventId}
+            />
           )}
         </div>
       </div>

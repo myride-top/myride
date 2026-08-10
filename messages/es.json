@@ -12,7 +12,8 @@
     "signOut": "Cerrar sesión",
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
-    "clubs": "Clubes"
+    "clubs": "Clubes",
+    "exploreClubs": "Explorar clubes"
   },
   "lang": {
     "label": "Idioma",
@@ -758,7 +759,58 @@
       "removeMemberFailed": "No se pudo eliminar el miembro",
       "roleUpdateFailed": "No se pudo actualizar el rol del miembro",
       "leaveFailed": "No se pudo abandonar el club",
-      "deleteFailed": "No se pudo eliminar el club"
+      "deleteFailed": "No se pudo eliminar el club",
+      "joinRequestFailed": "No se pudo enviar la solicitud de unión",
+      "setPrimaryFailed": "No se pudo establecer el club principal",
+      "reviewRequestFailed": "No se pudo revisar la solicitud"
+    },
+    "explore": {
+      "title": "Explorar clubes",
+      "description": "Descubre clubes de automóviles en MyRide",
+      "link": "Explorar clubes",
+      "myClubs": "Mis clubes",
+      "searchPlaceholder": "Buscar clubes...",
+      "allCountries": "Todos los países",
+      "sortMembers": "Más miembros",
+      "sortName": "Nombre A–Z",
+      "sortNewest": "Más recientes",
+      "empty": {
+        "title": "No se encontraron clubes",
+        "description": "Prueba a ajustar la búsqueda o los filtros."
+      }
+    },
+    "garage": "Garaje",
+    "garageDescription": "Coches de los miembros del club",
+    "events": "Eventos",
+    "eventsDescription": "Próximos eventos vinculados a este club",
+    "requestJoin": "Solicitar unirse",
+    "joinPending": "Solicitud pendiente",
+    "setPrimary": "Establecer como principal",
+    "settingPrimary": "Estableciendo...",
+    "primaryBadge": "Club principal",
+    "joinMessageHint": "Mensaje opcional para los administradores",
+    "joinMessagePlaceholder": "¿Por qué quieres unirte?",
+    "submitJoin": "Enviar solicitud",
+    "submittingJoin": "Enviando...",
+    "viewOnMap": "Ver en el mapa",
+    "country": "País",
+    "countryPlaceholder": "Seleccionar país (opcional)",
+    "noCountry": "Sin país",
+    "countryHint": "Se usa para descubrir clubes.",
+    "pendingRequests": "Solicitudes de unión pendientes",
+    "pendingRequestsDescription": "Aprueba o rechaza solicitudes para unirse",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "primaryNote": "Los miembros eligen su club principal desde su lista de clubes.",
+    "eventClubLabel": "Club (opcional)",
+    "eventClubNone": "Sin club",
+    "emptyGarage": {
+      "title": "Aún no hay coches",
+      "description": "Los miembros del club aún no han añadido coches."
+    },
+    "emptyEvents": {
+      "title": "No hay eventos próximos",
+      "description": "Este club no tiene eventos próximos en el mapa."
     },
     "toast": {
       "created": "Club creado correctamente",
@@ -768,7 +820,11 @@
       "memberRemoved": "Miembro eliminado",
       "roleUpdated": "Rol del miembro actualizado",
       "left": "Has abandonado el club",
-      "deleted": "Club eliminado"
+      "deleted": "Club eliminado",
+      "joinRequested": "Solicitud de unión enviada",
+      "primarySet": "Club principal actualizado",
+      "requestApproved": "Solicitud de unión aprobada",
+      "requestRejected": "Solicitud de unión rechazada"
     }
   }
 }

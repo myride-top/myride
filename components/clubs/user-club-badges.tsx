@@ -11,6 +11,7 @@ interface UserClubBadgesProps {
   size?: 'xs' | 'sm' | 'md'
   className?: string
   maxVisible?: number
+  mode?: 'primary' | 'all'
 }
 
 /**
@@ -23,6 +24,7 @@ export const UserClubBadges = ({
   size = 'sm',
   className,
   maxVisible,
+  mode = 'primary',
 }: UserClubBadgesProps) => {
   const [clubs, setClubs] = useState<ClubBadgeInfo[]>(clubsProp ?? [])
 
@@ -56,6 +58,7 @@ export const UserClubBadges = ({
       size={size}
       className={className}
       maxVisible={maxVisible}
+      mode={mode}
     />
   )
 }

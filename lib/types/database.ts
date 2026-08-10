@@ -71,6 +71,16 @@ export interface Database {
         Insert: Omit<ClubMember, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<ClubMember, 'id' | 'created_at' | 'updated_at'>>
       }
+      club_join_requests: {
+        Row: ClubJoinRequest
+        Insert: Omit<
+          ClubJoinRequest,
+          'id' | 'created_at' | 'reviewed_at' | 'reviewed_by'
+        >
+        Update: Partial<
+          Omit<ClubJoinRequest, 'id' | 'created_at' | 'club_id' | 'user_id'>
+        >
+      }
     }
     Views: {
       [_ in never]: never
@@ -315,6 +325,7 @@ export interface Event {
   event_type: EventType
   event_image_url: string | null
   route: [number, number][] | null // Array of [lat, lng] coordinates for cruise routes
+  club_id: string | null
   created_by: string
   created_at: string
   updated_at: string
@@ -394,6 +405,7 @@ export interface Club {
   slug: string
   description: string | null
   badge_url: string | null
+  country: string | null
   founder_id: string
   created_at: string
   updated_at: string
@@ -404,8 +416,29 @@ export interface ClubMember {
   club_id: string
   user_id: string
   role: ClubMemberRole
+  is_primary: boolean
   created_at: string
   updated_at: string
+}
+
+export type ClubJoinRequestStatus = 'pending' | 'approved' | 'rejected'
+
+export interface ClubJoinRequest {
+  id: string
+  club_id: string
+  user_id: string
+  status: ClubJoinRequestStatus
+  message: string | null
+  created_at: string
+  reviewed_at: string | null
+  reviewed_by: string | null
+}
+
+export interface ClubJoinRequestWithProfile extends ClubJoinRequest {
+  profile: Pick<
+    Profile,
+    'id' | 'username' | 'full_name' | 'avatar_url'
+  > | null
 }
 
 export interface ClubMemberWithProfile extends ClubMember {
@@ -418,6 +451,8 @@ export interface ClubMemberWithProfile extends ClubMember {
 export interface ClubWithMeta extends Club {
   member_count?: number
   my_role?: ClubMemberRole | null
+  is_primary?: boolean
+  pending_request?: boolean
 }
 
 /** Lightweight club badge for display next to usernames */
@@ -426,4 +461,5 @@ export interface ClubBadgeInfo {
   name: string
   slug: string
   badge_url: string
+  is_primary?: boolean
 }

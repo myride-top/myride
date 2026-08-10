@@ -42,9 +42,16 @@ import { EventPopup } from './event-popup'
 interface EventMapProps {
   events: EventWithAttendeeCount[]
   onEventsChange: (events: EventWithAttendeeCount[]) => void
+  clubSlugFilter?: string | null
+  highlightEventId?: string | null
 }
 
-export function EventMap({ events, onEventsChange }: EventMapProps) {
+export function EventMap({
+  events,
+  onEventsChange,
+  clubSlugFilter,
+  highlightEventId,
+}: EventMapProps) {
   const { t, locale } = useI18n()
   const { user } = useAuth()
   const { theme, resolvedTheme } = useTheme()
@@ -69,6 +76,16 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
   const [activePopupEventId, setActivePopupEventId] = useState<string | null>(
     null
   )
+
+  const displayedEvents = clubSlugFilter
+    ? events.filter(event => event.club?.slug === clubSlugFilter)
+    : events
+
+  useEffect(() => {
+    if (highlightEventId) {
+      setActivePopupEventId(highlightEventId)
+    }
+  }, [highlightEventId])
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
@@ -593,7 +610,7 @@ export function EventMap({ events, onEventsChange }: EventMapProps) {
         {/* Event markers - optimized to prevent unnecessary re-renders */}
         {leafletLoaded &&
           defaultEventIcons.size > 0 &&
-          events.map(event => {
+          displayedEvents.map(event => {
             // Use custom icon if event has an image, otherwise use default icon based on event type
             const iconToUse = event.event_image_url
               ? eventIcons.get(event.id) ||

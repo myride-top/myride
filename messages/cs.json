@@ -12,7 +12,8 @@
     "signOut": "Odhlásit se",
     "signIn": "Přihlásit se",
     "signUp": "Registrovat se",
-    "clubs": "Kluby"
+    "clubs": "Kluby",
+    "exploreClubs": "Prozkoumat kluby"
   },
   "lang": {
     "label": "Jazyk",
@@ -758,7 +759,58 @@
       "removeMemberFailed": "Odebrání člena se nezdařilo",
       "roleUpdateFailed": "Aktualizace role se nezdařila",
       "leaveFailed": "Opuštění klubu se nezdařilo",
-      "deleteFailed": "Smazání klubu se nezdařilo"
+      "deleteFailed": "Smazání klubu se nezdařilo",
+      "joinRequestFailed": "Odeslání žádosti o členství se nezdařilo",
+      "setPrimaryFailed": "Nastavení primárního klubu se nezdařilo",
+      "reviewRequestFailed": "Vyřízení žádosti se nezdařilo"
+    },
+    "explore": {
+      "title": "Prozkoumat kluby",
+      "description": "Objevte automobilové kluby na MyRide",
+      "link": "Prozkoumat kluby",
+      "myClubs": "Moje kluby",
+      "searchPlaceholder": "Hledat kluby...",
+      "allCountries": "Všechny země",
+      "sortMembers": "Nejvíce členů",
+      "sortName": "Název A–Z",
+      "sortNewest": "Nejnovější",
+      "empty": {
+        "title": "Žádné kluby nenalezeny",
+        "description": "Zkuste upravit vyhledávání nebo filtry."
+      }
+    },
+    "garage": "Garáž",
+    "garageDescription": "Auta od členů klubu",
+    "events": "Akce",
+    "eventsDescription": "Nadcházející akce propojené s tímto klubem",
+    "requestJoin": "Požádat o členství",
+    "joinPending": "Žádost čeká",
+    "setPrimary": "Nastavit jako primární",
+    "settingPrimary": "Nastavuji...",
+    "primaryBadge": "Primární klub",
+    "joinMessageHint": "Volitelná zpráva pro správce klubu",
+    "joinMessagePlaceholder": "Proč se chcete přidat?",
+    "submitJoin": "Odeslat žádost",
+    "submittingJoin": "Odesílám...",
+    "viewOnMap": "Zobrazit na mapě",
+    "country": "Země",
+    "countryPlaceholder": "Vyberte zemi (volitelné)",
+    "noCountry": "Bez země",
+    "countryHint": "Používá se pro objevování klubů.",
+    "pendingRequests": "Čekající žádosti o členství",
+    "pendingRequestsDescription": "Schvalte nebo zamítněte žádosti o připojení",
+    "approve": "Schválit",
+    "reject": "Zamítnout",
+    "primaryNote": "Členové si primární klub volí sami ve svém seznamu klubů.",
+    "eventClubLabel": "Klub (volitelné)",
+    "eventClubNone": "Bez klubu",
+    "emptyGarage": {
+      "title": "Zatím žádná auta",
+      "description": "Členové klubu zatím do garáže nic nepřidali."
+    },
+    "emptyEvents": {
+      "title": "Žádné nadcházející akce",
+      "description": "Tento klub nemá na mapě žádné nadcházející akce."
     },
     "toast": {
       "created": "Klub byl vytvořen",
@@ -768,7 +820,11 @@
       "memberRemoved": "Člen byl odebrán",
       "roleUpdated": "Role člena byla aktualizována",
       "left": "Opustili jste klub",
-      "deleted": "Klub byl smazán"
+      "deleted": "Klub byl smazán",
+      "joinRequested": "Žádost o členství byla odeslána",
+      "primarySet": "Primární klub byl aktualizován",
+      "requestApproved": "Žádost o členství schválena",
+      "requestRejected": "Žádost o členství zamítnuta"
     }
   }
 }

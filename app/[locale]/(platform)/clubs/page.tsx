@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Users, Plus, Shield } from 'lucide-react'
+import { Users, Plus, Shield, Star, Compass } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUserIdClient } from '@/lib/database/profiles-client'
 import {
   getClubsForUserClient,
   getClubBySlugClient,
+  setPrimaryClubClient,
 } from '@/lib/database/clubs-client'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { PageLayout } from '@/components/layout/page-layout'
@@ -45,6 +46,7 @@ export default function ClubsPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [clubs, setClubs] = useState<ClubWithMeta[]>([])
   const [loading, setLoading] = useState(true)
+  const [settingPrimaryId, setSettingPrimaryId] = useState<string | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -78,6 +80,41 @@ export default function ClubsPage() {
     void load()
   }, [user, t])
 
+  const handleSetPrimary = async (
+    e: React.MouseEvent,
+    clubId: string
+  ) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!user) return
+
+    setSettingPrimaryId(clubId)
+    try {
+      const result = await setPrimaryClubClient(user.id, clubId)
+      if (!result.success) {
+        toast.error(
+          result.error ||
+            t('clubs.error.setPrimaryFailed', 'Failed to set primary club')
+        )
+        return
+      }
+
+      setClubs(current =>
+        current.map(club => ({
+          ...club,
+          is_primary: club.id === clubId,
+        }))
+      )
+      toast.success(t('clubs.toast.primarySet', 'Primary club updated'))
+    } catch {
+      toast.error(
+        t('clubs.error.setPrimaryFailed', 'Failed to set primary club')
+      )
+    } finally {
+      setSettingPrimaryId(null)
+    }
+  }
+
   const createAction = profile?.is_premium ? (
     <Button asChild>
       <Link href={buildLocalePath(locale, '/clubs/new')}>
@@ -108,6 +145,17 @@ export default function ClubsPage() {
           )}
         />
 
+        {!loading && (
+          <div className='mb-4 flex justify-end'>
+            <Button asChild variant='outline'>
+              <Link href={buildLocalePath(locale, '/clubs/explore')}>
+                <Compass className='w-4 h-4' />
+                {t('clubs.explore.link', 'Explore clubs')}
+              </Link>
+            </Button>
+          </div>
+        )}
+
         {loading ? (
           <LoadingSpinner message={t('clubs.loading', 'Loading clubs...')} />
         ) : clubs.length === 0 ? (
@@ -118,16 +166,34 @@ export default function ClubsPage() {
               'clubs.empty.description',
               'Join a club or create your own to connect with other enthusiasts.'
             )}
-            action={createAction}
+            action={
+              <div className='flex flex-col gap-2 sm:flex-row'>
+                <Button asChild variant='outline'>
+                  <Link href={buildLocalePath(locale, '/clubs/explore')}>
+                    <Compass className='w-4 h-4' />
+                    {t('clubs.explore.link', 'Explore clubs')}
+                  </Link>
+                </Button>
+                {createAction}
+              </div>
+            }
             variant='card'
           />
         ) : (
           <div className='space-y-6'>
-            <div className='flex justify-end'>{createAction}</div>
+            <div className='flex flex-wrap justify-end gap-2'>
+              <Button asChild variant='outline'>
+                <Link href={buildLocalePath(locale, '/clubs/explore')}>
+                  <Compass className='w-4 h-4' />
+                  {t('clubs.explore.link', 'Explore clubs')}
+                </Link>
+              </Button>
+              {createAction}
+            </div>
 
             <ul className='grid gap-4 sm:grid-cols-2'>
               {clubs.map(club => (
-                <li key={club.id}>
+                <li key={club.id} className='relative'>
                   <Link
                     href={buildLocalePath(locale, `/c/${club.slug}`)}
                     className='group block rounded-lg border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary/40 hover:bg-accent/30'
@@ -149,9 +215,17 @@ export default function ClubsPage() {
                       </div>
 
                       <div className='min-w-0 flex-1'>
-                        <h2 className='truncate font-semibold text-foreground group-hover:text-primary'>
-                          {club.name}
-                        </h2>
+                        <div className='flex items-start justify-between gap-2'>
+                          <h2 className='truncate font-semibold text-foreground group-hover:text-primary'>
+                            {club.name}
+                          </h2>
+                          {club.is_primary && (
+                            <span className='inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary'>
+                              <Star className='h-3 w-3 fill-current' />
+                              {t('clubs.primaryBadge', 'Primary')}
+                            </span>
+                          )}
+                        </div>
                         {club.description && (
                           <p className='mt-1 line-clamp-2 text-sm text-muted-foreground'>
                             {club.description}
@@ -188,6 +262,22 @@ export default function ClubsPage() {
                       </div>
                     </div>
                   </Link>
+
+                  {!club.is_primary && (
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='ghost'
+                      className='absolute bottom-3 right-3'
+                      onClick={e => handleSetPrimary(e, club.id)}
+                      disabled={settingPrimaryId === club.id}
+                    >
+                      <Star className='h-3.5 w-3.5' />
+                      {settingPrimaryId === club.id
+                        ? t('clubs.settingPrimary', 'Setting...')
+                        : t('clubs.setPrimary', 'Set as primary')}
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>

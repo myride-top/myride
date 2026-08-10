@@ -6,8 +6,16 @@ const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+export interface EventClubInfo {
+  id: string
+  name: string
+  slug: string
+  badge_url: string | null
+}
+
 export interface EventWithAttendeeCount extends Event {
   attendee_count: number
+  club?: EventClubInfo | null
 }
 
 // Cache for events to prevent unnecessary refetches
@@ -79,6 +87,7 @@ export async function createEventClient(
     event_type?: string
     event_image_url?: string | null
     route?: [number, number][] | null
+    club_id?: string | null
   }
 ): Promise<{ success: boolean; error?: string; data?: Event }> {
   try {

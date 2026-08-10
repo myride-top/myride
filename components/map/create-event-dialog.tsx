@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useTheme } from 'next-themes'
+import { useAuth } from '@/lib/context/auth-context'
 import {
   createEventClient,
   updateEventClient,
 } from '@/lib/database/events-client'
+import { getManagedClubsForUserClient } from '@/lib/database/clubs-client'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {
   Dialog,
@@ -29,6 +31,7 @@ import {
 import { toast } from 'sonner'
 import { Upload, X, MapPin, Trash2, Undo2 } from 'lucide-react'
 import { EventType } from '@/lib/types/database'
+import type { ClubWithMeta } from '@/lib/types/database'
 import { uploadEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
 import type { DivIcon } from 'leaflet'
@@ -93,6 +96,7 @@ export function CreateEventDialog({
   initialCenter,
 }: CreateEventDialogProps) {
   const { t } = useI18n()
+  const { user } = useAuth()
   const { theme, resolvedTheme } = useTheme()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -101,6 +105,8 @@ export function CreateEventDialog({
   const [position, setPosition] = useState<[number, number]>(initialCenter)
   const [loading, setLoading] = useState(false)
   const [eventType, setEventType] = useState<EventType>('meetup')
+  const [managedClubs, setManagedClubs] = useState<ClubWithMeta[]>([])
+  const [selectedClubId, setSelectedClubId] = useState<string>('none')
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState(false)
@@ -110,6 +116,19 @@ export function CreateEventDialog({
 
   // Determine if dark mode is active
   const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
+
+  useEffect(() => {
+    if (!open || !user) {
+      setManagedClubs([])
+      setSelectedClubId('none')
+      return
+    }
+
+    void getManagedClubsForUserClient(user.id).then(clubs => {
+      setManagedClubs(clubs)
+      setSelectedClubId('none')
+    })
+  }, [open, user])
 
   // Create custom marker icon
   useEffect(() => {
@@ -272,6 +291,7 @@ export function CreateEventDialog({
         end_date: endDate ? endDate.toISOString() : undefined,
         event_type: eventType,
         route: eventType === 'cruise' && route.length > 0 ? route : null,
+        club_id: selectedClubId === 'none' ? null : selectedClubId,
       })
 
       if (result.success && result.data) {
@@ -372,6 +392,31 @@ export function CreateEventDialog({
               rows={3}
             />
           </div>
+
+          {managedClubs.length > 0 && (
+            <div>
+              <label className='text-sm font-medium mb-1 block'>
+                {t('clubs.eventClubLabel', 'Club (optional)')}
+              </label>
+              <Select value={selectedClubId} onValueChange={setSelectedClubId}>
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={t('clubs.eventClubNone', 'No club')}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='none'>
+                    {t('clubs.eventClubNone', 'No club')}
+                  </SelectItem>
+                  {managedClubs.map(club => (
+                    <SelectItem key={club.id} value={club.id}>
+                      {club.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div>
             <label className='text-sm font-medium mb-1 block'>

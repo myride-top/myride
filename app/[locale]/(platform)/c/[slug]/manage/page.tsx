@@ -26,6 +26,8 @@ import {
   removeClubMemberClient,
   leaveClubClient,
   deleteClubClient,
+  getPendingJoinRequestsClient,
+  reviewJoinRequestClient,
 } from '@/lib/database/clubs-client'
 import { uploadClubBadge, deleteClubBadge } from '@/lib/storage/photos'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -49,9 +51,11 @@ import { useI18n } from '@/lib/i18n/provider'
 import { buildLocalePath } from '@/lib/i18n/config'
 import type {
   Club,
+  ClubJoinRequestWithProfile,
   ClubMemberRole,
   ClubMemberWithProfile,
 } from '@/lib/types/database'
+import { COUNTRIES } from '@/lib/utils/countries'
 import { cn } from '@/lib/utils'
 
 const MAX_BADGE_SIZE = 2 * 1024 * 1024
@@ -89,8 +93,16 @@ export default function ManageClubPage() {
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [country, setCountry] = useState<string>('none')
   const [saving, setSaving] = useState(false)
   const [uploadingBadge, setUploadingBadge] = useState(false)
+
+  const [pendingRequests, setPendingRequests] = useState<
+    ClubJoinRequestWithProfile[]
+  >([])
+  const [reviewingRequestId, setReviewingRequestId] = useState<string | null>(
+    null
+  )
 
   const [newUsername, setNewUsername] = useState('')
   const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>(
@@ -107,16 +119,19 @@ export default function ManageClubPage() {
       return
     }
 
-    const [membersData, role] = await Promise.all([
+    const [membersData, role, requests] = await Promise.all([
       getClubMembersClient(clubData.id),
       getMyClubRoleClient(clubData.id, user.id),
+      getPendingJoinRequestsClient(clubData.id),
     ])
 
     setClub(clubData)
     setMembers(membersData)
     setMyRole(role)
+    setPendingRequests(requests)
     setName(clubData.name)
     setDescription(clubData.description ?? '')
+    setCountry(clubData.country ?? 'none')
     setNotFound(false)
   }, [slug, user])
 
@@ -145,6 +160,7 @@ export default function ManageClubPage() {
       const result = await updateClubClient(club.id, {
         name: name.trim(),
         description: description.trim() || null,
+        country: country === 'none' ? null : country,
       })
 
       if (!result.success || !result.club) {
@@ -210,6 +226,47 @@ export default function ManageClubPage() {
     } finally {
       setUploadingBadge(false)
       e.target.value = ''
+    }
+  }
+
+  const handleReviewRequest = async (
+    request: ClubJoinRequestWithProfile,
+    approve: boolean
+  ) => {
+    if (!club || !user) return
+
+    setReviewingRequestId(request.id)
+    try {
+      const result = await reviewJoinRequestClient({
+        requestId: request.id,
+        clubId: club.id,
+        approve,
+        reviewerId: user.id,
+      })
+
+      if (!result.success) {
+        toast.error(
+          result.error ||
+            t(
+              'clubs.error.reviewRequestFailed',
+              'Failed to review join request'
+            )
+        )
+        return
+      }
+
+      toast.success(
+        approve
+          ? t('clubs.toast.requestApproved', 'Join request approved')
+          : t('clubs.toast.requestRejected', 'Join request rejected')
+      )
+      await loadClub()
+    } catch {
+      toast.error(
+        t('clubs.error.reviewRequestFailed', 'Failed to review join request')
+      )
+    } finally {
+      setReviewingRequestId(null)
     }
   }
 
@@ -436,6 +493,37 @@ export default function ManageClubPage() {
                   className='flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
                 />
               </div>
+              <div className='space-y-2'>
+                <Label htmlFor='manage-country'>
+                  {t('clubs.country', 'Country')}
+                </Label>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger id='manage-country'>
+                    <SelectValue
+                      placeholder={t(
+                        'clubs.countryPlaceholder',
+                        'Select country (optional)'
+                      )}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='none'>
+                      {t('clubs.noCountry', 'No country set')}
+                    </SelectItem>
+                    {COUNTRIES.map(c => (
+                      <SelectItem key={c.code} value={c.code}>
+                        {c.flag} {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className='text-xs text-muted-foreground'>
+                  {t(
+                    'clubs.countryHint',
+                    'Used for club discovery on the explore page.'
+                  )}
+                </p>
+              </div>
               <div className='flex justify-end'>
                 <Button type='submit' disabled={saving}>
                   {saving
@@ -445,6 +533,71 @@ export default function ManageClubPage() {
               </div>
             </form>
           </section>
+
+          {pendingRequests.length > 0 && (
+            <section className='rounded-lg border border-border bg-card p-6 shadow-sm'>
+              <SectionHeader
+                as='h3'
+                title={t('clubs.pendingRequests', 'Pending join requests')}
+                description={t(
+                  'clubs.pendingRequestsDescription',
+                  'Approve or reject requests to join your club'
+                )}
+              />
+              <ul className='space-y-3'>
+                {pendingRequests.map(request => {
+                  const username = request.profile?.username ?? 'user'
+                  return (
+                    <li
+                      key={request.id}
+                      className='flex flex-col gap-3 rounded-lg border border-border bg-background p-3 sm:flex-row sm:items-center'
+                    >
+                      <div className='flex min-w-0 flex-1 items-center gap-3'>
+                        <UserAvatar
+                          avatarUrl={request.profile?.avatar_url}
+                          username={username}
+                          size='md'
+                        />
+                        <div className='min-w-0'>
+                          <p className='truncate font-medium'>@{username}</p>
+                          {request.message && (
+                            <p className='mt-1 text-sm text-muted-foreground line-clamp-2'>
+                              {request.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className='flex gap-2'>
+                        <Button
+                          type='button'
+                          size='sm'
+                          onClick={() => handleReviewRequest(request, true)}
+                          disabled={reviewingRequestId === request.id}
+                        >
+                          {t('clubs.approve', 'Approve')}
+                        </Button>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='outline'
+                          onClick={() => handleReviewRequest(request, false)}
+                          disabled={reviewingRequestId === request.id}
+                        >
+                          {t('clubs.reject', 'Reject')}
+                        </Button>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+              <p className='mt-4 text-xs text-muted-foreground'>
+                {t(
+                  'clubs.primaryNote',
+                  'Members choose their own primary club from their club list.'
+                )}
+              </p>
+            </section>
+          )}
 
           <section className='rounded-lg border border-border bg-card p-6 shadow-sm'>
             <SectionHeader

@@ -12,7 +12,8 @@
     "signOut": "Abmelden",
     "signIn": "Anmelden",
     "signUp": "Registrieren",
-    "clubs": "Clubs"
+    "clubs": "Clubs",
+    "exploreClubs": "Clubs entdecken"
   },
   "lang": {
     "label": "Sprache",
@@ -758,7 +759,58 @@
       "removeMemberFailed": "Mitglied konnte nicht entfernt werden",
       "roleUpdateFailed": "Mitgliedsrolle konnte nicht aktualisiert werden",
       "leaveFailed": "Club konnte nicht verlassen werden",
-      "deleteFailed": "Club konnte nicht gelöscht werden"
+      "deleteFailed": "Club konnte nicht gelöscht werden",
+      "joinRequestFailed": "Beitrittsanfrage konnte nicht gesendet werden",
+      "setPrimaryFailed": "Primärclub konnte nicht gesetzt werden",
+      "reviewRequestFailed": "Anfrage konnte nicht bearbeitet werden"
+    },
+    "explore": {
+      "title": "Clubs entdecken",
+      "description": "Entdecke Automobil-Clubs auf MyRide",
+      "link": "Clubs entdecken",
+      "myClubs": "Meine Clubs",
+      "searchPlaceholder": "Clubs suchen...",
+      "allCountries": "Alle Länder",
+      "sortMembers": "Meiste Mitglieder",
+      "sortName": "Name A–Z",
+      "sortNewest": "Neueste",
+      "empty": {
+        "title": "Keine Clubs gefunden",
+        "description": "Passe Suche oder Filter an."
+      }
+    },
+    "garage": "Garage",
+    "garageDescription": "Autos der Clubmitglieder",
+    "events": "Events",
+    "eventsDescription": "Bevorstehende Events dieses Clubs",
+    "requestJoin": "Beitritt anfragen",
+    "joinPending": "Anfrage ausstehend",
+    "setPrimary": "Als primär setzen",
+    "settingPrimary": "Wird gesetzt...",
+    "primaryBadge": "Primärclub",
+    "joinMessageHint": "Optionale Nachricht an Club-Manager",
+    "joinMessagePlaceholder": "Warum möchtest du beitreten?",
+    "submitJoin": "Anfrage senden",
+    "submittingJoin": "Wird gesendet...",
+    "viewOnMap": "Auf Karte anzeigen",
+    "country": "Land",
+    "countryPlaceholder": "Land wählen (optional)",
+    "noCountry": "Kein Land",
+    "countryHint": "Wird für die Club-Suche verwendet.",
+    "pendingRequests": "Offene Beitrittsanfragen",
+    "pendingRequestsDescription": "Beitrittsanfragen genehmigen oder ablehnen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "primaryNote": "Mitglieder wählen ihren Primärclub selbst in ihrer Club-Liste.",
+    "eventClubLabel": "Club (optional)",
+    "eventClubNone": "Kein Club",
+    "emptyGarage": {
+      "title": "Noch keine Autos",
+      "description": "Clubmitglieder haben noch keine Autos hinzugefügt."
+    },
+    "emptyEvents": {
+      "title": "Keine bevorstehenden Events",
+      "description": "Dieser Club hat keine bevorstehenden Events auf der Karte."
     },
     "toast": {
       "created": "Club erfolgreich erstellt",
@@ -768,7 +820,11 @@
       "memberRemoved": "Mitglied entfernt",
       "roleUpdated": "Mitgliedsrolle aktualisiert",
       "left": "Du hast den Club verlassen",
-      "deleted": "Club gelöscht"
+      "deleted": "Club gelöscht",
+      "joinRequested": "Beitrittsanfrage gesendet",
+      "primarySet": "Primärclub aktualisiert",
+      "requestApproved": "Beitrittsanfrage genehmigt",
+      "requestRejected": "Beitrittsanfrage abgelehnt"
     }
   }
 }

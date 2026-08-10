@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     const { data: events, error: eventsError } = await supabase
       .from('events')
       .select(
-        'id, created_by, title, description, event_type, event_date, end_date, latitude, longitude, event_image_url, route, created_at, updated_at'
+        'id, created_by, title, description, event_type, event_date, end_date, latitude, longitude, event_image_url, route, club_id, created_at, updated_at, club:clubs(id, name, slug, badge_url)'
       )
       .or(`end_date.gte.${now},and(end_date.is.null,event_date.gte.${now})`)
       .order('event_date', { ascending: true })
@@ -84,10 +84,16 @@ export async function GET(request: NextRequest) {
         attendeeCounts.set(attendee.event_id, count + 1)
       })
 
-      const eventsWithCounts = activeEvents.map(event => ({
-        ...event,
-        attendee_count: attendeeCounts.get(event.id) || 0,
-      }))
+      const eventsWithCounts = activeEvents.map(event => {
+        const clubValue = event.club
+        const club = Array.isArray(clubValue) ? clubValue[0] : clubValue
+
+        return {
+          ...event,
+          club: club ?? null,
+          attendee_count: attendeeCounts.get(event.id) || 0,
+        }
+      })
 
       const response = createSecureResponse({ events: eventsWithCounts })
       
@@ -183,6 +189,7 @@ export async function POST(request: NextRequest) {
       event_type,
       event_image_url,
       route,
+      club_id,
     } = body
 
     // Validate input
@@ -216,6 +223,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate optional club link — user must manage the club
+    let validatedClubId: string | null = null
+    if (club_id) {
+      if (typeof club_id !== 'string') {
+        return createSecureResponse({ error: 'Invalid club_id' }, 400)
+      }
+
+      const { data: membership } = await supabase
+        .from('club_members')
+        .select('role')
+        .eq('club_id', club_id)
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      if (
+        !membership ||
+        (membership.role !== 'founder' && membership.role !== 'admin')
+      ) {
+        return createSecureResponse(
+          { error: 'You must be a club manager to link events' },
+          403
+        )
+      }
+
+      validatedClubId = club_id
+    }
+
     // Create event
     const { data: event, error: createError } = await supabase
       .from('events')
@@ -229,6 +263,7 @@ export async function POST(request: NextRequest) {
         event_type: event_type || 'meetup',
         event_image_url: event_image_url || null,
         route: route || null,
+        club_id: validatedClubId,
         created_by: user.id,
       })
       .select()

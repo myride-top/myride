@@ -5,10 +5,13 @@ The ultimate platform for car enthusiasts to showcase their vehicles. Share deta
 ## 🚗 Clubs
 
 - Premium users can create clubs (`/clubs/new`)
-- Public club pages at `/c/[slug]`
-- Founder + admins manage description, badge image, and members
-- Club badge images appear next to member usernames across car cards, garage, and car detail
-- Schema: `clubs`, `club_members` + `club-badges` storage bucket (see `migrations/20260809_create_clubs.sql`)
+- Public club pages at `/c/[slug]` with member list, **garage feed**, and **club events**
+- Explore clubs at `/clubs/explore` (search, country, sort)
+- Join via **invite** (managers) or **join request** (approve/reject in manage)
+- Founder + admins manage description, country, badge image, and members
+- **Primary club** badge shown next to usernames (`+N` for other clubs)
+- Events can be linked to a club; map supports `?club=slug`
+- Schema: `migrations/20260809_create_clubs.sql` + `migrations/20260810_club_extensions.sql`
 
 ## 🏗️ Architecture Overview
 

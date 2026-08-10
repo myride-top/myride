@@ -12,7 +12,8 @@
     "signOut": "Sign Out",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "clubs": "Clubs"
+    "clubs": "Clubs",
+    "exploreClubs": "Explore clubs"
   },
   "lang": {
     "label": "Language",
@@ -593,7 +594,58 @@
       "removeMemberFailed": "Failed to remove member",
       "roleUpdateFailed": "Failed to update member role",
       "leaveFailed": "Failed to leave club",
-      "deleteFailed": "Failed to delete club"
+      "deleteFailed": "Failed to delete club",
+      "joinRequestFailed": "Failed to submit join request",
+      "setPrimaryFailed": "Failed to set primary club",
+      "reviewRequestFailed": "Failed to review join request"
+    },
+    "explore": {
+      "title": "Explore clubs",
+      "description": "Discover car enthusiast clubs on MyRide",
+      "link": "Explore clubs",
+      "myClubs": "My clubs",
+      "searchPlaceholder": "Search clubs...",
+      "allCountries": "All countries",
+      "sortMembers": "Most members",
+      "sortName": "Name A–Z",
+      "sortNewest": "Newest",
+      "empty": {
+        "title": "No clubs found",
+        "description": "Try adjusting your search or filters."
+      }
+    },
+    "garage": "Garage",
+    "garageDescription": "Cars from club members",
+    "events": "Events",
+    "eventsDescription": "Upcoming events linked to this club",
+    "requestJoin": "Request to join",
+    "joinPending": "Request pending",
+    "setPrimary": "Set as primary",
+    "settingPrimary": "Setting...",
+    "primaryBadge": "Primary club",
+    "joinMessageHint": "Optional message for club managers",
+    "joinMessagePlaceholder": "Why do you want to join?",
+    "submitJoin": "Submit request",
+    "submittingJoin": "Submitting...",
+    "viewOnMap": "View on map",
+    "country": "Country",
+    "countryPlaceholder": "Select country (optional)",
+    "noCountry": "No country set",
+    "countryHint": "Used for club discovery on the explore page.",
+    "pendingRequests": "Pending join requests",
+    "pendingRequestsDescription": "Approve or reject requests to join your club",
+    "approve": "Approve",
+    "reject": "Reject",
+    "primaryNote": "Members choose their own primary club from their club list.",
+    "eventClubLabel": "Club (optional)",
+    "eventClubNone": "No club",
+    "emptyGarage": {
+      "title": "No cars yet",
+      "description": "Club members have not added any cars to their garages."
+    },
+    "emptyEvents": {
+      "title": "No upcoming events",
+      "description": "This club has no upcoming events on the map."
     },
     "toast": {
       "created": "Club created successfully",
@@ -603,7 +655,11 @@
       "memberRemoved": "Member removed",
       "roleUpdated": "Member role updated",
       "left": "You left the club",
-      "deleted": "Club deleted"
+      "deleted": "Club deleted",
+      "joinRequested": "Join request submitted",
+      "primarySet": "Primary club updated",
+      "requestApproved": "Join request approved",
+      "requestRejected": "Join request rejected"
     }
   }
 }
