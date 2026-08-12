@@ -54,6 +54,11 @@ export async function generateMetadata({
           profile?.username || username
         } on MyRide!`
 
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || 'https://myride.top'
+    const ogImageUrl = `${siteUrl}/api/og/car?username=${encodeURIComponent(username)}&slug=${encodeURIComponent(carSlug)}&format=og`
+    const fallbackImage = imageUrl || `${siteUrl}/og-image-default.svg`
+
     const metadata: Metadata = {
       title,
       description,
@@ -61,31 +66,22 @@ export async function generateMetadata({
         title,
         description,
         type: 'website',
-        url: `https://myride.top/u/${username}/${carSlug}`,
-        images: imageUrl
-          ? [
-              {
-                url: imageUrl,
-                width: 1200,
-                height: 630,
-                alt: `${car.name} - ${car.year} ${car.make} ${car.model}`,
-              },
-            ]
-          : [
-              {
-                url: '/og-image-default.svg', // Local default image
-                width: 1200,
-                height: 630,
-                alt: 'MyRide - Share Your Ride',
-              },
-            ],
+        url: `${siteUrl}/u/${username}/${carSlug}`,
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: `${car.name} - ${car.year} ${car.make} ${car.model}`,
+          },
+        ],
         siteName: 'MyRide',
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
-        images: imageUrl ? [imageUrl] : ['/og-image-default.svg'],
+        images: [ogImageUrl || fallbackImage],
       },
     }
 

@@ -681,6 +681,7 @@
     "error": {
       "copyFailed": "Failed to copy link",
       "downloadFailed": "Failed to download image"
-    }
+    },
+    "igStory": "IG Story"
   }
 }

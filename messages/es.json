@@ -830,7 +830,7 @@
   "share": {
     "title": "Compartir coche",
     "storyTitle": "Instagram / Stories",
-    "storyDescription": "Descarga una imagen vertical lista para Stories.",
+    "storyDescription": "Descarga una imagen vertical lista para publicar en Stories.",
     "storyPreview": "Vista previa de Stories",
     "downloadStory": "Descargar imagen para Stories",
     "downloadCard": "Tarjeta para compartir",
@@ -846,6 +846,7 @@
     "error": {
       "copyFailed": "No se pudo copiar el enlace",
       "downloadFailed": "No se pudo descargar la imagen"
-    }
+    },
+    "igStory": "IG Story"
   }
 }

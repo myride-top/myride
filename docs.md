@@ -2,6 +2,12 @@
 
 The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.
 
+## Share & social cards
+
+- Dynamic car OG + Stories images via `/api/og/car?username=&slug=&format=og|story` (`next/og`)
+- Share opens QR modal first; optional **IG Story** expands preview (9:16) + download
+- `generateMetadata` on car pages points Open Graph / Twitter to the OG endpoint
+
 ## 🚗 Clubs
 
 - Premium users can create clubs (`/clubs/new`)

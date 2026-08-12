@@ -846,6 +846,7 @@
     "error": {
       "copyFailed": "Nepodařilo se zkopírovat odkaz",
       "downloadFailed": "Nepodařilo se stáhnout obrázek"
-    }
+    },
+    "igStory": "IG Story"
   }
 }

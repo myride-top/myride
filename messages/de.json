@@ -830,7 +830,7 @@
   "share": {
     "title": "Auto teilen",
     "storyTitle": "Instagram / Stories",
-    "storyDescription": "Lade ein vertikales Bild für Stories herunter.",
+    "storyDescription": "Lade ein vertikales Bild herunter, bereit für Stories.",
     "storyPreview": "Story-Vorschau",
     "downloadStory": "Story-Bild herunterladen",
     "downloadCard": "Share-Karte",
@@ -846,6 +846,7 @@
     "error": {
       "copyFailed": "Link konnte nicht kopiert werden",
       "downloadFailed": "Bild konnte nicht heruntergeladen werden"
-    }
+    },
+    "igStory": "IG Story"
   }
 }
