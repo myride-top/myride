@@ -661,5 +661,26 @@
       "requestApproved": "Join request approved",
       "requestRejected": "Join request rejected"
     }
+  },
+  "share": {
+    "title": "Share car",
+    "storyTitle": "Instagram / Stories",
+    "storyDescription": "Download a vertical image ready to post to Stories.",
+    "storyPreview": "Story preview",
+    "downloadStory": "Download story image",
+    "downloadCard": "Share card",
+    "copyLink": "Copy link",
+    "qrCode": "QR code",
+    "nativeShare": "Share…",
+    "nativeText": "Check out this car on MyRide",
+    "downloading": "Downloading...",
+    "toast": {
+      "storyDownloaded": "Story image downloaded",
+      "cardDownloaded": "Share card downloaded"
+    },
+    "error": {
+      "copyFailed": "Failed to copy link",
+      "downloadFailed": "Failed to download image"
+    }
   }
 }

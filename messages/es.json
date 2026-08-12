@@ -826,5 +826,26 @@
       "requestApproved": "Solicitud de unión aprobada",
       "requestRejected": "Solicitud de unión rechazada"
     }
+  },
+  "share": {
+    "title": "Compartir coche",
+    "storyTitle": "Instagram / Stories",
+    "storyDescription": "Descarga una imagen vertical lista para Stories.",
+    "storyPreview": "Vista previa de Stories",
+    "downloadStory": "Descargar imagen para Stories",
+    "downloadCard": "Tarjeta para compartir",
+    "copyLink": "Copiar enlace",
+    "qrCode": "Código QR",
+    "nativeShare": "Compartir…",
+    "nativeText": "Mira este coche en MyRide",
+    "downloading": "Descargando...",
+    "toast": {
+      "storyDownloaded": "Imagen de Stories descargada",
+      "cardDownloaded": "Tarjeta descargada"
+    },
+    "error": {
+      "copyFailed": "No se pudo copiar el enlace",
+      "downloadFailed": "No se pudo descargar la imagen"
+    }
   }
 }

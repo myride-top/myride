@@ -826,5 +826,26 @@
       "requestApproved": "Žádost o členství schválena",
       "requestRejected": "Žádost o členství zamítnuta"
     }
+  },
+  "share": {
+    "title": "Sdílet auto",
+    "storyTitle": "Instagram / Stories",
+    "storyDescription": "Stáhni vertikální obrázek připravený pro Stories.",
+    "storyPreview": "Náhled Stories",
+    "downloadStory": "Stáhnout obrázek pro Stories",
+    "downloadCard": "Sdílecí karta",
+    "copyLink": "Kopírovat odkaz",
+    "qrCode": "QR kód",
+    "nativeShare": "Sdílet…",
+    "nativeText": "Podívej se na tohle auto na MyRide",
+    "downloading": "Stahuji...",
+    "toast": {
+      "storyDownloaded": "Obrázek pro Stories stažen",
+      "cardDownloaded": "Sdílecí karta stažena"
+    },
+    "error": {
+      "copyFailed": "Nepodařilo se zkopírovat odkaz",
+      "downloadFailed": "Nepodařilo se stáhnout obrázek"
+    }
   }
 }

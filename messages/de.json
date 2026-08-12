@@ -826,5 +826,26 @@
       "requestApproved": "Beitrittsanfrage genehmigt",
       "requestRejected": "Beitrittsanfrage abgelehnt"
     }
+  },
+  "share": {
+    "title": "Auto teilen",
+    "storyTitle": "Instagram / Stories",
+    "storyDescription": "Lade ein vertikales Bild für Stories herunter.",
+    "storyPreview": "Story-Vorschau",
+    "downloadStory": "Story-Bild herunterladen",
+    "downloadCard": "Share-Karte",
+    "copyLink": "Link kopieren",
+    "qrCode": "QR-Code",
+    "nativeShare": "Teilen…",
+    "nativeText": "Schau dir dieses Auto auf MyRide an",
+    "downloading": "Wird heruntergeladen...",
+    "toast": {
+      "storyDownloaded": "Story-Bild heruntergeladen",
+      "cardDownloaded": "Share-Karte heruntergeladen"
+    },
+    "error": {
+      "copyFailed": "Link konnte nicht kopiert werden",
+      "downloadFailed": "Bild konnte nicht heruntergeladen werden"
+    }
   }
 }
