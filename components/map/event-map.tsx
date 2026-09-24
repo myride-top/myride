@@ -37,7 +37,7 @@ const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), {
 })
 
 import { EventPopup } from './event-popup'
-import { stadiaAlidadeSmoothDark } from './stadia-tiles'
+import { osmTileLayer } from './map-tiles'
 
 interface EventMapProps {
   events: EventWithAttendeeCount[]
@@ -508,13 +508,12 @@ export function EventMap({
         center={mapCenter}
         zoom={6}
         style={{ height: '100%', width: '100%', zIndex: 0 }}
-        attributionControl={false}
       >
         <TileLayer
-          attribution={stadiaAlidadeSmoothDark.attribution}
-          url={stadiaAlidadeSmoothDark.url}
-          minZoom={stadiaAlidadeSmoothDark.minZoom}
-          maxZoom={stadiaAlidadeSmoothDark.maxZoom}
+          attribution={osmTileLayer.attribution}
+          url={osmTileLayer.url}
+          minZoom={osmTileLayer.minZoom}
+          maxZoom={osmTileLayer.maxZoom}
         />
         {/* User location marker */}
         {userLocation && userLocationIcon && (

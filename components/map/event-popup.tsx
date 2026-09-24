@@ -35,7 +35,7 @@ import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import type * as Leaflet from 'leaflet'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
-import { stadiaAlidadeSmoothDark } from './stadia-tiles'
+import { osmTileLayer } from './map-tiles'
 import { buildLocalePath } from '@/lib/i18n/config'
 
 // Dynamically import map components for route display
@@ -183,10 +183,10 @@ function RouteMap({
       attributionControl={false}
     >
       <TileLayer
-        attribution={stadiaAlidadeSmoothDark.attribution}
-        url={stadiaAlidadeSmoothDark.url}
-        minZoom={stadiaAlidadeSmoothDark.minZoom}
-        maxZoom={stadiaAlidadeSmoothDark.maxZoom}
+        attribution={osmTileLayer.attribution}
+        url={osmTileLayer.url}
+        minZoom={osmTileLayer.minZoom}
+        maxZoom={osmTileLayer.maxZoom}
       />
       {route.length > 0 && (
         <>

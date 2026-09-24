@@ -29,7 +29,7 @@ import { uploadEventImage, deleteEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
-import { stadiaAlidadeSmoothDark } from './stadia-tiles'
+import { osmTileLayer } from './map-tiles'
 
 // Dynamically import map components
 const MapContainer = dynamic(
@@ -544,10 +544,10 @@ export function EditEventDialog({
                 style={{ height: '100%', width: '100%' }}
               >
                 <TileLayer
-                  attribution={stadiaAlidadeSmoothDark.attribution}
-                  url={stadiaAlidadeSmoothDark.url}
-                  minZoom={stadiaAlidadeSmoothDark.minZoom}
-                  maxZoom={stadiaAlidadeSmoothDark.maxZoom}
+                  attribution={osmTileLayer.attribution}
+                  url={osmTileLayer.url}
+                  minZoom={osmTileLayer.minZoom}
+                  maxZoom={osmTileLayer.maxZoom}
                 />
                 <MapClickHandler
                   onClick={handleMapClick}
