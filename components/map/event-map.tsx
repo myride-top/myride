@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { useTheme } from 'next-themes'
 import { useAuth } from '@/lib/context/auth-context'
 import {
   EventWithAttendeeCount,
@@ -38,6 +37,7 @@ const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), {
 })
 
 import { EventPopup } from './event-popup'
+import { stadiaAlidadeSmoothDark } from './stadia-tiles'
 
 interface EventMapProps {
   events: EventWithAttendeeCount[]
@@ -54,7 +54,6 @@ export function EventMap({
 }: EventMapProps) {
   const { t, locale } = useI18n()
   const { user } = useAuth()
-  const { theme, resolvedTheme } = useTheme()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [mapCenter, setMapCenter] = useState<[number, number]>([
@@ -86,9 +85,6 @@ export function EventMap({
       setActivePopupEventId(highlightEventId)
     }
   }, [highlightEventId])
-
-  // Determine if dark mode is active
-  const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
 
   // Initialize Leaflet and create icon only on client
   useEffect(() => {
@@ -515,15 +511,10 @@ export function EventMap({
         attributionControl={false}
       >
         <TileLayer
-          key={isDarkMode ? 'dark' : 'light'}
-          attribution=''
-          url={
-            isDarkMode
-              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-              : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-          }
-          subdomains='abcd'
-          maxZoom={20}
+          attribution={stadiaAlidadeSmoothDark.attribution}
+          url={stadiaAlidadeSmoothDark.url}
+          minZoom={stadiaAlidadeSmoothDark.minZoom}
+          maxZoom={stadiaAlidadeSmoothDark.maxZoom}
         />
         {/* User location marker */}
         {userLocation && userLocationIcon && (

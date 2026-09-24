@@ -32,10 +32,10 @@ import { deleteEventClient } from '@/lib/database/events-client'
 import { useEventAnalytics } from '@/lib/hooks/use-event-analytics'
 import { EventQRCodeModal } from './event-qr-code-modal'
 import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
-import { useTheme } from 'next-themes'
 import type * as Leaflet from 'leaflet'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
+import { stadiaAlidadeSmoothDark } from './stadia-tiles'
 import { buildLocalePath } from '@/lib/i18n/config'
 
 // Dynamically import map components for route display
@@ -86,7 +86,6 @@ const FitBounds = dynamic(
 function RouteMap({
   route,
   center,
-  isDarkMode,
   startTitle,
   startDescription,
   endTitle,
@@ -94,7 +93,6 @@ function RouteMap({
 }: {
   route: [number, number][]
   center: [number, number]
-  isDarkMode: boolean
   startTitle: string
   startDescription: string
   endTitle: string
@@ -185,15 +183,10 @@ function RouteMap({
       attributionControl={false}
     >
       <TileLayer
-        key={isDarkMode ? 'dark' : 'light'}
-        attribution=''
-        url={
-          isDarkMode
-            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-            : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-        }
-        subdomains='abcd'
-        maxZoom={20}
+        attribution={stadiaAlidadeSmoothDark.attribution}
+        url={stadiaAlidadeSmoothDark.url}
+        minZoom={stadiaAlidadeSmoothDark.minZoom}
+        maxZoom={stadiaAlidadeSmoothDark.maxZoom}
       />
       {route.length > 0 && (
         <>
@@ -265,10 +258,7 @@ export function EventPopup({
   const [showQRCode, setShowQRCode] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [isGeneratingQR, setIsGeneratingQR] = useState(false)
-  const { theme, resolvedTheme } = useTheme()
-
   const isCreator = user?.id === event.created_by
-  const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
   const isCruiseWithRoute =
     event.event_type === 'cruise' && event.route && event.route.length > 0
 
@@ -497,7 +487,6 @@ export function EventPopup({
                   <RouteMap
                     route={event.route || []}
                     center={[event.latitude, event.longitude]}
-                    isDarkMode={isDarkMode}
                     startTitle={t('map.route.startTitle', 'Start of Route')}
                     startDescription={t(
                       'map.route.startDescription',

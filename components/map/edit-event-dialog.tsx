@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useTheme } from 'next-themes'
 import { updateEventClient } from '@/lib/database/events-client'
 import { EventWithAttendeeCount } from '@/lib/database/events-client'
 import {
@@ -30,6 +29,7 @@ import { uploadEventImage, deleteEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
+import { stadiaAlidadeSmoothDark } from './stadia-tiles'
 
 // Dynamically import map components
 const MapContainer = dynamic(
@@ -87,7 +87,6 @@ export function EditEventDialog({
   onEventUpdated,
 }: EditEventDialogProps) {
   const { t } = useI18n()
-  const { theme, resolvedTheme } = useTheme()
   const [title, setTitle] = useState(event.title)
   const [description, setDescription] = useState(event.description || '')
   const [eventDate, setEventDate] = useState<Date | undefined>(undefined)
@@ -110,9 +109,6 @@ export function EditEventDialog({
   )
   const [isDrawingRoute, setIsDrawingRoute] = useState(false)
   const [markerIcon, setMarkerIcon] = useState<DivIcon | null>(null)
-
-  // Determine if dark mode is active
-  const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
 
   // Create custom marker icon
   useEffect(() => {
@@ -548,15 +544,10 @@ export function EditEventDialog({
                 style={{ height: '100%', width: '100%' }}
               >
                 <TileLayer
-                  key={isDarkMode ? 'dark' : 'light'}
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                  url={
-                    isDarkMode
-                      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-                  }
-                  subdomains='abcd'
-                  maxZoom={20}
+                  attribution={stadiaAlidadeSmoothDark.attribution}
+                  url={stadiaAlidadeSmoothDark.url}
+                  minZoom={stadiaAlidadeSmoothDark.minZoom}
+                  maxZoom={stadiaAlidadeSmoothDark.maxZoom}
                 />
                 <MapClickHandler
                   onClick={handleMapClick}

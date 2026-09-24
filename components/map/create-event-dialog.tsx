@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useTheme } from 'next-themes'
 import { useAuth } from '@/lib/context/auth-context'
 import {
   createEventClient,
@@ -36,6 +35,7 @@ import { uploadEventImage } from '@/lib/storage/photos'
 import dynamic from 'next/dynamic'
 import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
+import { stadiaAlidadeSmoothDark } from './stadia-tiles'
 
 // Dynamically import map components
 const MapContainer = dynamic(
@@ -97,7 +97,6 @@ export function CreateEventDialog({
 }: CreateEventDialogProps) {
   const { t } = useI18n()
   const { user } = useAuth()
-  const { theme, resolvedTheme } = useTheme()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [eventDate, setEventDate] = useState<Date | undefined>(undefined)
@@ -113,9 +112,6 @@ export function CreateEventDialog({
   const [route, setRoute] = useState<[number, number][]>([])
   const [isDrawingRoute, setIsDrawingRoute] = useState(false)
   const [markerIcon, setMarkerIcon] = useState<DivIcon | null>(null)
-
-  // Determine if dark mode is active
-  const isDarkMode = resolvedTheme === 'dark' || theme === 'dark'
 
   useEffect(() => {
     if (!open || !user) {
@@ -591,15 +587,10 @@ export function CreateEventDialog({
                 attributionControl={false}
               >
                 <TileLayer
-                  key={isDarkMode ? 'dark' : 'light'}
-                  attribution=''
-                  url={
-                    isDarkMode
-                      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-                  }
-                  subdomains='abcd'
-                  maxZoom={20}
+                  attribution={stadiaAlidadeSmoothDark.attribution}
+                  url={stadiaAlidadeSmoothDark.url}
+                  minZoom={stadiaAlidadeSmoothDark.minZoom}
+                  maxZoom={stadiaAlidadeSmoothDark.maxZoom}
                 />
                 <MapClickHandler onClick={handleMapClick} enabled={true} />
                 {markerIcon && <Marker position={position} icon={markerIcon} />}
