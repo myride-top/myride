@@ -30,7 +30,7 @@ export function slugifyClubName(name: string): string {
 }
 
 async function ensureUniqueSlug(baseSlug: string): Promise<string> {
-  let slug = baseSlug || 'club'
+  const slug = baseSlug || 'club'
   let attempt = 0
 
   while (attempt < 50) {
