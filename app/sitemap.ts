@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { LOCALES } from '@/lib/i18n/config'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://myride.top'
+  const baseUrl = 'https://www.myride.top'
   const staticRoutes: Array<{
     path: string
     changeFrequency:
@@ -15,9 +15,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       | 'never'
     priority: number
   }> = [
-    { path: '/', changeFrequency: 'daily', priority: 1 },
-    { path: '/browse', changeFrequency: 'daily', priority: 0.9 },
-    { path: '/clubs/explore', changeFrequency: 'daily', priority: 0.9 },
+    { path: '/browse', changeFrequency: 'daily', priority: 1 },
+    { path: '/clubs/explore', changeFrequency: 'daily', priority: 0.8 },
     { path: '/legal/terms', changeFrequency: 'yearly', priority: 0.5 },
     { path: '/legal/privacy', changeFrequency: 'yearly', priority: 0.5 },
     { path: '/legal/cookies', changeFrequency: 'yearly', priority: 0.5 },
@@ -27,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date()
   const localizedEntries = staticRoutes.flatMap((route) =>
     LOCALES.map((locale) => ({
-      url: `${baseUrl}/${locale}${route.path === '/' ? '' : route.path}`,
+      url: `${baseUrl}/${locale}${route.path}`,
       lastModified,
       changeFrequency: route.changeFrequency,
       priority: route.priority,

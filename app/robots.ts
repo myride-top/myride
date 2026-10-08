@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         '/*/edit',
       ],
     },
-    sitemap: 'https://myride.top/sitemap.xml',
+    sitemap: 'https://www.myride.top/sitemap.xml',
   }
 }
