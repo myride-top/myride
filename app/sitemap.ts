@@ -1,18 +1,157 @@
 import { MetadataRoute } from 'next'
+import { createClient } from '@supabase/supabase-js'
 import { LOCALES } from '@/lib/i18n/config'
 import { SITE_URL } from '@/lib/constants/site'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+type SitemapChangeFrequency =
+  | 'always'
+  | 'hourly'
+  | 'daily'
+  | 'weekly'
+  | 'monthly'
+  | 'yearly'
+  | 'never'
+
+const PAGE_SIZE = 1000
+
+const buildLocalizedEntries = (
+  path: string,
+  lastModified: Date,
+  changeFrequency: SitemapChangeFrequency,
+  priority: number
+): MetadataRoute.Sitemap => {
+  const languages: Record<string, string> = {
+    'x-default': `${SITE_URL}/en${path}`,
+  }
+  for (const loc of LOCALES) {
+    languages[loc] = `${SITE_URL}/${loc}${path}`
+  }
+
+  return LOCALES.map(locale => ({
+    url: `${SITE_URL}/${locale}${path}`,
+    lastModified,
+    changeFrequency,
+    priority,
+    alternates: {
+      languages,
+    },
+  }))
+}
+
+const createSitemapClient = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  )
+
+async function fetchAllPublicCars(
+  supabase: ReturnType<typeof createSitemapClient>,
+  usernameById: Map<string, string>
+) {
+  const rows: Array<{
+    url_slug: string
+    updated_at: string | null
+    created_at: string | null
+    username: string
+  }> = []
+
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from('cars')
+      .select('url_slug, updated_at, created_at, user_id')
+      .not('url_slug', 'is', null)
+      .order('updated_at', { ascending: false })
+      .range(from, from + PAGE_SIZE - 1)
+
+    if (error) {
+      console.error('sitemap cars fetch failed:', error.message)
+      break
+    }
+
+    if (!data || data.length === 0) {
+      break
+    }
+
+    for (const row of data) {
+      const username = row.user_id ? usernameById.get(row.user_id) : undefined
+      if (!username || !row.url_slug) {
+        continue
+      }
+
+      rows.push({
+        url_slug: row.url_slug,
+        updated_at: row.updated_at,
+        created_at: row.created_at,
+        username,
+      })
+    }
+
+    if (data.length < PAGE_SIZE) {
+      break
+    }
+  }
+
+  return rows
+}
+
+async function fetchAllPublicProfiles(
+  supabase: ReturnType<typeof createSitemapClient>
+) {
+  const rows: Array<{
+    id: string
+    username: string
+    updated_at: string | null
+    created_at: string | null
+  }> = []
+
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, updated_at, created_at')
+      .not('username', 'is', null)
+      .order('updated_at', { ascending: false })
+      .range(from, from + PAGE_SIZE - 1)
+
+    if (error) {
+      console.error('sitemap profiles fetch failed:', error.message)
+      break
+    }
+
+    if (!data || data.length === 0) {
+      break
+    }
+
+    for (const row of data) {
+      if (!row.username || !row.id) {
+        continue
+      }
+      rows.push({
+        id: row.id,
+        username: row.username,
+        updated_at: row.updated_at,
+        created_at: row.created_at,
+      })
+    }
+
+    if (data.length < PAGE_SIZE) {
+      break
+    }
+  }
+
+  return rows
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: Array<{
     path: string
-    changeFrequency:
-      | 'always'
-      | 'hourly'
-      | 'daily'
-      | 'weekly'
-      | 'monthly'
-      | 'yearly'
-      | 'never'
+    changeFrequency: SitemapChangeFrequency
     priority: number
   }> = [
     { path: '/browse', changeFrequency: 'daily', priority: 1 },
@@ -24,25 +163,51 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]
 
   const lastModified = new Date()
-  const localizedEntries = staticRoutes.flatMap((route) =>
-    LOCALES.map((locale) => {
-      const languages: Record<string, string> = {
-        'x-default': `${SITE_URL}/en${route.path}`,
-      }
-      for (const loc of LOCALES) {
-        languages[loc] = `${SITE_URL}/${loc}${route.path}`
-      }
-
-      return {
-        url: `${SITE_URL}/${locale}${route.path}`,
-        lastModified,
-        changeFrequency: route.changeFrequency,
-        priority: route.priority,
-        alternates: {
-          languages,
-        },
-      }
-    })
+  const entries: MetadataRoute.Sitemap = staticRoutes.flatMap(route =>
+    buildLocalizedEntries(
+      route.path,
+      lastModified,
+      route.changeFrequency,
+      route.priority
+    )
   )
-  return localizedEntries
+
+  try {
+    const supabase = createSitemapClient()
+    const profiles = await fetchAllPublicProfiles(supabase)
+    const usernameById = new Map(
+      profiles.map(profile => [profile.id, profile.username])
+    )
+    const cars = await fetchAllPublicCars(supabase, usernameById)
+
+    for (const car of cars) {
+      const modified = new Date(car.updated_at || car.created_at || Date.now())
+      entries.push(
+        ...buildLocalizedEntries(
+          `/u/${car.username}/${car.url_slug}`,
+          modified,
+          'weekly',
+          0.7
+        )
+      )
+    }
+
+    for (const profile of profiles) {
+      const modified = new Date(
+        profile.updated_at || profile.created_at || Date.now()
+      )
+      entries.push(
+        ...buildLocalizedEntries(
+          `/u/${profile.username}`,
+          modified,
+          'weekly',
+          0.6
+        )
+      )
+    }
+  } catch (error) {
+    console.error('sitemap dynamic fetch failed:', error)
+  }
+
+  return entries
 }

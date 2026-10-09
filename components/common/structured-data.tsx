@@ -86,6 +86,32 @@ export const carShowcaseSchema = (carData: {
   },
 })
 
+/** Schema.org Car for public car detail pages. */
+export const carJsonLdSchema = (carData: {
+  name: string
+  description?: string | null
+  make: string
+  model: string
+  year?: number | null
+  image?: string | null
+  url: string
+}) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Car',
+  name: carData.name,
+  ...(carData.description ? { description: carData.description } : {}),
+  brand: {
+    '@type': 'Brand',
+    name: carData.make,
+  },
+  model: carData.model,
+  ...(carData.year != null
+    ? { vehicleModelDate: String(carData.year) }
+    : {}),
+  ...(carData.image ? { image: carData.image } : {}),
+  url: carData.url,
+})
+
 export const breadcrumbSchema = (
   breadcrumbs: Array<{ name: string; url: string }>
 ) => ({

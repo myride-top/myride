@@ -105,6 +105,12 @@ export const metadata: Metadata = {
   ...(googleSiteVerification
     ? { verification: { google: googleSiteVerification } }
     : {}),
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
+    ],
+  },
   category: 'automotive',
   classification: 'car showcase platform',
 }
@@ -126,14 +132,12 @@ export default async function RootLayout({
   const messages = await getDictionary(locale)
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head>
-        <link rel='icon' href='/icon.svg' type='image/svg+xml' />
-        <link rel='alternate icon' href='/favicon.ico' />
-      </head>
-      <body
-        className={`${commissioner.variable} ${atkinson.variable} antialiased`}
-      >
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`${commissioner.variable} ${atkinson.variable}`}
+    >
+      <body className='antialiased'>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

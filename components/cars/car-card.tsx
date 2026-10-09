@@ -1,3 +1,5 @@
+'use client'
+
 import { Car, Profile } from '@/lib/types/database'
 import { Share2, Image as ImageIcon, Edit, Crown } from 'lucide-react'
 import { toast } from 'sonner'
@@ -14,6 +16,7 @@ import { NationalityFlag } from '@/components/common/nationality-flag'
 import { UserClubBadges } from '@/components/clubs/user-club-badges'
 import { useI18n } from '@/lib/i18n/provider'
 import { buildLocalePath } from '@/lib/i18n/config'
+import { SITE_URL } from '@/lib/constants/site'
 import type { ClubBadgeInfo } from '@/lib/types/database'
 
 interface CarCardProps {
@@ -197,7 +200,13 @@ export const CarCard = ({
         {/* Car Info */}
         <div className='mb-3'>
           <h3 className='font-semibold text-foreground mb-1 line-clamp-1'>
-            {car.name}
+            <Link
+              href={carDetailPath}
+              className='hover:text-primary transition-colors'
+              onClick={e => e.stopPropagation()}
+            >
+              {car.name}
+            </Link>
           </h3>
           <p className='text-sm text-muted-foreground'>
             {car.make} {car.model} ({car.year})
@@ -262,7 +271,7 @@ export const CarCard = ({
         qrCodeDataUrl={qrCodeDataUrl}
         car={car}
         profile={profile}
-        currentUrl={`${window.location.origin}${buildLocalePath(locale, `/u/${profile?.username}/${car.url_slug}`)}`}
+        currentUrl={`${SITE_URL}${buildLocalePath(locale, `/u/${profile?.username}/${car.url_slug}`)}`}
       />
     </article>
   )

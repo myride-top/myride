@@ -10,8 +10,10 @@ export default function robots(): MetadataRoute.Robots {
         '/dashboard',
         '/profile',
         '/create',
+        '/*/dashboard',
+        '/*/create',
+        '/*/profile',
         '/api/',
-
         '/*/edit',
       ],
     },

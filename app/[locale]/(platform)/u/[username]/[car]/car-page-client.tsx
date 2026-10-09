@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
 import {
   getProfileByUsernameClient,
   getProfileByUserIdClient,
@@ -74,22 +73,30 @@ const CarTimeline = dynamic(
   { ssr: false }
 )
 
-export default function CarDetailPageClient() {
+type CarDetailPageClientProps = {
+  initialCar: Car
+  initialProfile: Profile | null
+}
+
+export default function CarDetailPageClient({
+  initialCar,
+  initialProfile,
+}: CarDetailPageClientProps) {
   const params = useParams()
   const { user } = useAuth()
   const router = useRouter()
   const { t, locale } = useI18n()
 
-  const [car, setCar] = useState<Car | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [car, setCar] = useState<Car | null>(initialCar)
+  const [profile, setProfile] = useState<Profile | null>(initialProfile)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [selectedPhoto, setSelectedPhoto] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
   const [fullscreenPhotoIndex, setFullscreenPhotoIndex] = useState(0)
   const [isLiked, setIsLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(0)
+  const [likeCount, setLikeCount] = useState(initialCar.like_count || 0)
   const [isLikeLoading, setIsLikeLoading] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
@@ -111,127 +118,59 @@ export default function CarDetailPageClient() {
   const { trackShare } = useCarAnalytics(car?.id || '', car?.user_id || '')
 
   useEffect(() => {
-    const loadCarData = async () => {
+    setCar(initialCar)
+    setProfile(initialProfile)
+    setLikeCount(initialCar.like_count || 0)
+    setLoading(false)
+    setError('')
+  }, [initialCar, initialProfile])
+
+  useEffect(() => {
+    const enrichClientData = async () => {
+      const carData = initialCar
+
       try {
-        // Get the car by URL slug AND username to handle duplicate slugs
-        const carData = await getCarByUrlSlugAndUsernameClient(
-          params.car as string,
-          params.username as string
-        )
+        const realLikeCount = await getCarLikeCountClient(carData.id)
+        setLikeCount(realLikeCount)
+      } catch {
+        setLikeCount(carData.like_count || 0)
+      }
 
-        if (!carData) {
-          setError(t('carDetail.error.notFound', 'Car not found'))
-          setLoading(false)
-          return
+      try {
+        let loadedProfile: Profile | null = initialProfile
+
+        if (user && user.id === carData.user_id) {
+          loadedProfile =
+            (await getProfileByUserIdClient(user.id)) || loadedProfile
         }
 
-        // Set the car data immediately
-        setCar(carData)
-
-        // Get the real-time like count from car_likes table
-        try {
-          const realLikeCount = await getCarLikeCountClient(carData.id)
-          setLikeCount(realLikeCount)
-        } catch {
-          // Fallback to the like_count field from cars table
-          setLikeCount(carData.like_count || 0)
+        if (!loadedProfile) {
+          loadedProfile = await getProfileByUserIdClient(carData.user_id)
         }
 
-        // Load profile - prioritize current user's profile if they own this car
-        try {
-          let loadedProfile: Profile | null = null
-
-          // If signed in user owns this car, try to fetch their profile first
-          if (user && user.id === carData.user_id) {
-            loadedProfile = await getProfileByUserIdClient(user.id)
-          }
-
-          // If not found yet, try by car owner's user_id
-          if (!loadedProfile) {
-            loadedProfile = await getProfileByUserIdClient(carData.user_id)
-          }
-
-          // If still not found, try by username
-          if (!loadedProfile) {
-            loadedProfile = await getProfileByUsernameClient(
-              params.username as string
-            )
-          }
-
-          // If we have a profile, use it
-          if (loadedProfile) {
-            setProfile(loadedProfile)
-          } else {
-            // Only create fallback if we really couldn't find anything
-            setProfile({
-              id: carData.user_id,
-              username: params.username as string,
-              full_name: null,
-              avatar_url: null,
-              unit_preference: 'metric' as const,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              is_premium: false,
-              premium_purchased_at: null,
-              car_slots_purchased: 0,
-              stripe_customer_id: null,
-              stripe_subscription_id: null,
-              total_supported_amount: 0,
-              is_supporter: false,
-              bio: null,
-              location: null,
-              nationality: null,
-              instagram_handle: null,
-              youtube_channel: null,
-              website_url: null,
-              garage_description: null,
-            })
-          }
-        } catch {
-          // If profile fetch fails, create a fallback
-          setProfile({
-            id: carData.user_id,
-            username: params.username as string,
-            full_name: null,
-            avatar_url: null,
-            unit_preference: 'metric' as const,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            is_premium: false,
-            premium_purchased_at: null,
-            car_slots_purchased: 0,
-            stripe_customer_id: null,
-            stripe_subscription_id: null,
-            total_supported_amount: 0,
-            is_supporter: false,
-            bio: null,
-            location: null,
-            nationality: null,
-            instagram_handle: null,
-            youtube_channel: null,
-            website_url: null,
-            garage_description: null,
-          })
+        if (!loadedProfile) {
+          loadedProfile = await getProfileByUsernameClient(
+            params.username as string
+          )
         }
 
-        // Load timeline
-        try {
-          const timelineData = await getCarTimelineClient(carData.id)
-          setTimeline(timelineData)
-        } catch (timelineError) {
-          console.error('Error loading timeline:', timelineError)
+        if (loadedProfile) {
+          setProfile(loadedProfile)
         }
       } catch {
-        setError(t('carDetail.error.loadFailed', 'Failed to load car data'))
-      } finally {
-        setLoading(false)
+        // Keep server-provided profile
+      }
+
+      try {
+        const timelineData = await getCarTimelineClient(carData.id)
+        setTimeline(timelineData)
+      } catch (timelineError) {
+        console.error('Error loading timeline:', timelineError)
       }
     }
 
-    if (params.car && params.username) {
-      loadCarData()
-    }
-  }, [params.car, params.username, t, user])
+    void enrichClientData()
+  }, [initialCar, initialProfile, params.username, user])
 
   // Check if current user has liked this car
   useEffect(() => {

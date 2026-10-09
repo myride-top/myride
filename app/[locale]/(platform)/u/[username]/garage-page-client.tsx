@@ -22,14 +22,23 @@ import { Button } from '@/components/ui/button'
 import { NationalityFlag } from '@/components/common/nationality-flag'
 import { UserClubBadges } from '@/components/clubs/user-club-badges'
 import { useI18n } from '@/lib/i18n/provider'
-export default function ProfileGaragePageClient() {
+
+type ProfileGaragePageClientProps = {
+  initialProfile: Profile
+  initialCars: Car[]
+}
+
+export default function ProfileGaragePageClient({
+  initialProfile,
+  initialCars,
+}: ProfileGaragePageClientProps) {
   const { t } = useI18n()
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [cars, setCars] = useState<Car[]>([])
-  const [loading, setLoading] = useState(true)
+  const [profile, setProfile] = useState<Profile | null>(initialProfile)
+  const [cars, setCars] = useState<Car[]>(initialCars)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [showQRCode, setShowQRCode] = useState(false)
@@ -40,42 +49,32 @@ export default function ProfileGaragePageClient() {
   const isPremium = profile?.is_premium || false
 
   useEffect(() => {
-    const loadProfileData = async () => {
+    setProfile(initialProfile)
+    setCars(initialCars)
+    setLoading(false)
+    setError(null)
+  }, [initialCars, initialProfile])
+
+  useEffect(() => {
+    const refreshClientData = async () => {
       try {
-        setLoading(true)
-        setError(null)
-
-        // Get profile by username
-        const profileData = await getProfileByUsernameClient(username)
-
-        if (!profileData) {
-          setError(t('garage.error.profileNotFound', 'Profile not found'))
-          setLoading(false)
-          return
-        }
-
+        const profileData =
+          (await getProfileByUsernameClient(username)) || initialProfile
         setProfile(profileData)
 
-        // Get all cars for this user
         const carsData = await getCarsByUserClient(profileData.id)
-
-        if (carsData === null) {
-          setError(t('browse.error.loadFailed', 'Failed to load cars. Please try again later.'))
-        } else {
+        if (carsData) {
           setCars(carsData)
         }
       } catch (err) {
-        console.error('Error loading profile data:', err)
-        setError(t('garage.error.loadFailed', 'Failed to load profile'))
-      } finally {
-        setLoading(false)
+        console.error('Error refreshing profile data:', err)
       }
     }
 
     if (username) {
-      loadProfileData()
+      void refreshClientData()
     }
-  }, [t, username])
+  }, [initialProfile, username])
 
   const handleLikeChange = async (carId: string, newLikeCount: number) => {
     // Update local state immediately for UI responsiveness

@@ -6,6 +6,10 @@ import {
   PhotoCategory,
   Profile,
 } from '@/lib/types/database'
+import type {
+  BrowseCarsQuery,
+  BrowseCarsResult,
+} from '@/lib/database/browse'
 import { unitConversions } from '@/lib/utils'
 import { deleteAllCarPhotos } from '@/lib/storage/photos'
 
@@ -700,66 +704,13 @@ export async function getCarLikeCountClient(carId: string): Promise<number> {
   return count || 0
 }
 
-export type BrowseSortOption =
-  | 'newest'
-  | 'oldest'
-  | 'most_liked'
-  | 'most_viewed'
-  | 'most_shared'
-  | 'most_commented'
-  | 'year_asc'
-  | 'year_desc'
-  | 'horsepower_asc'
-  | 'horsepower_desc'
-
-export interface BrowseCarsFilters {
-  search?: string
-  make?: string
-  model?: string
-  yearFrom?: string
-  yearTo?: string
-  drivetrain?: string
-  transmission?: string
-  fuelType?: string
-  minHorsepower?: string
-  maxHorsepower?: string
-  engineCylinders?: string
-  minDisplacement?: string
-  maxDisplacement?: string
-  minTorque?: string
-  maxTorque?: string
-  minZeroToSixty?: string
-  maxZeroToSixty?: string
-  minTopSpeed?: string
-  maxTopSpeed?: string
-  minWeight?: string
-  maxWeight?: string
-  engineType?: string
-}
-
-export interface BrowseCarsQuery {
-  page?: number
-  pageSize?: number
-  sortBy?: BrowseSortOption
-  filters?: BrowseCarsFilters
-}
-
-type BrowseProfile = Pick<
-  Profile,
-  'id' | 'username' | 'full_name' | 'avatar_url' | 'is_premium' | 'nationality'
->
-
-export type BrowseCar = Car & {
-  profiles?: BrowseProfile | null
-}
-
-export interface BrowseCarsResult {
-  cars: BrowseCar[]
-  total: number
-  page: number
-  pageSize: number
-  hasMore: boolean
-}
+export type {
+  BrowseSortOption,
+  BrowseCarsFilters,
+  BrowseCarsQuery,
+  BrowseCar,
+  BrowseCarsResult,
+} from '@/lib/database/browse'
 
 export async function getAllCarsClient(
   query: BrowseCarsQuery = {}

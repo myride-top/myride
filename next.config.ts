@@ -3,7 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Enable compression for better performance
   compress: true,
-  
+
+  // Keep metadata in the initial <head> for all crawlers (no post-</head> streaming)
+  htmlLimitedBots: /.*/,
+
   // Optimize images
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -17,7 +20,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Enable experimental features for better performance
   experimental: {
     optimizeCss: true,
