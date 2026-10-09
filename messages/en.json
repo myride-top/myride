@@ -392,9 +392,11 @@
   "garage": {
     "private": {
       "upgrade": "Upgrade to Premium",
+      "signUp": "Create an account",
+      "browse": "Browse cars",
       "title": "Profile Not Available",
-      "owner": "This profile is private. Upgrade to premium to make your profile public and shareable.",
-      "visitor": "This profile is only available to premium members. This user needs to upgrade to premium to make their profile public."
+      "owner": "This profile is private. Upgrade to Premium to make your garage public and shareable.",
+      "visitor": "Public garages are a Premium feature. Create a free account or go Premium to start sharing your own cars."
     },
     "error": {
       "profileNotFound": "Profile not found",

@@ -397,9 +397,11 @@
   "garage": {
     "private": {
       "upgrade": "Actualizar a Premium",
+      "signUp": "Crear una cuenta",
+      "browse": "Explorar coches",
       "title": "Perfil no disponible",
-      "owner": "Este perfil es privado. Actualiza a premium para hacerlo público y compartible.",
-      "visitor": "Este perfil solo está disponible para miembros premium. Este usuario debe actualizar a premium para hacerlo público."
+      "owner": "Este perfil es privado. Actualiza a Premium para que tu garaje sea público y compartible.",
+      "visitor": "Los garajes públicos son una función Premium. Crea una cuenta gratis o pásate a Premium para empezar a compartir tus coches."
     },
     "error": {
       "profileNotFound": "Perfil no encontrado",

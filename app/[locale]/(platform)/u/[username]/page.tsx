@@ -121,6 +121,8 @@ export default async function ProfileGaragePage({ params }: ProfilePageProps) {
 
   const isPremium = Boolean(profile.is_premium)
   const displayName = profile.full_name || `@${profile.username}`
+  const handle = `@${profile.username}`
+  const t = await getTranslations({ locale, namespace: 'garage' })
 
   return (
     <>
@@ -143,7 +145,18 @@ export default async function ProfileGaragePage({ params }: ProfilePageProps) {
             ))}
           </ul>
         </div>
-      ) : null}
+      ) : (
+        <div className='sr-only'>
+          <h1>{handle}</h1>
+          <p>{t('private.visitor')}</p>
+          <Link href={buildLocalePath(locale, '/register')}>
+            {t('private.signUp')}
+          </Link>
+          <Link href={buildLocalePath(locale, '/premium')}>
+            {t('private.upgrade')}
+          </Link>
+        </div>
+      )}
       <ProfileGaragePageClient initialProfile={profile} initialCars={cars} />
     </>
   )

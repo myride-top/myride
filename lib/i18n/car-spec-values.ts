@@ -62,7 +62,8 @@ export function translateFuelType(
 
   const key = FUEL_KEYS[normalized]
   if (!key) {
-    return normalized
+    // Unknown / free-text values stay as entered in the DB
+    return value
   }
 
   return t(`carDetail.specValues.fuel.${key}`, normalized)
@@ -121,7 +122,9 @@ export function translateTransmission(
   }
 
   // Fallback for free-form like "7-speed auto"
-  const loose = value.trim().match(/(\d+)\s*[-]?\s*speed\s*(auto|automatic|manual|cvt|dct)/i)
+  const loose = value
+    .trim()
+    .match(/(\d+)\s*[-]?\s*speed\s*(auto|automatic|manual|cvt|dct)/i)
   if (loose) {
     const n = loose[1]
     const kind = loose[2].toLowerCase().startsWith('auto')
@@ -138,7 +141,8 @@ export function translateTransmission(
     return applyVars(template, { n })
   }
 
-  return normalized
+  // Unknown / free-text values stay as entered in the DB
+  return value
 }
 
 /** Map DB drivetrain string to a localized label via enum keys. */

@@ -17,7 +17,6 @@ import { generateQRCodeWithLogo } from '@/lib/utils/qr-code-with-logo'
 import { Crown, Share2, MapPin, Instagram, Youtube, Globe, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { NationalityFlag } from '@/components/common/nationality-flag'
 import { UserClubBadges } from '@/components/clubs/user-club-badges'
@@ -36,7 +35,6 @@ export default function ProfileGaragePageClient({
 }: ProfileGaragePageClientProps) {
   const { t, locale } = useI18n()
   const params = useParams()
-  const router = useRouter()
   const { user } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(initialProfile)
   const [cars, setCars] = useState<Car[]>(initialCars)
@@ -162,42 +160,57 @@ export default function ProfileGaragePageClient({
   if (!isPremium) {
     return (
       <PageLayout>
-        <div className='max-w-md mx-auto'>
-          <EmptyState
-            size='lg'
-            icon={Lock}
-            title={t('garage.private.title', 'Profile Not Available')}
-            description={
-              isOwner
-                ? t(
-                    'garage.private.owner',
-                    'This profile is private. Upgrade to premium to make your profile public and shareable.'
-                  )
-                : t(
-                    'garage.private.visitor',
-                    'This profile is only available to premium members. This user needs to upgrade to premium to make their profile public.'
-                  )
-            }
-            action={
-              <div className='flex flex-col sm:flex-row gap-3 justify-center'>
-                {isOwner ? (
-                  <Button asChild>
-                    <Link href='/premium'>
-                      <Crown className='w-4 h-4' />
-                      {t('garage.private.upgrade', 'Upgrade to Premium')}
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button
-                    variant='outline'
-                    onClick={() => router.push('/browse')}
-                  >
-                    {t('nav.browseCars', 'Browse Cars')}
-                  </Button>
-                )}
-              </div>
-            }
+        <div className='max-w-md mx-auto text-center py-12 sm:py-16 px-4'>
+          <Lock
+            className='mx-auto h-14 w-14 text-muted-foreground/60'
+            aria-hidden='true'
           />
+          <h1 className='mt-6 text-2xl sm:text-3xl font-bold text-foreground tracking-tight'>
+            @{profile.username}
+          </h1>
+          <p className='mt-2 text-sm font-medium text-muted-foreground'>
+            {t('garage.private.title', 'Profile Not Available')}
+          </p>
+          <p className='mt-3 text-sm sm:text-base text-muted-foreground max-w-sm mx-auto'>
+            {isOwner
+              ? t(
+                  'garage.private.owner',
+                  'This profile is private. Upgrade to Premium to make your garage public and shareable.'
+                )
+              : t(
+                  'garage.private.visitor',
+                  'Public garages are a Premium feature. Create a free account or go Premium to start sharing your own cars.'
+                )}
+          </p>
+          <div className='mt-8 flex flex-col sm:flex-row gap-3 justify-center'>
+            {isOwner ? (
+              <Button asChild>
+                <Link href={buildLocalePath(locale, '/premium')}>
+                  <Crown className='w-4 h-4' />
+                  {t('garage.private.upgrade', 'Upgrade to Premium')}
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild>
+                  <Link href={buildLocalePath(locale, '/register')}>
+                    {t('garage.private.signUp', 'Create an account')}
+                  </Link>
+                </Button>
+                <Button asChild variant='outline'>
+                  <Link href={buildLocalePath(locale, '/premium')}>
+                    <Crown className='w-4 h-4' />
+                    {t('garage.private.upgrade', 'Upgrade to Premium')}
+                  </Link>
+                </Button>
+              </>
+            )}
+            <Button asChild variant='ghost'>
+              <Link href={buildLocalePath(locale, '/browse')}>
+                {t('garage.private.browse', 'Browse cars')}
+              </Link>
+            </Button>
+          </div>
         </div>
       </PageLayout>
     )

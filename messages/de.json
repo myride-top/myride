@@ -397,9 +397,11 @@
   "garage": {
     "private": {
       "upgrade": "Auf Premium upgraden",
+      "signUp": "Konto erstellen",
+      "browse": "Autos durchsuchen",
       "title": "Profil nicht verfügbar",
-      "owner": "Dieses Profil ist privat. Upgrade auf Premium, um dein Profil öffentlich und teilbar zu machen.",
-      "visitor": "Dieses Profil ist nur für Premium-Mitglieder verfügbar. Dieser Nutzer muss auf Premium upgraden, um sein Profil öffentlich zu machen."
+      "owner": "Dieses Profil ist privat. Upgrade auf Premium, damit deine Garage öffentlich und teilbar wird.",
+      "visitor": "Öffentliche Garagen sind eine Premium-Funktion. Erstelle ein kostenloses Konto oder wechsle zu Premium, um deine eigenen Autos zu teilen."
     },
     "error": {
       "profileNotFound": "Profil nicht gefunden",

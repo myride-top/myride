@@ -397,9 +397,11 @@
   "garage": {
     "private": {
       "upgrade": "Upgradovat na Premium",
+      "signUp": "Vytvořit účet",
+      "browse": "Procházet auta",
       "title": "Profil není dostupný",
-      "owner": "Tento profil je soukromý. Upgradujte na premium, aby byl profil veřejný a sdílitelný.",
-      "visitor": "Tento profil je dostupný jen premium členům. Uživatel musí upgradovat na premium, aby byl profil veřejný."
+      "owner": "Tento profil je soukromý. Upgradujte na Premium, aby byla garáž veřejná a sdílitelná.",
+      "visitor": "Veřejné garáže jsou Premium funkce. Vytvořte si účet zdarma nebo přejděte na Premium a začněte sdílet vlastní auta."
     },
     "error": {
       "profileNotFound": "Profil nenalezen",

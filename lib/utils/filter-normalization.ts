@@ -19,7 +19,10 @@ export function normalizeTransmission(value: string | null): string | null {
 
   // Extract number and type (manual/automatic/cvt/etc)
   const manualMatch = normalized.match(/(\d+)\s*[-]?\s*speed\s*manual/i)
-  const autoMatch = normalized.match(/(\d+)\s*[-]?\s*speed\s*automatic/i)
+  // "auto" / "AT" are common shorthand for automatic (e.g. "7-speed auto")
+  const autoMatch = normalized.match(
+    /(\d+)\s*[-]?\s*speed\s*(?:automatic|auto|at)\b/i
+  )
   const cvtMatch = normalized.match(/(\d+)\s*[-]?\s*speed\s*cvt/i)
   const dctMatch = normalized.match(/(\d+)\s*[-]?\s*speed\s*dct/i)
   const sequentialMatch = normalized.match(/(\d+)\s*[-]?\s*speed\s*sequential/i)
@@ -42,13 +45,19 @@ export function normalizeTransmission(value: string | null): string | null {
 
   // Handle common variations
   const lower = normalized.toLowerCase()
-  if (lower.includes('manual') && !lower.match(/\d/)) {
+  if (lower.includes('manual') && !/\d/.test(lower)) {
     return 'Manual'
   }
-  if (lower.includes('automatic') && !lower.match(/\d/)) {
+  if (
+    (lower.includes('automatic') ||
+      lower === 'auto' ||
+      lower === 'at' ||
+      /\bauto\b/.test(lower)) &&
+    !/\d/.test(lower)
+  ) {
     return 'Automatic'
   }
-  if (lower.includes('cvt') && !lower.match(/\d/)) {
+  if (lower.includes('cvt') && !/\d/.test(lower)) {
     return 'CVT'
   }
   if (lower.includes('dct') || lower.includes('dual clutch')) {
