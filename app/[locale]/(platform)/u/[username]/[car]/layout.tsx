@@ -1,7 +1,13 @@
 import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { getCarByUrlSlugAndUsername } from '@/lib/database/cars'
 import { getProfileByUsername } from '@/lib/database/profiles'
-import { SITE_URL, buildLocaleAlternates } from '@/lib/constants/site'
+import {
+  DEFAULT_OG_IMAGE,
+  OPEN_GRAPH_LOCALES,
+  SITE_URL,
+  buildLocaleAlternates,
+} from '@/lib/constants/site'
 import { isLocale, type Locale } from '@/lib/i18n/config'
 
 interface CarLayoutProps {
@@ -16,94 +22,80 @@ interface CarLayoutProps {
 export async function generateMetadata({
   params,
 }: CarLayoutProps): Promise<Metadata> {
+  const { locale: localeParam, username, car: carSlug } = await params
+  const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const path = `/u/${username}/${carSlug}`
+  const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+    locale,
+    path
+  )
+
+  const car = await getCarByUrlSlugAndUsername(carSlug, username)
+
+  if (!car) {
+    notFound()
+  }
+
+  let profile = null
   try {
-    const { locale: localeParam, username, car: carSlug } = await params
-    const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
-    const path = `/u/${username}/${carSlug}`
-    const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
-      locale,
-      path
-    )
+    profile = await getProfileByUsername(username)
+  } catch {
+    // Profile is optional for metadata branding
+  }
 
-    // First try to get the car
-    const car = await getCarByUrlSlugAndUsername(carSlug, username)
-
-    if (!car) {
-      return {
-        title: 'Car Not Found',
-        description: 'The requested car could not be found.',
-        alternates: { canonical, languages },
-        openGraph: { url: openGraphUrl },
-      }
+  let imageUrl = car.main_photo_url
+  if (!imageUrl && car.photos && car.photos.length > 0) {
+    const firstPhoto = car.photos[0]
+    if (typeof firstPhoto === 'string') {
+      imageUrl = firstPhoto
+    } else if (
+      firstPhoto &&
+      typeof firstPhoto === 'object' &&
+      firstPhoto.url
+    ) {
+      imageUrl = firstPhoto.url
     }
+  }
 
-    // Try to get the profile, but don't fail if it doesn't exist
-    let profile = null
-    try {
-      profile = await getProfileByUsername(username)
-    } catch {}
+  const title = `${car.name} by @${profile?.username || username}`
+  const description = car.description
+    ? `${car.description} - ${car.year} ${car.make} ${car.model}`
+    : `Check out this ${car.year} ${car.make} ${car.model} by @${
+        profile?.username || username
+      } on MyRide!`
 
-    // Get the main photo URL or first available photo
-    let imageUrl = car.main_photo_url
-    if (!imageUrl && car.photos && car.photos.length > 0) {
-      const firstPhoto = car.photos[0]
-      if (typeof firstPhoto === 'string') {
-        imageUrl = firstPhoto
-      } else if (
-        firstPhoto &&
-        typeof firstPhoto === 'object' &&
-        firstPhoto.url
-      ) {
-        imageUrl = firstPhoto.url
-      }
-    }
+  const ogImageUrl = `${SITE_URL}/api/og/car?username=${encodeURIComponent(username)}&slug=${encodeURIComponent(carSlug)}&format=og`
+  const fallbackImage = imageUrl || `${SITE_URL}${DEFAULT_OG_IMAGE}`
 
-    const title = `${car.name} by @${profile?.username || username}`
-    const description = car.description
-      ? `${car.description} - ${car.year} ${car.make} ${car.model}`
-      : `Check out this ${car.year} ${car.make} ${car.model} by @${
-          profile?.username || username
-        } on MyRide!`
-
-    const ogImageUrl = `${SITE_URL}/api/og/car?username=${encodeURIComponent(username)}&slug=${encodeURIComponent(carSlug)}&format=og`
-    const fallbackImage = imageUrl || `${SITE_URL}/og-image-default.svg`
-
-    const metadata: Metadata = {
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+      languages,
+    },
+    openGraph: {
       title,
       description,
-      alternates: {
-        canonical,
-        languages,
-      },
-      openGraph: {
-        title,
-        description,
-        type: 'website',
-        url: openGraphUrl,
-        images: [
-          {
-            url: ogImageUrl,
-            width: 1200,
-            height: 630,
-            alt: `${car.name} - ${car.year} ${car.make} ${car.model}`,
-          },
-        ],
-        siteName: 'MyRide',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: [ogImageUrl || fallbackImage],
-      },
-    }
-
-    return metadata
-  } catch {
-    return {
-      title: 'Car Details - MyRide',
-      description: 'View car details on MyRide',
-    }
+      type: 'website',
+      locale: OPEN_GRAPH_LOCALES[locale],
+      url: openGraphUrl,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${car.name} - ${car.year} ${car.make} ${car.model}`,
+        },
+      ],
+      siteName: 'MyRide',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl || fallbackImage],
+    },
   }
 }
 

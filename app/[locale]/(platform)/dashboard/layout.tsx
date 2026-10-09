@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: 'MyRide',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/og-image-default.png',
         width: 1200,
         height: 630,
         alt: 'MyRide Dashboard',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: 'MyRide - Dashboard',
     description:
       'Manage your cars, view statistics, and track your MyRide profile. Your personal automotive showcase dashboard.',
-    images: ['/og-image-default.svg'],
+    images: ['/og-image-default.png'],
   },
   robots: {
     index: false,

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: 'MyRide',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/og-image-default.png',
         width: 1200,
         height: 630,
         alt: 'MyRide Premium Features',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: 'MyRide Premium - Unlimited Cars & Analytics',
     description:
       'Upgrade to MyRide Premium for unlimited cars, advanced analytics, garage sharing, and exclusive features. Only $10 for lifetime access.',
-    images: ['/og-image-default.svg'],
+    images: ['/og-image-default.png'],
   },
   robots: {
     index: true,

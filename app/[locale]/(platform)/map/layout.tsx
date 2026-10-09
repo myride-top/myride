@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'MyRide',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/og-image-default.png',
         width: 1200,
         height: 630,
         alt: 'MyRide Events Map',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'MyRide - Events Map',
     description:
       'Discover car events near you. View events on the map, RSVP, and connect with fellow car enthusiasts.',
-    images: ['/og-image-default.svg'],
+    images: ['/og-image-default.png'],
   },
   robots: {
     index: false,

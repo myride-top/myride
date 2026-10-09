@@ -20,7 +20,7 @@ import {
   websiteSchema,
   organizationSchema,
 } from '@/components/common/structured-data'
-import { SITE_URL } from '@/lib/constants/site'
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/constants/site'
 import './globals.css'
 
 const commissioner = Commissioner({
@@ -73,14 +73,23 @@ export const metadata: Metadata = {
     title: 'MyRide - Showcase Your Car to the World',
     description:
       'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'MyRide',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     site: '@myride',
     creator: '@myride',
     title: 'MyRide - Showcase Your Car to the World',
     description:
       'The ultimate platform for car enthusiasts to showcase their vehicles. Share detailed specifications, photos, and connect with fellow car lovers.',
+    images: [DEFAULT_OG_IMAGE],
   },
   robots: {
     index: true,

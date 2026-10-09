@@ -26,7 +26,7 @@ export async function generateMetadata({
         siteName: 'MyRide',
         images: [
           {
-            url: '/og-image-default.svg',
+            url: '/og-image-default.png',
             width: 1200,
             height: 630,
             alt: `Edit ${carName} on MyRide`,
@@ -37,7 +37,7 @@ export async function generateMetadata({
         card: 'summary_large_image',
         title: `MyRide - Editing ${carName}`,
         description: `Edit your ${carName} details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.`,
-        images: ['/og-image-default.svg'],
+        images: ['/og-image-default.png'],
       },
       robots: {
         index: false,
@@ -60,7 +60,7 @@ export async function generateMetadata({
         siteName: 'MyRide',
         images: [
           {
-            url: '/og-image-default.svg',
+            url: '/og-image-default.png',
             width: 1200,
             height: 630,
             alt: 'Edit Car on MyRide',
@@ -72,7 +72,7 @@ export async function generateMetadata({
         title: 'MyRide - Editing Car',
         description:
           'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
-        images: ['/og-image-default.svg'],
+        images: ['/og-image-default.png'],
       },
       robots: {
         index: false,

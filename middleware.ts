@@ -58,7 +58,11 @@ const shouldBypassLocaleRedirect = (pathname: string): boolean => {
   if (
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
-    pathname === '/manifest.webmanifest'
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/opengraph-image' ||
+    pathname.startsWith('/opengraph-image/') ||
+    pathname === '/twitter-image' ||
+    pathname.startsWith('/twitter-image/')
   ) {
     return true
   }

@@ -1,6 +1,11 @@
 import { Metadata } from 'next'
-import { buildLocaleAlternates } from '@/lib/constants/site'
+import {
+  DEFAULT_OG_IMAGE,
+  OPEN_GRAPH_LOCALES,
+  buildLocaleAlternates,
+} from '@/lib/constants/site'
 import { isLocale, type Locale } from '@/lib/i18n/config'
+import { getTranslations } from '@/lib/i18n/server'
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -11,43 +16,43 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: localeParam } = await params
   const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const t = await getTranslations({ locale, namespace: 'meta' })
   const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
     locale,
     '/legal/licenses'
   )
 
+  const title = t('legalLicenses.title')
+  const description = t('legalLicenses.description')
+
   return {
-    title: 'Licenses',
-    description:
-      'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
-    keywords:
-      'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
+    title,
+    description,
     alternates: {
       canonical,
       languages,
     },
     openGraph: {
-      title: 'MyRide - Licenses',
-      description:
-        'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
+      title,
+      description,
       type: 'website',
+      locale: OPEN_GRAPH_LOCALES[locale],
       url: openGraphUrl,
       siteName: 'MyRide',
       images: [
         {
-          url: '/og-image-default.svg',
+          url: DEFAULT_OG_IMAGE,
           width: 1200,
           height: 630,
-          alt: 'MyRide Licenses',
+          alt: t('legalLicenses.ogAlt'),
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'MyRide - Licenses',
-      description:
-        'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
-      images: ['/og-image-default.svg'],
+      title,
+      description,
+      images: [DEFAULT_OG_IMAGE],
     },
     robots: {
       index: true,

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: 'MyRide',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/og-image-default.png',
         width: 1200,
         height: 630,
         alt: 'Add New Car on MyRide',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: 'MyRide - Add New Car',
     description:
       'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
-    images: ['/og-image-default.svg'],
+    images: ['/og-image-default.png'],
   },
   robots: {
     index: false,

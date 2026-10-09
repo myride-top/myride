@@ -43,7 +43,7 @@ export const organizationSchema = {
   description:
     'The ultimate platform for car enthusiasts to showcase their vehicles',
   url: SITE_URL,
-  logo: `${SITE_URL}/og-image-default.svg`,
+  logo: `${SITE_URL}/og-image-default.png`,
   sameAs: [
     'https://twitter.com/myride',
     'https://tiktok.com/@myride.top',

@@ -1,6 +1,11 @@
 import { MinimalFooter } from '@/components/common/minimal-footer'
-import { buildLocaleAlternates } from '@/lib/constants/site'
+import {
+  DEFAULT_OG_IMAGE,
+  OPEN_GRAPH_LOCALES,
+  buildLocaleAlternates,
+} from '@/lib/constants/site'
 import { isLocale, type Locale } from '@/lib/i18n/config'
+import { getTranslations } from '@/lib/i18n/server'
 import { Metadata } from 'next'
 
 type BrowseLayoutProps = {
@@ -13,43 +18,43 @@ export async function generateMetadata({
 }: BrowseLayoutProps): Promise<Metadata> {
   const { locale: localeParam } = await params
   const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const t = await getTranslations({ locale, namespace: 'meta' })
   const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
     locale,
     '/browse'
   )
 
+  const title = t('browse.title')
+  const description = t('browse.description')
+
   return {
-    title: 'Browse Cars',
-    description:
-      'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
-    keywords:
-      'browse cars, car gallery, vehicle showcase, automotive community, car photos, car specifications, car modifications',
+    title,
+    description,
     alternates: {
       canonical,
       languages,
     },
     openGraph: {
-      title: 'MyRide - Browse Cars',
-      description:
-        'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
+      title,
+      description,
       type: 'website',
+      locale: OPEN_GRAPH_LOCALES[locale],
       url: openGraphUrl,
       siteName: 'MyRide',
       images: [
         {
-          url: '/og-image-default.svg',
+          url: DEFAULT_OG_IMAGE,
           width: 1200,
           height: 630,
-          alt: 'Browse Cars on MyRide',
+          alt: t('browse.ogAlt'),
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'MyRide - Browse Cars',
-      description:
-        'Discover amazing cars from the MyRide community. Browse through detailed car specifications, photos, and modifications shared by car enthusiasts worldwide.',
-      images: ['/og-image-default.svg'],
+      title,
+      description,
+      images: [DEFAULT_OG_IMAGE],
     },
     robots: {
       index: true,

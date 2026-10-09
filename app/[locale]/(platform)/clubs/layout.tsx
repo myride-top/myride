@@ -2,7 +2,10 @@ import { Metadata } from 'next'
 import { MinimalFooter } from '@/components/common/minimal-footer'
 
 export const metadata: Metadata = {
-  title: 'Clubs',
+  title: {
+    default: 'Clubs',
+    template: '%s | MyRide',
+  },
   description: 'View and manage your car clubs on MyRide.',
   robots: {
     index: false,

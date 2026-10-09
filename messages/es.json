@@ -848,5 +848,53 @@
       "downloadFailed": "No se pudo descargar la imagen"
     },
     "igStory": "IG Story"
+  },
+  "meta": {
+    "browse": {
+      "title": "Explorar coches",
+      "description": "Descubre coches increíbles de la comunidad MyRide. Explora especificaciones, fotos y modificaciones de entusiastas de todo el mundo.",
+      "ogAlt": "Explorar coches en MyRide"
+    },
+    "clubsExplore": {
+      "title": "Explorar clubes",
+      "description": "Descubre clubes de entusiastas del motor en MyRide. Explora clubes públicos por país, miembros y nombre.",
+      "ogAlt": "Explorar clubes en MyRide"
+    },
+    "legalTerms": {
+      "title": "Términos del servicio",
+      "description": "Términos del servicio de MyRide: lee las condiciones de uso de la plataforma de escaparate automotriz.",
+      "ogAlt": "Términos del servicio de MyRide"
+    },
+    "legalPrivacy": {
+      "title": "Política de privacidad",
+      "description": "Política de privacidad de MyRide: cómo protegemos tu información personal en nuestra plataforma.",
+      "ogAlt": "Política de privacidad de MyRide"
+    },
+    "legalCookies": {
+      "title": "Política de cookies",
+      "description": "Política de cookies de MyRide: información sobre el uso de cookies y tecnologías de seguimiento.",
+      "ogAlt": "Política de cookies de MyRide"
+    },
+    "legalLicenses": {
+      "title": "Licencias",
+      "description": "Licencias e información de propiedad intelectual de MyRide y software de terceros usado en la plataforma.",
+      "ogAlt": "Licencias de MyRide"
+    },
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Inicia sesión en tu cuenta MyRide para gestionar tus coches y conectar con la comunidad automotriz."
+    },
+    "register": {
+      "title": "Crear cuenta",
+      "description": "Crea tu cuenta MyRide para empezar a mostrar tus coches y unirte a la comunidad automotriz."
+    }
+  },
+  "footer": {
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "cookies": "Cookies",
+    "licenses": "Licencias",
+    "rightsReserved": "Todos los derechos reservados.",
+    "createdBy": "Creado por"
   }
 }

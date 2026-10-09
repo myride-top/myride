@@ -64,3 +64,23 @@ export const getServerTranslator = async () => {
 
   return { locale, t }
 }
+
+/** next-intl-compatible translator scoped to a message namespace. */
+export const getTranslations = async ({
+  locale,
+  namespace,
+}: {
+  locale: Locale
+  namespace: string
+}) => {
+  const messages = await getDictionary(locale)
+
+  return (key: string, fallback?: string): string => {
+    const translated = getMessageByKey(messages, `${namespace}.${key}`)
+    if (translated) {
+      return translated
+    }
+
+    return fallback ?? `${namespace}.${key}`
+  }
+}

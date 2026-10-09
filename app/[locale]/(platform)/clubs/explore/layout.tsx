@@ -1,5 +1,10 @@
-import { buildLocaleAlternates } from '@/lib/constants/site'
+import {
+  DEFAULT_OG_IMAGE,
+  OPEN_GRAPH_LOCALES,
+  buildLocaleAlternates,
+} from '@/lib/constants/site'
 import { isLocale, type Locale } from '@/lib/i18n/config'
+import { getTranslations } from '@/lib/i18n/server'
 import { Metadata } from 'next'
 
 type ExploreClubsLayoutProps = {
@@ -12,26 +17,43 @@ export async function generateMetadata({
 }: ExploreClubsLayoutProps): Promise<Metadata> {
   const { locale: localeParam } = await params
   const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const t = await getTranslations({ locale, namespace: 'meta' })
   const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
     locale,
     '/clubs/explore'
   )
 
+  const title = t('clubsExplore.title')
+  const description = t('clubsExplore.description')
+
   return {
-    title: 'Explore Clubs',
-    description:
-      'Discover car enthusiast clubs on MyRide. Browse public clubs by country, members, and name.',
+    title,
+    description,
     alternates: {
       canonical,
       languages,
     },
     openGraph: {
-      title: 'MyRide - Explore Clubs',
-      description:
-        'Discover car enthusiast clubs on MyRide. Browse public clubs by country, members, and name.',
+      title,
+      description,
       type: 'website',
+      locale: OPEN_GRAPH_LOCALES[locale],
       url: openGraphUrl,
       siteName: 'MyRide',
+      images: [
+        {
+          url: DEFAULT_OG_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: t('clubsExplore.ogAlt'),
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [DEFAULT_OG_IMAGE],
     },
     robots: {
       index: true,

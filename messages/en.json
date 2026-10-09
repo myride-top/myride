@@ -683,5 +683,53 @@
       "downloadFailed": "Failed to download image"
     },
     "igStory": "IG Story"
+  },
+  "meta": {
+    "browse": {
+      "title": "Browse Cars",
+      "description": "Discover amazing cars from the MyRide community. Browse detailed specifications, photos, and modifications shared by car enthusiasts worldwide.",
+      "ogAlt": "Browse Cars on MyRide"
+    },
+    "clubsExplore": {
+      "title": "Explore Clubs",
+      "description": "Discover car enthusiast clubs on MyRide. Browse public clubs by country, members, and name.",
+      "ogAlt": "Explore Clubs on MyRide"
+    },
+    "legalTerms": {
+      "title": "Terms of Service",
+      "description": "Terms of Service for MyRide — read the terms and conditions for using the automotive showcase platform.",
+      "ogAlt": "MyRide Terms of Service"
+    },
+    "legalPrivacy": {
+      "title": "Privacy Policy",
+      "description": "Privacy Policy for MyRide — learn how we protect your personal information on our automotive showcase platform.",
+      "ogAlt": "MyRide Privacy Policy"
+    },
+    "legalCookies": {
+      "title": "Cookie Policy",
+      "description": "Cookie Policy for MyRide — learn about our use of cookies and tracking technologies.",
+      "ogAlt": "MyRide Cookie Policy"
+    },
+    "legalLicenses": {
+      "title": "Licenses",
+      "description": "Licenses and intellectual property information for MyRide and third-party software used on the platform.",
+      "ogAlt": "MyRide Licenses"
+    },
+    "login": {
+      "title": "Sign In",
+      "description": "Sign in to your MyRide account to manage your cars and connect with the automotive community."
+    },
+    "register": {
+      "title": "Create Account",
+      "description": "Create your MyRide account to start showcasing your cars and join the automotive community."
+    }
+  },
+  "footer": {
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "licenses": "Licenses",
+    "rightsReserved": "All rights reserved.",
+    "createdBy": "Created by"
   }
 }

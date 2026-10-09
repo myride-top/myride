@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     siteName: 'MyRide',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/og-image-default.png',
         width: 1200,
         height: 630,
         alt: 'MyRide Authentication',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     title: 'Authentication - MyRide',
     description:
       'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
-    images: ['/og-image-default.svg'],
+    images: ['/og-image-default.png'],
   },
   robots: {
     index: false,

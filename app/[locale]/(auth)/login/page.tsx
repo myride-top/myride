@@ -1,22 +1,55 @@
 import { Metadata } from 'next'
 import { LoginForm } from '@/components/auth/login-form'
 import Link from 'next/link'
-import { getServerTranslator } from '@/lib/i18n/server'
+import {
+  OPEN_GRAPH_LOCALES,
+  buildLocaleAlternates,
+} from '@/lib/constants/site'
+import { isLocale, type Locale } from '@/lib/i18n/config'
+import { getServerTranslator, getTranslations } from '@/lib/i18n/server'
 
-export const metadata: Metadata = {
-  title: 'Sign In',
-  description:
-    'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
-  openGraph: {
-    title: 'MyRide - Sign In',
-    description:
-      'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
-  },
-  twitter: {
-    title: 'MyRide - Sign In',
-    description:
-      'Sign in to your MyRide account to manage your cars and connect with the automotive community.',
-  },
+type LoginPageProps = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: LoginPageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const t = await getTranslations({ locale, namespace: 'meta' })
+  const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+    locale,
+    '/login'
+  )
+
+  const title = t('login.title')
+  const description = t('login.description')
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+      languages,
+    },
+    openGraph: {
+      title,
+      description,
+      locale: OPEN_GRAPH_LOCALES[locale],
+      url: openGraphUrl,
+      type: 'website',
+      siteName: 'MyRide',
+    },
+    twitter: {
+      title,
+      description,
+    },
+    robots: {
+      index: false,
+      follow: false,
+    },
+  }
 }
 
 export default async function LoginPage() {

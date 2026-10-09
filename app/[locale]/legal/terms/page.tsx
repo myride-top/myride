@@ -1,6 +1,11 @@
 import { Metadata } from 'next'
-import { buildLocaleAlternates } from '@/lib/constants/site'
+import {
+  DEFAULT_OG_IMAGE,
+  OPEN_GRAPH_LOCALES,
+  buildLocaleAlternates,
+} from '@/lib/constants/site'
 import { isLocale, type Locale } from '@/lib/i18n/config'
+import { getTranslations } from '@/lib/i18n/server'
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -11,43 +16,43 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: localeParam } = await params
   const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const t = await getTranslations({ locale, namespace: 'meta' })
   const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
     locale,
     '/legal/terms'
   )
 
+  const title = t('legalTerms.title')
+  const description = t('legalTerms.description')
+
   return {
-    title: 'Terms of Service',
-    description:
-      'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
-    keywords:
-      'terms of service, terms and conditions, legal, car showcase platform, automotive community',
+    title,
+    description,
     alternates: {
       canonical,
       languages,
     },
     openGraph: {
-      title: 'MyRide - Terms of Service',
-      description:
-        'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+      title,
+      description,
       type: 'website',
+      locale: OPEN_GRAPH_LOCALES[locale],
       url: openGraphUrl,
       siteName: 'MyRide',
       images: [
         {
-          url: '/og-image-default.svg',
+          url: DEFAULT_OG_IMAGE,
           width: 1200,
           height: 630,
-          alt: 'MyRide Terms of Service',
+          alt: t('legalTerms.ogAlt'),
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'MyRide - Terms of Service',
-      description:
-        'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
-      images: ['/og-image-default.svg'],
+      title,
+      description,
+      images: [DEFAULT_OG_IMAGE],
     },
     robots: {
       index: true,

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: 'MyRide',
     images: [
       {
-        url: '/og-image-default.svg',
+        url: '/og-image-default.png',
         width: 1200,
         height: 630,
         alt: 'Edit Profile on MyRide',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: 'MyRide - Edit Profile',
     description:
       'Update your MyRide profile settings, avatar, and preferences. Customize your automotive showcase experience.',
-    images: ['/og-image-default.svg'],
+    images: ['/og-image-default.png'],
   },
   robots: {
     index: false,

@@ -848,5 +848,53 @@
       "downloadFailed": "Nepodařilo se stáhnout obrázek"
     },
     "igStory": "IG Story"
+  },
+  "meta": {
+    "browse": {
+      "title": "Procházet auta",
+      "description": "Objevujte skvělá auta z komunity MyRide. Procházejte specifikace, fotky a úpravy sdílené automobilovými nadšenci z celého světa.",
+      "ogAlt": "Procházet auta na MyRide"
+    },
+    "clubsExplore": {
+      "title": "Prozkoumat kluby",
+      "description": "Objevujte automobilové kluby na MyRide. Procházejte veřejné kluby podle země, členů a názvu.",
+      "ogAlt": "Prozkoumat kluby na MyRide"
+    },
+    "legalTerms": {
+      "title": "Obchodní podmínky",
+      "description": "Obchodní podmínky MyRide — přečtěte si podmínky používání platformy pro prezentaci vozidel.",
+      "ogAlt": "Obchodní podmínky MyRide"
+    },
+    "legalPrivacy": {
+      "title": "Zásady ochrany osobních údajů",
+      "description": "Zásady ochrany osobních údajů MyRide — jak chráníme vaše osobní údaje na naší platformě.",
+      "ogAlt": "Zásady ochrany osobních údajů MyRide"
+    },
+    "legalCookies": {
+      "title": "Zásady cookies",
+      "description": "Zásady cookies MyRide — informace o používání cookies a technologií sledování.",
+      "ogAlt": "Zásady cookies MyRide"
+    },
+    "legalLicenses": {
+      "title": "Licence",
+      "description": "Licence a informace o duševním vlastnictví MyRide a software třetích stran používaném na platformě.",
+      "ogAlt": "Licence MyRide"
+    },
+    "login": {
+      "title": "Přihlášení",
+      "description": "Přihlaste se ke svému účtu MyRide, spravujte auta a spojte se s automobilovou komunitou."
+    },
+    "register": {
+      "title": "Vytvořit účet",
+      "description": "Vytvořte si účet MyRide a začněte prezentovat svá auta v automobilové komunitě."
+    }
+  },
+  "footer": {
+    "terms": "Podmínky",
+    "privacy": "Soukromí",
+    "cookies": "Cookies",
+    "licenses": "Licence",
+    "rightsReserved": "Všechna práva vyhrazena.",
+    "createdBy": "Vytvořil"
   }
 }

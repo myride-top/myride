@@ -848,5 +848,53 @@
       "downloadFailed": "Bild konnte nicht heruntergeladen werden"
     },
     "igStory": "IG Story"
+  },
+  "meta": {
+    "browse": {
+      "title": "Autos entdecken",
+      "description": "Entdecke tolle Autos aus der MyRide-Community. Durchsuche Spezifikationen, Fotos und Umbauten von Autofans weltweit.",
+      "ogAlt": "Autos auf MyRide entdecken"
+    },
+    "clubsExplore": {
+      "title": "Clubs entdecken",
+      "description": "Entdecke Auto-Clubs auf MyRide. Durchsuche öffentliche Clubs nach Land, Mitgliedern und Namen.",
+      "ogAlt": "Clubs auf MyRide entdecken"
+    },
+    "legalTerms": {
+      "title": "Nutzungsbedingungen",
+      "description": "Nutzungsbedingungen von MyRide — lies die Bedingungen für die Nutzung der Auto-Showcase-Plattform.",
+      "ogAlt": "MyRide Nutzungsbedingungen"
+    },
+    "legalPrivacy": {
+      "title": "Datenschutzrichtlinie",
+      "description": "Datenschutzrichtlinie von MyRide — erfahre, wie wir deine persönlichen Daten schützen.",
+      "ogAlt": "MyRide Datenschutzrichtlinie"
+    },
+    "legalCookies": {
+      "title": "Cookie-Richtlinie",
+      "description": "Cookie-Richtlinie von MyRide — Informationen zur Nutzung von Cookies und Tracking-Technologien.",
+      "ogAlt": "MyRide Cookie-Richtlinie"
+    },
+    "legalLicenses": {
+      "title": "Lizenzen",
+      "description": "Lizenzen und Informationen zum geistigen Eigentum von MyRide und verwendeter Drittanbieter-Software.",
+      "ogAlt": "MyRide Lizenzen"
+    },
+    "login": {
+      "title": "Anmelden",
+      "description": "Melde dich bei deinem MyRide-Konto an, um deine Autos zu verwalten und dich mit der Community zu verbinden."
+    },
+    "register": {
+      "title": "Konto erstellen",
+      "description": "Erstelle dein MyRide-Konto und beginne, deine Autos der Community zu präsentieren."
+    }
+  },
+  "footer": {
+    "terms": "Bedingungen",
+    "privacy": "Datenschutz",
+    "cookies": "Cookies",
+    "licenses": "Lizenzen",
+    "rightsReserved": "Alle Rechte vorbehalten.",
+    "createdBy": "Erstellt von"
   }
 }
