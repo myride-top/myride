@@ -4,7 +4,6 @@ import {
   CarPhoto,
   CarComment,
   PhotoCategory,
-  Profile,
 } from '@/lib/types/database'
 import type {
   BrowseCarsQuery,
