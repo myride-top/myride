@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { MinimalFooter } from '@/components/common/minimal-footer'
+import { SITE_URL } from '@/lib/constants/site'
 
 export const metadata: Metadata = {
   title: 'Add New Car',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     description:
       'Add your car to the MyRide community. Share detailed specifications, photos, and modifications with fellow car enthusiasts.',
     type: 'website',
-    url: 'https://myride.top/create',
+    url: `${SITE_URL}/create`,
     siteName: 'MyRide',
     images: [
       {

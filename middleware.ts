@@ -122,8 +122,11 @@ export async function middleware(request: NextRequest) {
 
   if (normalizedPathname === '/') {
     const target = authenticatedUser ? '/dashboard' : '/browse'
+    // Permanent for public home -> browse; temporary when auth sends to dashboard
+    const status = authenticatedUser ? 307 : 308
     const redirectResponse = NextResponse.redirect(
-      new URL(`${localePrefix}${target}`, request.url)
+      new URL(`${localePrefix}${target}`, request.url),
+      status
     )
     return withLocaleCookie(redirectResponse, resolvedLocale)
   }

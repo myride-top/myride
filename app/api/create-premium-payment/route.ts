@@ -7,6 +7,7 @@ import {
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { SITE_URL } from '@/lib/constants/site'
 
 export async function POST(request: NextRequest) {
   // Apply rate limiting
@@ -86,10 +87,10 @@ export async function POST(request: NextRequest) {
       name: 'MyRide Premium',
       description: 'Lifetime premium access to MyRide features',
       successUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
+        process.env.NEXT_PUBLIC_APP_URL || SITE_URL
       }/premium/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
+        process.env.NEXT_PUBLIC_APP_URL || SITE_URL
       }/premium`,
       metadata: {
         type: 'premium',

@@ -1,38 +1,59 @@
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/lib/constants/site'
+import { isLocale, type Locale } from '@/lib/i18n/config'
 
-export const metadata: Metadata = {
-  title: 'Licenses',
-  description:
-    'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
-  keywords:
-    'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
-  openGraph: {
-    title: 'MyRide - Licenses',
+type PageProps = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+    locale,
+    '/legal/licenses'
+  )
+
+  return {
+    title: 'Licenses',
     description:
       'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
-    type: 'website',
-    url: 'https://myride.top/legal/licenses',
-    siteName: 'MyRide',
-    images: [
-      {
-        url: '/og-image-default.svg',
-        width: 1200,
-        height: 630,
-        alt: 'MyRide Licenses',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'MyRide - Licenses',
-    description:
-      'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
-    images: ['/og-image-default.svg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+    keywords:
+      'licenses, intellectual property, open source, third-party software, car showcase platform, automotive community',
+    alternates: {
+      canonical,
+      languages,
+    },
+    openGraph: {
+      title: 'MyRide - Licenses',
+      description:
+        'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
+      type: 'website',
+      url: openGraphUrl,
+      siteName: 'MyRide',
+      images: [
+        {
+          url: '/og-image-default.svg',
+          width: 1200,
+          height: 630,
+          alt: 'MyRide Licenses',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'MyRide - Licenses',
+      description:
+        'Licenses and intellectual property information for MyRide. Learn about the open source licenses and third-party software used in our automotive showcase platform.',
+      images: ['/og-image-default.svg'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
 }
 
 export default function LicensesPage() {

@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { MainNavbar } from '@/components/navbar/main-navbar'
+import { SITE_URL } from '@/lib/constants/site'
 
 export const metadata: Metadata = {
   title: {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     description:
       'Sign in or create your MyRide account to start showcasing your cars to the automotive community.',
     type: 'website',
-    url: 'https://myride.top',
+    url: SITE_URL,
     siteName: 'MyRide',
     images: [
       {

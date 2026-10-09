@@ -20,6 +20,7 @@ import {
   websiteSchema,
   organizationSchema,
 } from '@/components/common/structured-data'
+import { SITE_URL } from '@/lib/constants/site'
 import './globals.css'
 
 const commissioner = Commissioner({
@@ -32,6 +33,9 @@ const atkinson = Atkinson_Hyperlegible({
   weight: ['400', '700'],
   subsets: ['latin'],
 })
+
+const googleSiteVerification =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
 
 export const metadata: Metadata = {
   title: {
@@ -50,20 +54,21 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://myride.top'),
+  metadataBase: new URL(SITE_URL),
   alternates: {
-    canonical: '/',
+    canonical: '/en/browse',
     languages: {
-      en: '/en',
-      cs: '/cs',
-      es: '/es',
-      de: '/de',
+      en: '/en/browse',
+      cs: '/cs/browse',
+      es: '/es/browse',
+      de: '/de/browse',
+      'x-default': '/en/browse',
     },
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://myride.top',
+    url: '/en/browse',
     siteName: 'MyRide',
     title: 'MyRide - Showcase Your Car to the World',
     description:
@@ -88,9 +93,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
+  ...(googleSiteVerification
+    ? { verification: { google: googleSiteVerification } }
+    : {}),
   category: 'automotive',
   classification: 'car showcase platform',
 }
@@ -107,8 +112,8 @@ export default async function RootLayout({
   const locale: Locale = isLocale(localeFromHeader)
     ? localeFromHeader
     : isLocale(localeFromCookie)
-    ? localeFromCookie
-    : DEFAULT_LOCALE
+      ? localeFromCookie
+      : DEFAULT_LOCALE
   const messages = await getDictionary(locale)
 
   return (

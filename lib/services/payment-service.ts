@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { getStripeClient } from './stripe-client'
+import { SITE_URL } from '@/lib/constants/site'
 
 export interface PaymentSessionOptions {
   userId?: string
@@ -79,7 +80,7 @@ export class PaymentService {
               product_data: {
                 name: name.trim(),
                 description: description?.trim() || '',
-                images: ['https://myride.top/icon.jpg'],
+                images: [`${SITE_URL}/icon.jpg`],
               },
               unit_amount: amount,
             },

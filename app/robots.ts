@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/constants/site'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -10,10 +11,10 @@ export default function robots(): MetadataRoute.Robots {
         '/profile',
         '/create',
         '/api/',
-        
+
         '/*/edit',
       ],
     },
-    sitemap: 'https://www.myride.top/sitemap.xml',
+    sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }

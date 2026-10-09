@@ -7,6 +7,7 @@ import {
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { SITE_URL } from '@/lib/constants/site'
 
 export async function POST(request: NextRequest) {
   // Apply rate limiting
@@ -86,10 +87,10 @@ export async function POST(request: NextRequest) {
       name: 'Additional Car Slot',
       description: 'Add one more car to your MyRide profile',
       successUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
+        process.env.NEXT_PUBLIC_APP_URL || SITE_URL
       }/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || 'https://myride.top'
+        process.env.NEXT_PUBLIC_APP_URL || SITE_URL
       }/dashboard`,
       metadata: {
         type: 'car_slot',

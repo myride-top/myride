@@ -1,6 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { MinimalFooter } from '@/components/common/minimal-footer'
+import { SITE_URL } from '@/lib/constants/site'
 
 export const metadata: Metadata = {
   title: 'Analytics',
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     description:
       'Track your car performance with detailed analytics and insights. Monitor views, likes, shares, and comments to optimize your automotive showcase.',
     type: 'website',
-    url: 'https://myride.top/analytics',
+    url: `${SITE_URL}/analytics`,
     siteName: 'MyRide',
     images: [
       {

@@ -1,3 +1,5 @@
+import { SITE_URL } from '@/lib/constants/site'
+
 interface StructuredDataProps {
   data: Record<string, JsonValue>
   id?: string
@@ -26,10 +28,10 @@ export const websiteSchema = {
   name: 'MyRide',
   description:
     'The ultimate platform for car enthusiasts to showcase their vehicles',
-  url: 'https://myride.top',
+  url: SITE_URL,
   potentialAction: {
     '@type': 'SearchAction',
-    target: 'https://myride.top/browse?q={search_term_string}',
+    target: `${SITE_URL}/en/browse?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
 }
@@ -40,8 +42,8 @@ export const organizationSchema = {
   name: 'MyRide',
   description:
     'The ultimate platform for car enthusiasts to showcase their vehicles',
-  url: 'https://myride.top',
-  logo: 'https://myride.top/og-image-default.svg',
+  url: SITE_URL,
+  logo: `${SITE_URL}/og-image-default.svg`,
   sameAs: [
     'https://twitter.com/myride',
     'https://tiktok.com/@myride.top',

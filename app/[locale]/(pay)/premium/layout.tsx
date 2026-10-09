@@ -1,5 +1,6 @@
 import { MinimalFooter } from '@/components/common/minimal-footer'
 import { Metadata } from 'next'
+import { SITE_URL } from '@/lib/constants/site'
 
 export const metadata: Metadata = {
   title: 'Premium',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     description:
       'Upgrade to MyRide Premium for unlimited cars, advanced analytics, garage sharing, and exclusive features. Only $10 for lifetime access.',
     type: 'website',
-    url: 'https://myride.top/premium',
+    url: `${SITE_URL}/premium`,
     siteName: 'MyRide',
     images: [
       {

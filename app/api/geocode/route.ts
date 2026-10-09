@@ -4,6 +4,7 @@ import {
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { SITE_URL } from '@/lib/constants/site'
 
 export async function GET(request: NextRequest) {
   // Apply rate limiting
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
       {
         headers: {
-          'User-Agent': 'MyRide App (https://myride.top)',
+          'User-Agent': `MyRide App (${SITE_URL})`,
         },
       }
     )

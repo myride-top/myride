@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { getCarByUrlSlugAndUsernameClient } from '@/lib/database/cars-client'
 import { MinimalFooter } from '@/components/common/minimal-footer'
+import { SITE_URL } from '@/lib/constants/site'
 
 export async function generateMetadata({
   params,
@@ -21,7 +22,7 @@ export async function generateMetadata({
         title: `MyRide - Editing ${carName}`,
         description: `Edit your ${carName} details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.`,
         type: 'website',
-        url: 'https://myride.top',
+        url: SITE_URL,
         siteName: 'MyRide',
         images: [
           {
@@ -55,7 +56,7 @@ export async function generateMetadata({
         description:
           'Edit your car details, specifications, and photos on MyRide. Update your automotive showcase with the latest information.',
         type: 'website',
-        url: 'https://myride.top',
+        url: SITE_URL,
         siteName: 'MyRide',
         images: [
           {

@@ -1,38 +1,59 @@
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/lib/constants/site'
+import { isLocale, type Locale } from '@/lib/i18n/config'
 
-export const metadata: Metadata = {
-  title: 'Terms of Service',
-  description:
-    'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
-  keywords:
-    'terms of service, terms and conditions, legal, car showcase platform, automotive community',
-  openGraph: {
-    title: 'MyRide - Terms of Service',
+type PageProps = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+    locale,
+    '/legal/terms'
+  )
+
+  return {
+    title: 'Terms of Service',
     description:
       'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
-    type: 'website',
-    url: 'https://myride.top/legal/terms',
-    siteName: 'MyRide',
-    images: [
-      {
-        url: '/og-image-default.svg',
-        width: 1200,
-        height: 630,
-        alt: 'MyRide Terms of Service',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'MyRide - Terms of Service',
-    description:
-      'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
-    images: ['/og-image-default.svg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+    keywords:
+      'terms of service, terms and conditions, legal, car showcase platform, automotive community',
+    alternates: {
+      canonical,
+      languages,
+    },
+    openGraph: {
+      title: 'MyRide - Terms of Service',
+      description:
+        'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+      type: 'website',
+      url: openGraphUrl,
+      siteName: 'MyRide',
+      images: [
+        {
+          url: '/og-image-default.svg',
+          width: 1200,
+          height: 630,
+          alt: 'MyRide Terms of Service',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'MyRide - Terms of Service',
+      description:
+        'Terms of Service for MyRide - The ultimate platform for car enthusiasts. Read our terms and conditions for using the automotive showcase platform.',
+      images: ['/og-image-default.svg'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
 }
 
 export default function TermsPage() {

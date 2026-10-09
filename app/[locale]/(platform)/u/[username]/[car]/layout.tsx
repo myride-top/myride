@@ -1,10 +1,13 @@
 import { Metadata } from 'next'
 import { getCarByUrlSlugAndUsername } from '@/lib/database/cars'
 import { getProfileByUsername } from '@/lib/database/profiles'
+import { SITE_URL, buildLocaleAlternates } from '@/lib/constants/site'
+import { isLocale, type Locale } from '@/lib/i18n/config'
 
 interface CarLayoutProps {
   children: React.ReactNode
   params: Promise<{
+    locale: string
     username: string
     car: string
   }>
@@ -14,7 +17,13 @@ export async function generateMetadata({
   params,
 }: CarLayoutProps): Promise<Metadata> {
   try {
-    const { username, car: carSlug } = await params
+    const { locale: localeParam, username, car: carSlug } = await params
+    const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+    const path = `/u/${username}/${carSlug}`
+    const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+      locale,
+      path
+    )
 
     // First try to get the car
     const car = await getCarByUrlSlugAndUsername(carSlug, username)
@@ -23,6 +32,8 @@ export async function generateMetadata({
       return {
         title: 'Car Not Found',
         description: 'The requested car could not be found.',
+        alternates: { canonical, languages },
+        openGraph: { url: openGraphUrl },
       }
     }
 
@@ -54,19 +65,21 @@ export async function generateMetadata({
           profile?.username || username
         } on MyRide!`
 
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL || 'https://myride.top'
-    const ogImageUrl = `${siteUrl}/api/og/car?username=${encodeURIComponent(username)}&slug=${encodeURIComponent(carSlug)}&format=og`
-    const fallbackImage = imageUrl || `${siteUrl}/og-image-default.svg`
+    const ogImageUrl = `${SITE_URL}/api/og/car?username=${encodeURIComponent(username)}&slug=${encodeURIComponent(carSlug)}&format=og`
+    const fallbackImage = imageUrl || `${SITE_URL}/og-image-default.svg`
 
     const metadata: Metadata = {
       title,
       description,
+      alternates: {
+        canonical,
+        languages,
+      },
       openGraph: {
         title,
         description,
         type: 'website',
-        url: `${siteUrl}/u/${username}/${carSlug}`,
+        url: openGraphUrl,
         images: [
           {
             url: ogImageUrl,
@@ -97,4 +110,3 @@ export async function generateMetadata({
 export default function CarLayout({ children }: CarLayoutProps) {
   return <>{children}</>
 }
-

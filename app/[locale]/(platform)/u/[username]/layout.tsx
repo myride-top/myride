@@ -1,10 +1,13 @@
 import { Metadata } from 'next'
 import { getProfileByUsername } from '@/lib/database/profiles'
 import { MinimalFooter } from '@/components/common/minimal-footer'
+import { buildLocaleAlternates } from '@/lib/constants/site'
+import { isLocale, type Locale } from '@/lib/i18n/config'
 
 interface ProfileLayoutProps {
   children: React.ReactNode
   params: Promise<{
+    locale: string
     username: string
   }>
 }
@@ -13,7 +16,13 @@ export async function generateMetadata({
   params,
 }: ProfileLayoutProps): Promise<Metadata> {
   try {
-    const { username } = await params
+    const { locale: localeParam, username } = await params
+    const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+    const path = `/u/${username}`
+    const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+      locale,
+      path
+    )
 
     // Try to get the profile
     const profile = await getProfileByUsername(username)
@@ -22,6 +31,8 @@ export async function generateMetadata({
       return {
         title: 'Profile Not Found',
         description: 'The requested profile could not be found.',
+        alternates: { canonical, languages },
+        openGraph: { url: openGraphUrl },
       }
     }
 
@@ -33,11 +44,15 @@ export async function generateMetadata({
     const metadata: Metadata = {
       title,
       description,
+      alternates: {
+        canonical,
+        languages,
+      },
       openGraph: {
         title,
         description,
         type: 'website',
-        url: `https://myride.top/u/${username}`,
+        url: openGraphUrl,
         images: profile.avatar_url
           ? [
               {

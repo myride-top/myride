@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { MinimalFooter } from '@/components/common/minimal-footer'
+import { SITE_URL } from '@/lib/constants/site'
 
 export const metadata: Metadata = {
   title: 'Edit Profile',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     description:
       'Update your MyRide profile settings, avatar, and preferences. Customize your automotive showcase experience.',
     type: 'website',
-    url: 'https://myride.top/profile',
+    url: `${SITE_URL}/profile`,
     siteName: 'MyRide',
     images: [
       {

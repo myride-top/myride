@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { SITE_URL } from '@/lib/constants/site'
 
 export const metadata: Metadata = {
   title: 'Events Map',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     description:
       'Discover car events near you. View events on the map, RSVP, and connect with fellow car enthusiasts.',
     type: 'website',
-    url: 'https://myride.top/map',
+    url: `${SITE_URL}/map`,
     siteName: 'MyRide',
     images: [
       {

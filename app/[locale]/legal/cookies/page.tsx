@@ -1,38 +1,59 @@
 import { Metadata } from 'next'
+import { buildLocaleAlternates } from '@/lib/constants/site'
+import { isLocale, type Locale } from '@/lib/i18n/config'
 
-export const metadata: Metadata = {
-  title: 'Cookie Policy',
-  description:
-    'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
-  keywords:
-    'cookie policy, cookies, tracking technologies, data collection, car showcase platform, automotive community',
-  openGraph: {
-    title: 'MyRide - Cookie Policy',
+type PageProps = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale: Locale = isLocale(localeParam) ? localeParam : 'en'
+  const { canonical, languages, openGraphUrl } = buildLocaleAlternates(
+    locale,
+    '/legal/cookies'
+  )
+
+  return {
+    title: 'Cookie Policy',
     description:
       'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
-    type: 'website',
-    url: 'https://myride.top/legal/cookies',
-    siteName: 'MyRide',
-    images: [
-      {
-        url: '/og-image-default.svg',
-        width: 1200,
-        height: 630,
-        alt: 'MyRide Cookie Policy',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'MyRide - Cookie Policy',
-    description:
-      'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
-    images: ['/og-image-default.svg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+    keywords:
+      'cookie policy, cookies, tracking technologies, data collection, car showcase platform, automotive community',
+    alternates: {
+      canonical,
+      languages,
+    },
+    openGraph: {
+      title: 'MyRide - Cookie Policy',
+      description:
+        'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+      type: 'website',
+      url: openGraphUrl,
+      siteName: 'MyRide',
+      images: [
+        {
+          url: '/og-image-default.svg',
+          width: 1200,
+          height: 630,
+          alt: 'MyRide Cookie Policy',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'MyRide - Cookie Policy',
+      description:
+        'Cookie Policy for MyRide - Learn about our use of cookies and tracking technologies on our automotive showcase platform.',
+      images: ['/og-image-default.svg'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
 }
 
 export default function CookiesPage() {
