@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import { getProfileByUsernameClient } from '@/lib/database/profiles-client'
 import { toast } from 'sonner'
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { AlertCircle, Loader2, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n/provider'
+import { getSafeNextPath } from '@/lib/utils/safe-next-path'
 
 export const RegisterForm = () => {
   const { t } = useI18n()
@@ -29,6 +30,8 @@ export const RegisterForm = () => {
   }>({})
   const { signUp } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextPath = getSafeNextPath(searchParams.get('next'))
 
   const validateForm = () => {
     const newErrors: typeof errors = {}
@@ -156,7 +159,7 @@ export const RegisterForm = () => {
       setLoading(false)
     } else {
       toast.success(t('auth.register.success', 'Account created successfully!'))
-      router.push('/dashboard')
+      router.push(nextPath)
     }
   }
 

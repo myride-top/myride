@@ -767,7 +767,28 @@
       "title": "Events Map",
       "description": "Discover car events near you. View events on the map, RSVP, and connect with fellow car enthusiasts.",
       "ogAlt": "MyRide Events Map"
+    },
+    "events": {
+      "title": "Upcoming Events",
+      "description": "Discover public car meets and events on MyRide. Browse upcoming events, RSVP, and share with friends.",
+      "ogAlt": "Upcoming car events on MyRide"
     }
+  },
+  "events": {
+    "title": "Upcoming events",
+    "description": "Public car meets and events you can share and join.",
+    "emptyTitle": "No upcoming events",
+    "emptyDescription": "Check back soon or create an event on the map.",
+    "attendeeCount": "{count} attending",
+    "rsvp": "I will attend",
+    "manageRsvp": "Manage attendance",
+    "pastBadge": "Past event",
+    "location": "Location",
+    "openInMaps": "Open in Google Maps",
+    "mapAlt": "Map for {name}",
+    "about": "About",
+    "organizer": "Organizer",
+    "attendeeCars": "Cars attending"
   },
   "footer": {
     "terms": "Terms",

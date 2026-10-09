@@ -931,7 +931,28 @@
       "title": "Mapa de eventos",
       "description": "Descubre eventos de coches cerca de ti. Véalos en el mapa, confirma asistencia y conecta con otros entusiastas.",
       "ogAlt": "Mapa de eventos MyRide"
+    },
+    "events": {
+      "title": "Próximos eventos",
+      "description": "Descubre quedadas y eventos públicos en MyRide. Explora, confirma asistencia y comparte con amigos.",
+      "ogAlt": "Próximos eventos de coches en MyRide"
     }
+  },
+  "events": {
+    "title": "Próximos eventos",
+    "description": "Quedadas y eventos públicos para compartir y unirte.",
+    "emptyTitle": "No hay próximos eventos",
+    "emptyDescription": "Vuelve pronto o crea un evento en el mapa.",
+    "attendeeCount": "{count} asistentes",
+    "rsvp": "Asistiré",
+    "manageRsvp": "Gestionar asistencia",
+    "pastBadge": "Pasado",
+    "location": "Ubicación",
+    "openInMaps": "Abrir en Google Maps",
+    "mapAlt": "Mapa de {name}",
+    "about": "Descripción",
+    "organizer": "Organizador",
+    "attendeeCars": "Coches asistentes"
   },
   "footer": {
     "terms": "Términos",

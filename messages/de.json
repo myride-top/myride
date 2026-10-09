@@ -931,7 +931,28 @@
       "title": "Eventkarte",
       "description": "Entdecke Auto-Events in deiner Nähe. Sieh sie auf der Karte, sage zu und vernetze dich mit anderen Fans.",
       "ogAlt": "MyRide Eventkarte"
+    },
+    "events": {
+      "title": "Kommende Events",
+      "description": "Entdecke öffentliche Auto-Treffen und Events auf MyRide. Stöbere, sage zu und teile mit Freunden.",
+      "ogAlt": "Kommende Auto-Events auf MyRide"
     }
+  },
+  "events": {
+    "title": "Kommende Events",
+    "description": "Öffentliche Treffen und Events zum Teilen und Mitmachen.",
+    "emptyTitle": "Keine kommenden Events",
+    "emptyDescription": "Schau später wieder vorbei oder erstelle ein Event auf der Karte.",
+    "attendeeCount": "{count} Teilnehmer",
+    "rsvp": "Ich nehme teil",
+    "manageRsvp": "Teilnahme verwalten",
+    "pastBadge": "Vergangen",
+    "location": "Ort",
+    "openInMaps": "In Google Maps öffnen",
+    "mapAlt": "Karte für {name}",
+    "about": "Beschreibung",
+    "organizer": "Veranstalter",
+    "attendeeCars": "Teilnehmende Autos"
   },
   "footer": {
     "terms": "Bedingungen",

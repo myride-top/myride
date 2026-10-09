@@ -931,7 +931,28 @@
       "title": "Mapa akcí",
       "description": "Objevuj automobilové akce v okolí. Sleduj je na mapě, potvrď účast a spoj se s dalšími nadšenci.",
       "ogAlt": "Mapa akcí MyRide"
+    },
+    "events": {
+      "title": "Nadcházející akce",
+      "description": "Objevuj veřejné srazy a akce na MyRide. Procházej nadcházející eventy, potvrď účast a sdílej s přáteli.",
+      "ogAlt": "Nadcházející automobilové akce na MyRide"
     }
+  },
+  "events": {
+    "title": "Nadcházející akce",
+    "description": "Veřejné srazy a akce, které můžeš sdílet a zúčastnit se.",
+    "emptyTitle": "Žádné nadcházející akce",
+    "emptyDescription": "Zkuste to později nebo vytvořte akci na mapě.",
+    "attendeeCount": "{count} účastníků",
+    "rsvp": "Zúčastním se",
+    "manageRsvp": "Upravit účast",
+    "pastBadge": "Proběhlé",
+    "location": "Místo",
+    "openInMaps": "Otevřít v Google Maps",
+    "mapAlt": "Mapa pro {name}",
+    "about": "Popis",
+    "organizer": "Organizátor",
+    "attendeeCars": "Auta účastníků"
   },
   "footer": {
     "terms": "Podmínky",

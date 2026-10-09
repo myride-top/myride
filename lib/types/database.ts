@@ -317,6 +317,8 @@ export type EventType =
 export interface Event {
   id: string
   title: string
+  /** Public URL slug; null until DB migration `add_slug_to_events` is applied. */
+  slug: string | null
   description: string | null
   latitude: number
   longitude: number

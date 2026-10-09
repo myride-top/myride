@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/context/auth-context'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n/provider'
+import { getSafeNextPath } from '@/lib/utils/safe-next-path'
 
 export const LoginForm = () => {
   const { t } = useI18n()
@@ -19,6 +20,8 @@ export const LoginForm = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const { signIn } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextPath = getSafeNextPath(searchParams.get('next'))
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {}
@@ -71,7 +74,7 @@ export const LoginForm = () => {
       setLoading(false)
     } else {
       toast.success(t('auth.login.success', 'Signed in successfully!'))
-      router.push('/dashboard')
+      router.push(nextPath)
     }
   }
 

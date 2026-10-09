@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import { RegisterForm } from '@/components/auth/register-form'
 import Link from 'next/link'
 import {
@@ -10,6 +11,7 @@ import { getServerTranslator, getTranslations } from '@/lib/i18n/server'
 
 type RegisterPageProps = {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ next?: string }>
 }
 
 export async function generateMetadata({
@@ -52,8 +54,12 @@ export async function generateMetadata({
   }
 }
 
-export default async function RegisterPage() {
+export default async function RegisterPage({ searchParams }: RegisterPageProps) {
   const { t } = await getServerTranslator()
+  const { next } = await searchParams
+  const loginHref = next
+    ? `/login?next=${encodeURIComponent(next)}`
+    : '/login'
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8 pt-24'>
@@ -65,7 +71,7 @@ export default async function RegisterPage() {
           <p className='mt-2 text-center text-sm text-muted-foreground'>
             {t('auth.register.or', 'Or')}{' '}
             <Link
-              href='/login'
+              href={loginHref}
               className='font-medium text-primary hover:text-primary/80 cursor-pointer'
             >
               {t(
@@ -75,7 +81,9 @@ export default async function RegisterPage() {
             </Link>
           </p>
         </div>
-        <RegisterForm />
+        <Suspense fallback={null}>
+          <RegisterForm />
+        </Suspense>
       </div>
     </div>
   )

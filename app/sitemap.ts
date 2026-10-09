@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { LOCALES } from '@/lib/i18n/config'
 import { SITE_URL } from '@/lib/constants/site'
 
+export const revalidate = 3600
+
 type SitemapChangeFrequency =
   | 'always'
   | 'hourly'
@@ -157,6 +159,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: number
   }> = [
     { path: '/browse', changeFrequency: 'daily', priority: 1 },
+    { path: '/events', changeFrequency: 'daily', priority: 0.8 },
     { path: '/clubs/explore', changeFrequency: 'daily', priority: 0.8 },
     { path: '/legal/terms', changeFrequency: 'yearly', priority: 0.5 },
     { path: '/legal/privacy', changeFrequency: 'yearly', priority: 0.5 },
@@ -208,6 +211,74 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           0.6
         )
       )
+    }
+
+    for (let from = 0; ; from += PAGE_SIZE) {
+      const withSlug = await supabase
+        .from('events')
+        .select('slug, updated_at, created_at')
+        .not('slug', 'is', null)
+        .order('updated_at', { ascending: false })
+        .range(from, from + PAGE_SIZE - 1)
+
+      if (withSlug.error) {
+        const withId = await supabase
+          .from('events')
+          .select('id, updated_at, created_at')
+          .order('updated_at', { ascending: false })
+          .range(from, from + PAGE_SIZE - 1)
+
+        if (withId.error) {
+          console.error('sitemap events fetch failed:', withId.error.message)
+          break
+        }
+
+        if (!withId.data || withId.data.length === 0) {
+          break
+        }
+
+        for (const event of withId.data) {
+          const modified = new Date(
+            event.updated_at || event.created_at || Date.now()
+          )
+          entries.push(
+            ...buildLocalizedEntries(
+              `/events/${event.id}`,
+              modified,
+              'weekly',
+              0.7
+            )
+          )
+        }
+
+        if (withId.data.length < PAGE_SIZE) {
+          break
+        }
+        continue
+      }
+
+      if (!withSlug.data || withSlug.data.length === 0) {
+        break
+      }
+
+      for (const event of withSlug.data) {
+        if (!event.slug) continue
+        const modified = new Date(
+          event.updated_at || event.created_at || Date.now()
+        )
+        entries.push(
+          ...buildLocalizedEntries(
+            `/events/${event.slug}`,
+            modified,
+            'weekly',
+            0.7
+          )
+        )
+      }
+
+      if (withSlug.data.length < PAGE_SIZE) {
+        break
+      }
     }
   } catch (error) {
     console.error('sitemap dynamic fetch failed:', error)

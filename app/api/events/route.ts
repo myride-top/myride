@@ -6,6 +6,7 @@ import {
   createRateLimitResponse,
 } from '@/lib/utils/rate-limit'
 import { createSecureResponse } from '@/lib/utils/security-headers'
+import { ensureUniqueSlug, slugify } from '@/lib/utils/slugify'
 
 export async function GET(request: NextRequest) {
   // Apply rate limiting
@@ -52,10 +53,11 @@ export async function GET(request: NextRequest) {
 
     // Get active events - filter expired events at database level for better performance
     const now = new Date().toISOString()
+    // `*` includes `slug` when the column exists (after migration)
     const { data: events, error: eventsError } = await supabase
       .from('events')
       .select(
-        'id, created_by, title, description, event_type, event_date, end_date, latitude, longitude, event_image_url, route, club_id, created_at, updated_at, club:clubs(id, name, slug, badge_url)'
+        '*, club:clubs(id, name, slug, badge_url)'
       )
       .or(`end_date.gte.${now},and(end_date.is.null,event_date.gte.${now})`)
       .order('event_date', { ascending: true })
@@ -250,26 +252,70 @@ export async function POST(request: NextRequest) {
       validatedClubId = club_id
     }
 
-    // Create event
-    const { data: event, error: createError } = await supabase
-      .from('events')
-      .insert({
-        title,
-        description: description || null,
-        latitude,
-        longitude,
-        event_date,
-        end_date: end_date || null,
-        event_type: event_type || 'meetup',
-        event_image_url: event_image_url || null,
-        route: route || null,
-        club_id: validatedClubId,
-        created_by: user.id,
-      })
-      .select()
-      .single()
+    const basePayload = {
+      title,
+      description: description || null,
+      latitude,
+      longitude,
+      event_date,
+      end_date: end_date || null,
+      event_type: event_type || 'meetup',
+      event_image_url: event_image_url || null,
+      route: route || null,
+      club_id: validatedClubId,
+      created_by: user.id,
+    }
 
-    if (createError) {
+    let slug: string | null = null
+    try {
+      slug = await ensureUniqueSlug(slugify(String(title)), async candidate => {
+        const { data: existing } = await supabase
+          .from('events')
+          .select('id')
+          .eq('slug', candidate)
+          .maybeSingle()
+        return Boolean(existing)
+      })
+    } catch {
+      slug = null
+    }
+
+    // Create event (with slug when column exists; fall back without)
+    let event = null
+    let createError = null
+
+    if (slug) {
+      const withSlug = await supabase
+        .from('events')
+        .insert({ ...basePayload, slug })
+        .select()
+        .single()
+      event = withSlug.data
+      createError = withSlug.error
+
+      if (
+        createError &&
+        (createError.message?.includes('slug') || createError.code === '42703')
+      ) {
+        const withoutSlug = await supabase
+          .from('events')
+          .insert(basePayload)
+          .select()
+          .single()
+        event = withoutSlug.data
+        createError = withoutSlug.error
+      }
+    } else {
+      const withoutSlug = await supabase
+        .from('events')
+        .insert(basePayload)
+        .select()
+        .single()
+      event = withoutSlug.data
+      createError = withoutSlug.error
+    }
+
+    if (createError || !event) {
       return createSecureResponse(
         { error: 'Failed to create event' },
         500

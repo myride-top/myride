@@ -124,3 +124,61 @@ export const breadcrumbSchema = (
     item: breadcrumb.url,
   })),
 })
+
+/** Schema.org Event for public event detail pages. */
+export const eventJsonLdSchema = (eventData: {
+  name: string
+  description?: string | null
+  startDate: string
+  endDate?: string | null
+  image?: string | null
+  url: string
+  locationName: string
+  streetAddress?: string
+  addressLocality?: string
+  addressCountry?: string
+  latitude: number
+  longitude: number
+  organizerName: string
+  organizerUrl?: string
+}) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: eventData.name,
+  ...(eventData.description
+    ? { description: eventData.description }
+    : {}),
+  startDate: eventData.startDate,
+  ...(eventData.endDate ? { endDate: eventData.endDate } : {}),
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  ...(eventData.image ? { image: eventData.image } : {}),
+  url: eventData.url,
+  location: {
+    '@type': 'Place',
+    name: eventData.locationName,
+    address: {
+      '@type': 'PostalAddress',
+      ...(eventData.streetAddress
+        ? { streetAddress: eventData.streetAddress }
+        : {}),
+      ...(eventData.addressLocality
+        ? { addressLocality: eventData.addressLocality }
+        : {}),
+      ...(eventData.addressCountry
+        ? { addressCountry: eventData.addressCountry }
+        : {}),
+      name: eventData.locationName,
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: eventData.latitude,
+      longitude: eventData.longitude,
+    },
+  },
+  organizer: {
+    '@type': 'Person',
+    name: eventData.organizerName,
+    ...(eventData.organizerUrl ? { url: eventData.organizerUrl } : {}),
+  },
+})

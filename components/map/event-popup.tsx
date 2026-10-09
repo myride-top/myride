@@ -37,6 +37,7 @@ import type { DivIcon } from 'leaflet'
 import { useI18n } from '@/lib/i18n/provider'
 import { osmTileLayer } from './map-tiles'
 import { buildLocalePath } from '@/lib/i18n/config'
+import { getEventPublicPath } from '@/lib/utils/event-path'
 
 // Dynamically import map components for route display
 const MapContainer = dynamic(
@@ -283,9 +284,9 @@ export function EventPopup({
     if (!qrCodeDataUrl) {
       setIsGeneratingQR(true)
       try {
-        const shareUrl = `${
+        const origin =
           typeof window !== 'undefined' ? window.location.origin : ''
-        }/map?event=${event.id}`
+        const shareUrl = `${origin}${getEventPublicPath(locale, event)}`
         const dataUrl = await generateQRCodeWithLogo(shareUrl, '/icon.jpg', {
           width: 300,
           margin: 2,
@@ -640,7 +641,7 @@ export function EventPopup({
           }}
           currentUrl={
             typeof window !== 'undefined'
-              ? `${window.location.origin}/map?event=${event.id}`
+              ? `${window.location.origin}${getEventPublicPath(locale, event)}`
               : undefined
           }
           onShare={() => {
