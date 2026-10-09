@@ -4,27 +4,34 @@ import type { Locale } from '@/lib/i18n/config'
 interface LocaleFlagProps {
   locale: Locale
   className?: string
+  /** Accessible name for the flag; rendered as aria-label (not SVG <title>). */
+  'aria-label'?: string
+  /** @deprecated Use aria-label instead — SVG <title> leaks into HTML text. */
   title?: string
 }
 
-export const LocaleFlag = ({ locale, className, title }: LocaleFlagProps) => {
+export const LocaleFlag = ({
+  locale,
+  className,
+  'aria-label': ariaLabel,
+  title,
+}: LocaleFlagProps) => {
+  const label = ariaLabel ?? title
   const svgProps = {
     viewBox: '0 0 24 16',
     className: cn(
       'block h-3.5 w-5 rounded-[2px] border border-border/40',
       className
     ),
-    role: title ? 'img' : 'presentation',
-    'aria-hidden': title ? undefined : true,
-  } as const
-
-  const titleElement = title ? <title>{title}</title> : null
+    role: label ? ('img' as const) : ('presentation' as const),
+    'aria-label': label,
+    'aria-hidden': label ? undefined : true,
+  }
 
   switch (locale) {
     case 'en':
       return (
         <svg {...svgProps}>
-          {titleElement}
           <rect width='24' height='16' fill='#b22234' />
           <rect y='2' width='24' height='2' fill='#ffffff' />
           <rect y='6' width='24' height='2' fill='#ffffff' />
@@ -47,7 +54,6 @@ export const LocaleFlag = ({ locale, className, title }: LocaleFlagProps) => {
     case 'cs':
       return (
         <svg {...svgProps}>
-          {titleElement}
           <rect width='24' height='8' fill='#ffffff' />
           <rect y='8' width='24' height='8' fill='#d7141a' />
           <polygon points='0,0 10,8 0,16' fill='#11457e' />
@@ -56,7 +62,6 @@ export const LocaleFlag = ({ locale, className, title }: LocaleFlagProps) => {
     case 'es':
       return (
         <svg {...svgProps}>
-          {titleElement}
           <rect width='24' height='16' fill='#aa151b' />
           <rect y='4' width='24' height='8' fill='#f1bf00' />
         </svg>
@@ -64,7 +69,6 @@ export const LocaleFlag = ({ locale, className, title }: LocaleFlagProps) => {
     case 'de':
       return (
         <svg {...svgProps}>
-          {titleElement}
           <rect width='24' height='5.34' fill='#000000' />
           <rect y='5.33' width='24' height='5.34' fill='#dd0000' />
           <rect y='10.66' width='24' height='5.34' fill='#ffce00' />

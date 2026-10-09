@@ -601,6 +601,39 @@
         "build_thread_url": "Build-Thread",
         "website_url": "Website"
       }
+    },
+    "specValues": {
+      "fuel": {
+        "gasoline": "Benzin",
+        "diesel": "Diesel",
+        "electric": "Elektro",
+        "hybrid": "Hybrid",
+        "plugInHybrid": "Plug-in-Hybrid",
+        "e85": "E85",
+        "flexFuel": "Flex Fuel",
+        "cng": "CNG",
+        "lpg": "LPG",
+        "hydrogen": "Wasserstoff",
+        "fuelCell": "Brennstoffzelle"
+      },
+      "transmission": {
+        "manual": "Schaltgetriebe",
+        "automatic": "Automatik",
+        "cvt": "CVT",
+        "dct": "DCT",
+        "sequential": "Sequenziel",
+        "nSpeedManual": "{n}-Gang Schaltgetriebe",
+        "nSpeedAutomatic": "{n}-Gang Automatik",
+        "nSpeedCvt": "{n}-Gang CVT",
+        "nSpeedDct": "{n}-Gang DCT",
+        "nSpeedSequential": "{n}-Gang sequenziell"
+      },
+      "drivetrain": {
+        "awd": "Allrad (AWD)",
+        "rwd": "Heckantrieb (RWD)",
+        "fwd": "Frontantrieb (FWD)",
+        "fourWd": "Allrad (4WD)"
+      }
     }
   },
   "comments": {
@@ -887,6 +920,15 @@
     "register": {
       "title": "Konto erstellen",
       "description": "Erstelle dein MyRide-Konto und beginne, deine Autos der Community zu präsentieren."
+    },
+    "profile": {
+      "title": "Garage @{username}",
+      "description": "Sieh dir die Autos von @{username} auf MyRide an."
+    },
+    "map": {
+      "title": "Eventkarte",
+      "description": "Entdecke Auto-Events in deiner Nähe. Sieh sie auf der Karte, sage zu und vernetze dich mit anderen Fans.",
+      "ogAlt": "MyRide Eventkarte"
     }
   },
   "footer": {

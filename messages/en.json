@@ -507,6 +507,40 @@
       "noneDescription": "No photos have been uploaded for this car.",
       "noneCategory": "No photos in this category.",
       "reuploadAction": "Edit Car & Re-upload Photos"
+    },
+    "specs": {},
+    "specValues": {
+      "fuel": {
+        "gasoline": "Gasoline",
+        "diesel": "Diesel",
+        "electric": "Electric",
+        "hybrid": "Hybrid",
+        "plugInHybrid": "Plug-in Hybrid",
+        "e85": "E85",
+        "flexFuel": "Flex Fuel",
+        "cng": "CNG",
+        "lpg": "LPG",
+        "hydrogen": "Hydrogen",
+        "fuelCell": "Fuel Cell"
+      },
+      "transmission": {
+        "manual": "Manual",
+        "automatic": "Automatic",
+        "cvt": "CVT",
+        "dct": "DCT",
+        "sequential": "Sequential",
+        "nSpeedManual": "{n}-speed manual",
+        "nSpeedAutomatic": "{n}-speed automatic",
+        "nSpeedCvt": "{n}-speed CVT",
+        "nSpeedDct": "{n}-speed DCT",
+        "nSpeedSequential": "{n}-speed sequential"
+      },
+      "drivetrain": {
+        "awd": "AWD",
+        "rwd": "RWD",
+        "fwd": "FWD",
+        "fourWd": "4WD"
+      }
     }
   },
   "clubs": {
@@ -722,6 +756,15 @@
     "register": {
       "title": "Create Account",
       "description": "Create your MyRide account to start showcasing your cars and join the automotive community."
+    },
+    "profile": {
+      "title": "Garage @{username}",
+      "description": "Check out @{username}'s cars on MyRide."
+    },
+    "map": {
+      "title": "Events Map",
+      "description": "Discover car events near you. View events on the map, RSVP, and connect with fellow car enthusiasts.",
+      "ogAlt": "MyRide Events Map"
     }
   },
   "footer": {

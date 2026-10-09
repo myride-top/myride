@@ -22,6 +22,8 @@ import { Button } from '@/components/ui/button'
 import { NationalityFlag } from '@/components/common/nationality-flag'
 import { UserClubBadges } from '@/components/clubs/user-club-badges'
 import { useI18n } from '@/lib/i18n/provider'
+import { buildLocalePath } from '@/lib/i18n/config'
+import { SITE_URL } from '@/lib/constants/site'
 
 type ProfileGaragePageClientProps = {
   initialProfile: Profile
@@ -32,7 +34,7 @@ export default function ProfileGaragePageClient({
   initialProfile,
   initialCars,
 }: ProfileGaragePageClientProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
@@ -46,7 +48,8 @@ export default function ProfileGaragePageClient({
 
   const username = params.username as string
   const isOwner = user?.id === profile?.id
-  const isPremium = profile?.is_premium || false
+  const isPremium = Boolean(profile?.is_premium)
+  const shareUrl = `${SITE_URL}${buildLocalePath(locale, `/u/${username}`)}`
 
   useEffect(() => {
     setProfile(initialProfile)
@@ -109,7 +112,6 @@ export default function ProfileGaragePageClient({
     if (!qrCodeDataUrl) {
       setIsGeneratingQR(true)
       try {
-        const shareUrl = `${window.location.origin}/u/${username}`
         // Use user's avatar if available, otherwise fall back to icon
         const logoUrl = profile?.avatar_url || '/icon.jpg'
         const dataUrl = await generateQRCodeWithLogo(shareUrl, logoUrl, {
@@ -201,8 +203,6 @@ export default function ProfileGaragePageClient({
     )
   }
 
-  const shareUrl = `${window.location.origin}/u/${username}`
-
   return (
     <PageLayout bare animate={false} maxWidth='full'>
       <div className='min-h-screen bg-background'>
@@ -220,9 +220,10 @@ export default function ProfileGaragePageClient({
                   />
                   <div>
                     <div className='flex items-center gap-2 flex-wrap'>
-                      <h1 className='text-2xl sm:text-3xl font-bold text-foreground'>
+                      {/* Visual heading — crawlable H1 is server-rendered above */}
+                      <p className='text-2xl sm:text-3xl font-bold text-foreground'>
                         {profile.full_name || `@${profile.username}`}
-                      </h1>
+                      </p>
                       {isPremium && (
                         <Crown className='w-5 h-5 sm:w-6 sm:h-6 text-yellow-500' />
                       )}

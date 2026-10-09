@@ -3,6 +3,11 @@ import { SpecificationSection } from './specification-section'
 import { useUnitPreference } from '@/lib/context/unit-context'
 import { unitConversions } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n/provider'
+import {
+  translateDrivetrain,
+  translateFuelType,
+  translateTransmission,
+} from '@/lib/i18n/car-spec-values'
 import { SectionHeader } from '@/components/layout/section-header'
 
 interface CarSpecificationsProps {
@@ -88,17 +93,17 @@ export const CarSpecifications = ({
     {
       key: 'fuel_type',
       label: getSpecLabel('fuel_type', 'Fuel Type'),
-      value: car.fuel_type,
+      value: translateFuelType(car.fuel_type, t),
     },
     {
       key: 'transmission',
       label: getSpecLabel('transmission', 'Transmission'),
-      value: car.transmission,
+      value: translateTransmission(car.transmission, t),
     },
     {
       key: 'drivetrain',
       label: getSpecLabel('drivetrain', 'Drivetrain'),
-      value: car.drivetrain,
+      value: translateDrivetrain(car.drivetrain, t),
     },
     {
       key: 'zero_to_sixty',

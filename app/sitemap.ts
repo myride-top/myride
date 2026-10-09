@@ -101,12 +101,13 @@ async function fetchAllPublicCars(
   return rows
 }
 
-async function fetchAllPublicProfiles(
+async function fetchAllProfilesForCarLookup(
   supabase: ReturnType<typeof createSitemapClient>
 ) {
   const rows: Array<{
     id: string
     username: string
+    is_premium: boolean
     updated_at: string | null
     created_at: string | null
   }> = []
@@ -114,7 +115,7 @@ async function fetchAllPublicProfiles(
   for (let from = 0; ; from += PAGE_SIZE) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, updated_at, created_at')
+      .select('id, username, is_premium, updated_at, created_at')
       .not('username', 'is', null)
       .order('updated_at', { ascending: false })
       .range(from, from + PAGE_SIZE - 1)
@@ -135,6 +136,7 @@ async function fetchAllPublicProfiles(
       rows.push({
         id: row.id,
         username: row.username,
+        is_premium: Boolean(row.is_premium),
         updated_at: row.updated_at,
         created_at: row.created_at,
       })
@@ -174,10 +176,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const supabase = createSitemapClient()
-    const profiles = await fetchAllPublicProfiles(supabase)
+    const profiles = await fetchAllProfilesForCarLookup(supabase)
     const usernameById = new Map(
       profiles.map(profile => [profile.id, profile.username])
     )
+    const premiumProfiles = profiles.filter(profile => profile.is_premium)
     const cars = await fetchAllPublicCars(supabase, usernameById)
 
     for (const car of cars) {
@@ -192,7 +195,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       )
     }
 
-    for (const profile of profiles) {
+    // Only premium (public) profiles — non-premium garage pages are noindex
+    for (const profile of premiumProfiles) {
       const modified = new Date(
         profile.updated_at || profile.created_at || Date.now()
       )

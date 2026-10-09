@@ -65,6 +65,21 @@ export const getServerTranslator = async () => {
   return { locale, t }
 }
 
+const interpolate = (
+  template: string,
+  values?: Record<string, string | number>
+): string => {
+  if (!values) {
+    return template
+  }
+
+  let result = template
+  for (const [key, value] of Object.entries(values)) {
+    result = result.replaceAll(`{${key}}`, String(value))
+  }
+  return result
+}
+
 /** next-intl-compatible translator scoped to a message namespace. */
 export const getTranslations = async ({
   locale,
@@ -75,12 +90,20 @@ export const getTranslations = async ({
 }) => {
   const messages = await getDictionary(locale)
 
-  return (key: string, fallback?: string): string => {
-    const translated = getMessageByKey(messages, `${namespace}.${key}`)
-    if (translated) {
-      return translated
-    }
+  return (
+    key: string,
+    valuesOrFallback?: string | Record<string, string | number>,
+    fallback?: string
+  ): string => {
+    const values =
+      typeof valuesOrFallback === 'object' ? valuesOrFallback : undefined
+    const explicitFallback =
+      typeof valuesOrFallback === 'string' ? valuesOrFallback : fallback
 
-    return fallback ?? `${namespace}.${key}`
+    const translated = getMessageByKey(messages, `${namespace}.${key}`)
+    const template =
+      translated ?? explicitFallback ?? `${namespace}.${key}`
+
+    return interpolate(template, values)
   }
 }

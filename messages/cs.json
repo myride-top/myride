@@ -601,6 +601,39 @@
         "build_thread_url": "Build thread",
         "website_url": "Web"
       }
+    },
+    "specValues": {
+      "fuel": {
+        "gasoline": "Benzín",
+        "diesel": "Nafta",
+        "electric": "Elektřina",
+        "hybrid": "Hybrid",
+        "plugInHybrid": "Plug-in hybrid",
+        "e85": "E85",
+        "flexFuel": "Flex Fuel",
+        "cng": "CNG",
+        "lpg": "LPG",
+        "hydrogen": "Vodík",
+        "fuelCell": "Palivový článek"
+      },
+      "transmission": {
+        "manual": "Manuál",
+        "automatic": "Automat",
+        "cvt": "CVT",
+        "dct": "DCT",
+        "sequential": "Sekvenční",
+        "nSpeedManual": "{n}stupňový manuál",
+        "nSpeedAutomatic": "{n}stupňový automat",
+        "nSpeedCvt": "{n}stupňové CVT",
+        "nSpeedDct": "{n}stupňové DCT",
+        "nSpeedSequential": "{n}stupňová sekvence"
+      },
+      "drivetrain": {
+        "awd": "4×4 (AWD)",
+        "rwd": "Zadní (RWD)",
+        "fwd": "Přední (FWD)",
+        "fourWd": "4×4 (4WD)"
+      }
     }
   },
   "comments": {
@@ -887,6 +920,15 @@
     "register": {
       "title": "Vytvořit účet",
       "description": "Vytvořte si účet MyRide a začněte prezentovat svá auta v automobilové komunitě."
+    },
+    "profile": {
+      "title": "Garáž @{username}",
+      "description": "Prohlédni si auta @{username} na MyRide."
+    },
+    "map": {
+      "title": "Mapa akcí",
+      "description": "Objevuj automobilové akce v okolí. Sleduj je na mapě, potvrď účast a spoj se s dalšími nadšenci.",
+      "ogAlt": "Mapa akcí MyRide"
     }
   },
   "footer": {

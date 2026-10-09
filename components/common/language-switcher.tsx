@@ -71,7 +71,7 @@ export const LanguageSwitcher = () => {
           <LocaleFlag
             locale={currentLocale}
             className='shrink-0 self-center'
-            title={getLocaleLabel(currentLocale)}
+            aria-label={getLocaleLabel(currentLocale)}
           />
           <span className='hidden md:inline truncate leading-none'>
             {getLocaleLabel(currentLocale)}
@@ -85,7 +85,7 @@ export const LanguageSwitcher = () => {
               <LocaleFlag
                 locale={item}
                 className='shrink-0 self-center'
-                title={getLocaleLabel(item)}
+                aria-label={getLocaleLabel(item)}
               />
               <span className='leading-none'>{getLocaleLabel(item)}</span>
             </span>

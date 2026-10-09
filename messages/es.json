@@ -601,6 +601,39 @@
         "build_thread_url": "Hilo de proyecto",
         "website_url": "Sitio web"
       }
+    },
+    "specValues": {
+      "fuel": {
+        "gasoline": "Gasolina",
+        "diesel": "Diésel",
+        "electric": "Eléctrico",
+        "hybrid": "Híbrido",
+        "plugInHybrid": "Híbrido enchufable",
+        "e85": "E85",
+        "flexFuel": "Flex Fuel",
+        "cng": "GNC",
+        "lpg": "GLP",
+        "hydrogen": "Hidrógeno",
+        "fuelCell": "Pila de combustible"
+      },
+      "transmission": {
+        "manual": "Manual",
+        "automatic": "Automático",
+        "cvt": "CVT",
+        "dct": "DCT",
+        "sequential": "Secuencial",
+        "nSpeedManual": "Manual de {n} velocidades",
+        "nSpeedAutomatic": "Automático de {n} velocidades",
+        "nSpeedCvt": "CVT de {n} velocidades",
+        "nSpeedDct": "DCT de {n} velocidades",
+        "nSpeedSequential": "Secuencial de {n} velocidades"
+      },
+      "drivetrain": {
+        "awd": "AWD",
+        "rwd": "RWD",
+        "fwd": "FWD",
+        "fourWd": "4WD"
+      }
     }
   },
   "comments": {
@@ -887,6 +920,15 @@
     "register": {
       "title": "Crear cuenta",
       "description": "Crea tu cuenta MyRide para empezar a mostrar tus coches y unirte a la comunidad automotriz."
+    },
+    "profile": {
+      "title": "Garaje @{username}",
+      "description": "Mira los coches de @{username} en MyRide."
+    },
+    "map": {
+      "title": "Mapa de eventos",
+      "description": "Descubre eventos de coches cerca de ti. Véalos en el mapa, confirma asistencia y conecta con otros entusiastas.",
+      "ogAlt": "Mapa de eventos MyRide"
     }
   },
   "footer": {
